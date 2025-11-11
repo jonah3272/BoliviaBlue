@@ -1,4 +1,4 @@
 Contact: https://github.com/jonah3272/BoliviaBlue/issues
 Preferred-Languages: es, en
-Canonical: https://boliviablueconpaz.vercel.app/.well-known/security.txt
+Canonical: https://boliviablue.com/.well-known/security.txt
 

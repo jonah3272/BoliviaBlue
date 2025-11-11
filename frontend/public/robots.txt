@@ -5,7 +5,7 @@ User-agent: *
 Allow: /
 
 # Sitemap location
-Sitemap: https://boliviablueconpaz.vercel.app/sitemap.xml
+Sitemap: https://boliviablue.com/sitemap.xml
 
 # Crawl delay (optional, be nice to servers)
 Crawl-delay: 1

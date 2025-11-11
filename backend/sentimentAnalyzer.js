@@ -68,8 +68,15 @@ What is the sentiment regarding the US dollar value against the Boliviano?`;
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`
       },
+      // Model selection: gpt-4o-mini is optimal for sentiment analysis
+      // Alternatives:
+      // - 'gpt-4o': More accurate but ~10x more expensive ($2.50 vs $0.15 per 1M input tokens)
+      // - 'gpt-3.5-turbo': Cheaper but less accurate for nuanced financial sentiment
+      // - 'o1-mini': Better reasoning but slower and more expensive
+      const model = process.env.OPENAI_MODEL || 'gpt-4o-mini';
+      
       body: JSON.stringify({
-        model: 'gpt-4o-mini', // Fast and cheap model
+        model: model,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }

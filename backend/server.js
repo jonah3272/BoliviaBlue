@@ -174,8 +174,8 @@ app.get('/api/blue-history', (req, res) => {
  */
 app.get('/api/news', (req, res) => {
   try {
-    const limit = parseInt(req.query.limit) || 100;
-    const rows = getRecentNews.all(limit);
+    // Always return only the latest 10 articles
+    const rows = getRecentNews.all(10);
     
     const news = rows.map(row => ({
       id: row.id,

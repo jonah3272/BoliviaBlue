@@ -4,7 +4,8 @@ import { fetchNews } from './newsClient.js';
 import { insertRate, insertNews, getRatesInRange } from './db.js';
 import { median } from './median.js';
 
-const REFRESH_INTERVAL = 15 * 60 * 1000; // 15 minutes
+const REFRESH_INTERVAL = 15 * 60 * 1000; // 15 minutes for rates
+const NEWS_REFRESH_INTERVAL = 30 * 60 * 1000; // 30 minutes for news
 
 // In-memory cache for latest data
 export const cache = {
@@ -137,14 +138,21 @@ async function runRefreshJobs() {
  * Start the scheduler
  */
 export function startScheduler() {
-  console.log(`Starting scheduler with ${REFRESH_INTERVAL / 1000}s interval`);
+  console.log(`Starting scheduler...`);
+  console.log(`- Rates: refresh every ${REFRESH_INTERVAL / 1000 / 60} minutes`);
+  console.log(`- News: refresh every ${NEWS_REFRESH_INTERVAL / 1000 / 60} minutes`);
   
   // Initial refresh on boot
-  runRefreshJobs().catch(console.error);
+  refreshBlueRate().catch(console.error);
+  refreshNews().catch(console.error);
   
   // Schedule periodic refreshes
   setInterval(() => {
-    runRefreshJobs().catch(console.error);
+    refreshBlueRate().catch(console.error);
   }, REFRESH_INTERVAL);
+  
+  setInterval(() => {
+    refreshNews().catch(console.error);
+  }, NEWS_REFRESH_INTERVAL);
 }
 

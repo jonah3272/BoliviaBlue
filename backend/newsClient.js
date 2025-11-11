@@ -139,7 +139,7 @@ async function fetchSource(sourceUrl) {
 }
 
 /**
- * Check if news item is relevant to Bolivia economy and Rodrigo Paz
+ * Check if news item is relevant to Bolivia (financial, political, international relations)
  * @param {string} title - News title
  * @param {string} summary - News summary
  * @returns {boolean} True if relevant
@@ -147,19 +147,20 @@ async function fetchSource(sourceUrl) {
 function isRelevantToBolivia(title, summary) {
   const text = (title + ' ' + summary).toLowerCase();
   
-  // Must mention Bolivia or be about Rodrigo Paz
+  // Must mention Bolivia or related entities
   const boliviaKeywords = [
     'bolivia',
     'boliviano',
     'bolivianos',
     'rodrigo paz',
     'presidente paz',
-    'paz',
+    'paz gobierno',
     'bcb',
     'banco central de bolivia',
     'la paz',
     'santa cruz',
-    'cochabamba'
+    'cochabamba',
+    'gobierno boliviano'
   ];
   
   const hasBoliviaReference = boliviaKeywords.some(keyword => text.includes(keyword));
@@ -168,7 +169,7 @@ function isRelevantToBolivia(title, summary) {
     return false;
   }
   
-  // Must be related to economy, dollar, or exchange rate
+  // Economic/financial keywords
   const economicKeywords = [
     'dolar',
     'dólar',
@@ -197,15 +198,61 @@ function isRelevantToBolivia(title, summary) {
     'paralelo',
     'blue',
     'usdt',
-    'cripto'
+    'cripto',
+    'financiero',
+    'financiera',
+    'deficit',
+    'déficit',
+    'deuda',
+    'inversion',
+    'inversión'
+  ];
+  
+  // International relations & political keywords (e.g., Marco Rubio visit)
+  const politicalKeywords = [
+    'rubio',
+    'marco rubio',
+    'secretario',
+    'embajador',
+    'visita',
+    'reunion',
+    'reunión',
+    'cumbre',
+    'acuerdo',
+    'tratado',
+    'diplomacia',
+    'diplomatico',
+    'diplomático',
+    'relaciones',
+    'estados unidos',
+    'eeuu',
+    'china',
+    'brasil',
+    'argentina',
+    'politica',
+    'política',
+    'gobierno',
+    'ministro',
+    'congreso',
+    'internacional'
   ];
   
   const hasEconomicTopic = economicKeywords.some(keyword => text.includes(keyword));
+  const hasPoliticalTopic = politicalKeywords.some(keyword => text.includes(keyword));
   
-  // Always include if mentions Rodrigo Paz
+  // Priority 1: Always include if mentions Rodrigo Paz or Presidente Paz
   const mentionsPaz = text.includes('rodrigo paz') || text.includes('presidente paz');
+  if (mentionsPaz) {
+    return true;
+  }
   
-  return hasEconomicTopic || mentionsPaz;
+  // Priority 2: Include high-profile international visits (e.g., Rubio visiting Bolivia)
+  if ((text.includes('rubio') || text.includes('secretario')) && text.includes('visita')) {
+    return true;
+  }
+  
+  // Priority 3: Must have economic OR political topic
+  return hasEconomicTopic || hasPoliticalTopic;
 }
 
 /**

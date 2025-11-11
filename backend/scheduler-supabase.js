@@ -1,10 +1,12 @@
 import { getCurrentBlueRate } from './p2pClient.js';
 import { getOfficialRate, getStaticOfficialRate } from './officialRateClient.js';
 import { fetchNews } from './newsClient.js'; // Already has Bolivia filtering
+import { fetchTwitterNews } from './twitterClient.js'; // Twitter/X integration
 import { insertRate, insertNews } from './db-supabase.js';
 import { median } from './median.js';
 
-const REFRESH_INTERVAL = 15 * 60 * 1000; // 15 minutes
+const REFRESH_INTERVAL = 15 * 60 * 1000; // 15 minutes for rates
+const NEWS_REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes for news - keep it fresh!
 
 // In-memory cache for latest data
 export const cache = {
@@ -64,7 +66,7 @@ async function refreshBlueRate() {
 }
 
 /**
- * Refresh news data
+ * Refresh news data from RSS feeds and Twitter
  */
 async function refreshNews() {
   try {
@@ -72,16 +74,25 @@ async function refreshNews() {
     
     const sources = (process.env.NEWS_SOURCES || '').split(',').filter(Boolean);
     
-    if (sources.length === 0) {
-      console.warn('No news sources configured');
+    // Fetch from both RSS feeds and Twitter in parallel
+    const [rssNews, twitterNews] = await Promise.all([
+      sources.length > 0 ? fetchNews(sources) : Promise.resolve([]),
+      fetchTwitterNews().catch(err => {
+        console.warn('Twitter fetch failed:', err.message);
+        return [];
+      })
+    ]);
+    
+    const allNewsItems = [...rssNews, ...twitterNews];
+    
+    if (allNewsItems.length === 0) {
+      console.warn('No news items fetched');
       return;
     }
     
-    const newsItems = await fetchNews(sources);
-    
     // Store in Supabase
     let insertedCount = 0;
-    for (const item of newsItems) {
+    for (const item of allNewsItems) {
       try {
         await insertNews(
           item.id,
@@ -90,7 +101,8 @@ async function refreshNews() {
           item.title,
           item.summary,
           item.published_at_iso,
-          item.sentiment
+          item.sentiment,
+          item.category
         );
         insertedCount++;
       } catch (error) {
@@ -101,7 +113,7 @@ async function refreshNews() {
       }
     }
     
-    console.log(`News updated: ${insertedCount} new items stored`);
+    console.log(`News updated: ${insertedCount} new items stored (${rssNews.length} RSS, ${twitterNews.length} Twitter)`);
     
   } catch (error) {
     console.error('Failed to refresh news:', error);
@@ -109,27 +121,23 @@ async function refreshNews() {
 }
 
 /**
- * Run all refresh jobs
- */
-async function runRefreshJobs() {
-  await Promise.all([
-    refreshBlueRate(),
-    refreshNews()
-  ]);
-}
-
-/**
  * Start the scheduler
  */
 export function startScheduler() {
-  console.log(`Starting scheduler with ${REFRESH_INTERVAL / 1000}s interval`);
+  console.log(`Starting scheduler: Rates every ${REFRESH_INTERVAL / 1000}s, News every ${NEWS_REFRESH_INTERVAL / 1000}s`);
   
   // Initial refresh on boot
-  runRefreshJobs().catch(console.error);
+  refreshBlueRate().catch(console.error);
+  refreshNews().catch(console.error);
   
-  // Schedule periodic refreshes
+  // Schedule rates refresh (every 15 minutes)
   setInterval(() => {
-    runRefreshJobs().catch(console.error);
+    refreshBlueRate().catch(console.error);
   }, REFRESH_INTERVAL);
+  
+  // Schedule news refresh (every 5 minutes for freshness!)
+  setInterval(() => {
+    refreshNews().catch(console.error);
+  }, NEWS_REFRESH_INTERVAL);
 }
 

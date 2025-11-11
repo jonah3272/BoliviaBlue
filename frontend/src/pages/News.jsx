@@ -3,6 +3,7 @@ import ThemeToggle from '../components/ThemeToggle';
 import LanguageToggle from '../components/LanguageToggle';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Link } from 'react-router-dom';
+import { fetchNews } from '../utils/api';
 
 const CATEGORIES = {
   all: { es: 'Todas', en: 'All', color: 'gray' },
@@ -27,6 +28,35 @@ const CategoryIcon = ({ category }) => {
   return icons[category] || icons.all;
 };
 
+// AI-Powered Sentiment Indicator
+const SentimentArrow = ({ sentiment, language }) => {
+  if (!sentiment || sentiment === 'neutral') {
+    return (
+      <span className="text-2xl" title={language === 'es' ? 'Neutral - Sin impacto claro en divisas' : 'Neutral - No clear currency impact'}>
+        ⚪
+      </span>
+    );
+  }
+  
+  if (sentiment === 'up') {
+    return (
+      <span className="text-2xl" title={language === 'es' ? 'Dólar Subiendo - Boliviano Debilitándose' : 'Dollar Rising - Boliviano Weakening'}>
+        ↗️
+      </span>
+    );
+  }
+  
+  if (sentiment === 'down') {
+    return (
+      <span className="text-2xl" title={language === 'es' ? 'Dólar Bajando - Boliviano Fortaleciéndose' : 'Dollar Falling - Boliviano Strengthening'}>
+        ↘️
+      </span>
+    );
+  }
+  
+  return null;
+};
+
 function News() {
   const { t, language } = useLanguage();
   const [news, setNews] = useState([]);
@@ -41,15 +71,8 @@ function News() {
   const loadNews = async () => {
     setIsLoading(true);
     try {
-      const params = new URLSearchParams({ limit: '30' });
-      if (selectedCategory !== 'all') {
-        params.append('category', selectedCategory);
-      }
-      
-      const response = await fetch(`/api/news?${params}`);
-      if (!response.ok) throw new Error('Failed to load news');
-      
-      const data = await response.json();
+      const category = selectedCategory !== 'all' ? selectedCategory : null;
+      const data = await fetchNews(category, 30);
       setNews(data);
       setError(null);
     } catch (err) {
@@ -204,12 +227,13 @@ function News() {
                   key={article.id}
                   className="bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all p-6 flex flex-col"
                 >
-                  {/* Category Badge */}
+                  {/* Category Badge & Sentiment */}
                   <div className="flex items-center justify-between mb-3">
                     <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-${cat.color}-100 dark:bg-${cat.color}-900/30 text-${cat.color}-700 dark:text-${cat.color}-300`}>
                       <CategoryIcon category={article.category} />
-                    {language === 'es' ? cat.es : cat.en}
-                  </span>
+                      {language === 'es' ? cat.es : cat.en}
+                    </span>
+                    <SentimentArrow sentiment={article.sentiment} language={language} />
                   </div>
 
                   {/* Title */}

@@ -1,5 +1,6 @@
 import fetch from 'node-fetch';
 import crypto from 'crypto';
+import { analyzeSentimentAI } from './sentimentAnalyzer.js';
 
 const NEWS_FETCH_TIMEOUT = 15000;
 
@@ -16,7 +17,7 @@ function generateId(url) {
  * @param {string} summary - Article summary
  * @returns {string} Category: "economy", "politics", "international", "banking", "markets", "currency", "general"
  */
-function categorizeArticle(title, summary) {
+export function categorizeArticle(title, summary) {
   const text = `${title} ${summary}`.toLowerCase();
   
   // Currency & Exchange rates
@@ -62,52 +63,19 @@ function categorizeArticle(title, summary) {
   return maxCategory[1] > 0 ? maxCategory[0] : 'general';
 }
 
-/**
- * Simple sentiment classifier based on keywords
- * @param {string} text - Text to analyze
- * @returns {string} "up", "down", or "neutral"
- */
-function classifySentiment(text) {
-  if (!text) return 'neutral';
-  
-  const lowerText = text.toLowerCase();
-  
-  // Keywords that suggest price increase (dollar strengthening, boliviano weakening)
-  const upKeywords = [
-    'sube', 'incremento', 'aumenta', 'alza', 'dispara', 'escasez',
-    'deprecia', 'devalu', 'crisis', 'inflacion', 'mercado paralelo',
-    'dolar blue', 'tipo de cambio sube'
-  ];
-  
-  // Keywords that suggest price decrease (dollar weakening, boliviano strengthening)
-  const downKeywords = [
-    'baja', 'disminuye', 'cae', 'desciende', 'estabiliza', 'controla',
-    'normaliza', 'reservas', 'fortalece', 'recupera'
-  ];
-  
-  let upScore = 0;
-  let downScore = 0;
-  
-  for (const keyword of upKeywords) {
-    if (lowerText.includes(keyword)) upScore++;
-  }
-  
-  for (const keyword of downKeywords) {
-    if (lowerText.includes(keyword)) downScore++;
-  }
-  
-  if (upScore > downScore) return 'up';
-  if (downScore > upScore) return 'down';
-  return 'neutral';
+// Sentiment analysis is now handled by sentimentAnalyzer.js
+// This function is kept for backward compatibility but delegates to AI
+async function classifySentiment(title, summary) {
+  return await analyzeSentimentAI(title, summary);
 }
 
 /**
  * Parse RSS feed
  * @param {string} xml - RSS XML content
  * @param {string} source - Source name
- * @returns {Array} Array of news items
+ * @returns {Promise<Array>} Array of news items with AI-analyzed sentiment
  */
-function parseRSS(xml, source) {
+async function parseRSS(xml, source) {
   const items = [];
   
   // Basic regex-based RSS parsing (lightweight alternative to XML parser)
@@ -117,6 +85,7 @@ function parseRSS(xml, source) {
   const descRegex = /<description>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/description>/s;
   const pubDateRegex = /<pubDate>(.*?)<\/pubDate>/s;
   
+  const rawItems = [];
   let match;
   while ((match = itemRegex.exec(xml)) !== null) {
     const itemXml = match[1];
@@ -132,17 +101,28 @@ function parseRSS(xml, source) {
       const summary = descMatch ? descMatch[1].replace(/<[^>]*>/g, '').trim().substring(0, 200) : '';
       const pubDate = dateMatch ? new Date(dateMatch[1]).toISOString() : new Date().toISOString();
       
-      items.push({
+      rawItems.push({
         id: generateId(url),
         source,
         url,
         title,
         summary,
         published_at_iso: pubDate,
-        sentiment: classifySentiment(title + ' ' + summary),
         category: categorizeArticle(title, summary)
       });
     }
+  }
+  
+  // Analyze sentiment for each item using AI (in batches to avoid rate limits)
+  for (const item of rawItems) {
+    const sentiment = await classifySentiment(item.title, item.summary);
+    items.push({
+      ...item,
+      sentiment
+    });
+    
+    // Small delay between API calls to avoid rate limiting
+    await new Promise(resolve => setTimeout(resolve, 100));
   }
   
   return items;
@@ -180,7 +160,7 @@ async function fetchSource(sourceUrl) {
     
     // Parse based on content type
     if (contentType.includes('xml') || contentType.includes('rss') || text.includes('<rss')) {
-      return parseRSS(text, sourceName);
+      return await parseRSS(text, sourceName);
     }
     
     return [];

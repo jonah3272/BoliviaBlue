@@ -108,7 +108,7 @@ export async function getTotalRatesCount() {
 /**
  * Insert a news item
  */
-export async function insertNews(id, source, url, title, summary, published_at, sentiment) {
+export async function insertNews(id, source, url, title, summary, published_at, sentiment, category = 'general') {
   const { data, error } = await supabase
     .from('news')
     .insert({
@@ -118,7 +118,8 @@ export async function insertNews(id, source, url, title, summary, published_at, 
       title,
       summary,
       published_at,
-      sentiment
+      sentiment,
+      category
     })
     .select()
     .single();

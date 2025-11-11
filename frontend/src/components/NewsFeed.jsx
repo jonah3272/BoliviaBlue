@@ -2,7 +2,34 @@ import { useState, useEffect } from 'react';
 import { fetchNews } from '../utils/api';
 import { formatTimeAgo } from '../utils/formatters';
 
-// Sentiment badges removed - classification not accurate for complex political/economic news
+// AI-Powered Sentiment Indicator
+function SentimentArrow({ sentiment }) {
+  if (!sentiment || sentiment === 'neutral') {
+    return (
+      <span className="text-gray-400 dark:text-gray-500" title="Neutral - No clear currency impact">
+        ⚪
+      </span>
+    );
+  }
+  
+  if (sentiment === 'up') {
+    return (
+      <span className="text-red-500" title="Dollar Rising - Boliviano Weakening">
+        ↗️
+      </span>
+    );
+  }
+  
+  if (sentiment === 'down') {
+    return (
+      <span className="text-green-500" title="Dollar Falling - Boliviano Strengthening">
+        ↘️
+      </span>
+    );
+  }
+  
+  return null;
+}
 
 function NewsCard({ item }) {
   return (
@@ -12,10 +39,13 @@ function NewsCard({ item }) {
       rel="noopener noreferrer"
       className="block bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow p-4 border border-gray-200 dark:border-gray-700"
     >
-      <div className="mb-2">
-        <h3 className="font-medium text-gray-900 dark:text-white line-clamp-2">
+      <div className="flex items-start justify-between mb-2">
+        <h3 className="font-medium text-gray-900 dark:text-white line-clamp-2 flex-1">
           {item.title}
         </h3>
+        <div className="ml-2 flex-shrink-0 text-xl">
+          <SentimentArrow sentiment={item.sentiment} />
+        </div>
       </div>
       
       {item.summary && (

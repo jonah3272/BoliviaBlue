@@ -1,0 +1,26 @@
+# Bolivia Blue con Paz - Robots.txt
+# Allow all search engines to crawl the entire site
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://boliviablueconpaz.vercel.app/sitemap.xml
+
+# Crawl delay (optional, be nice to servers)
+Crawl-delay: 1
+
+# Specific rules for major search engines
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+# Disallow common non-content paths (if any)
+# Disallow: /api/
+# Disallow: /admin/
+

@@ -100,7 +100,7 @@ export async function fetchBlueHistory(range = '1W') {
 }
 
 /**
- * Fetch recent news headlines directly from Supabase
+ * Fetch recent news articles directly from Supabase (excludes tweets)
  * @param {string} category - Optional category filter
  * @param {number} limit - Number of articles to fetch
  */
@@ -108,6 +108,7 @@ export async function fetchNews(category = null, limit = 10) {
   let query = supabase
     .from('news')
     .select('*')
+    .eq('type', 'article') // Only articles, not tweets
     .order('published_at', { ascending: false })
     .limit(limit);
   
@@ -131,7 +132,39 @@ export async function fetchNews(category = null, limit = 10) {
     summary: item.summary,
     published_at_iso: item.published_at,
     sentiment: item.sentiment,
-    category: item.category
+    category: item.category,
+    type: item.type
+  }));
+}
+
+/**
+ * Fetch recent tweets from Supabase
+ * @param {number} limit - Number of tweets to fetch
+ */
+export async function fetchTweets(limit = 20) {
+  const { data, error } = await supabase
+    .from('news')
+    .select('*')
+    .eq('type', 'tweet')
+    .order('published_at', { ascending: false})
+    .limit(limit);
+  
+  if (error) {
+    console.error('Error fetching tweets from Supabase:', error);
+    throw new Error(`Failed to fetch tweets: ${error.message}`);
+  }
+  
+  // Format response to match expected structure
+  return (data || []).map(item => ({
+    id: item.id,
+    source: item.source,
+    url: item.url,
+    title: item.title,
+    summary: item.summary,
+    published_at_iso: item.published_at,
+    sentiment: item.sentiment,
+    category: item.category,
+    type: item.type
   }));
 }
 

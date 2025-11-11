@@ -4,6 +4,7 @@ import RateCards from '../components/RateCards';
 import BinanceBanner from '../components/BinanceBanner';
 import BlueChart from '../components/BlueChart';
 import NewsFeed from '../components/NewsFeed';
+import TweetsFeed from '../components/TweetsFeed';
 import About from '../components/About';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Link } from 'react-router-dom';
@@ -98,7 +99,24 @@ function Home() {
 
         {/* News Feed */}
         <section>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+            {t('newsTitle')}
+          </h2>
           <NewsFeed />
+        </section>
+
+        {/* Tweets Feed (Social Media) */}
+        <section>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+            <span className="flex items-center gap-2">
+              {/* Twitter/X Icon */}
+              <svg className="w-6 h-6 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              </svg>
+              {t('language') === 'es' ? 'En Twitter/X' : 'On Twitter/X'}
+            </span>
+          </h2>
+          <TweetsFeed maxItems={10} />
         </section>
 
         {/* About */}

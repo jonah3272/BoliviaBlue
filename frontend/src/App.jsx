@@ -2,6 +2,9 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Calculator from './pages/Calculator';
 import News from './pages/News';
+import About from './pages/About';
+import FAQ from './pages/FAQ';
+import RodrigoPaz from './pages/RodrigoPaz';
 
 function App() {
   return (
@@ -10,6 +13,9 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/calculator" element={<Calculator />} />
         <Route path="/news" element={<News />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/faq" element={<FAQ />} />
+        <Route path="/rodrigo-paz" element={<RodrigoPaz />} />
       </Routes>
     </Router>
   );

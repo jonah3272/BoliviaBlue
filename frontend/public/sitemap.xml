@@ -35,14 +35,34 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/news?lang=en" />
   </url>
   
-  <!-- About Page (Coming Soon) -->
+  <!-- About Page -->
   <url>
     <loc>https://boliviablue.com/about</loc>
     <lastmod>2025-01-17T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/about" />
     <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/about?lang=en" />
+  </url>
+  
+  <!-- FAQ Page -->
+  <url>
+    <loc>https://boliviablue.com/faq</loc>
+    <lastmod>2025-01-17T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/faq" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/faq?lang=en" />
+  </url>
+  
+  <!-- Rodrigo Paz Page -->
+  <url>
+    <loc>https://boliviablue.com/rodrigo-paz</loc>
+    <lastmod>2025-01-17T00:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/rodrigo-paz" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/rodrigo-paz?lang=en" />
   </url>
   
 </urlset>

@@ -1,19 +1,15 @@
-import { useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import ThemeToggle from '../components/ThemeToggle';
 import LanguageToggle from '../components/LanguageToggle';
+import PageMeta from '../components/PageMeta';
+import Breadcrumbs from '../components/Breadcrumbs';
 import { Link } from 'react-router-dom';
 
 function FAQ() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
-  useEffect(() => {
-    document.title = t('faqPageTitle');
-    
-    // Add FAQ structured data for Google
-    const script = document.createElement('script');
-    script.type = 'application/ld+json';
-    script.text = JSON.stringify({
+  // FAQ structured data
+  const faqSchema = {
       "@context": "https://schema.org",
       "@type": "FAQPage",
       "mainEntity": [
@@ -114,13 +110,7 @@ function FAQ() {
           }
         }
       ]
-    });
-    document.head.appendChild(script);
-    
-    return () => {
-      document.head.removeChild(script);
     };
-  }, [t]);
 
   const faqs = [
     { q: 'faqQ1', a: 'faqA1' },
@@ -139,12 +129,22 @@ function FAQ() {
 
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
+      <PageMeta
+        title={t('faqPageTitle')}
+        description={t('faqPageSubtitle')}
+        keywords={language === 'es'
+          ? "preguntas frecuentes dólar blue, faq tipo cambio bolivia, dudas dólar paralelo, preguntas bolivia blue"
+          : "blue dollar faq, exchange rate questions bolivia, parallel dollar questions, bolivia blue faq"}
+        canonical="/faq"
+        structuredData={faqSchema}
+      />
+      
       {/* Header */}
       <header className="bg-white dark:bg-gray-800 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
           <div className="flex items-center justify-between gap-4">
             <Link to="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity min-w-0">
-              <img src="/favicon.svg" alt="Logo" className="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0" />
+              <img src="/favicon.svg" alt="Bolivia Blue con Paz - Tipo de Cambio Dólar Boliviano" className="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0" />
               <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white truncate">
                 Bolivia Blue
               </h1>
@@ -222,6 +222,7 @@ function FAQ() {
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <Breadcrumbs />
         <article className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 sm:p-8 lg:p-12">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2">
             {t('faqPageTitle')}

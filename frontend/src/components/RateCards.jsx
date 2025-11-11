@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { fetchBlueRate } from '../utils/api';
 import { formatRate, formatDateTime, isStale } from '../utils/formatters';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -108,8 +109,32 @@ function RateCards() {
   const buyChange = data?.buy_change_24h;
   const sellChange = data?.sell_change_24h;
 
+  // Generate ExchangeRate structured data
+  const exchangeRateSchema = data && data.buy_bob_per_usd && data.sell_bob_per_usd ? {
+    "@context": "https://schema.org",
+    "@type": "ExchangeRateSpecification",
+    "currency": "BOB",
+    "exchangeCurrency": "USD",
+    "currentExchangeRate": {
+      "@type": "UnitPriceSpecification",
+      "price": ((data.buy_bob_per_usd + data.sell_bob_per_usd) / 2).toFixed(4),
+      "priceCurrency": "BOB",
+      "unitCode": "USD"
+    },
+    "validFrom": data.updated_at_iso,
+    "rateType": "Blue Market (Parallel)",
+    "exchangeRateSpread": (data.sell_bob_per_usd - data.buy_bob_per_usd).toFixed(4)
+  } : null;
+
   return (
     <div className="space-y-8">
+      {exchangeRateSchema && (
+        <Helmet>
+          <script type="application/ld+json">
+            {JSON.stringify(exchangeRateSchema)}
+          </script>
+        </Helmet>
+      )}
       {/* Blue Market Rates */}
       <div>
         <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4 text-center">

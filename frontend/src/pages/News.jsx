@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import ThemeToggle from '../components/ThemeToggle';
 import LanguageToggle from '../components/LanguageToggle';
+import PageMeta from '../components/PageMeta';
+import Breadcrumbs from '../components/Breadcrumbs';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Link } from 'react-router-dom';
 import { fetchNews } from '../utils/api';
@@ -140,12 +142,26 @@ function News() {
 
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
+      <PageMeta
+        title={language === 'es' 
+          ? "Noticias Económicas - Bolivia Blue con Paz"
+          : "Economic News - Bolivia Blue with Paz"}
+        description={language === 'es'
+          ? "Últimas noticias financieras y económicas de Bolivia relacionadas con el tipo de cambio del dólar blue, la presidencia de Rodrigo Paz, y el mercado cambiario. Actualizado cada 5 minutos."
+          : "Latest financial and economic news from Bolivia related to the blue dollar exchange rate, Rodrigo Paz's presidency, and the exchange market. Updated every 5 minutes."}
+        keywords={language === 'es'
+          ? "noticias bolivia, noticias económicas bolivia, noticias dólar blue, noticias rodrigo paz, economía bolivia"
+          : "bolivia news, economic news bolivia, blue dollar news, rodrigo paz news, bolivia economy"}
+        canonical="/news"
+        structuredData={newsPageSchema}
+      />
+      
       {/* Header */}
       <header className="bg-white dark:bg-gray-800 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
           <div className="flex items-center justify-between gap-4">
             <Link to="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity min-w-0">
-              <img src="/favicon.svg" alt="Logo" className="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0" />
+              <img src="/favicon.svg" alt="Bolivia Blue con Paz - Tipo de Cambio Dólar Boliviano" className="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0" />
               <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white truncate">
                 Bolivia Blue
               </h1>
@@ -237,6 +253,7 @@ function News() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
+        <Breadcrumbs />
         {/* Sentiment Legend */}
         <SentimentLegend />
         

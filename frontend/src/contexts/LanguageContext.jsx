@@ -365,7 +365,13 @@ export function LanguageProvider({ children }) {
 
   useEffect(() => {
     localStorage.setItem('language', language);
+    // Update HTML lang attribute for SEO and accessibility
     document.documentElement.lang = language;
+    // Also update html tag if it exists
+    const htmlTag = document.querySelector('html');
+    if (htmlTag) {
+      htmlTag.setAttribute('lang', language);
+    }
   }, [language]);
 
   const toggleLanguage = () => {

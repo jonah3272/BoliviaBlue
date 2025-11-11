@@ -1,25 +1,32 @@
-import { useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import ThemeToggle from '../components/ThemeToggle';
 import LanguageToggle from '../components/LanguageToggle';
+import PageMeta from '../components/PageMeta';
+import Breadcrumbs from '../components/Breadcrumbs';
 import { Link } from 'react-router-dom';
 
 function About() {
-  const { t } = useLanguage();
-
-  // Update document title for SEO
-  useEffect(() => {
-    document.title = t('aboutPageTitle');
-  }, [t]);
+  const { t, language } = useLanguage();
 
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
+      <PageMeta
+        title={t('aboutPageTitle')}
+        description={language === 'es'
+          ? "Conoce cómo funciona Bolivia Blue con Paz. Metodología, fuentes de datos, análisis con IA, y transparencia en el seguimiento del tipo de cambio del dólar blue en Bolivia."
+          : "Learn how Bolivia Blue with Paz works. Methodology, data sources, AI analysis, and transparency in tracking the blue dollar exchange rate in Bolivia."}
+        keywords={language === 'es'
+          ? "acerca de bolivia blue, metodología tipo cambio, cómo funciona dólar blue, transparencia bolivia"
+          : "about bolivia blue, exchange rate methodology, how blue dollar works, bolivia transparency"}
+        canonical="/about"
+      />
+      
       {/* Header */}
       <header className="bg-white dark:bg-gray-800 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
           <div className="flex items-center justify-between gap-4">
             <Link to="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity min-w-0">
-              <img src="/favicon.svg" alt="Logo" className="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0" />
+              <img src="/favicon.svg" alt="Bolivia Blue con Paz - Tipo de Cambio Dólar Boliviano" className="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0" />
               <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white truncate">
                 Bolivia Blue
               </h1>
@@ -97,6 +104,7 @@ function About() {
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <Breadcrumbs />
         <article className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 sm:p-8 lg:p-12">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-6">
             {t('aboutPageTitle')}

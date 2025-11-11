@@ -6,20 +6,55 @@ import BlueChart from '../components/BlueChart';
 import NewsFeed from '../components/NewsFeed';
 import TweetsFeed from '../components/TweetsFeed';
 import About from '../components/About';
+import PageMeta from '../components/PageMeta';
+import Breadcrumbs from '../components/Breadcrumbs';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Link } from 'react-router-dom';
 
 function Home() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  
+  // Organization schema for homepage
+  const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Bolivia Blue con Paz",
+    "alternateName": "Bolivia Blue with Paz",
+    "url": "https://boliviablue.com",
+    "logo": "https://boliviablue.com/favicon.svg",
+    "description": language === 'es' 
+      ? "Plataforma de seguimiento en tiempo real del tipo de cambio del dólar blue en Bolivia"
+      : "Real-time tracking platform for the blue dollar exchange rate in Bolivia",
+    "sameAs": [
+      "https://github.com/jonah3272/BoliviaBlue"
+    ],
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "Customer Service",
+      "availableLanguage": ["Spanish", "English"]
+    }
+  };
   
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
+      <PageMeta
+        title={t('title') + ' - ' + (language === 'es' ? 'Tipo de Cambio Dólar Boliviano en Tiempo Real' : 'Real-Time Bolivian Dollar Exchange Rate')}
+        description={language === 'es' 
+          ? "Seguimiento en tiempo real del tipo de cambio del dólar blue en Bolivia bajo el presidente Rodrigo Paz. Cotizaciones actualizadas cada 15 minutos desde Binance P2P, gráficos históricos y noticias financieras."
+          : "Real-time tracking of the blue dollar exchange rate in Bolivia under President Rodrigo Paz. Rates updated every 15 minutes from Binance P2P, historical charts and financial news."}
+        keywords={language === 'es'
+          ? "dólar bolivia, tipo de cambio bolivia, boliviano dólar, blue bolivia, Rodrigo Paz, BCB, binance bolivia, usdt bob, cambio dólar bolivia, mercado paralelo bolivia"
+          : "bolivia dollar, exchange rate bolivia, boliviano dollar, blue bolivia, Rodrigo Paz, BCB, binance bolivia, usdt bob, bolivia currency, parallel market bolivia"}
+        canonical="/"
+        structuredData={organizationSchema}
+      />
+      
       {/* Header */}
       <header className="bg-white dark:bg-gray-800 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
           <div className="flex items-center justify-between gap-4">
             <Link to="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity min-w-0">
-              <img src="/favicon.svg" alt="Logo" className="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0" />
+              <img src="/favicon.svg" alt="Bolivia Blue con Paz - Tipo de Cambio Dólar Boliviano" className="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0" />
               <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white truncate">
                 Bolivia Blue
               </h1>

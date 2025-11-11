@@ -1,19 +1,15 @@
-import { useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import ThemeToggle from '../components/ThemeToggle';
 import LanguageToggle from '../components/LanguageToggle';
+import PageMeta from '../components/PageMeta';
+import Breadcrumbs from '../components/Breadcrumbs';
 import { Link } from 'react-router-dom';
 
 function RodrigoPaz() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
-  useEffect(() => {
-    document.title = t('rodrigoPazPageTitle');
-    
-    // Add Person structured data for SEO
-    const script = document.createElement('script');
-    script.type = 'application/ld+json';
-    script.text = JSON.stringify({
+  // Person structured data
+  const personSchema = {
       "@context": "https://schema.org",
       "@type": "Person",
       "name": "Rodrigo Paz",
@@ -26,24 +22,28 @@ function RodrigoPaz() {
         "@type": "Country",
         "name": "Bolivia"
       }
-    });
-    document.head.appendChild(script);
-    
-    return () => {
-      if (document.head.contains(script)) {
-        document.head.removeChild(script);
-      }
     };
-  }, [t]);
 
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
+      <PageMeta
+        title={t('rodrigoPazPageTitle')}
+        description={language === 'es'
+          ? "Información sobre la presidencia de Rodrigo Paz en Bolivia y su impacto en el tipo de cambio del dólar blue. Políticas económicas, decisiones cambiarias y contexto histórico."
+          : "Information about Rodrigo Paz's presidency in Bolivia and its impact on the blue dollar exchange rate. Economic policies, exchange decisions and historical context."}
+        keywords={language === 'es'
+          ? "Rodrigo Paz Bolivia, presidente Bolivia, políticas económicas Paz, dólar blue Rodrigo Paz, economía bolivia 2025"
+          : "Rodrigo Paz Bolivia, Bolivia president, Paz economic policies, blue dollar Rodrigo Paz, bolivia economy 2025"}
+        canonical="/rodrigo-paz"
+        structuredData={personSchema}
+      />
+      
       {/* Header */}
       <header className="bg-white dark:bg-gray-800 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
           <div className="flex items-center justify-between gap-4">
             <Link to="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity min-w-0">
-              <img src="/favicon.svg" alt="Logo" className="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0" />
+              <img src="/favicon.svg" alt="Bolivia Blue con Paz - Tipo de Cambio Dólar Boliviano" className="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0" />
               <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white truncate">
                 Bolivia Blue
               </h1>
@@ -121,6 +121,7 @@ function RodrigoPaz() {
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <Breadcrumbs />
         <article className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 sm:p-8 lg:p-12">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-6">
             {t('rodrigoPazPageTitle')}

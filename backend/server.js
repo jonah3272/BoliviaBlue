@@ -22,8 +22,28 @@ const PORT = process.env.PORT || 3000;
 const ORIGIN = process.env.ORIGIN || '*';
 const STALE_THRESHOLD = 45 * 60 * 1000; // 45 minutes
 
-// Middleware
-app.use(cors({ origin: ORIGIN }));
+// Middleware - Allow multiple origins
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'https://bolivia-blue-con-paz.vercel.app',
+  'https://boliviablueconpaz.vercel.app', // Actual Vercel domain
+  ORIGIN
+].filter(Boolean);
+
+app.use(cors({ 
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin) || ORIGIN === '*') {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
 app.use(express.json());
 
 // Serve frontend static files in production

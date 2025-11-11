@@ -1,0 +1,29 @@
+{
+  "name": "bolivia-blue-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Backend API for Bolivia Blue con Paz exchange rate tracker",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "start:supabase": "node server-supabase.js",
+    "dev": "node --watch server.js",
+    "dev:supabase": "node --watch server-supabase.js",
+    "test": "node --test tests/*.test.js"
+  },
+  "keywords": [
+    "bolivia",
+    "exchange-rate",
+    "blue-market"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "better-sqlite3": "^11.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "node-fetch": "^3.3.2"
+  }
+}

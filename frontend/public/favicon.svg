@@ -1,0 +1,22 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="boliviaGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FBBF24;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#F59E0B;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#10B981;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Coin circle -->
+  <circle cx="32" cy="32" r="28" fill="url(#boliviaGradient)" />
+  <circle cx="32" cy="32" r="24" fill="none" stroke="white" stroke-width="2" />
+  
+  <!-- Dollar symbol -->
+  <text x="32" y="42" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="white" text-anchor="middle">$</text>
+  
+  <!-- Bolivian flag colors accent (top edge) -->
+  <rect x="8" y="8" width="48" height="3" fill="#D52B1E" opacity="0.7" rx="1.5" />
+  <rect x="8" y="12" width="48" height="3" fill="#F9E300" opacity="0.7" rx="1.5" />
+  <rect x="8" y="16" width="48" height="3" fill="#007934" opacity="0.7" rx="1.5" />
+</svg>
+

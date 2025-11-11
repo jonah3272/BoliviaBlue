@@ -1,0 +1,12 @@
+node_modules
+npm-debug.log
+.git
+.gitignore
+*.md
+.env
+backend/blue.db
+backend/blue.db-shm
+backend/blue.db-wal
+frontend/dist
+frontend/node_modules
+

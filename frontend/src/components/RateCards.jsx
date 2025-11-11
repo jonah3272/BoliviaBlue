@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { fetchBlueRate } from '../utils/api';
 import { formatRate, formatDateTime, isStale } from '../utils/formatters';
+import { useLanguage } from '../contexts/LanguageContext';
 
 function RateCard({ type, rate, timestamp, isStaleData, isLoading, error, dailyChange, isOfficial }) {
+  const { t } = useLanguage();
   const isBuy = type === 'buy';
-  const label = isBuy ? 'COMPRAR' : 'VENDER';
+  const label = isBuy ? t('buy') : t('sell');
   const color = isBuy ? 'blue' : 'pink';
   const borderColor = isOfficial 
     ? (isBuy ? 'border-gray-400' : 'border-gray-500')
@@ -30,7 +32,7 @@ function RateCard({ type, rate, timestamp, isStaleData, isLoading, error, dailyC
     return (
       <div className={`bg-white dark:bg-gray-800 rounded-lg border-2 ${borderColor} p-6 shadow-lg`}>
         <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">{label}</div>
-        <div className="text-red-500 text-sm">Error al cargar</div>
+        <div className="text-red-500 text-sm">{t('error')}</div>
       </div>
     );
   }
@@ -42,12 +44,12 @@ function RateCard({ type, rate, timestamp, isStaleData, isLoading, error, dailyC
         <div className="flex gap-2">
           {isStaleData && (
             <span className="px-2 py-1 text-xs bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200 rounded-full">
-              Desactualizado
+              {t('stale')}
             </span>
           )}
           {!isOfficial && changeValue !== null && (
             <span className={`px-2 py-1 text-xs font-medium rounded-full ${changeColor}`}>
-              {changeIcon}{Math.abs(changeValue).toFixed(2)}% 24h
+              {changeIcon}{Math.abs(changeValue).toFixed(2)}% {t('change24h')}
             </span>
           )}
         </div>
@@ -58,13 +60,13 @@ function RateCard({ type, rate, timestamp, isStaleData, isLoading, error, dailyC
           {formatRate(rate)}
         </div>
         <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          Bs. por USD
+          {t('perUSD')}
         </div>
       </div>
       
       {timestamp && (
         <div className="text-xs text-gray-500 dark:text-gray-400 mt-4">
-          Actualizado: {formatDateTime(timestamp)}
+          {t('updated')}: {formatDateTime(timestamp)}
         </div>
       )}
     </div>
@@ -72,6 +74,7 @@ function RateCard({ type, rate, timestamp, isStaleData, isLoading, error, dailyC
 }
 
 function RateCards() {
+  const { t } = useLanguage();
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -110,7 +113,7 @@ function RateCards() {
       {/* Blue Market Rates */}
       <div>
         <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4 text-center">
-          Mercado Paralelo (Dólar Blue) - Binance P2P
+          {t('blueMarketTitle')}
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
           <RateCard
@@ -137,7 +140,7 @@ function RateCards() {
       {/* Official Rates */}
       <div>
         <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4 text-center">
-          Tipo de Cambio Oficial - Banco Central de Bolivia
+          {t('officialRateTitle')}
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
           <RateCard

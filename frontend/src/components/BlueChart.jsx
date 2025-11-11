@@ -1,21 +1,23 @@
 import { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { fetchBlueHistory } from '../utils/api';
-
-const TIME_RANGES = [
-  { value: '1D', label: '1D', minDays: 0 },
-  { value: '1W', label: '1W', minDays: 7 },
-  { value: '1M', label: '1M', minDays: 30 },
-  { value: '1Y', label: '1Y', minDays: 365 },
-  { value: 'ALL', label: 'Todo', minDays: 0 }
-];
+import { useLanguage } from '../contexts/LanguageContext';
 
 function BlueChart() {
+  const { t, language } = useLanguage();
   const [range, setRange] = useState('1D');
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [dataAge, setDataAge] = useState(0); // Days of data available
+  
+  const TIME_RANGES = [
+    { value: '1D', label: t('timeRanges.1D'), minDays: 0 },
+    { value: '1W', label: t('timeRanges.1W'), minDays: 7 },
+    { value: '1M', label: t('timeRanges.1M'), minDays: 30 },
+    { value: '1Y', label: t('timeRanges.1Y'), minDays: 365 },
+    { value: 'ALL', label: t('timeRanges.ALL'), minDays: 0 }
+  ];
 
   useEffect(() => {
     const loadData = async () => {

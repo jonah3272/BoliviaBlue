@@ -2,7 +2,7 @@ import { getCurrentBlueRate } from './p2pClient.js';
 import { getOfficialRate, getStaticOfficialRate } from './officialRateClient.js';
 import { fetchNews } from './newsClient.js'; // Already has Bolivia filtering
 import { fetchTwitterNews } from './twitterClient.js'; // Twitter/X integration
-import { insertRate, insertNews } from './db-supabase.js';
+import { insertRate, insertNews, supabase } from './db-supabase.js';
 import { median } from './median.js';
 
 const REFRESH_INTERVAL = 15 * 60 * 1000; // 15 minutes for rates
@@ -66,6 +66,36 @@ async function refreshBlueRate() {
 }
 
 /**
+ * Prune old news articles to keep database clean
+ * Keeps last 100 articles
+ */
+async function pruneOldNews() {
+  try {
+    const { data: allNews, error } = await supabase
+      .from('news')
+      .select('id, published_at')
+      .order('published_at', { ascending: false });
+
+    if (error) throw error;
+
+    if (allNews && allNews.length > 100) {
+      const toDelete = allNews.slice(100).map(item => item.id);
+      
+      const { error: deleteError } = await supabase
+        .from('news')
+        .delete()
+        .in('id', toDelete);
+
+      if (!deleteError) {
+        console.log(`Pruned ${toDelete.length} old articles (keeping last 100)`);
+      }
+    }
+  } catch (error) {
+    console.error('Failed to prune old news:', error.message);
+  }
+}
+
+/**
  * Refresh news data from RSS feeds and Twitter
  */
 async function refreshNews() {
@@ -114,6 +144,9 @@ async function refreshNews() {
     }
     
     console.log(`News updated: ${insertedCount} new items stored (${rssNews.length} RSS, ${twitterNews.length} Twitter)`);
+    
+    // Prune old articles after inserting new ones
+    await pruneOldNews();
     
   } catch (error) {
     console.error('Failed to refresh news:', error);

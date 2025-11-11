@@ -41,7 +41,7 @@ const SentimentArrow = ({ sentiment, language }) => {
   
   if (sentiment === 'up') {
     return (
-      <span className="text-2xl" title={language === 'es' ? 'Dólar Subiendo - Boliviano Debilitándose' : 'Dollar Rising - Boliviano Weakening'}>
+      <span className="text-2xl text-green-500" title={language === 'es' ? 'Dólar Subiendo - Boliviano Debilitándose' : 'Dollar Rising - Boliviano Weakening'}>
         ↗️
       </span>
     );
@@ -49,7 +49,7 @@ const SentimentArrow = ({ sentiment, language }) => {
   
   if (sentiment === 'down') {
     return (
-      <span className="text-2xl" title={language === 'es' ? 'Dólar Bajando - Boliviano Fortaleciéndose' : 'Dollar Falling - Boliviano Strengthening'}>
+      <span className="text-2xl text-red-500" title={language === 'es' ? 'Dólar Bajando - Boliviano Fortaleciéndose' : 'Dollar Falling - Boliviano Strengthening'}>
         ↘️
       </span>
     );

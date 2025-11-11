@@ -15,7 +15,7 @@ function SentimentArrow({ sentiment }) {
   
   if (sentiment === 'up') {
     return (
-      <span className="text-red-500" title="Dollar Rising - Boliviano Weakening">
+      <span className="text-green-500" title="Dollar Rising - Boliviano Weakening">
         ↗️
       </span>
     );
@@ -23,7 +23,7 @@ function SentimentArrow({ sentiment }) {
   
   if (sentiment === 'down') {
     return (
-      <span className="text-green-500" title="Dollar Falling - Boliviano Strengthening">
+      <span className="text-red-500" title="Dollar Falling - Boliviano Strengthening">
         ↘️
       </span>
     );

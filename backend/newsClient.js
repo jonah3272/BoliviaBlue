@@ -1,8 +1,10 @@
 import fetch from 'node-fetch';
 import crypto from 'crypto';
+import * as cheerio from 'cheerio';
 import { analyzeSentimentAI } from './sentimentAnalyzer.js';
 
 const NEWS_FETCH_TIMEOUT = 15000;
+const MAX_RETRIES = 2;
 
 /**
  * Generate a unique ID from URL
@@ -129,18 +131,90 @@ async function parseRSS(xml, source) {
 }
 
 /**
- * Fetch news from a single source
+ * Scrape articles from HTML page using Cheerio
+ * @param {string} html - HTML content
+ * @param {string} source - Source name
+ * @param {string} baseUrl - Base URL for relative links
+ * @returns {Promise<Array>} Array of scraped articles
+ */
+async function scrapeHTML(html, source, baseUrl) {
+  const $ = cheerio.load(html);
+  const articles = [];
+  
+  // Common selectors for news articles
+  const selectors = [
+    'article',
+    '.article',
+    '.noticia',
+    '.news-item',
+    '.post',
+    '[class*="article"]',
+    '[class*="noticia"]'
+  ];
+  
+  for (const selector of selectors) {
+    const elements = $(selector);
+    if (elements.length > 0) {
+      elements.slice(0, 10).each((i, elem) => {
+        const $elem = $(elem);
+        
+        // Try to find title
+        const title = $elem.find('h1, h2, h3, .title, .titulo').first().text().trim() ||
+                     $elem.find('a').first().text().trim();
+        
+        // Try to find link
+        let link = $elem.find('a').first().attr('href') || '';
+        if (link && !link.startsWith('http')) {
+          link = new URL(link, baseUrl).href;
+        }
+        
+        // Try to find summary
+        const summary = $elem.find('p, .summary, .excerpt, .descripcion').first().text().trim().substring(0, 200);
+        
+        if (title && link && title.length > 10) {
+          articles.push({
+            id: generateId(link),
+            source,
+            url: link,
+            title,
+            summary: summary || title.substring(0, 200),
+            published_at_iso: new Date().toISOString(),
+            category: categorizeArticle(title, summary)
+          });
+        }
+      });
+      
+      if (articles.length > 0) break; // Found articles with this selector
+    }
+  }
+  
+  return articles;
+}
+
+/**
+ * Fetch news from a single source with retry logic
  * @param {string} sourceUrl - RSS feed URL
+ * @param {number} retryCount - Current retry attempt
  * @returns {Promise<Array>} Array of news items
  */
-async function fetchSource(sourceUrl) {
+async function fetchSource(sourceUrl, retryCount = 0) {
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), NEWS_FETCH_TIMEOUT);
     
+    // Rotate user agents to avoid blocks
+    const userAgents = [
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    ];
+    
     const response = await fetch(sourceUrl, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; BoliviaBlueBot/1.0)'
+        'User-Agent': userAgents[retryCount % userAgents.length],
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'es-ES,es;q=0.9,en;q=0.8',
+        'Cache-Control': 'no-cache'
       },
       signal: controller.signal
     });
@@ -155,18 +229,30 @@ async function fetchSource(sourceUrl) {
     const text = await response.text();
     
     // Extract source name from URL
-    const sourceMatch = sourceUrl.match(/\/\/(.*?)\//);
+    const sourceMatch = sourceUrl.match(/\/\/([^\/]+)/);
     const sourceName = sourceMatch ? sourceMatch[1].replace('www.', '') : 'unknown';
     
     // Parse based on content type
-    if (contentType.includes('xml') || contentType.includes('rss') || text.includes('<rss')) {
+    if (contentType.includes('xml') || contentType.includes('rss') || text.includes('<rss') || text.includes('<feed')) {
       return await parseRSS(text, sourceName);
+    } else if (contentType.includes('html')) {
+      // Try HTML scraping as fallback
+      console.log(`RSS not found for ${sourceUrl}, attempting HTML scraping...`);
+      const scraped = await scrapeHTML(text, sourceName, sourceUrl);
+      return scraped;
     }
     
     return [];
     
   } catch (error) {
-    console.warn(`Failed to fetch news from ${sourceUrl}:`, error.message);
+    // Retry on failure
+    if (retryCount < MAX_RETRIES) {
+      console.log(`Retry ${retryCount + 1}/${MAX_RETRIES} for ${sourceUrl}...`);
+      await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1))); // Exponential backoff
+      return fetchSource(sourceUrl, retryCount + 1);
+    }
+    
+    console.warn(`Failed to fetch news from ${sourceUrl} after ${MAX_RETRIES} retries:`, error.message);
     return [];
   }
 }

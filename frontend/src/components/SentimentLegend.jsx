@@ -14,13 +14,13 @@ function SentimentLegend() {
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-1.5">
             <span className="text-xl">↗️</span>
-            <span className="text-sm text-red-600 dark:text-red-400 font-medium">
+            <span className="text-sm text-green-600 dark:text-green-400 font-medium">
               {language === 'es' ? 'USD ↑' : 'USD Rising'}
             </span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="text-xl">↘️</span>
-            <span className="text-sm text-green-600 dark:text-green-400 font-medium">
+            <span className="text-sm text-red-600 dark:text-red-400 font-medium">
               {language === 'es' ? 'USD ↓' : 'USD Falling'}
             </span>
           </div>

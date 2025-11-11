@@ -4,6 +4,7 @@ import LanguageToggle from '../components/LanguageToggle';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Link } from 'react-router-dom';
 import { fetchNews } from '../utils/api';
+import SentimentLegend from '../components/SentimentLegend';
 
 const CATEGORIES = {
   all: { es: 'Todas', en: 'All', color: 'gray' },
@@ -181,9 +182,12 @@ function News() {
       </section>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
+        {/* Sentiment Legend */}
+        <SentimentLegend />
+        
         {/* Category Filters */}
-        <div className="mb-8 flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2">
           {Object.entries(CATEGORIES).map(([key, cat]) => (
             <button
               key={key}

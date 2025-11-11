@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { fetchNews } from '../utils/api';
 import { formatTimeAgo } from '../utils/formatters';
+import SentimentLegend from './SentimentLegend';
 
 // AI-Powered Sentiment Indicator
 function SentimentArrow({ sentiment }) {
@@ -90,10 +91,14 @@ function NewsFeed() {
   }, []);
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6">
-      <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-        Noticias relevantes
-      </h2>
+    <div className="space-y-6">
+      {/* Sentiment Legend */}
+      <SentimentLegend />
+      
+      <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+          Noticias relevantes
+        </h2>
       
       {isLoading && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -126,6 +131,7 @@ function NewsFeed() {
           ))}
         </div>
       )}
+      </div>
     </div>
   );
 }

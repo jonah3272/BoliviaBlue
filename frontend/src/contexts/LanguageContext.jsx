@@ -66,7 +66,6 @@ export const translations = {
     aboutTransparency: 'Transparencia',
     aboutTransparencyDesc: 'Este es un proyecto de código abierto creado para proporcionar visibilidad sobre el mercado cambiario boliviano durante la presidencia de Rodrigo Paz. El código fuente está disponible públicamente para revisión y auditoría.',
     aboutLastUpdate: 'Última actualización del sistema: Noviembre 2025',
-    aboutRepo: 'Ver código en GitHub',
     
     // Footer
     footerText: 'Hecho con datos abiertos para transparencia.',
@@ -81,7 +80,7 @@ export const translations = {
   
   en: {
     // Header
-    title: 'Bolivia Blue with Peace',
+    title: 'Bolivia Blue with Paz',
     subtitle: 'Tracking the Boliviano\'s pulse under President Paz',
     
     // Rate Cards
@@ -124,7 +123,7 @@ export const translations = {
     },
     
     // About
-    aboutTitle: 'About Bolivia Blue with Peace',
+    aboutTitle: 'About Bolivia Blue with Paz',
     aboutMethodology: 'Methodology',
     aboutMethodologyDesc: 'This site tracks two types of exchange rates in Bolivia:',
     aboutBlueMarket: 'Parallel Market (Blue Dollar):',
@@ -140,9 +139,8 @@ export const translations = {
     aboutCaveatsTitle: 'The blue dollar reflects the informal market.',
     aboutCaveatsDesc: 'Parallel market exchange rates may vary significantly from the official exchange rate of the Central Bank of Bolivia. The difference (spread) between both indicates market pressure and may reflect foreign currency shortages, devaluation expectations, or exchange restrictions. Use this information only as a reference. We are not responsible for financial decisions made based on this data.',
     aboutTransparency: 'Transparency',
-    aboutTransparencyDesc: 'This is an open source project created to provide visibility into the Bolivian exchange market during the presidency of Rodrigo Paz. The source code is publicly available for review and audit.',
+    aboutTransparencyDesc: 'This is an open source project created to provide visibility into the Bolivian exchange market during the presidency of Rodrigo Paz.',
     aboutLastUpdate: 'Last system update: November 2025',
-    aboutRepo: 'View code on GitHub',
     
     // Footer
     footerText: 'Made with open data for transparency.',

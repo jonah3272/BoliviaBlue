@@ -117,16 +117,6 @@ function Home() {
             <p className="mb-4">
               {t('footerText')}
             </p>
-            <div className="flex items-center justify-center gap-6">
-              <a 
-                href="https://github.com/jonah3272/BoliviaBlue" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="hover:text-blue-500 transition-colors"
-              >
-                {t('aboutRepo')}
-              </a>
-            </div>
             <p className="mt-6 text-xs text-gray-500 dark:text-gray-500">
               &copy; 2025 {t('title')}
             </p>

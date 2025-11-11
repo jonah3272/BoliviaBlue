@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { fetchBlueHistory } from '../utils/api';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -12,14 +12,14 @@ function BlueChart() {
   const [dataAge, setDataAge] = useState(0);
   const [stats, setStats] = useState({ latestBuy: 0, latestSell: 0, change: 0 });
   
-  // Define TIME_RANGES inside component to access t()
-  const TIME_RANGES = [
+  // Define TIME_RANGES using useMemo to ensure t() is available
+  const TIME_RANGES = useMemo(() => [
     { value: '1D', label: t('timeRanges.1D'), minDays: 0 },
     { value: '1W', label: t('timeRanges.1W'), minDays: 7 },
     { value: '1M', label: t('timeRanges.1M'), minDays: 30 },
     { value: '1Y', label: t('timeRanges.1Y'), minDays: 365 },
     { value: 'ALL', label: t('timeRanges.ALL'), minDays: 0 }
-  ];
+  ], [t]);
 
   useEffect(() => {
     const loadData = async () => {

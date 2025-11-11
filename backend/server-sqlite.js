@@ -9,8 +9,8 @@ import {
   getAllRates, 
   getTotalRatesCount,
   getRecentNews 
-} from './db-supabase.js';
-import { startScheduler, cache } from './scheduler-supabase.js';
+} from './db.js';
+import { startScheduler, cache } from './scheduler.js';
 
 dotenv.config();
 
@@ -22,8 +22,12 @@ const PORT = process.env.PORT || 3000;
 const ORIGIN = process.env.ORIGIN || '*';
 const STALE_THRESHOLD = 45 * 60 * 1000; // 45 minutes
 
-// Middleware
-app.use(cors({ origin: ORIGIN }));
+// Middleware - Allow all origins for CORS
+app.use(cors({ 
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 
 // Serve frontend static files in production
@@ -33,28 +37,20 @@ app.use(express.static(frontendDist));
 /**
  * Health check endpoint
  */
-app.get('/api/health', async (req, res) => {
-  try {
-    const result = await getTotalRatesCount();
-    
-    res.json({
-      ok: cache.isHealthy,
-      updated_at_iso: cache.lastUpdate ? cache.lastUpdate.toISOString() : null,
-      history_points: result.count
-    });
-  } catch (error) {
-    console.error('Health check error:', error);
-    res.status(500).json({
-      ok: false,
-      error: error.message
-    });
-  }
+app.get('/api/health', (req, res) => {
+  const count = getTotalRatesCount.get();
+  
+  res.json({
+    ok: cache.isHealthy,
+    updated_at_iso: cache.lastUpdate ? cache.lastUpdate.toISOString() : null,
+    history_points: count.count
+  });
 });
 
 /**
  * Get current blue market rate
  */
-app.get('/api/blue-rate', async (req, res) => {
+app.get('/api/blue-rate', (req, res) => {
   try {
     // Try cache first for low latency
     if (cache.latestRate) {
@@ -67,7 +63,7 @@ app.get('/api/blue-rate', async (req, res) => {
     }
     
     // Fallback to database
-    const dbRate = await getLatestRate();
+    const dbRate = getLatestRate.get();
     
     if (!dbRate) {
       return res.status(503).json({
@@ -78,12 +74,27 @@ app.get('/api/blue-rate', async (req, res) => {
     
     const isStale = Date.now() - new Date(dbRate.t).getTime() > STALE_THRESHOLD;
     
+    // Get yesterday's rate for daily change calculation
+    const yesterdayStart = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    const yesterdayRates = getRatesInRange.all(yesterdayStart);
+    
+    let buyChange = null;
+    let sellChange = null;
+    
+    if (yesterdayRates.length > 0) {
+      const yesterdayRate = yesterdayRates[0];
+      buyChange = ((dbRate.buy - yesterdayRate.buy) / yesterdayRate.buy * 100).toFixed(2);
+      sellChange = ((dbRate.sell - yesterdayRate.sell) / yesterdayRate.sell * 100).toFixed(2);
+    }
+    
     res.json({
       source: 'binance-p2p',
       buy_bob_per_usd: dbRate.buy,
       sell_bob_per_usd: dbRate.sell,
       official_buy: dbRate.official_buy,
       official_sell: dbRate.official_sell,
+      buy_change_24h: buyChange,
+      sell_change_24h: sellChange,
       updated_at_iso: dbRate.t,
       is_stale: isStale,
       sample_buy: [],
@@ -102,32 +113,32 @@ app.get('/api/blue-rate', async (req, res) => {
 /**
  * Get historical blue market rates
  */
-app.get('/api/blue-history', async (req, res) => {
+app.get('/api/blue-history', (req, res) => {
   try {
     const range = req.query.range || '1W';
     
-    let startDate;
-    let rows;
+    let stmt;
+    let params = [];
     
     switch (range) {
       case '1D':
-        startDate = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-        rows = await getRatesInRange(startDate);
+        stmt = getRatesInRange;
+        params = [new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()];
         break;
       case '1W':
-        startDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-        rows = await getRatesInRange(startDate);
+        stmt = getRatesInRange;
+        params = [new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()];
         break;
       case '1M':
-        startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-        rows = await getRatesInRange(startDate);
+        stmt = getRatesInRange;
+        params = [new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()];
         break;
       case '1Y':
-        startDate = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString();
-        rows = await getRatesInRange(startDate);
+        stmt = getRatesInRange;
+        params = [new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString()];
         break;
       case 'ALL':
-        rows = await getAllRates();
+        stmt = getAllRates;
         break;
       default:
         return res.status(400).json({
@@ -135,6 +146,8 @@ app.get('/api/blue-history', async (req, res) => {
           message: 'Range must be one of: 1D, 1W, 1M, 1Y, ALL'
         });
     }
+    
+    const rows = params.length > 0 ? stmt.all(...params) : stmt.all();
     
     const points = rows.map(row => ({
       t: row.t,
@@ -163,10 +176,23 @@ app.get('/api/blue-history', async (req, res) => {
 /**
  * Get recent news headlines
  */
-app.get('/api/news', async (req, res) => {
+app.get('/api/news', (req, res) => {
   try {
-    const limit = parseInt(req.query.limit) || 100;
-    const rows = await getRecentNews(limit);
+    const limit = parseInt(req.query.limit) || 10;
+    const category = req.query.category;
+    
+    let query = 'SELECT * FROM news';
+    let params = [];
+    
+    if (category && category !== 'all') {
+      query += ' WHERE category = ?';
+      params.push(category);
+    }
+    
+    query += ' ORDER BY published_at DESC LIMIT ?';
+    params.push(limit);
+    
+    const rows = db.prepare(query).all(...params);
     
     const news = rows.map(row => ({
       id: row.id,
@@ -175,7 +201,8 @@ app.get('/api/news', async (req, res) => {
       title: row.title,
       published_at_iso: row.published_at,
       summary: row.summary,
-      sentiment: row.sentiment
+      sentiment: row.sentiment,
+      category: row.category
     }));
     
     res.json(news);
@@ -200,7 +227,6 @@ startScheduler();
 // Start server
 app.listen(PORT, () => {
   console.log(`Bolivia Blue con Paz backend running on port ${PORT}`);
-  console.log(`Using Supabase database at ${process.env.SUPABASE_URL}`);
   console.log(`CORS origin: ${ORIGIN}`);
 });
 

@@ -55,9 +55,16 @@ function NewsCard({ item }) {
         </p>
       )}
       
-      <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-        <span className="font-medium">{item.source}</span>
-        <span>{formatTimeAgo(item.published_at_iso)}</span>
+      <div className="flex items-center justify-between text-xs">
+        <span className="font-medium text-gray-500 dark:text-gray-400">{item.source}</span>
+        <div className="flex items-center gap-2">
+          <span className="text-gray-500 dark:text-gray-400">{formatTimeAgo(item.published_at_iso)}</span>
+          {item.category && item.category !== 'general' && (
+            <span className="px-2.5 py-1 rounded-full bg-blue-500 dark:bg-blue-600 text-white text-xs font-semibold shadow-sm">
+              {item.category}
+            </span>
+          )}
+        </div>
       </div>
     </a>
   );

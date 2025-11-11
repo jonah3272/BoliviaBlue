@@ -168,20 +168,28 @@ async function refreshNews(includeTwitter = false) {
  * Start the scheduler
  */
 export function startScheduler() {
-  console.log(`Starting scheduler: Rates every ${REFRESH_INTERVAL / 1000}s, News every ${NEWS_REFRESH_INTERVAL / 1000}s`);
+  console.log(`Starting scheduler:`);
+  console.log(`- Rates: every ${REFRESH_INTERVAL / 1000}s (15 min)`);
+  console.log(`- RSS News: every ${NEWS_REFRESH_INTERVAL / 1000}s (5 min)`);
+  console.log(`- Twitter: every ${TWITTER_REFRESH_INTERVAL / 1000}s (24 hours - conserve API quota)`);
   
-  // Initial refresh on boot
+  // Initial refresh on boot (include Twitter on first load)
   refreshBlueRate().catch(console.error);
-  refreshNews().catch(console.error);
+  refreshNews(true).catch(console.error); // Include Twitter on startup
   
   // Schedule rates refresh (every 15 minutes)
   setInterval(() => {
     refreshBlueRate().catch(console.error);
   }, REFRESH_INTERVAL);
   
-  // Schedule news refresh (every 5 minutes for freshness!)
+  // Schedule RSS news refresh (every 5 minutes, WITHOUT Twitter)
   setInterval(() => {
-    refreshNews().catch(console.error);
+    refreshNews(false).catch(console.error); // RSS only to save Twitter API
   }, NEWS_REFRESH_INTERVAL);
+  
+  // Schedule Twitter refresh (once per 24 hours to stay within 100/month limit)
+  setInterval(() => {
+    refreshNews(true).catch(console.error); // Include Twitter
+  }, TWITTER_REFRESH_INTERVAL);
 }
 

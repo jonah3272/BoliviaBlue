@@ -220,7 +220,7 @@ startScheduler();
 // Start server
 app.listen(PORT, () => {
   console.log(`Bolivia Blue con Paz backend running on port ${PORT}`);
-  console.log(`Using Supabase database at ${process.env.SUPABASE_URL}`);
-  console.log(`CORS origin: ${ORIGIN}`);
+console.log(`Using Supabase database at ${process.env.SUPABASE_URL}`);
+console.log(`CORS configured for multiple origins including: ${allowedOrigins.join(', ')}`);
 });
 

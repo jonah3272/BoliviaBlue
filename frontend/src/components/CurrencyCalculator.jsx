@@ -3,7 +3,9 @@ import { fetchBlueRate } from '../utils/api';
 import { useLanguage } from '../contexts/LanguageContext';
 
 function CurrencyCalculator() {
-  const { t, language } = useLanguage();
+  const languageContext = useLanguage();
+  const t = languageContext?.t || ((key) => key || '');
+  const language = languageContext?.language || 'es';
   const [rateData, setRateData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [useOfficial, setUseOfficial] = useState(false);

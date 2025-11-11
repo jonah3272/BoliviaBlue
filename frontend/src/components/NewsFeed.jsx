@@ -77,9 +77,11 @@ function NewsCard({ item }) {
 }
 
 function NewsFeed() {
+  const { language } = useLanguage();
   const [news, setNews] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [dailySentiment, setDailySentiment] = useState(null);
 
   useEffect(() => {
     const loadNews = async () => {
@@ -105,8 +107,33 @@ function NewsFeed() {
 
   return (
     <div className="space-y-6">
-      {/* Sentiment Legend */}
-      <SentimentLegend />
+      {/* Compact Sentiment Legend + Daily Summary */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <SentimentLegend compact={true} />
+        
+        {dailySentiment && dailySentiment.total > 0 && (
+          <div className="inline-flex items-center gap-2 text-sm">
+            <span className="text-gray-600 dark:text-gray-400 font-medium">
+              {language === 'es' ? 'Últimas noticias:' : 'Latest news:'}
+            </span>
+            {dailySentiment.up > 0 && (
+              <span className="px-2 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 font-semibold">
+                {dailySentiment.up} ↗
+              </span>
+            )}
+            {dailySentiment.down > 0 && (
+              <span className="px-2 py-1 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 font-semibold">
+                {dailySentiment.down} ↘
+              </span>
+            )}
+            {dailySentiment.neutral > 0 && (
+              <span className="px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 font-semibold">
+                {dailySentiment.neutral} ○
+              </span>
+            )}
+          </div>
+        )}
+      </div>
       
       <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">

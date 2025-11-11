@@ -67,7 +67,7 @@ async function refreshBlueRate() {
 
 /**
  * Prune old news articles to keep database clean
- * Keeps last 100 articles
+ * Keeps last 200 articles for better historical context
  */
 async function pruneOldNews() {
   try {
@@ -78,8 +78,8 @@ async function pruneOldNews() {
 
     if (error) throw error;
 
-    if (allNews && allNews.length > 100) {
-      const toDelete = allNews.slice(100).map(item => item.id);
+    if (allNews && allNews.length > 200) {
+      const toDelete = allNews.slice(200).map(item => item.id);
       
       const { error: deleteError } = await supabase
         .from('news')
@@ -87,7 +87,7 @@ async function pruneOldNews() {
         .in('id', toDelete);
 
       if (!deleteError) {
-        console.log(`Pruned ${toDelete.length} old articles (keeping last 100)`);
+        console.log(`Pruned ${toDelete.length} old articles (keeping last 200)`);
       }
     }
   } catch (error) {

@@ -207,13 +207,8 @@ function News() {
                   <div className="flex items-center justify-between mb-3">
                     <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-${cat.color}-100 dark:bg-${cat.color}-900/30 text-${cat.color}-700 dark:text-${cat.color}-300`}>
                       <CategoryIcon category={article.category} />
-                      {language === 'es' ? cat.es : cat.en}
-                    </span>
-                    {article.sentiment !== 'neutral' && (
-                      <span className={`text-lg ${article.sentiment === 'up' ? 'text-green-500' : 'text-red-500'}`}>
-                        {article.sentiment === 'up' ? '↑' : '↓'}
-                      </span>
-                    )}
+                    {language === 'es' ? cat.es : cat.en}
+                  </span>
                   </div>
 
                   {/* Title */}

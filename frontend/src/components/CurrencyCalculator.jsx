@@ -113,7 +113,7 @@ function CurrencyCalculator() {
         {/* Header */}
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            {language === 'es' ? 'Calculadora de Divisas' : 'Currency Calculator'}
+            {t('currencyCalculator')}
           </h2>
           <p className="text-gray-600 dark:text-gray-400">
             {language === 'es' 
@@ -127,7 +127,7 @@ function CurrencyCalculator() {
           {/* BOB Input */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              {language === 'es' ? 'Bolivianos (BOB)' : 'Bolivianos (BOB)'}
+              {t('bolivianos')}
             </label>
             <div className="relative">
               <input
@@ -148,7 +148,7 @@ function CurrencyCalculator() {
             <button
               onClick={handleSwap}
               className="group bg-blue-50 dark:bg-gray-700 hover:bg-blue-100 dark:hover:bg-gray-600 p-3 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              aria-label={language === 'es' ? 'Intercambiar monedas' : 'Swap currencies'}
+              aria-label={t('swapCurrencies')}
             >
               <svg 
                 className="w-6 h-6 text-blue-600 dark:text-blue-400 group-hover:rotate-180 transition-transform duration-300" 
@@ -164,7 +164,7 @@ function CurrencyCalculator() {
           {/* USD Input */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              {language === 'es' ? 'Dólares (USD)' : 'Dollars (USD)'}
+              {t('dollars')}
             </label>
             <div className="relative">
               <input
@@ -185,7 +185,7 @@ function CurrencyCalculator() {
         <div className="flex items-center justify-center mb-8">
           <label className="flex items-center cursor-pointer">
             <span className="mr-3 text-sm font-medium text-gray-700 dark:text-gray-300">
-              {language === 'es' ? 'Tasas No Oficiales' : 'Unofficial Rates'}
+              {t('unofficialRates')}
             </span>
             <div className="relative">
               <input
@@ -198,7 +198,7 @@ function CurrencyCalculator() {
               <div className={`absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform ${useOfficial ? 'transform translate-x-6' : ''}`}></div>
             </div>
             <span className="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">
-              {language === 'es' ? 'Tasas Oficiales' : 'Official Rates'}
+              {t('officialRates')}
             </span>
           </label>
         </div>
@@ -207,14 +207,14 @@ function CurrencyCalculator() {
         {!isLoading && rateData && (
           <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 rounded-xl p-6">
             <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-4 text-center">
-              {language === 'es' ? 'Tipos de Cambio' : 'Exchange Rates'}
+              {t('exchangeRates')}
             </h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center">
                 <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
                   {useOfficial 
-                    ? (language === 'es' ? 'Oficial' : 'Official')
-                    : (language === 'es' ? 'No Oficial' : 'Unofficial')}
+                    ? t('official')
+                    : t('unofficial')}
                 </div>
                 <div className={`text-2xl font-mono font-bold ${useOfficial ? 'text-pink-600 dark:text-pink-400' : 'text-blue-600 dark:text-blue-400'}`}>
                   1.000 USD = {((getBuyRate() + getSellRate()) / 2).toFixed(4)} BOB
@@ -222,7 +222,7 @@ function CurrencyCalculator() {
               </div>
               <div className="text-center">
                 <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                  {language === 'es' ? 'Inverso' : 'Inverse'}
+                  {t('inverse')}
                 </div>
                 <div className={`text-2xl font-mono font-bold ${!useOfficial ? 'text-blue-600 dark:text-blue-400' : 'text-pink-600 dark:text-pink-400'}`}>
                   1.000 BOB = {(1 / ((getBuyRate() + getSellRate()) / 2)).toFixed(4)} USD
@@ -237,7 +237,7 @@ function CurrencyCalculator() {
           <div className="text-center py-8">
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-300 border-t-blue-600"></div>
             <p className="mt-2 text-gray-600 dark:text-gray-400">
-              {language === 'es' ? 'Cargando tasas...' : 'Loading rates...'}
+              {t('loadingRates')}
             </p>
           </div>
         )}

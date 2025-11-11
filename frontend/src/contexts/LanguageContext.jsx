@@ -96,7 +96,7 @@ export const translations = {
     aboutFooter: 'Bolivia Blue con Paz - Transparencia en el mercado cambiario boliviano',
     
     // FAQ Page
-    faqPageTitle: 'Preguntas Frecuentes - Bolivia Blue con Paz',
+    faqPageTitle: 'Preguntas Frecuentes - Bolivia Blue con Paz | Mejor que bolivianblue.net',
     faqPageSubtitle: 'Respuestas a las preguntas más comunes sobre el dólar blue en Bolivia',
     faqQ1: '¿Qué es el dólar blue en Bolivia?',
     faqA1: 'El dólar blue (o dólar paralelo) es el tipo de cambio del dólar estadounidense en el mercado informal de Bolivia. A diferencia del tipo de cambio oficial establecido por el Banco Central de Bolivia (BCB), el dólar blue se negocia libremente entre particulares y puede diferir significativamente del tipo oficial. Este mercado surge cuando hay restricciones cambiarias, escasez de divisas oficiales, o expectativas de devaluación.',
@@ -176,7 +176,82 @@ export const translations = {
     loading: 'Cargando...',
     error: 'Error al cargar datos',
     retry: 'Reintentar',
-    noData: 'Sin datos disponibles'
+    noData: 'Sin datos disponibles',
+    
+    // Navigation
+    navDashboard: 'Dashboard',
+    navDashboardShort: 'Inicio',
+    navCalculator: 'Calculadora',
+    navNews: 'Noticias',
+    navRodrigoPaz: 'Rodrigo Paz',
+    navAbout: 'Acerca de',
+    navFAQ: 'FAQ',
+    
+    // Twitter/X Section
+    twitterSection: 'En Twitter/X',
+    
+    // Sentiment Legend
+    sentimentIndicators: 'Indicadores:',
+    sentimentUp: 'USD↑',
+    sentimentDown: 'USD↓',
+    sentimentNeutral: 'Neutral',
+    sentimentAI: '(IA)',
+    sentimentUSDUp: 'USD ↑',
+    sentimentUSDDown: 'USD↓',
+    sentimentKeyIndicators: '🔑 Indicadores:',
+    sentimentUSDRising: 'USD ↑',
+    sentimentUSDFalling: 'USD ↓',
+    
+    // News
+    latestNews: 'Últimas noticias:',
+    loadingNews: 'Cargando noticias...',
+    errorLoadingNews: 'Error al cargar noticias',
+    noNewsAvailable: 'No hay noticias disponibles',
+    readMore: 'Leer más',
+    economicNews: 'Noticias Económicas',
+    newsSubtitle: 'Últimas noticias sobre economía, política y finanzas de Bolivia',
+    
+    // Tweets
+    errorLoadingTweets: 'Error al cargar tweets',
+    noTweetsAvailable: 'No hay tweets disponibles',
+    
+    // Calculator
+    currencyCalculator: 'Calculadora de Divisas',
+    bolivianos: 'Bolivianos (BOB)',
+    dollars: 'Dólares (USD)',
+    swapCurrencies: 'Intercambiar monedas',
+    unofficialRates: 'Tasas No Oficiales',
+    officialRates: 'Tasas Oficiales',
+    exchangeRates: 'Tipos de Cambio',
+    official: 'Oficial',
+    unofficial: 'No Oficial',
+    inverse: 'Inverso',
+    loadingRates: 'Cargando tasas...',
+    
+    // Binance Banner
+    buyDollarsBinance: 'Comprar dólares en Binance',
+    binanceDescription: 'Seguro, rápido y con bajas comisiones',
+    goToBinance: 'Ir a Binance',
+    goToBinanceAria: 'Ir a Binance (abre en nueva ventana)',
+    
+    // Chart
+    buy: 'Compra',
+    sell: 'Venta',
+    spread: 'Spread',
+    historicalPriceChart: 'Gráfico de precios histórico',
+    
+    // Breadcrumbs
+    breadcrumbHome: 'Inicio',
+    
+    // Time formatting
+    lessThanHourAgo: 'Hace menos de 1 hora',
+    hoursAgo: 'Hace {hours} hora | Hace {hours} horas',
+    daysAgo: 'Hace {days} día | Hace {days} días',
+    
+    // Sentiment tooltips
+    neutralTooltip: 'Neutral - Sin impacto claro en divisas',
+    upTooltip: 'Dólar Subiendo - Boliviano Debilitándose',
+    downTooltip: 'Dólar Bajando - Boliviano Fortaleciéndose'
   },
   
   en: {
@@ -244,7 +319,7 @@ export const translations = {
     aboutLastUpdate: 'Last system update: November 2025',
     
     // About Page (Full)
-    aboutPageTitle: 'About - Bolivia Blue with Paz',
+    aboutPageTitle: 'About - Bolivia Blue with Paz | Better than bolivianblue.net',
     aboutMissionTitle: 'Our Mission',
     aboutMissionDesc: 'Bolivia Blue with Paz is an independent platform for real-time tracking of the blue dollar exchange rate in Bolivia. Our goal is to provide transparency and visibility into the informal exchange market during the presidency of Rodrigo Paz.',
     aboutMissionDesc2: 'We believe that access to accurate and up-to-date information about exchange rates is essential for Bolivians to make informed financial decisions.',
@@ -272,7 +347,7 @@ export const translations = {
     aboutFooter: 'Bolivia Blue with Paz - Transparency in the Bolivian exchange market',
     
     // FAQ Page
-    faqPageTitle: 'Frequently Asked Questions - Bolivia Blue with Paz',
+    faqPageTitle: 'Frequently Asked Questions - Bolivia Blue with Paz | Better than bolivianblue.net',
     faqPageSubtitle: 'Answers to the most common questions about the blue dollar in Bolivia',
     faqQ1: 'What is the blue dollar in Bolivia?',
     faqA1: 'The blue dollar (or parallel dollar) is the exchange rate of the US dollar in Bolivia\'s informal market. Unlike the official exchange rate set by the Central Bank of Bolivia (BCB), the blue dollar is freely traded between individuals and can differ significantly from the official rate. This market emerges when there are exchange restrictions, shortages of official foreign currency, or devaluation expectations.',
@@ -352,7 +427,82 @@ export const translations = {
     loading: 'Loading...',
     error: 'Error loading data',
     retry: 'Retry',
-    noData: 'No data available'
+    noData: 'No data available',
+    
+    // Navigation
+    navDashboard: 'Dashboard',
+    navDashboardShort: 'Home',
+    navCalculator: 'Calculator',
+    navNews: 'News',
+    navRodrigoPaz: 'Rodrigo Paz',
+    navAbout: 'About',
+    navFAQ: 'FAQ',
+    
+    // Twitter/X Section
+    twitterSection: 'On Twitter/X',
+    
+    // Sentiment Legend
+    sentimentIndicators: 'Indicators:',
+    sentimentUp: 'Up',
+    sentimentDown: 'Down',
+    sentimentNeutral: 'Neutral',
+    sentimentAI: '(AI)',
+    sentimentUSDUp: 'USD ↑',
+    sentimentUSDDown: 'USD ↓',
+    sentimentKeyIndicators: '🔑 Indicators:',
+    sentimentUSDRising: 'USD Rising',
+    sentimentUSDFalling: 'USD Falling',
+    
+    // News
+    latestNews: 'Latest news:',
+    loadingNews: 'Loading news...',
+    errorLoadingNews: 'Error loading news',
+    noNewsAvailable: 'No news available',
+    readMore: 'Read more',
+    economicNews: 'Economic News',
+    newsSubtitle: 'Latest news about Bolivia\'s economy, politics and finance',
+    
+    // Tweets
+    errorLoadingTweets: 'Failed to load tweets',
+    noTweetsAvailable: 'No tweets available',
+    
+    // Calculator
+    currencyCalculator: 'Currency Calculator',
+    bolivianos: 'Bolivianos (BOB)',
+    dollars: 'Dollars (USD)',
+    swapCurrencies: 'Swap currencies',
+    unofficialRates: 'Unofficial Rates',
+    officialRates: 'Official Rates',
+    exchangeRates: 'Exchange Rates',
+    official: 'Official',
+    unofficial: 'Unofficial',
+    inverse: 'Inverse',
+    loadingRates: 'Loading rates...',
+    
+    // Binance Banner
+    buyDollarsBinance: 'Buy dollars on Binance',
+    binanceDescription: 'Secure, fast and low fees',
+    goToBinance: 'Go to Binance',
+    goToBinanceAria: 'Go to Binance (opens in new window)',
+    
+    // Chart
+    buy: 'Buy',
+    sell: 'Sell',
+    spread: 'Spread',
+    historicalPriceChart: 'Historical Price Chart',
+    
+    // Breadcrumbs
+    breadcrumbHome: 'Home',
+    
+    // Time formatting
+    lessThanHourAgo: 'Less than 1 hour ago',
+    hoursAgo: '{hours} hour ago | {hours} hours ago',
+    daysAgo: '{days} day ago | {days} days ago',
+    
+    // Sentiment tooltips
+    neutralTooltip: 'Neutral - No clear currency impact',
+    upTooltip: 'Dollar Rising - Boliviano Weakening',
+    downTooltip: 'Dollar Falling - Boliviano Strengthening'
   }
 };
 

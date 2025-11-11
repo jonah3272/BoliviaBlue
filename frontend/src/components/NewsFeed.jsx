@@ -123,7 +123,7 @@ function NewsFeed() {
         {dailySentiment && dailySentiment.total > 0 && (
           <div className="inline-flex items-center gap-2 text-sm">
             <span className="text-gray-600 dark:text-gray-400 font-medium">
-              {language === 'es' ? 'Últimas noticias:' : 'Latest news:'}
+              {t('latestNews')}
             </span>
             {dailySentiment.up > 0 && (
               <span className="px-2 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 font-semibold">

@@ -117,7 +117,7 @@ function BlueChart() {
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-red-500"></div>
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {language === 'es' ? 'Venta' : 'Sell'}
+                  {t('chartSell')}
                 </span>
               </div>
               <span className="text-lg font-bold font-mono text-red-600 dark:text-red-400">
@@ -128,7 +128,7 @@ function BlueChart() {
               <div className="pt-2 mt-2 border-t border-gray-200 dark:border-gray-700">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-gray-500 dark:text-gray-400">
-                    {language === 'es' ? 'Spread' : 'Spread'}
+                    {t('spread')}
                   </span>
                   <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                     {spread}%
@@ -149,7 +149,7 @@ function BlueChart() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
         <div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-            {language === 'es' ? 'Gráfico de precios histórico' : 'Historical Price Chart'}
+            {t('historicalPriceChart')}
           </h2>
           {stats.latestBuy > 0 && (
             <div className="flex items-center gap-4 text-sm">
@@ -241,7 +241,7 @@ function BlueChart() {
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 rounded-full bg-red-500 shadow-lg shadow-red-500/50"></div>
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                {language === 'es' ? 'Venta' : 'Sell'}
+                {t('chartSell')}
               </span>
             </div>
           </div>

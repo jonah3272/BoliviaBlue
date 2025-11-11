@@ -21,52 +21,52 @@ function RateCard({ type, rate, timestamp, isStaleData, isLoading, error, dailyC
 
   if (isLoading) {
     return (
-      <div className={`bg-white dark:bg-gray-800 rounded-lg border-2 ${borderColor} p-6 shadow-lg animate-pulse`}>
-        <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-24 mb-4"></div>
-        <div className="h-16 bg-gray-200 dark:bg-gray-700 rounded w-32 mb-2"></div>
-        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-40"></div>
+      <div className={`bg-white dark:bg-gray-800 rounded-lg border-2 ${borderColor} p-4 shadow-lg animate-pulse`}>
+        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-20 mb-2"></div>
+        <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded w-28 mb-1"></div>
+        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className={`bg-white dark:bg-gray-800 rounded-lg border-2 ${borderColor} p-6 shadow-lg`}>
-        <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">{label}</div>
-        <div className="text-red-500 text-sm">{t('error')}</div>
+      <div className={`bg-white dark:bg-gray-800 rounded-lg border-2 ${borderColor} p-4 shadow-lg`}>
+        <div className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">{label}</div>
+        <div className="text-red-500 text-xs">{t('error')}</div>
       </div>
     );
   }
 
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-lg border-2 ${borderColor} p-6 shadow-lg transition-all hover:shadow-xl`}>
-      <div className="flex items-center justify-between mb-2">
-        <div className="text-sm font-medium text-gray-600 dark:text-gray-400">{label}</div>
-        <div className="flex gap-2">
+    <div className={`bg-white dark:bg-gray-800 rounded-lg border-2 ${borderColor} p-4 shadow-lg transition-all hover:shadow-xl`}>
+      <div className="flex items-center justify-between mb-1">
+        <div className="text-xs font-medium text-gray-600 dark:text-gray-400">{label}</div>
+        <div className="flex gap-1.5">
           {isStaleData && (
-            <span className="px-2 py-1 text-xs bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200 rounded-full">
+            <span className="px-1.5 py-0.5 text-xs bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200 rounded-full">
               {t('stale')}
             </span>
           )}
           {!isOfficial && changeValue !== null && (
-            <span className={`px-2 py-1 text-xs font-medium rounded-full ${changeColor}`}>
+            <span className={`px-1.5 py-0.5 text-xs font-medium rounded-full ${changeColor}`}>
               {changeIcon}{Math.abs(changeValue).toFixed(2)}% {t('change24h')}
             </span>
           )}
         </div>
       </div>
       
-      <div className="mb-2 animate-on-update">
-        <div className="font-mono text-5xl font-bold text-gray-900 dark:text-white">
+      <div className="mb-1 animate-on-update">
+        <div className="font-mono text-4xl font-bold text-gray-900 dark:text-white">
           {formatRate(rate)}
         </div>
-        <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+        <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
           {t('perUSD')}
         </div>
       </div>
       
       {timestamp && (
-        <div className="text-xs text-gray-500 dark:text-gray-400 mt-4">
+        <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
           {t('updated')}: {formatDateTime(timestamp)}
         </div>
       )}
@@ -127,7 +127,7 @@ function RateCards() {
   } : null;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {exchangeRateSchema && (
         <Helmet>
           <script type="application/ld+json">
@@ -137,10 +137,10 @@ function RateCards() {
       )}
       {/* Blue Market Rates */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4 text-center">
+        <h3 className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-3 text-center">
           {t('blueMarketTitle')}
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
           <RateCard
             type="buy"
             rate={data?.buy_bob_per_usd}
@@ -164,10 +164,10 @@ function RateCards() {
 
       {/* Official Rates */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4 text-center">
+        <h3 className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-3 text-center">
           {t('officialRateTitle')}
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
           <RateCard
             type="buy"
             rate={data?.official_buy}

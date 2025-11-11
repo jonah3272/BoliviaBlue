@@ -121,7 +121,7 @@ function TweetsFeed({ maxItems = 10 }) {
     return (
       <div className="text-center py-8">
         <p className="text-red-500">
-          {language === 'es' ? 'Error al cargar tweets' : 'Failed to load tweets'}
+          {t('errorLoadingTweets')}
         </p>
       </div>
     );
@@ -131,7 +131,7 @@ function TweetsFeed({ maxItems = 10 }) {
     return (
       <div className="text-center py-8">
         <p className="text-gray-500 dark:text-gray-400">
-          {language === 'es' ? 'No hay tweets disponibles' : 'No tweets available'}
+          {t('noTweetsAvailable')}
         </p>
         <p className="text-sm text-gray-400 dark:text-gray-500 mt-2">
           {language === 'es' 

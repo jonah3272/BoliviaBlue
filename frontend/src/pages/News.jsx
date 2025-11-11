@@ -73,6 +73,35 @@ function News() {
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
 
+  // Structured data for News page
+  const newsPageSchema = news.length > 0 ? {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": language === 'es' ? "Noticias Económicas - Bolivia Blue con Paz" : "Economic News - Bolivia Blue with Paz",
+    "description": language === 'es'
+      ? "Últimas noticias financieras y económicas de Bolivia relacionadas con el tipo de cambio del dólar blue"
+      : "Latest financial and economic news from Bolivia related to the blue dollar exchange rate",
+    "url": "https://boliviablue.com/news",
+    "mainEntity": {
+      "@type": "ItemList",
+      "itemListElement": news.slice(0, 10).map((article, index) => ({
+        "@type": "ListItem",
+        "position": index + 1,
+        "item": {
+          "@type": "NewsArticle",
+          "headline": article.title,
+          "description": article.summary || article.title,
+          "url": article.url,
+          "datePublished": article.published_at,
+          "publisher": {
+            "@type": "Organization",
+            "name": article.source || "Bolivia Blue con Paz"
+          }
+        }
+      }))
+    }
+  } : null;
+
   // Get available categories (only those with articles)
   const [availableCategories, setAvailableCategories] = useState(['all']);
   
@@ -144,14 +173,14 @@ function News() {
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
         title={language === 'es' 
-          ? "Noticias Económicas - Bolivia Blue con Paz"
-          : "Economic News - Bolivia Blue with Paz"}
+          ? "Noticias Económicas - Bolivia Blue con Paz | Mejor que bolivianblue.net"
+          : "Economic News - Bolivia Blue with Paz | Better than bolivianblue.net"}
         description={language === 'es'
-          ? "Últimas noticias financieras y económicas de Bolivia relacionadas con el tipo de cambio del dólar blue, la presidencia de Rodrigo Paz, y el mercado cambiario. Actualizado cada 5 minutos."
-          : "Latest financial and economic news from Bolivia related to the blue dollar exchange rate, Rodrigo Paz's presidency, and the exchange market. Updated every 5 minutes."}
+          ? "Últimas noticias financieras y económicas de Bolivia relacionadas con el tipo de cambio del dólar blue, la presidencia de Rodrigo Paz, y el mercado cambiario. Actualizado cada 5 minutos. Análisis de sentimiento con IA. Mejor que bolivianblue.net."
+          : "Latest financial and economic news from Bolivia related to the blue dollar exchange rate, Rodrigo Paz's presidency, and the exchange market. Updated every 5 minutes. AI sentiment analysis. Better than bolivianblue.net."}
         keywords={language === 'es'
-          ? "noticias bolivia, noticias económicas bolivia, noticias dólar blue, noticias rodrigo paz, economía bolivia"
-          : "bolivia news, economic news bolivia, blue dollar news, rodrigo paz news, bolivia economy"}
+          ? "noticias bolivia, noticias económicas bolivia, noticias dólar blue, noticias rodrigo paz, economía bolivia, noticias tipo cambio bolivia, noticias mercado cambiario bolivia, análisis sentimiento dólar bolivia, noticias financieras bolivia, mejor fuente noticias bolivia"
+          : "bolivia news, economic news bolivia, blue dollar news, rodrigo paz news, bolivia economy, bolivia exchange rate news, bolivia currency market news, bolivia dollar sentiment analysis, bolivia financial news, best bolivia news source"}
         canonical="/news"
         structuredData={newsPageSchema}
       />
@@ -204,7 +233,7 @@ function News() {
               <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
               </svg>
-              {language === 'es' ? 'Noticias' : 'News'}
+              {t('navNews')}
             </Link>
             <Link
               to="/rodrigo-paz"
@@ -213,7 +242,7 @@ function News() {
               <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
-              {language === 'es' ? 'Rodrigo Paz' : 'Rodrigo Paz'}
+              {t('navRodrigoPaz')}
             </Link>
             <Link
               to="/about"
@@ -222,7 +251,7 @@ function News() {
               <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              {language === 'es' ? 'Acerca de' : 'About'}
+              {t('navAbout')}
             </Link>
             <Link
               to="/faq"
@@ -231,7 +260,7 @@ function News() {
               <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              {language === 'es' ? 'FAQ' : 'FAQ'}
+              {t('navFAQ')}
             </Link>
           </div>
         </div>
@@ -244,9 +273,7 @@ function News() {
             {language === 'es' ? 'Noticias Económicas' : 'Economic News'}
           </h2>
           <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            {language === 'es' 
-              ? 'Últimas noticias sobre economía, política y finanzas de Bolivia'
-              : 'Latest news about Bolivia\'s economy, politics and finance'}
+            {t('newsSubtitle')}
           </p>
         </div>
       </section>
@@ -285,12 +312,12 @@ function News() {
           </div>
         ) : error ? (
           <div className="text-center py-12">
-            <p className="text-red-500">{language === 'es' ? 'Error al cargar noticias' : 'Error loading news'}</p>
+            <p className="text-red-500">{t('errorLoadingNews')}</p>
           </div>
         ) : news.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-600 dark:text-gray-400">
-              {language === 'es' ? 'No hay noticias disponibles' : 'No news available'}
+              {t('noNewsAvailable')}
             </p>
           </div>
         ) : (

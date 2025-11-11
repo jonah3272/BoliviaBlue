@@ -1,7 +1,7 @@
 import { useLanguage } from '../contexts/LanguageContext';
 
 function BinanceBanner() {
-  const { language } = useLanguage();
+  const { t } = useLanguage();
   
   const referralLink = "https://www.binance.com/referral/earn-together/refer2earn-usdc/claim?hl=en&ref=GRO_28502_RNV8W&utm_source=default";
   
@@ -24,12 +24,10 @@ function BinanceBanner() {
             {/* Text */}
             <div>
               <h3 className="text-base font-semibold text-gray-900 dark:text-white">
-                {language === 'es' ? 'Comprar dólares en Binance' : 'Buy dollars on Binance'}
+                {t('buyDollarsBinance')}
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">
-                {language === 'es' 
-                  ? 'Seguro, rápido y con bajas comisiones'
-                  : 'Secure, fast and low fees'}
+                {t('binanceDescription')}
               </p>
             </div>
           </div>
@@ -40,11 +38,11 @@ function BinanceBanner() {
               href={referralLink}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label={language === 'es' ? 'Ir a Binance (abre en nueva ventana)' : 'Go to Binance (opens in new window)'}
+              aria-label={t('goToBinanceAria')}
               className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-medium px-5 py-2.5 rounded-lg shadow-sm hover:shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
             >
               <span className="text-sm">
-                {language === 'es' ? 'Ir a Binance' : 'Go to Binance'}
+                {t('goToBinance')}
               </span>
               <svg 
                 className="w-4 h-4" 

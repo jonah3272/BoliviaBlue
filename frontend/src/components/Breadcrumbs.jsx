@@ -14,7 +14,7 @@ export default function Breadcrumbs({ items }) {
   const breadcrumbItems = items || (() => {
     const pathSegments = location.pathname.split('/').filter(Boolean);
     const crumbs = [
-      { name: language === 'es' ? 'Inicio' : 'Home', path: '/' }
+      { name: t('breadcrumbHome'), path: '/' }
     ];
 
     pathSegments.forEach((segment, index) => {
@@ -22,11 +22,11 @@ export default function Breadcrumbs({ items }) {
       let name = segment;
 
       // Translate common paths
-      if (segment === 'calculator') name = language === 'es' ? 'Calculadora' : 'Calculator';
-      else if (segment === 'news') name = language === 'es' ? 'Noticias' : 'News';
-      else if (segment === 'about') name = language === 'es' ? 'Acerca de' : 'About';
-      else if (segment === 'faq') name = 'FAQ';
-      else if (segment === 'rodrigo-paz') name = 'Rodrigo Paz';
+      if (segment === 'calculator') name = t('navCalculator');
+      else if (segment === 'news') name = t('navNews');
+      else if (segment === 'about') name = t('navAbout');
+      else if (segment === 'faq') name = t('navFAQ');
+      else if (segment === 'rodrigo-paz') name = t('navRodrigoPaz');
       else name = segment.charAt(0).toUpperCase() + segment.slice(1);
 
       crumbs.push({ name, path });

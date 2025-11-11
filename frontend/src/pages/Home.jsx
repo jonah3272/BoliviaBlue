@@ -1,6 +1,7 @@
 import ThemeToggle from '../components/ThemeToggle';
 import LanguageToggle from '../components/LanguageToggle';
 import RateCards from '../components/RateCards';
+import BinanceBanner from '../components/BinanceBanner';
 import BlueChart from '../components/BlueChart';
 import NewsFeed from '../components/NewsFeed';
 import About from '../components/About';
@@ -46,6 +47,11 @@ function Home() {
         {/* Rate Cards */}
         <section>
           <RateCards />
+        </section>
+
+        {/* Binance Banner */}
+        <section>
+          <BinanceBanner />
         </section>
 
         {/* Chart */}

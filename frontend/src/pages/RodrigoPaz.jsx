@@ -3,6 +3,7 @@ import ThemeToggle from '../components/ThemeToggle';
 import LanguageToggle from '../components/LanguageToggle';
 import PageMeta from '../components/PageMeta';
 import Breadcrumbs from '../components/Breadcrumbs';
+import Navigation from '../components/Navigation';
 import { Link } from 'react-router-dom';
 
 function RodrigoPaz() {

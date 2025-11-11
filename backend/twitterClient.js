@@ -114,6 +114,8 @@ export async function fetchTwitterNews() {
 
     const processedTweets = [];
     for (const tweet of uniqueTweets) {
+      // Twitter queries are already currency-focused, so use AI for better accuracy
+      // But tweets are shorter, so they're cheaper to analyze
       const sentiment = await analyzeSentimentAI(tweet.title, tweet.summary);
       const category = categorizeArticle(tweet.title, tweet.summary);
       

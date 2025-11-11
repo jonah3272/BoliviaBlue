@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 import crypto from 'crypto';
 import * as cheerio from 'cheerio';
-import { analyzeSentimentAI } from './sentimentAnalyzer.js';
+import { analyzeSentimentAI, analyzeSentimentKeywords } from './sentimentAnalyzer.js';
 
 const NEWS_FETCH_TIMEOUT = 15000;
 const MAX_RETRIES = 2;
@@ -65,10 +65,48 @@ export function categorizeArticle(title, summary) {
   return maxCategory[1] > 0 ? maxCategory[0] : 'general';
 }
 
-// Sentiment analysis is now handled by sentimentAnalyzer.js
-// This function is kept for backward compatibility but delegates to AI
+/**
+ * Check if article is about currency/exchange rates (not just Bolivia in general)
+ * Only currency-related articles should use expensive OpenAI API
+ * @param {string} title - Article title
+ * @param {string} summary - Article summary
+ * @returns {boolean} True if currency-related
+ */
+function isCurrencyRelated(title, summary) {
+  const text = (title + ' ' + summary).toLowerCase();
+  
+  // Strong currency/exchange rate keywords
+  const currencyKeywords = [
+    'dolar', 'dólar', 'dollar', 'usd',
+    'tipo de cambio', 'exchange rate', 'cotización',
+    'boliviano', 'bob', 'usdt',
+    'mercado paralelo', 'paralelo', 'blue',
+    'banco central', 'bcb', 'reservas', 'reservas internacionales',
+    'devaluacion', 'devaluación', 'depreciacion', 'depreciación',
+    'escasez de dolares', 'escasez de dólares', 'falta de dolares', 'falta de dólares',
+    'divisas', 'moneda', 'cambio', 'cambio de moneda',
+    'presion cambiaria', 'presión cambiaria', 'intervencion', 'intervención',
+    'inyecta dolares', 'inyecta dólares', 'vende dolares', 'vende dólares',
+    'tasa de cambio', 'precio del dolar', 'precio del dólar',
+    'sube dolar', 'baja dolar', 'sube dólar', 'baja dólar',
+    'alza cambiaria', 'caida cambiaria', 'caída cambiaria'
+  ];
+  
+  return currencyKeywords.some(keyword => text.includes(keyword));
+}
+
+/**
+ * Smart sentiment analysis: Use OpenAI only for currency-related articles
+ * Use keyword-based analysis for other Bolivia articles to save costs
+ */
 async function classifySentiment(title, summary) {
-  return await analyzeSentimentAI(title, summary);
+  // Only use expensive OpenAI API for currency-related articles
+  if (isCurrencyRelated(title, summary)) {
+    return await analyzeSentimentAI(title, summary);
+  } else {
+    // Use free keyword-based analysis for non-currency articles
+    return analyzeSentimentKeywords(title, summary);
+  }
 }
 
 /**

@@ -117,7 +117,7 @@ What is the sentiment regarding the US dollar value against the Boliviano?`;
  * @param {string} summary - Article summary
  * @returns {string} "up", "down", or "neutral"
  */
-function analyzeSentimentKeywords(title, summary) {
+export function analyzeSentimentKeywords(title, summary) {
   const text = `${title} ${summary}`.toLowerCase();
 
   // Keywords that suggest dollar strengthening (boliviano weakening) - EXPANDED

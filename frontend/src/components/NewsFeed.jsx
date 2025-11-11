@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { fetchNews } from '../utils/api';
 import { formatTimeAgo } from '../utils/formatters';
+import { useLanguage } from '../contexts/LanguageContext';
 import SentimentLegend from './SentimentLegend';
 
 // AI-Powered Sentiment Indicator - Matches legend colors

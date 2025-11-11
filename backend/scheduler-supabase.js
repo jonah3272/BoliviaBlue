@@ -6,7 +6,8 @@ import { insertRate, insertNews, supabase } from './db-supabase.js';
 import { median } from './median.js';
 
 const REFRESH_INTERVAL = 15 * 60 * 1000; // 15 minutes for rates
-const NEWS_REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes for news - keep it fresh!
+const NEWS_REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes for RSS news
+const TWITTER_REFRESH_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours for Twitter (free tier is only 100/month!)
 
 // In-memory cache for latest data
 export const cache = {
@@ -96,22 +97,28 @@ async function pruneOldNews() {
 }
 
 /**
- * Refresh news data from RSS feeds and Twitter
+ * Refresh news data from RSS feeds and optionally Twitter
+ * @param {boolean} includeTwitter - Whether to fetch from Twitter (to conserve API quota)
  */
-async function refreshNews() {
+async function refreshNews(includeTwitter = false) {
   try {
-    console.log('Refreshing news...');
+    console.log(`Refreshing news... ${includeTwitter ? '(including Twitter)' : '(RSS only)'}`);
     
     const sources = (process.env.NEWS_SOURCES || '').split(',').filter(Boolean);
     
-    // Fetch from both RSS feeds and Twitter in parallel
-    const [rssNews, twitterNews] = await Promise.all([
-      sources.length > 0 ? fetchNews(sources) : Promise.resolve([]),
-      fetchTwitterNews().catch(err => {
+    // Fetch RSS feeds
+    const rssNews = sources.length > 0 ? await fetchNews(sources) : [];
+    
+    // Only fetch Twitter if explicitly requested (to save API quota)
+    let twitterNews = [];
+    if (includeTwitter) {
+      try {
+        twitterNews = await fetchTwitterNews();
+        console.log(`✅ Twitter: Fetched ${twitterNews.length} tweets`);
+      } catch (err) {
         console.warn('Twitter fetch failed:', err.message);
-        return [];
-      })
-    ]);
+      }
+    }
     
     const allNewsItems = [...rssNews, ...twitterNews];
     

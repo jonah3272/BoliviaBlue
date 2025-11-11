@@ -1,14 +1,12 @@
 import ThemeToggle from '../components/ThemeToggle';
 import LanguageToggle from '../components/LanguageToggle';
 import RateCards from '../components/RateCards';
+import CurrencyCalculator from '../components/CurrencyCalculator';
 import BinanceBanner from '../components/BinanceBanner';
-import BlueChart from '../components/BlueChart';
-import NewsFeed from '../components/NewsFeed';
-import About from '../components/About';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Link } from 'react-router-dom';
 
-function Home() {
+function Calculator() {
   const { t } = useLanguage();
   
   return (
@@ -37,13 +35,13 @@ function Home() {
           <div className="flex gap-1">
             <Link
               to="/"
-              className="px-6 py-3 text-sm font-medium text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400"
+              className="px-6 py-3 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white border-b-2 border-transparent hover:border-gray-300 dark:hover:border-gray-600 transition-colors"
             >
               {t('language') === 'es' ? '📊 Dashboard' : '📊 Dashboard'}
             </Link>
             <Link
               to="/calculator"
-              className="px-6 py-3 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white border-b-2 border-transparent hover:border-gray-300 dark:hover:border-gray-600 transition-colors"
+              className="px-6 py-3 text-sm font-medium text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400"
             >
               {t('language') === 'es' ? '🧮 Calculadora' : '🧮 Calculator'}
             </Link>
@@ -70,24 +68,14 @@ function Home() {
           <RateCards />
         </section>
 
+        {/* Calculator */}
+        <section>
+          <CurrencyCalculator />
+        </section>
+
         {/* Binance Banner */}
         <section>
           <BinanceBanner />
-        </section>
-
-        {/* Chart */}
-        <section>
-          <BlueChart />
-        </section>
-
-        {/* News Feed */}
-        <section>
-          <NewsFeed />
-        </section>
-
-        {/* About */}
-        <section>
-          <About />
         </section>
       </main>
 
@@ -121,5 +109,5 @@ function Home() {
   );
 }
 
-export default Home;
+export default Calculator;
 

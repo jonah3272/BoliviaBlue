@@ -1,7 +1,8 @@
 import { useLanguage } from '../contexts/LanguageContext';
 
 function About() {
-  const { t } = useLanguage();
+  const languageContext = useLanguage();
+  const t = languageContext?.t || ((key) => key || '');
   
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-4xl mx-auto">

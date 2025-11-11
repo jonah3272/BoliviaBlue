@@ -1,7 +1,8 @@
 import { useLanguage } from '../contexts/LanguageContext';
 
 function SentimentLegend({ compact = false }) {
-  const { t } = useLanguage();
+  const languageContext = useLanguage();
+  const t = languageContext?.t || ((key) => key || '');
 
   if (compact) {
     // Compact version for dashboard

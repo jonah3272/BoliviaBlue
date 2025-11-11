@@ -6,7 +6,9 @@ import { Helmet } from 'react-helmet-async';
  * Breadcrumb navigation component with structured data
  */
 export default function Breadcrumbs({ items }) {
-  const { language, t } = useLanguage();
+  const languageContext = useLanguage();
+  const language = languageContext?.language || 'es';
+  const t = languageContext?.t || ((key) => key || '');
   const location = useLocation();
   const baseUrl = 'https://boliviablue.com';
 

@@ -5,7 +5,8 @@ import { formatRate, formatDateTime, isStale } from '../utils/formatters';
 import { useLanguage } from '../contexts/LanguageContext';
 
 function RateCard({ type, rate, timestamp, isStaleData, isLoading, error, dailyChange, isOfficial }) {
-  const { t } = useLanguage();
+  const languageContext = useLanguage();
+  const t = languageContext?.t || ((key) => key || '');
   const isBuy = type === 'buy';
   const label = isBuy ? t('buy') : t('sell');
   const color = isBuy ? 'blue' : 'pink';
@@ -75,7 +76,8 @@ function RateCard({ type, rate, timestamp, isStaleData, isLoading, error, dailyC
 }
 
 function RateCards() {
-  const { t } = useLanguage();
+  const languageContext = useLanguage();
+  const t = languageContext?.t || ((key) => key || '');
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);

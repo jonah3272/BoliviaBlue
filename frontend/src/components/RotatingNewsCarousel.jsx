@@ -3,7 +3,9 @@ import { fetchNews } from '../utils/api';
 import { useLanguage } from '../contexts/LanguageContext';
 
 function RotatingNewsCarousel() {
-  const { t, language } = useLanguage();
+  const languageContext = useLanguage();
+  const t = languageContext?.t || ((key) => key || '');
+  const language = languageContext?.language || 'es';
   const [articles, setArticles] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);

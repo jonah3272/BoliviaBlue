@@ -1,7 +1,8 @@
 import { useLanguage } from '../contexts/LanguageContext';
 
 function BinanceBanner() {
-  const { t } = useLanguage();
+  const languageContext = useLanguage();
+  const t = languageContext?.t || ((key) => key || '');
   
   const referralLink = "https://www.binance.com/referral/earn-together/refer2earn-usdc/claim?hl=en&ref=GRO_28502_RNV8W&utm_source=default";
   

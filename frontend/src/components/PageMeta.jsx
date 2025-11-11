@@ -67,9 +67,6 @@ export default function PageMeta({
           {JSON.stringify(structuredData)}
         </script>
       )}
-
-      {/* HTML Lang Attribute */}
-      <html lang={language === 'es' ? 'es' : 'en'} />
     </Helmet>
   );
 }

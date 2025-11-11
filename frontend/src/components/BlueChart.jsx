@@ -68,15 +68,8 @@ function BlueChart() {
         <div className="bg-white dark:bg-gray-800 p-3 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
           <p className="text-sm font-medium mb-2">{payload[0].payload.time}</p>
           <div className="space-y-1">
-            <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">Mercado Paralelo:</p>
-            {payload.filter(e => e.dataKey.startsWith('blue')).map((entry, index) => (
-              <p key={index} className="text-xs ml-2" style={{ color: entry.color }}>
-                {entry.name}: {entry.value ? entry.value.toFixed(2) : 'N/A'} Bs.
-              </p>
-            ))}
-            <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mt-2">Oficial:</p>
-            {payload.filter(e => e.dataKey.startsWith('official')).map((entry, index) => (
-              <p key={index} className="text-xs ml-2" style={{ color: entry.color }}>
+            {payload.map((entry, index) => (
+              <p key={index} className="text-xs" style={{ color: entry.color }}>
                 {entry.name}: {entry.value ? entry.value.toFixed(2) : 'N/A'} Bs.
               </p>
             ))}
@@ -197,26 +190,6 @@ function BlueChart() {
               name="Blue Venta"
               stroke="#EF4444" 
               strokeWidth={2}
-              dot={false}
-              activeDot={{ r: 6 }}
-            />
-            <Line 
-              type="monotone" 
-              dataKey="official_buy" 
-              name="Oficial Compra"
-              stroke="#6B7280" 
-              strokeWidth={2}
-              strokeDasharray="5 5"
-              dot={false}
-              activeDot={{ r: 6 }}
-            />
-            <Line 
-              type="monotone" 
-              dataKey="official_sell" 
-              name="Oficial Venta"
-              stroke="#9CA3AF" 
-              strokeWidth={2}
-              strokeDasharray="5 5"
               dot={false}
               activeDot={{ r: 6 }}
             />

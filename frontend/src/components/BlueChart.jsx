@@ -4,7 +4,10 @@ import { fetchBlueHistory } from '../utils/api';
 import { useLanguage } from '../contexts/LanguageContext';
 
 function BlueChart() {
-  const { t, language } = useLanguage();
+  const languageContext = useLanguage();
+  const t = languageContext?.t || ((key) => key || '');
+  const language = languageContext?.language || 'es';
+  
   const [range, setRange] = useState('1D');
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -14,14 +17,34 @@ function BlueChart() {
   
   // Define TIME_RANGES using useMemo to ensure t() is available
   const TIME_RANGES = useMemo(() => {
-    if (!t) return []; // Safety check
-    return [
-      { value: '1D', label: t('timeRanges.1D'), minDays: 0 },
-      { value: '1W', label: t('timeRanges.1W'), minDays: 7 },
-      { value: '1M', label: t('timeRanges.1M'), minDays: 30 },
-      { value: '1Y', label: t('timeRanges.1Y'), minDays: 365 },
-      { value: 'ALL', label: t('timeRanges.ALL'), minDays: 0 }
-    ];
+    if (!t || typeof t !== 'function') {
+      // Return default English labels as fallback
+      return [
+        { value: '1D', label: '1 Day', minDays: 0 },
+        { value: '1W', label: '1 Week', minDays: 7 },
+        { value: '1M', label: '1 Month', minDays: 30 },
+        { value: '1Y', label: '1 Year', minDays: 365 },
+        { value: 'ALL', label: 'All', minDays: 0 }
+      ];
+    }
+    try {
+      return [
+        { value: '1D', label: t('timeRanges.1D'), minDays: 0 },
+        { value: '1W', label: t('timeRanges.1W'), minDays: 7 },
+        { value: '1M', label: t('timeRanges.1M'), minDays: 30 },
+        { value: '1Y', label: t('timeRanges.1Y'), minDays: 365 },
+        { value: 'ALL', label: t('timeRanges.ALL'), minDays: 0 }
+      ];
+    } catch (err) {
+      console.error('Error in TIME_RANGES translation:', err);
+      return [
+        { value: '1D', label: '1 Day', minDays: 0 },
+        { value: '1W', label: '1 Week', minDays: 7 },
+        { value: '1M', label: '1 Month', minDays: 30 },
+        { value: '1Y', label: '1 Year', minDays: 365 },
+        { value: 'ALL', label: 'All', minDays: 0 }
+      ];
+    }
   }, [t]);
 
   useEffect(() => {

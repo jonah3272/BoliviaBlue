@@ -557,7 +557,21 @@ export function LanguageProvider({ children }) {
 export function useLanguage() {
   const context = useContext(LanguageContext);
   if (!context) {
-    throw new Error('useLanguage must be used within a LanguageProvider');
+    // Return a safe fallback instead of throwing to prevent crashes
+    console.warn('useLanguage called outside LanguageProvider, using fallback');
+    return {
+      language: 'es',
+      toggleLanguage: () => {},
+      t: (key) => key || '' // Safe fallback that returns the key itself
+    };
+  }
+  // Ensure t is always a function
+  if (!context.t || typeof context.t !== 'function') {
+    console.warn('LanguageContext t() is not a function, using fallback');
+    return {
+      ...context,
+      t: (key) => key || ''
+    };
   }
   return context;
 }

@@ -27,12 +27,12 @@ export async function fetchTwitterNews() {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), TWITTER_TIMEOUT);
 
-    // Search queries for Bolivia economy and Rodrigo Paz
+    // Search queries for Bolivia economy and Rodrigo Paz - MORE SPECIFIC
     const queries = [
-      'bolivia dolar OR boliviano OR "tipo de cambio" lang:es -is:retweet',
-      '"rodrigo paz" bolivia lang:es -is:retweet',
-      'bolivia economia OR economic lang:es -is:retweet',
-      'bolivia "banco central" OR BCB lang:es -is:retweet'
+      '(bolivia OR boliviano) (dolar OR dólar OR "tipo de cambio" OR "mercado paralelo" OR "blue") lang:es -is:retweet',
+      '"rodrigo paz" (dolar OR dólar OR economia OR economía OR bolivia) lang:es -is:retweet',
+      'bolivia ("banco central" OR BCB) (dolar OR dólar OR reservas) lang:es -is:retweet',
+      '(bolivia OR boliviano) (inflacion OR inflación OR crisis OR escasez) (dolar OR dólar) lang:es -is:retweet'
     ];
 
     const allTweets = [];

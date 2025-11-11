@@ -3,24 +3,33 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { fetchBlueHistory } from '../utils/api';
 
 const TIME_RANGES = [
-  { value: '1D', label: '1D' },
-  { value: '1W', label: '1W' },
-  { value: '1M', label: '1M' },
-  { value: '1Y', label: '1Y' },
-  { value: 'ALL', label: 'Todo' }
+  { value: '1D', label: '1D', minDays: 0 },
+  { value: '1W', label: '1W', minDays: 7 },
+  { value: '1M', label: '1M', minDays: 30 },
+  { value: '1Y', label: '1Y', minDays: 365 },
+  { value: 'ALL', label: 'Todo', minDays: 0 }
 ];
 
 function BlueChart() {
-  const [range, setRange] = useState('1W');
+  const [range, setRange] = useState('1D');
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [dataAge, setDataAge] = useState(0); // Days of data available
 
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
       try {
         const result = await fetchBlueHistory(range);
+        
+        // Calculate data age (days since first data point)
+        if (result.points.length > 0) {
+          const firstPoint = new Date(result.points[0].t);
+          const now = new Date();
+          const ageInDays = Math.floor((now - firstPoint) / (1000 * 60 * 60 * 24));
+          setDataAge(ageInDays);
+        }
         
         // Transform data for Recharts
         const chartData = result.points.map(point => ({
@@ -84,19 +93,27 @@ function BlueChart() {
         </h2>
         
         <div className="flex gap-2">
-          {TIME_RANGES.map(({ value, label }) => (
-            <button
-              key={value}
-              onClick={() => setRange(value)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                range === value
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
+          {TIME_RANGES.map(({ value, label, minDays }) => {
+            const isDisabled = minDays > 0 && dataAge < minDays;
+            return (
+              <button
+                key={value}
+                onClick={() => !isDisabled && setRange(value)}
+                disabled={isDisabled}
+                title={isDisabled ? `Disponible después de ${minDays} días de datos` : ''}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  range === value
+                    ? 'bg-blue-500 text-white'
+                    : isDisabled
+                    ? 'bg-gray-50 dark:bg-gray-800 text-gray-300 dark:text-gray-600 cursor-not-allowed'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer'
+                }`}
+              >
+                {label}
+                {isDisabled && <span className="ml-1 text-xs">🔒</span>}
+              </button>
+            );
+          })}
         </div>
       </div>
 

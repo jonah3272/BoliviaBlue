@@ -22,8 +22,12 @@ const PORT = process.env.PORT || 3000;
 const ORIGIN = process.env.ORIGIN || '*';
 const STALE_THRESHOLD = 45 * 60 * 1000; // 45 minutes
 
-// Middleware
-app.use(cors({ origin: ORIGIN }));
+// Middleware - Allow all origins for CORS
+app.use(cors({ 
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 
 // Serve frontend static files in production

@@ -124,6 +124,9 @@ async function refreshNews() {
     let insertedCount = 0;
     for (const item of allNewsItems) {
       try {
+        // Determine type: tweets from twitter.com, everything else is articles
+        const type = item.source === 'twitter.com' ? 'tweet' : 'article';
+        
         await insertNews(
           item.id,
           item.source,
@@ -132,7 +135,8 @@ async function refreshNews() {
           item.summary,
           item.published_at_iso,
           item.sentiment,
-          item.category
+          item.category,
+          type
         );
         insertedCount++;
       } catch (error) {

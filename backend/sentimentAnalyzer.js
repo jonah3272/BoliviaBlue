@@ -92,7 +92,7 @@ What is the sentiment regarding the US dollar value against the Boliviano?`;
 }
 
 /**
- * Fallback keyword-based sentiment classifier
+ * Fallback keyword-based sentiment classifier (MORE AGGRESSIVE - LESS NEUTRAL)
  * @param {string} title - Article title  
  * @param {string} summary - Article summary
  * @returns {string} "up", "down", or "neutral"
@@ -100,39 +100,86 @@ What is the sentiment regarding the US dollar value against the Boliviano?`;
 function analyzeSentimentKeywords(title, summary) {
   const text = `${title} ${summary}`.toLowerCase();
 
-  // Keywords that suggest dollar strengthening (boliviano weakening)
+  // Keywords that suggest dollar strengthening (boliviano weakening) - EXPANDED
   const upKeywords = [
-    'sube', 'subió', 'incremento', 'aumenta', 'aumentó', 'alza', 'dispara', 
-    'disparó', 'escasez', 'deprecia', 'depreció', 'devalua', 'devaluó', 
-    'devaluación', 'crisis', 'inflacion', 'inflación', 'mercado paralelo',
-    'dolar blue', 'blue sube', 'tipo de cambio sube', 'cotización alta',
-    'dólar caro', 'demanda de dólares', 'falta de divisas'
+    // Direct price movement
+    'sube', 'subió', 'incremento', 'incrementó', 'aumenta', 'aumentó',
+    'alza', 'dispara', 'disparó', 'trepa', 'trepó', 'escala', 'escaló',
+    
+    // Currency weakness
+    'deprecia', 'depreció', 'devalua', 'devaluó', 'devaluacion', 'devaluación',
+    'debil', 'débil', 'debilita', 'debilitó', 'cae boliviano', 'pierde valor',
+    
+    // Economic issues
+    'escasez', 'crisis', 'inflacion', 'inflación', 'deficit', 'déficit',
+    'falta de dolares', 'falta de dólares', 'sin dolares', 'sin dólares',
+    'paralelo', 'blue', 'mercado negro', 'tipo de cambio sube',
+    'dólar caro', 'cotización alta', 'demanda de dólares', 'falta de divisas',
+    
+    // Reserve problems
+    'caen reservas', 'bajan reservas', 'reservas bajas', 'sin reservas',
+    'perdida de reservas', 'pérdida de reservas',
+    
+    // Market behavior
+    'buscan dolares', 'buscan dólares', 'compran dolares', 'compran dólares',
+    'presion cambiaria', 'presión cambiaria', 'nerviosismo', 'incertidumbre'
   ];
 
-  // Keywords that suggest dollar weakening (boliviano strengthening)
+  // Keywords that suggest dollar weakening (boliviano strengthening) - EXPANDED
   const downKeywords = [
-    'baja', 'bajó', 'disminuye', 'disminuyó', 'cae', 'cayó', 'desciende', 
-    'descendió', 'estabiliza', 'estabilizó', 'controla', 'controló',
-    'normaliza', 'normalizó', 'reservas suben', 'fortalece', 'fortaleció', 
-    'recupera', 'recuperó', 'blue baja', 'tipo de cambio baja',
-    'dólar barato', 'oferta de dólares'
+    // Direct price movement
+    'baja', 'bajó', 'disminuye', 'disminuyó', 'cae', 'cayó', 'cae dolar', 'cae dólar',
+    'desciende', 'descendió', 'retrocede', 'retrocedió', 'blue baja', 'tipo de cambio baja',
+    'dólar barato',
+    
+    // Currency strength
+    'fortalece', 'fortaleció', 'recupera', 'recuperó', 'sube boliviano',
+    'boliviano fuerte', 'gana valor',
+    
+    // Economic stability
+    'estabiliza', 'estabilizó', 'controla', 'controló', 'normaliza', 'normalizó',
+    'tranquilidad', 'calma cambiaria',
+    
+    // Reserve improvements
+    'suben reservas', 'reservas suben', 'aumentan reservas', 'crecen reservas',
+    'inyecta dolares', 'inyecta dólares', 'oferta de dólares',
+    
+    // Central bank actions
+    'bcb inyecta', 'banco central interviene', 'intervencion', 'intervención',
+    'vende dolares', 'vende dólares', 'provisión de divisas'
   ];
 
   let upScore = 0;
   let downScore = 0;
 
-  // Count keyword matches
+  // Count keyword matches with weighted scoring
   for (const keyword of upKeywords) {
-    if (text.includes(keyword)) upScore++;
+    if (text.includes(keyword)) {
+      upScore++;
+      // Weight critical keywords more heavily
+      if (['crisis', 'escasez', 'devaluacion', 'devaluación', 'paralelo', 'blue'].some(k => keyword.includes(k))) {
+        upScore += 0.5;
+      }
+    }
   }
 
   for (const keyword of downKeywords) {
-    if (text.includes(keyword)) downScore++;
+    if (text.includes(keyword)) {
+      downScore++;
+      // Weight central bank actions more heavily
+      if (['bcb', 'banco central', 'inyecta', 'intervencion', 'intervención'].some(k => keyword.includes(k))) {
+        downScore += 0.5;
+      }
+    }
   }
 
-  // Determine sentiment based on scores
+  // Be more aggressive - if we have ANY signal, use it (less neutral)
+  if (upScore > 0 && downScore === 0) return 'up';
+  if (downScore > 0 && upScore === 0) return 'down';
   if (upScore > downScore) return 'up';
   if (downScore > upScore) return 'down';
+  
+  // Only return neutral if there's truly no economic signal
   return 'neutral';
 }
 

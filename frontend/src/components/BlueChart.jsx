@@ -12,6 +12,7 @@ function BlueChart() {
   const [dataAge, setDataAge] = useState(0);
   const [stats, setStats] = useState({ latestBuy: 0, latestSell: 0, change: 0 });
   
+  // Define TIME_RANGES inside component to access t()
   const TIME_RANGES = [
     { value: '1D', label: t('timeRanges.1D'), minDays: 0 },
     { value: '1W', label: t('timeRanges.1W'), minDays: 7 },

@@ -23,13 +23,13 @@ export async function fetchBlueRate() {
   
   // Get yesterday's rate for daily change calculation
   const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-  const { data: yesterdayData } = await supabase
+  const { data: yesterdayData, error: yesterdayError } = await supabase
     .from('rates')
     .select('buy, sell')
     .lte('t', oneDayAgo)
     .order('t', { ascending: false })
     .limit(1)
-    .single();
+    .maybeSingle(); // Use maybeSingle() instead of single() to handle no results gracefully
   
   let buyChange = null;
   let sellChange = null;

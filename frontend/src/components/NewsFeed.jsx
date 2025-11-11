@@ -3,29 +3,35 @@ import { fetchNews } from '../utils/api';
 import { formatTimeAgo } from '../utils/formatters';
 import SentimentLegend from './SentimentLegend';
 
-// AI-Powered Sentiment Indicator
+// AI-Powered Sentiment Indicator - Matches legend colors
 function SentimentArrow({ sentiment }) {
   if (!sentiment || sentiment === 'neutral') {
     return (
-      <span className="text-gray-400 dark:text-gray-500" title="Neutral - No clear currency impact">
-        ⚪
-      </span>
+      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700/50">
+        <span className="text-sm text-gray-500 dark:text-gray-400" title="Neutral - No clear currency impact">
+          ○
+        </span>
+      </div>
     );
   }
   
   if (sentiment === 'up') {
     return (
-      <span className="text-green-500" title="Dollar Rising - Boliviano Weakening">
-        ↗️
-      </span>
+      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30">
+        <span className="text-lg font-bold text-green-600 dark:text-green-400" title="Dollar Rising - Boliviano Weakening">
+          ↗
+        </span>
+      </div>
     );
   }
   
   if (sentiment === 'down') {
     return (
-      <span className="text-red-500" title="Dollar Falling - Boliviano Strengthening">
-        ↘️
-      </span>
+      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/30">
+        <span className="text-lg font-bold text-red-600 dark:text-red-400" title="Dollar Falling - Boliviano Strengthening">
+          ↘
+        </span>
+      </div>
     );
   }
   

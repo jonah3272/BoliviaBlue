@@ -29,29 +29,35 @@ const CategoryIcon = ({ category }) => {
   return icons[category] || icons.all;
 };
 
-// AI-Powered Sentiment Indicator
+// AI-Powered Sentiment Indicator - Matches legend colors
 const SentimentArrow = ({ sentiment, language }) => {
   if (!sentiment || sentiment === 'neutral') {
     return (
-      <span className="text-2xl" title={language === 'es' ? 'Neutral - Sin impacto claro en divisas' : 'Neutral - No clear currency impact'}>
-        ⚪
-      </span>
+      <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-700/50">
+        <span className="text-xl text-gray-500 dark:text-gray-400" title={language === 'es' ? 'Neutral - Sin impacto claro en divisas' : 'Neutral - No clear currency impact'}>
+          ○
+        </span>
+      </div>
     );
   }
   
   if (sentiment === 'up') {
     return (
-      <span className="text-2xl text-green-500" title={language === 'es' ? 'Dólar Subiendo - Boliviano Debilitándose' : 'Dollar Rising - Boliviano Weakening'}>
-        ↗️
-      </span>
+      <div className="flex items-center justify-center w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30">
+        <span className="text-2xl font-bold text-green-600 dark:text-green-400" title={language === 'es' ? 'Dólar Subiendo - Boliviano Debilitándose' : 'Dollar Rising - Boliviano Weakening'}>
+          ↗
+        </span>
+      </div>
     );
   }
   
   if (sentiment === 'down') {
     return (
-      <span className="text-2xl text-red-500" title={language === 'es' ? 'Dólar Bajando - Boliviano Fortaleciéndose' : 'Dollar Falling - Boliviano Strengthening'}>
-        ↘️
-      </span>
+      <div className="flex items-center justify-center w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30">
+        <span className="text-2xl font-bold text-red-600 dark:text-red-400" title={language === 'es' ? 'Dólar Bajando - Boliviano Fortaleciéndose' : 'Dollar Falling - Boliviano Strengthening'}>
+          ↘
+        </span>
+      </div>
     );
   }
   

@@ -12,25 +12,31 @@ function SentimentLegend() {
           </span>
         </div>
         <div className="flex flex-wrap items-center gap-4">
-          <div className="flex items-center gap-1.5">
-            <span className="text-xl">↗️</span>
-            <span className="text-sm text-green-600 dark:text-green-400 font-medium">
+          {/* Dollar UP - GREEN */}
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-100 dark:bg-green-900/30">
+            <span className="text-lg font-bold text-green-600 dark:text-green-400">↗</span>
+            <span className="text-sm text-green-700 dark:text-green-300 font-semibold">
               {language === 'es' ? 'USD ↑' : 'USD Rising'}
             </span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="text-xl">↘️</span>
-            <span className="text-sm text-red-600 dark:text-red-400 font-medium">
+          
+          {/* Dollar DOWN - RED */}
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-100 dark:bg-red-900/30">
+            <span className="text-lg font-bold text-red-600 dark:text-red-400">↘</span>
+            <span className="text-sm text-red-700 dark:text-red-300 font-semibold">
               {language === 'es' ? 'USD ↓' : 'USD Falling'}
             </span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="text-xl">⚪</span>
-            <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+          
+          {/* Neutral - GRAY */}
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-700/50">
+            <span className="text-lg text-gray-500 dark:text-gray-400">○</span>
+            <span className="text-sm text-gray-600 dark:text-gray-300 font-semibold">
               {language === 'es' ? 'Neutral' : 'Neutral'}
             </span>
           </div>
-          <span className="text-xs text-gray-500 dark:text-gray-500 ml-2">
+          
+          <span className="text-xs text-gray-500 dark:text-gray-400 ml-2 font-medium">
             {language === 'es' ? '(IA)' : '(AI)'}
           </span>
         </div>

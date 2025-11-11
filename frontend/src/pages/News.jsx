@@ -71,8 +71,29 @@ function News() {
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
 
+  // Get available categories (only those with articles)
+  const [availableCategories, setAvailableCategories] = useState(['all']);
+  
   useEffect(() => {
     loadNews();
+    
+    // Also fetch all news to determine which categories have articles
+    const checkCategories = async () => {
+      try {
+        const allNews = await fetchNews('all', 100);
+        const categoriesWithArticles = new Set(['all']);
+        allNews.forEach(article => {
+          if (article.category) {
+            categoriesWithArticles.add(article.category);
+          }
+        });
+        setAvailableCategories(Array.from(categoriesWithArticles));
+      } catch (err) {
+        console.error('Error checking categories:', err);
+      }
+    };
+    
+    checkCategories();
   }, [selectedCategory]);
 
   const loadNews = async () => {
@@ -192,9 +213,9 @@ function News() {
         {/* Sentiment Legend */}
         <SentimentLegend />
         
-        {/* Category Filters */}
+        {/* Category Filters - Only show categories with articles */}
         <div className="flex flex-wrap gap-2">
-          {Object.entries(CATEGORIES).map(([key, cat]) => (
+          {Object.entries(CATEGORIES).filter(([key]) => availableCategories.includes(key)).map(([key, cat]) => (
             <button
               key={key}
               onClick={() => setSelectedCategory(key)}

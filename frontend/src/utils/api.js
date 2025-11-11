@@ -3,6 +3,11 @@ const API_BASE = import.meta.env.VITE_API_URL
   ? `${import.meta.env.VITE_API_URL}/api` 
   : '/api';
 
+// Debug: Log API base URL (only in development)
+if (import.meta.env.DEV) {
+  console.log('API_BASE:', API_BASE);
+}
+
 /**
  * Fetch current blue market rate
  */

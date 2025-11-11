@@ -23,16 +23,17 @@ db.exec(`
 
   CREATE INDEX IF NOT EXISTS idx_rates_t ON rates(t DESC);
 
-  CREATE TABLE IF NOT EXISTS news (
-    id TEXT PRIMARY KEY,
-    source TEXT NOT NULL,
-    url TEXT UNIQUE NOT NULL,
-    title TEXT NOT NULL,
-    summary TEXT,
-    published_at TEXT NOT NULL,
-    sentiment TEXT DEFAULT 'neutral',
-    created_at INTEGER DEFAULT (strftime('%s', 'now'))
-  );
+CREATE TABLE IF NOT EXISTS news (
+  id TEXT PRIMARY KEY,
+  source TEXT NOT NULL,
+  url TEXT UNIQUE NOT NULL,
+  title TEXT NOT NULL,
+  summary TEXT,
+  published_at TEXT NOT NULL,
+  sentiment TEXT DEFAULT 'neutral',
+  category TEXT DEFAULT 'general',
+  created_at INTEGER DEFAULT (strftime('%s', 'now'))
+);
 
   CREATE INDEX IF NOT EXISTS idx_news_published ON news(published_at DESC);
 `);
@@ -62,8 +63,8 @@ export const getTotalRatesCount = db.prepare(`
 `);
 
 export const insertNews = db.prepare(`
-  INSERT OR IGNORE INTO news (id, source, url, title, summary, published_at, sentiment)
-  VALUES (?, ?, ?, ?, ?, ?, ?)
+  INSERT OR IGNORE INTO news (id, source, url, title, summary, published_at, sentiment, category)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 `);
 
 export const getRecentNews = db.prepare(`

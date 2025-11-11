@@ -106,7 +106,8 @@ async function refreshNews() {
           item.title,
           item.summary,
           item.published_at_iso,
-          item.sentiment
+          item.sentiment,
+          item.category
         );
         insertedCount++;
       } catch (error) {

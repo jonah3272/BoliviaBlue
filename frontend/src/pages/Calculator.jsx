@@ -45,6 +45,12 @@ function Calculator() {
             >
               {t('language') === 'es' ? '🧮 Calculadora' : '🧮 Calculator'}
             </Link>
+            <Link
+              to="/news"
+              className="px-6 py-3 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white border-b-2 border-transparent hover:border-gray-300 dark:hover:border-gray-600 transition-colors"
+            >
+              {t('language') === 'es' ? '📰 Noticias' : '📰 News'}
+            </Link>
           </div>
         </div>
       </nav>

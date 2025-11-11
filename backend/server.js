@@ -174,8 +174,21 @@ app.get('/api/blue-history', (req, res) => {
  */
 app.get('/api/news', (req, res) => {
   try {
-    // Always return only the latest 10 articles
-    const rows = getRecentNews.all(10);
+    const limit = parseInt(req.query.limit) || 10;
+    const category = req.query.category;
+    
+    let query = 'SELECT * FROM news';
+    let params = [];
+    
+    if (category && category !== 'all') {
+      query += ' WHERE category = ?';
+      params.push(category);
+    }
+    
+    query += ' ORDER BY published_at DESC LIMIT ?';
+    params.push(limit);
+    
+    const rows = db.prepare(query).all(...params);
     
     const news = rows.map(row => ({
       id: row.id,
@@ -184,7 +197,8 @@ app.get('/api/news', (req, res) => {
       title: row.title,
       published_at_iso: row.published_at,
       summary: row.summary,
-      sentiment: row.sentiment
+      sentiment: row.sentiment,
+      category: row.category
     }));
     
     res.json(news);

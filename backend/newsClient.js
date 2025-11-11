@@ -11,6 +11,58 @@ function generateId(url) {
 }
 
 /**
+ * Categorize news article based on content
+ * @param {string} title - Article title
+ * @param {string} summary - Article summary
+ * @returns {string} Category: "economy", "politics", "international", "banking", "markets", "currency", "general"
+ */
+function categorizeArticle(title, summary) {
+  const text = `${title} ${summary}`.toLowerCase();
+  
+  // Currency & Exchange rates
+  const currencyKeywords = ['dolar', 'dólar', 'tipo de cambio', 'divisa', 'moneda', 'cambio', 'devaluacion', 'devaluación', 'paralelo', 'blue', 'usdt'];
+  
+  // Banking & Financial institutions
+  const bankingKeywords = ['banco', 'bcb', 'banco central', 'credito', 'crédito', 'prestamo', 'préstamo', 'financiero', 'financiera'];
+  
+  // International relations & diplomacy
+  const internationalKeywords = ['rubio', 'secretario', 'embajador', 'visita', 'reunion', 'reunión', 'cumbre', 'acuerdo', 'tratado', 'diplomacia', 'estados unidos', 'eeuu', 'internacional', 'relaciones'];
+  
+  // Markets & trade
+  const marketKeywords = ['mercado', 'comercio', 'exportacion', 'exportación', 'importacion', 'importación', 'precio', 'bolsa', 'trading'];
+  
+  // Politics & government
+  const politicsKeywords = ['rodrigo paz', 'presidente', 'gobierno', 'ministro', 'congreso', 'politica', 'política', 'elecciones', 'ley', 'decreto'];
+  
+  // Economy (general economic news)
+  const economyKeywords = ['economia', 'economía', 'inflacion', 'inflación', 'deficit', 'déficit', 'pib', 'crecimiento', 'recession', 'recesión', 'inversion', 'inversión'];
+  
+  // Count matches for each category
+  let scores = {
+    currency: 0,
+    banking: 0,
+    international: 0,
+    markets: 0,
+    politics: 0,
+    economy: 0
+  };
+  
+  currencyKeywords.forEach(k => { if (text.includes(k)) scores.currency++; });
+  bankingKeywords.forEach(k => { if (text.includes(k)) scores.banking++; });
+  internationalKeywords.forEach(k => { if (text.includes(k)) scores.international++; });
+  marketKeywords.forEach(k => { if (text.includes(k)) scores.markets++; });
+  politicsKeywords.forEach(k => { if (text.includes(k)) scores.politics++; });
+  economyKeywords.forEach(k => { if (text.includes(k)) scores.economy++; });
+  
+  // Return category with highest score
+  const maxCategory = Object.entries(scores).reduce((max, [cat, score]) => 
+    score > max[1] ? [cat, score] : max
+  , ['general', 0]);
+  
+  return maxCategory[1] > 0 ? maxCategory[0] : 'general';
+}
+
+/**
  * Simple sentiment classifier based on keywords
  * @param {string} text - Text to analyze
  * @returns {string} "up", "down", or "neutral"
@@ -87,7 +139,8 @@ function parseRSS(xml, source) {
         title,
         summary,
         published_at_iso: pubDate,
-        sentiment: classifySentiment(title + ' ' + summary)
+        sentiment: classifySentiment(title + ' ' + summary),
+        category: categorizeArticle(title, summary)
       });
     }
   }

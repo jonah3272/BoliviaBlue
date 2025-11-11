@@ -85,9 +85,17 @@ function NewsFeed() {
 
   useEffect(() => {
     const loadNews = async () => {
+      setIsLoading(true);
       try {
         const data = await fetchNews();
         setNews(data.slice(0, 20)); // Show top 20 items
+        
+        // Calculate daily sentiment summary
+        const upCount = data.filter(item => item.sentiment === 'up').length;
+        const downCount = data.filter(item => item.sentiment === 'down').length;
+        const neutralCount = data.filter(item => item.sentiment === 'neutral').length;
+        
+        setDailySentiment({ up: upCount, down: downCount, neutral: neutralCount, total: data.length });
         setError(null);
       } catch (err) {
         console.error('Error loading news:', err);

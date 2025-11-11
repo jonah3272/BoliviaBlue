@@ -217,10 +217,10 @@ app.get('*', (req, res) => {
 // Start scheduler
 startScheduler();
 
-// Start server
-app.listen(PORT, () => {
+// Start server - Listen on 0.0.0.0 for Railway compatibility
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Bolivia Blue con Paz backend running on port ${PORT}`);
-console.log(`Using Supabase database at ${process.env.SUPABASE_URL}`);
-console.log(`CORS configured for multiple origins including: ${allowedOrigins.join(', ')}`);
+  console.log(`Using Supabase database at ${process.env.SUPABASE_URL}`);
+  console.log(`CORS configured for multiple origins including: ${allowedOrigins.join(', ')}`);
 });
 

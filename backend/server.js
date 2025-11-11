@@ -70,12 +70,27 @@ app.get('/api/blue-rate', (req, res) => {
     
     const isStale = Date.now() - new Date(dbRate.t).getTime() > STALE_THRESHOLD;
     
+    // Get yesterday's rate for daily change calculation
+    const yesterdayStart = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    const yesterdayRates = getRatesInRange.all(yesterdayStart);
+    
+    let buyChange = null;
+    let sellChange = null;
+    
+    if (yesterdayRates.length > 0) {
+      const yesterdayRate = yesterdayRates[0];
+      buyChange = ((dbRate.buy - yesterdayRate.buy) / yesterdayRate.buy * 100).toFixed(2);
+      sellChange = ((dbRate.sell - yesterdayRate.sell) / yesterdayRate.sell * 100).toFixed(2);
+    }
+    
     res.json({
       source: 'binance-p2p',
       buy_bob_per_usd: dbRate.buy,
       sell_bob_per_usd: dbRate.sell,
       official_buy: dbRate.official_buy,
       official_sell: dbRate.official_sell,
+      buy_change_24h: buyChange,
+      sell_change_24h: sellChange,
       updated_at_iso: dbRate.t,
       is_stale: isStale,
       sample_buy: [],

@@ -2,13 +2,19 @@ import { useState, useEffect } from 'react';
 import { fetchBlueRate } from '../utils/api';
 import { formatRate, formatDateTime, isStale } from '../utils/formatters';
 
-function RateCard({ type, rate, timestamp, isStaleData, isLoading, error, spread, isOfficial }) {
+function RateCard({ type, rate, timestamp, isStaleData, isLoading, error, dailyChange, isOfficial }) {
   const isBuy = type === 'buy';
   const label = isBuy ? 'COMPRAR' : 'VENDER';
   const color = isBuy ? 'blue' : 'pink';
   const borderColor = isOfficial 
     ? (isBuy ? 'border-gray-400' : 'border-gray-500')
     : (isBuy ? 'border-blue-500' : 'border-pink-500');
+  
+  // Parse daily change
+  const changeValue = dailyChange ? parseFloat(dailyChange) : null;
+  const changeColor = changeValue > 0 ? 'text-green-600' : changeValue < 0 ? 'text-red-600' : 'text-gray-500';
+  const changeIcon = changeValue > 0 ? '↑' : changeValue < 0 ? '↓' : '';
+
 
   if (isLoading) {
     return (
@@ -39,9 +45,9 @@ function RateCard({ type, rate, timestamp, isStaleData, isLoading, error, spread
               Desactualizado
             </span>
           )}
-          {!isOfficial && spread && (
-            <span className="px-2 py-1 text-xs bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded-full">
-              +{spread}%
+          {!isOfficial && changeValue !== null && (
+            <span className={`px-2 py-1 text-xs font-medium rounded-full ${changeColor}`}>
+              {changeIcon}{Math.abs(changeValue).toFixed(2)}% 24h
             </span>
           )}
         </div>
@@ -95,9 +101,9 @@ function RateCards() {
   const isDataStale = data?.updated_at_iso ? 
     (isStale(data.updated_at_iso) || data.is_stale) : false;
 
-  // Calculate spread (difference between blue and official)
-  const buySpread = data ? ((data.buy_bob_per_usd - data.official_buy) / data.official_buy * 100).toFixed(1) : 0;
-  const sellSpread = data ? ((data.sell_bob_per_usd - data.official_sell) / data.official_sell * 100).toFixed(1) : 0;
+  // Use daily change from API
+  const buyChange = data?.buy_change_24h;
+  const sellChange = data?.sell_change_24h;
 
   return (
     <div className="space-y-8">
@@ -114,7 +120,7 @@ function RateCards() {
             isStaleData={isDataStale}
             isLoading={isLoading}
             error={error}
-            spread={buySpread}
+            dailyChange={buyChange}
           />
           <RateCard
             type="sell"
@@ -123,7 +129,7 @@ function RateCards() {
             isStaleData={isDataStale}
             isLoading={isLoading}
             error={error}
-            spread={sellSpread}
+            dailyChange={sellChange}
           />
         </div>
       </div>
@@ -155,29 +161,6 @@ function RateCards() {
         </div>
       </div>
 
-      {/* Spread Indicator */}
-      {data && !isLoading && !error && (
-        <div className="max-w-4xl mx-auto bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <svg className="w-5 h-5 text-amber-600 dark:text-amber-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-              </svg>
-              <span className="font-medium text-amber-900 dark:text-amber-200">Diferencia (Spread)</span>
-            </div>
-            <div className="flex gap-8 text-sm">
-              <div>
-                <span className="text-amber-700 dark:text-amber-300">Compra: </span>
-                <span className="font-mono font-bold text-amber-900 dark:text-amber-100">+{buySpread}%</span>
-              </div>
-              <div>
-                <span className="text-amber-700 dark:text-amber-300">Venta: </span>
-                <span className="font-mono font-bold text-amber-900 dark:text-amber-100">+{sellSpread}%</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

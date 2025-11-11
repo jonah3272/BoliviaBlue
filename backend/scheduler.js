@@ -1,7 +1,7 @@
 import { getCurrentBlueRate } from './p2pClient.js';
 import { getOfficialRate, getStaticOfficialRate } from './officialRateClient.js';
 import { fetchNews } from './newsClient.js';
-import { insertRate, insertNews } from './db.js';
+import { insertRate, insertNews, getRatesInRange } from './db.js';
 import { median } from './median.js';
 
 const REFRESH_INTERVAL = 15 * 60 * 1000; // 15 minutes
@@ -44,12 +44,27 @@ async function refreshBlueRate() {
       officialMid
     );
     
-    // Update cache with both rates
+    // Get yesterday's rate for daily change calculation
+    const yesterdayStart = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    const yesterdayRates = getRatesInRange.all(yesterdayStart);
+    
+    let buyChange = null;
+    let sellChange = null;
+    
+    if (yesterdayRates.length > 0) {
+      const yesterdayRate = yesterdayRates[0];
+      buyChange = ((blueRateData.buy_bob_per_usd - yesterdayRate.buy) / yesterdayRate.buy * 100).toFixed(2);
+      sellChange = ((blueRateData.sell_bob_per_usd - yesterdayRate.sell) / yesterdayRate.sell * 100).toFixed(2);
+    }
+    
+    // Update cache with both rates and daily change
     cache.latestRate = {
       ...blueRateData,
       official_buy: officialRateData.official_buy,
       official_sell: officialRateData.official_sell,
-      official_source: officialRateData.source
+      official_source: officialRateData.source,
+      buy_change_24h: buyChange,
+      sell_change_24h: sellChange
     };
     cache.lastUpdate = new Date();
     cache.isHealthy = true;

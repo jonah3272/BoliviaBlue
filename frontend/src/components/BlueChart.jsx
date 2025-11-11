@@ -114,7 +114,23 @@ function BlueChart() {
 
       {!isLoading && !error && data.length === 0 && (
         <div className="h-80 flex items-center justify-center">
-          <div className="text-gray-500 dark:text-gray-400">No hay datos disponibles</div>
+          <div className="text-center">
+            <div className="text-gray-500 dark:text-gray-400 mb-2">
+              Recopilando datos históricos...
+            </div>
+            <div className="text-sm text-gray-400 dark:text-gray-500">
+              El sistema actualiza cada 15 minutos. Los datos históricos se acumularán con el tiempo.
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {!isLoading && !error && data.length > 0 && data.length < 5 && (
+        <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-sm">
+          <span className="text-blue-700 dark:text-blue-300">
+            📊 Datos recientes: {data.length} punto{data.length > 1 ? 's' : ''}. 
+            El gráfico mejorará a medida que se acumulen más datos cada 15 minutos.
+          </span>
         </div>
       )}
 

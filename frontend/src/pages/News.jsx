@@ -68,7 +68,9 @@ const SentimentArrow = ({ sentiment, language }) => {
 };
 
 function News() {
-  const { t, language } = useLanguage();
+  const languageContext = useLanguage();
+  const t = languageContext?.t || ((key) => key || '');
+  const language = languageContext?.language || 'es';
   const [news, setNews] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);

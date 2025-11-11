@@ -10,7 +10,9 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { Link } from 'react-router-dom';
 
 function Calculator() {
-  const { t, language } = useLanguage();
+  const languageContext = useLanguage();
+  const t = languageContext?.t || ((key) => key || '');
+  const language = languageContext?.language || 'es';
   
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">

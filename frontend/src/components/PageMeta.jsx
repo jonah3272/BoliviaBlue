@@ -14,7 +14,8 @@ export default function PageMeta({
   noindex = false,
   structuredData
 }) {
-  const { language } = useLanguage();
+  const languageContext = useLanguage();
+  const language = languageContext?.language || 'es';
   const baseUrl = 'https://boliviablue.com';
   const fullCanonical = canonical ? `${baseUrl}${canonical}` : baseUrl;
   const fullOgImage = ogImage.startsWith('http') ? ogImage : `${baseUrl}${ogImage}`;

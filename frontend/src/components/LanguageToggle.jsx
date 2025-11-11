@@ -1,7 +1,9 @@
 import { useLanguage } from '../contexts/LanguageContext';
 
 function LanguageToggle() {
-  const { language, toggleLanguage } = useLanguage();
+  const languageContext = useLanguage();
+  const language = languageContext?.language || 'es';
+  const toggleLanguage = languageContext?.toggleLanguage || (() => {});
 
   return (
     <button

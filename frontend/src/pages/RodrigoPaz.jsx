@@ -7,7 +7,9 @@ import Navigation from '../components/Navigation';
 import { Link } from 'react-router-dom';
 
 function RodrigoPaz() {
-  const { t, language } = useLanguage();
+  const languageContext = useLanguage();
+  const t = languageContext?.t || ((key) => key || '');
+  const language = languageContext?.language || 'es';
 
   // Person structured data
   const personSchema = {

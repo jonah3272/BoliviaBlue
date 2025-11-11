@@ -7,13 +7,9 @@ import Navigation from '../components/Navigation';
 import { Link } from 'react-router-dom';
 
 function FAQ() {
-  const { t, language } = useLanguage();
-  
-  // Ensure t is available before using it
-  if (!t || typeof t !== 'function') {
-    console.error('Translation function t is not available');
-    return <div>Loading...</div>;
-  }
+  const languageContext = useLanguage();
+  const t = languageContext?.t || ((key) => key || '');
+  const language = languageContext?.language || 'es';
 
   // FAQ structured data
   const faqSchema = {

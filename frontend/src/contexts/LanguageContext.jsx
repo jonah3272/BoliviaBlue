@@ -529,6 +529,7 @@ export function LanguageProvider({ children }) {
   };
 
   const t = (key) => {
+    if (!key) return '';
     const keys = key.split('.');
     let value = translations[language];
     
@@ -539,8 +540,15 @@ export function LanguageProvider({ children }) {
     return value || key;
   };
 
+  // Ensure t is always defined
+  const contextValue = {
+    language,
+    toggleLanguage,
+    t: t || ((key) => key) // Fallback if t is somehow undefined
+  };
+
   return (
-    <LanguageContext.Provider value={{ language, toggleLanguage, t }}>
+    <LanguageContext.Provider value={contextValue}>
       {children}
     </LanguageContext.Provider>
   );

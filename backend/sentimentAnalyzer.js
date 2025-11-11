@@ -3,6 +3,14 @@ import fetch from 'node-fetch';
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const SENTIMENT_TIMEOUT = 10000; // 10 seconds
 
+// Log environment variable status on module load
+if (OPENAI_API_KEY) {
+  console.log(`✅ OPENAI_API_KEY is set (length: ${OPENAI_API_KEY.length} chars, starts with: ${OPENAI_API_KEY.substring(0, 7)}...)`);
+} else {
+  console.warn('⚠️ OPENAI_API_KEY is NOT set in environment variables');
+  console.warn('⚠️ Available env vars:', Object.keys(process.env).filter(k => k.includes('OPENAI') || k.includes('API')));
+}
+
 /**
  * Analyze article sentiment using OpenAI GPT-4
  * Determines if the article indicates the USD is rising or falling against the Boliviano
@@ -11,9 +19,12 @@ const SENTIMENT_TIMEOUT = 10000; // 10 seconds
  * @returns {Promise<string>} "up", "down", or "neutral"
  */
 export async function analyzeSentimentAI(title, summary) {
+  // Re-check API key at runtime (in case env vars changed)
+  const apiKey = process.env.OPENAI_API_KEY || OPENAI_API_KEY;
+  
   // If no API key, fall back to keyword analysis
-  if (!OPENAI_API_KEY) {
-    console.warn('⚠️ No OPENAI_API_KEY found, using keyword-based sentiment fallback');
+  if (!apiKey || apiKey.trim() === '') {
+    console.warn('⚠️ No OPENAI_API_KEY found at runtime, using keyword-based sentiment fallback');
     return analyzeSentimentKeywords(title, summary);
   }
   
@@ -55,7 +66,7 @@ What is the sentiment regarding the US dollar value against the Boliviano?`;
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${OPENAI_API_KEY}`
+        'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
         model: 'gpt-4o-mini', // Fast and cheap model

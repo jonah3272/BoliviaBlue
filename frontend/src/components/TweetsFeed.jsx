@@ -64,7 +64,7 @@ function TweetCard({ tweet }) {
           {formatTimeAgo(tweet.published_at)}
         </span>
         {tweet.category && tweet.category !== 'general' && (
-          <span className="px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs font-medium">
+          <span className="px-2.5 py-1 rounded-full bg-blue-500 dark:bg-blue-600 text-white text-xs font-semibold shadow-sm">
             {tweet.category}
           </span>
         )}

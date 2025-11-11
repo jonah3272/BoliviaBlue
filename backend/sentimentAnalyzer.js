@@ -13,9 +13,11 @@ const SENTIMENT_TIMEOUT = 10000; // 10 seconds
 export async function analyzeSentimentAI(title, summary) {
   // If no API key, fall back to keyword analysis
   if (!OPENAI_API_KEY) {
-    console.warn('No OPENAI_API_KEY found, using keyword-based sentiment');
+    console.warn('⚠️ No OPENAI_API_KEY found, using keyword-based sentiment fallback');
     return analyzeSentimentKeywords(title, summary);
   }
+  
+  console.log('✅ Using OpenAI GPT-4o-mini for sentiment analysis');
 
   try {
     const controller = new AbortController();

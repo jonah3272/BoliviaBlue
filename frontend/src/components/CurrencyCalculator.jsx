@@ -7,6 +7,7 @@ function CurrencyCalculator() {
   const [rateData, setRateData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [useOfficial, setUseOfficial] = useState(false);
+  const [convertFromBOB, setConvertFromBOB] = useState(true); // true = BOB->USD, false = USD->BOB
   
   const [bobAmount, setBobAmount] = useState('100');
   const [usdAmount, setUsdAmount] = useState('');
@@ -18,10 +19,14 @@ function CurrencyCalculator() {
   }, []);
 
   useEffect(() => {
-    if (rateData && bobAmount) {
-      calculateUSD();
+    if (rateData) {
+      if (convertFromBOB && bobAmount) {
+        calculateUSD();
+      } else if (!convertFromBOB && usdAmount) {
+        calculateBOB();
+      }
     }
-  }, [rateData, bobAmount, useOfficial]);
+  }, [rateData, bobAmount, usdAmount, useOfficial, convertFromBOB]);
 
   const loadRates = async () => {
     try {
@@ -34,30 +39,69 @@ function CurrencyCalculator() {
     }
   };
 
-  const calculateUSD = () => {
-    if (!rateData || !bobAmount) return;
-    
-    const bob = parseFloat(bobAmount);
-    if (isNaN(bob)) return;
-    
-    // Use the average of buy and sell rates
-    const rate = useOfficial 
+  const getRate = () => {
+    if (!rateData) return 0;
+    return useOfficial 
       ? (rateData.official_buy + rateData.official_sell) / 2
       : (rateData.buy_bob_per_usd + rateData.sell_bob_per_usd) / 2;
+  };
+
+  const calculateUSD = () => {
+    if (!rateData || !bobAmount) {
+      setUsdAmount('');
+      return;
+    }
     
+    const bob = parseFloat(bobAmount);
+    if (isNaN(bob) || bob === 0) {
+      setUsdAmount('');
+      return;
+    }
+    
+    const rate = getRate();
     const usd = bob / rate;
     setUsdAmount(usd.toFixed(4));
+  };
+
+  const calculateBOB = () => {
+    if (!rateData || !usdAmount) {
+      setBobAmount('');
+      return;
+    }
+    
+    const usd = parseFloat(usdAmount);
+    if (isNaN(usd) || usd === 0) {
+      setBobAmount('');
+      return;
+    }
+    
+    const rate = getRate();
+    const bob = usd * rate;
+    setBobAmount(bob.toFixed(2));
   };
 
   const handleBobChange = (e) => {
     const value = e.target.value;
     if (value === '' || /^\d*\.?\d*$/.test(value)) {
       setBobAmount(value);
+      setConvertFromBOB(true);
     }
   };
 
-  const handleCurrencyChange = (currency) => {
-    // Could expand this to support more currencies
+  const handleUsdChange = (e) => {
+    const value = e.target.value;
+    if (value === '' || /^\d*\.?\d*$/.test(value)) {
+      setUsdAmount(value);
+      setConvertFromBOB(false);
+    }
+  };
+
+  const handleSwap = () => {
+    setConvertFromBOB(!convertFromBOB);
+    // Swap the values
+    const tempBob = bobAmount;
+    setBobAmount(usdAmount);
+    setUsdAmount(tempBob);
   };
 
   const getBuyRate = () => useOfficial ? rateData?.official_buy : rateData?.buy_bob_per_usd;
@@ -79,49 +123,60 @@ function CurrencyCalculator() {
         </div>
 
         {/* Calculator Inputs */}
-        <div className="space-y-6 mb-8">
+        <div className="space-y-4 mb-8">
           {/* BOB Input */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              {language === 'es' ? 'Cantidad en BOB' : 'Amount in BOB'}
+              {language === 'es' ? 'Bolivianos (BOB)' : 'Bolivianos (BOB)'}
             </label>
-            <input
-              type="text"
-              value={bobAmount}
-              onChange={handleBobChange}
-              className="w-full px-4 py-4 text-2xl font-mono font-bold bg-gray-50 dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white transition-all"
-              placeholder="100"
-            />
-          </div>
-
-          {/* Arrow Icon */}
-          <div className="flex justify-center">
-            <div className="bg-gray-100 dark:bg-gray-700 p-3 rounded-full">
-              <svg className="w-6 h-6 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-              </svg>
+            <div className="relative">
+              <input
+                type="text"
+                value={bobAmount}
+                onChange={handleBobChange}
+                className="w-full px-4 py-4 text-2xl font-mono font-bold bg-gray-50 dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white transition-all"
+                placeholder="100.00"
+              />
+              <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 font-semibold text-lg">
+                Bs.
+              </span>
             </div>
           </div>
 
-          {/* USD Output */}
+          {/* Swap Button */}
+          <div className="flex justify-center">
+            <button
+              onClick={handleSwap}
+              className="group bg-blue-50 dark:bg-gray-700 hover:bg-blue-100 dark:hover:bg-gray-600 p-3 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              aria-label={language === 'es' ? 'Intercambiar monedas' : 'Swap currencies'}
+            >
+              <svg 
+                className="w-6 h-6 text-blue-600 dark:text-blue-400 group-hover:rotate-180 transition-transform duration-300" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+              </svg>
+            </button>
+          </div>
+
+          {/* USD Input */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              {language === 'es' ? 'Cantidad en USD' : 'Amount in USD'}
+              {language === 'es' ? 'Dólares (USD)' : 'Dollars (USD)'}
             </label>
             <div className="relative">
               <input
                 type="text"
                 value={usdAmount}
-                readOnly
-                className="w-full px-4 py-4 text-2xl font-mono font-bold bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-300 dark:border-blue-700 rounded-xl text-blue-900 dark:text-blue-200"
+                onChange={handleUsdChange}
+                className="w-full px-4 py-4 text-2xl font-mono font-bold bg-gray-50 dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-white transition-all"
                 placeholder="0.0000"
               />
-              <select
-                onChange={(e) => handleCurrencyChange(e.target.value)}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-transparent text-gray-700 dark:text-gray-300 font-medium focus:outline-none"
-              >
-                <option value="USD">USD</option>
-              </select>
+              <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 font-semibold text-lg">
+                $
+              </span>
             </div>
           </div>
         </div>

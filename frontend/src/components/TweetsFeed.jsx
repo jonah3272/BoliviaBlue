@@ -81,6 +81,7 @@ function TweetCard({ tweet }) {
 
 function TweetsFeed({ maxItems = 10 }) {
   const languageContext = useLanguage();
+  const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
   const [tweets, setTweets] = useState([]);
   const [isLoading, setIsLoading] = useState(true);

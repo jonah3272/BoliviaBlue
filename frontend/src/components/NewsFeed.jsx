@@ -79,6 +79,7 @@ function NewsCard({ item }) {
 
 function NewsFeed() {
   const languageContext = useLanguage();
+  const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
   const [news, setNews] = useState([]);
   const [isLoading, setIsLoading] = useState(true);

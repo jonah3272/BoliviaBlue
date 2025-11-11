@@ -1,12 +1,15 @@
-import { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
-import { ThemeProvider } from './contexts/ThemeContext';
+import Calculator from './pages/Calculator';
 
 function App() {
   return (
-    <ThemeProvider>
-      <Home />
-    </ThemeProvider>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/calculator" element={<Calculator />} />
+      </Routes>
+    </Router>
   );
 }
 

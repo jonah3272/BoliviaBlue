@@ -22,7 +22,7 @@ function SentimentNewsCard() {
   const [showTooltip, setShowTooltip] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState('top');
   const badgeRef = useRef(null);
-  const timeframeRef = useRef(null);
+  const infoIconRef = useRef(null);
   const tooltipRef = useRef(null);
   const autoRotateIntervalRef = useRef(null);
 
@@ -212,7 +212,7 @@ function SentimentNewsCard() {
     setTimeout(() => setIsPaused(false), 10000);
   }, [articles.length]);
 
-  // Calculate tooltip position - position to the right of 24h badge
+  // Calculate tooltip position - position to the right of info icon
   const handleTooltipToggle = useCallback((show) => {
     if (!show) {
       setShowTooltip(false);
@@ -224,20 +224,20 @@ function SentimentNewsCard() {
 
     // Adjust position after tooltip renders
     setTimeout(() => {
-      if (!tooltipRef.current || !timeframeRef.current) return;
+      if (!tooltipRef.current || !infoIconRef.current) return;
       
       const tooltipRect = tooltipRef.current.getBoundingClientRect();
-      const timeframeRect = timeframeRef.current.getBoundingClientRect();
+      const infoIconRect = infoIconRef.current.getBoundingClientRect();
       const viewportWidth = window.innerWidth;
       const viewportHeight = window.innerHeight;
       
-      // Position to the right of the 24h badge
-      let leftPos = timeframeRect.right + 10;
-      let topPos = timeframeRect.top + (timeframeRect.height / 2) - (tooltipRect.height / 2);
+      // Position to the right of the info icon
+      let leftPos = infoIconRect.right + 10;
+      let topPos = infoIconRect.top + (infoIconRect.height / 2) - (tooltipRect.height / 2);
       
       // If tooltip goes off right edge, position to the left instead
       if (leftPos + tooltipRect.width > viewportWidth - 10) {
-        leftPos = timeframeRect.left - tooltipRect.width - 10;
+        leftPos = infoIconRect.left - tooltipRect.width - 10;
       }
       
       // Adjust vertical position if tooltip goes off screen
@@ -386,31 +386,30 @@ function SentimentNewsCard() {
             </div>
           )}
 
-          {/* Timeframe with Info Icon */}
-          <div 
-            ref={timeframeRef}
-            className="inline-flex items-center gap-1 px-1.5 py-1 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 relative cursor-help"
-            onMouseEnter={() => handleTooltipToggle(true)}
-            onMouseLeave={() => handleTooltipToggle(false)}
-          >
+          {/* Timeframe */}
+          <div className="inline-flex items-center px-1.5 py-1 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
             <span className="text-[10px] font-medium text-gray-600 dark:text-gray-400">
               24h
             </span>
-            {/* Info Icon */}
-            <button
-              type="button"
-              className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
-              aria-label={language === 'es' ? 'Información sobre el análisis de sentimiento' : 'Information about sentiment analysis'}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleTooltipToggle(!showTooltip);
-              }}
-            >
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </button>
-            {/* Tooltip - Positioned to the right of 24h badge */}
+          </div>
+
+          {/* Info Icon - Separate clickable element */}
+          <button
+            ref={infoIconRef}
+            type="button"
+            className="inline-flex items-center justify-center w-6 h-6 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative"
+            aria-label={language === 'es' ? 'Información sobre el análisis de sentimiento' : 'Information about sentiment analysis'}
+            onMouseEnter={() => handleTooltipToggle(true)}
+            onMouseLeave={() => handleTooltipToggle(false)}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleTooltipToggle(!showTooltip);
+            }}
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {/* Tooltip - Positioned to the right of info icon */}
             {showTooltip && (
               <div 
                 ref={tooltipRef}
@@ -423,13 +422,13 @@ function SentimentNewsCard() {
                   </svg>
                   <span className="text-left">{tooltipText}</span>
                 </div>
-                {/* Arrow pointing to 24h badge (left side) */}
+                {/* Arrow pointing to info icon (left side) */}
                 <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-full">
                   <div className="border-4 border-transparent border-r-gray-900 dark:border-r-gray-800"></div>
                 </div>
               </div>
             )}
-          </div>
+          </button>
         </div>
       </div>
 

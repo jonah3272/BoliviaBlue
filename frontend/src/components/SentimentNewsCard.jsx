@@ -395,9 +395,9 @@ function SentimentNewsCard() {
             {/* Sentiment Compass Gauge - Dynamic Zoom with Labels */}
             <div className="flex items-center gap-2">
               {/* Compact Compass Indicator */}
-              <div className="inline-flex items-center gap-2.5 px-3 py-2 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 overflow-visible">
+              <div className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
                 {/* Compass Track with Labels */}
-                <div className="relative w-40 flex flex-col items-center pb-4">
+                <div className="relative w-40 h-8 flex flex-col items-center">
                   {/* Track Container */}
                   <div className="relative w-full h-7 flex items-center">
                     {/* Background track */}
@@ -465,7 +465,7 @@ function SentimentNewsCard() {
                       ></div>
                       {/* Downward arrow - larger */}
                       <div 
-                        className={`absolute bottom-0 transform translate-y-full w-0 h-0 border-l-[5px] border-r-[5px] border-t-[7px] border-l-transparent border-r-transparent ${
+                        className={`absolute -bottom-2 w-0 h-0 border-l-[5px] border-r-[5px] border-t-[7px] border-l-transparent border-r-transparent ${
                           isPositive 
                             ? 'border-t-green-600 dark:border-t-green-400' 
                             : isNegative 
@@ -477,7 +477,7 @@ function SentimentNewsCard() {
                   </div>
                   
                   {/* Labels: Negative (left) and Positive (right) */}
-                  <div className="absolute top-full left-0 right-0 flex items-center justify-between mt-1 text-[9px] font-medium">
+                  <div className="absolute -bottom-4 left-0 right-0 flex items-center justify-between text-[9px] font-medium">
                     <span className="text-red-600 dark:text-red-400">
                       {language === 'es' ? 'Negativo' : 'Negative'}
                     </span>

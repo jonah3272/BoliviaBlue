@@ -340,12 +340,33 @@ function SentimentNewsCard() {
       {/* Sentiment Header - Compact */}
       <div className="p-2.5 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center gap-2 flex-wrap">
-          {/* Sentiment Badge */}
+          {/* Sentiment Badge with Pendulum Arrow */}
           <div 
             ref={badgeRef}
-            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border-2 ${trendBg} shadow-sm h-[36px]`}
+            className={`inline-flex items-center gap-2 px-2.5 py-1 rounded-md border-2 ${trendBg} shadow-sm h-[36px]`}
           >
-            <span className={`text-lg font-bold ${trendColor}`}>{trendIcon}</span>
+            {/* Pendulum Arrow Indicator */}
+            <div className="relative w-6 h-6 flex items-center justify-center">
+              {/* Base circle */}
+              <div className="absolute inset-0 rounded-full border-2 border-gray-400 dark:border-gray-500"></div>
+              {/* Pendulum arrow - rotates based on sentiment */}
+              <svg 
+                className={`w-4 h-4 transition-transform duration-500 ${trendColor}`}
+                style={{
+                  transform: isBullish 
+                    ? 'rotate(-45deg)' 
+                    : isBearish 
+                    ? 'rotate(45deg)' 
+                    : 'rotate(0deg)'
+                }}
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="3" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
             <div className="flex flex-col leading-tight">
               <span className="text-[10px] font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
                 {t('dailySentimentTitle')}
@@ -356,32 +377,39 @@ function SentimentNewsCard() {
             </div>
           </div>
 
-          {/* Article Metrics */}
+          {/* Article Breakdown - Reorganized for clarity */}
+          {/* Total Articles First */}
           <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 h-[36px]">
             <span className="text-xs font-bold text-gray-900 dark:text-white">
               {dailySentiment.total}
             </span>
             <span className="text-[10px] text-gray-600 dark:text-gray-400">
-              {language === 'es' ? 'art.' : 'art.'}
+              {language === 'es' ? 'total' : 'total'}
             </span>
           </div>
 
           {/* Positive Count */}
           {dailySentiment.up > 0 && (
-            <div className="inline-flex items-center gap-0.5 px-2.5 py-1 rounded-md bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 h-[36px]">
+            <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 h-[36px]">
               <span className="text-xs font-bold text-green-700 dark:text-green-300">↗</span>
               <span className="text-xs font-bold text-green-700 dark:text-green-300">
                 {dailySentiment.up}
+              </span>
+              <span className="text-[10px] text-green-600 dark:text-green-400">
+                {language === 'es' ? 'sube' : 'up'}
               </span>
             </div>
           )}
 
           {/* Negative Count */}
           {dailySentiment.down > 0 && (
-            <div className="inline-flex items-center gap-0.5 px-2.5 py-1 rounded-md bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 h-[36px]">
+            <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 h-[36px]">
               <span className="text-xs font-bold text-red-700 dark:text-red-300">↘</span>
               <span className="text-xs font-bold text-red-700 dark:text-red-300">
                 {dailySentiment.down}
+              </span>
+              <span className="text-[10px] text-red-600 dark:text-red-400">
+                {language === 'es' ? 'baja' : 'down'}
               </span>
             </div>
           )}

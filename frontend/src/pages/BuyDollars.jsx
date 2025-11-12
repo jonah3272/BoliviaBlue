@@ -79,6 +79,7 @@ function BuyDollars() {
 
   const referralLink = "https://www.binance.com/referral/earn-together/refer2earn-usdc/claim?hl=en&ref=GRO_28502_RNV8W&utm_source=default";
   const binanceP2PLink = "https://www.binance.com/en/p2p";
+  const airtmReferralLink = "https://app.airtm.io/ivt/dasyl1sfs6fzr";
 
   // HowTo structured data
   const howToSchema = {
@@ -192,81 +193,152 @@ function BuyDollars() {
           <BlueRateCards />
         </section>
 
-        {/* PRIMARY: Binance - Featured Prominently */}
-        <section className="bg-gradient-to-br from-yellow-50 via-orange-50 to-yellow-50 dark:from-gray-800 dark:via-gray-800 dark:to-gray-800 rounded-xl shadow-xl border-2 border-yellow-300 dark:border-yellow-700 p-8">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="bg-gray-900 dark:bg-white p-3 rounded-lg">
-              <svg className="w-8 h-8 text-white dark:text-gray-900" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M16.624 13.9202l2.7175 2.7154-7.353 7.353-7.353-7.352 2.7175-2.7164 4.6355 4.6595 4.6356-4.6595zm4.6366-4.6366L24 12l-2.7154 2.7164L18.5682 12l2.6924-2.7164zm-9.272.001l2.7163 2.6914-2.7164 2.7174v-.001L9.2721 12l2.7164-2.7154zm-9.2722-.001L5.4088 12l-2.6914 2.6924L0 12l2.7164-2.7164zM11.9885.0115l7.353 7.329-2.7174 2.7154-4.6356-4.6356-4.6355 4.6595-2.7174-2.7154 7.353-7.353z"/>
-              </svg>
+        {/* PRIMARY OPTIONS: Binance & Airtm - Featured Prominently */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Binance - Primary Option */}
+          <section className="bg-gradient-to-br from-yellow-50 via-orange-50 to-yellow-50 dark:from-gray-800 dark:via-gray-800 dark:to-gray-800 rounded-xl shadow-xl border-2 border-yellow-300 dark:border-yellow-700 p-8">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="bg-gray-900 dark:bg-white p-3 rounded-lg">
+                <svg className="w-8 h-8 text-white dark:text-gray-900" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M16.624 13.9202l2.7175 2.7154-7.353 7.353-7.353-7.352 2.7175-2.7164 4.6355 4.6595 4.6356-4.6595zm4.6366-4.6366L24 12l-2.7154 2.7164L18.5682 12l2.6924-2.7164zm-9.272.001l2.7163 2.6914-2.7164 2.7174v-.001L9.2721 12l2.7164-2.7154zm-9.2722-.001L5.4088 12l-2.6914 2.6924L0 12l2.7164-2.7164zM11.9885.0115l7.353 7.329-2.7174 2.7154-4.6356-4.6356-4.6355 4.6595-2.7174-2.7154 7.353-7.353z"/>
+                </svg>
+              </div>
+              <div>
+                <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+                  Binance P2P
+                </h2>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                  {language === 'es' ? '⭐ Recomendado - La plataforma más grande' : '⭐ Recommended - The largest platform'}
+                </p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-                Binance P2P
-              </h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                {language === 'es' ? '⭐ Recomendado - La plataforma más grande y confiable' : '⭐ Recommended - The largest and most trusted platform'}
+            
+            <div className="space-y-4 text-gray-700 dark:text-gray-300 mb-6">
+              <p className="leading-relaxed">
+                {language === 'es' 
+                  ? 'El exchange de criptomonedas más grande del mundo con servicio P2P seguro. Más de 200 millones de usuarios confían en Binance.'
+                  : 'The world\'s largest cryptocurrency exchange with secure P2P service. Over 200 million users trust Binance.'}
               </p>
-            </div>
-          </div>
-          
-          <div className="space-y-4 text-gray-700 dark:text-gray-300 mb-6">
-            <p className="leading-relaxed text-lg">
-              {language === 'es' 
-                ? 'Binance es el exchange de criptomonedas más grande del mundo con servicio P2P seguro y confiable. Más de 200 millones de usuarios confían en Binance para comprar y vender USDT.'
-                : 'Binance is the world\'s largest cryptocurrency exchange with secure and reliable P2P service. Over 200 million users trust Binance to buy and sell USDT.'}
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-              <div className="flex items-center gap-2">
-                <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                <span className="text-sm">{language === 'es' ? 'Bajas comisiones' : 'Low fees'}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                <span className="text-sm">{language === 'es' ? 'Alta liquidez' : 'High liquidity'}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                <span className="text-sm">{language === 'es' ? 'Seguridad avanzada' : 'Advanced security'}</span>
+              <div className="grid grid-cols-1 gap-3 mt-4">
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span className="text-sm">{language === 'es' ? 'Bajas comisiones' : 'Low fees'}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span className="text-sm">{language === 'es' ? 'Alta liquidez' : 'High liquidity'}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span className="text-sm">{language === 'es' ? 'Seguridad avanzada' : 'Advanced security'}</span>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Primary CTA - Binance Referral Link */}
-          <div className="flex flex-col sm:flex-row gap-4">
-            <a
-              href={referralLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-1 inline-flex items-center justify-center px-8 py-4 bg-yellow-400 hover:bg-yellow-500 dark:bg-yellow-500 dark:hover:bg-yellow-600 text-gray-900 font-bold text-lg rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
-            >
-              <svg className="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M16.624 13.9202l2.7175 2.7154-7.353 7.353-7.353-7.352 2.7175-2.7164 4.6355 4.6595 4.6356-4.6595zm4.6366-4.6366L24 12l-2.7154 2.7164L18.5682 12l2.6924-2.7164zm-9.272.001l2.7163 2.6914-2.7164 2.7174v-.001L9.2721 12l2.7164-2.7154zm-9.2722-.001L5.4088 12l-2.6914 2.6924L0 12l2.7164-2.7164zM11.9885.0115l7.353 7.329-2.7174 2.7154-4.6356-4.6356-4.6355 4.6595-2.7174-2.7154 7.353-7.353z"/>
-              </svg>
-              {language === 'es' ? 'Crear Cuenta en Binance (Recomendado)' : 'Create Binance Account (Recommended)'}
-              <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </a>
-            <a
-              href={binanceP2PLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center px-6 py-4 bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all border-2 border-gray-300 dark:border-gray-600"
-            >
-              {language === 'es' ? 'Ir a P2P' : 'Go to P2P'}
-              <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </a>
-          </div>
-        </section>
+            {/* Primary CTA - Binance Referral Link */}
+            <div className="flex flex-col gap-3">
+              <a
+                href={referralLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full inline-flex items-center justify-center px-6 py-4 bg-yellow-400 hover:bg-yellow-500 dark:bg-yellow-500 dark:hover:bg-yellow-600 text-gray-900 font-bold text-lg rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+              >
+                <svg className="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M16.624 13.9202l2.7175 2.7154-7.353 7.353-7.353-7.352 2.7175-2.7164 4.6355 4.6595 4.6356-4.6595zm4.6366-4.6366L24 12l-2.7154 2.7164L18.5682 12l2.6924-2.7164zm-9.272.001l2.7163 2.6914-2.7164 2.7174v-.001L9.2721 12l2.7164-2.7154zm-9.2722-.001L5.4088 12l-2.6914 2.6924L0 12l2.7164-2.7164zM11.9885.0115l7.353 7.329-2.7174 2.7154-4.6356-4.6356-4.6355 4.6595-2.7174-2.7154 7.353-7.353z"/>
+                </svg>
+                {language === 'es' ? 'Crear Cuenta en Binance' : 'Create Binance Account'}
+                <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </a>
+              <a
+                href={binanceP2PLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center px-6 py-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all border-2 border-gray-300 dark:border-gray-600"
+              >
+                {language === 'es' ? 'Ir a P2P' : 'Go to P2P'}
+                <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </a>
+            </div>
+          </section>
+
+          {/* Airtm - Primary Option */}
+          <section className="bg-gradient-to-br from-blue-50 via-blue-100 to-indigo-50 dark:from-gray-800 dark:via-gray-800 dark:to-gray-800 rounded-xl shadow-xl border-2 border-blue-400 dark:border-blue-600 p-8">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="bg-blue-600 dark:bg-blue-500 p-3 rounded-lg">
+                <div className="w-8 h-8 flex items-center justify-center">
+                  <span className="text-white dark:text-white font-bold text-xl">A</span>
+                </div>
+              </div>
+              <div>
+                <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+                  Airtm
+                </h2>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                  {language === 'es' ? '⭐ Recomendado - Plataforma global confiable' : '⭐ Recommended - Trusted global platform'}
+                </p>
+              </div>
+            </div>
+            
+            <div className="space-y-4 text-gray-700 dark:text-gray-300 mb-6">
+              <p className="leading-relaxed">
+                {language === 'es' 
+                  ? 'Plataforma global para intercambio de divisas y criptomonedas con alcance mundial. Fácil de usar con soporte 24/7 y múltiples métodos de pago.'
+                  : 'Global platform for currency and cryptocurrency exchange with worldwide reach. Easy to use with 24/7 support and multiple payment methods.'}
+              </p>
+              <div className="grid grid-cols-1 gap-3 mt-4">
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span className="text-sm">{language === 'es' ? 'Fácil de usar' : 'Easy to use'}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span className="text-sm">{language === 'es' ? 'Soporte 24/7' : '24/7 Support'}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span className="text-sm">{language === 'es' ? 'Múltiples métodos de pago' : 'Multiple payment methods'}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Primary CTA - Airtm Referral Link */}
+            <div className="flex flex-col gap-3">
+              <a
+                href={airtmReferralLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full inline-flex items-center justify-center px-6 py-4 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-bold text-lg rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+              >
+                <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                {language === 'es' ? 'Crear Cuenta en Airtm' : 'Create Airtm Account'}
+                <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </a>
+              <div className="text-xs text-gray-600 dark:text-gray-400 text-center">
+                {language === 'es' ? 'Protege tus ahorros' : 'Protect your savings'}
+              </div>
+            </div>
+          </section>
+        </div>
 
         {/* What is Binance P2P */}
         <section className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 sm:p-8">

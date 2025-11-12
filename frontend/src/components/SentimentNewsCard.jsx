@@ -109,8 +109,7 @@ function SentimentNewsCard() {
         });
         
         // Filter articles from last 24 hours with up or down sentiment for rotation
-        const oneDayAgo = new Date();
-        oneDayAgo.setHours(oneDayAgo.getHours() - 24);
+        // Reuse oneDayAgo from above (already set to 24 hours ago)
         
         const filteredArticles = allNews.filter(article => {
           const publishedDate = article.published_at || article.published_at_iso;

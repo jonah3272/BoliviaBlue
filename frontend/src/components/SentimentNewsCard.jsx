@@ -392,8 +392,8 @@ function SentimentNewsCard() {
               </span>
               <p className="text-[10px] text-gray-400 dark:text-gray-500">
                 {language === 'es' 
-                  ? 'Actualizado cada hora desde fuentes principales de noticias bolivianas.'
-                  : 'Updated hourly from major Bolivian news sources.'}
+                  ? 'Positivo = Dólar sube (más Bs por USD). Negativo = Dólar baja (menos Bs por USD).'
+                  : 'Positive = Dollar rising (more BOB per USD). Negative = Dollar falling (fewer BOB per USD).'}
               </p>
             </div>
             
@@ -489,26 +489,35 @@ function SentimentNewsCard() {
                   
                   {/* Labels: Negative (left) and Positive (right) - tighter spacing */}
                   <div className="absolute top-full left-0 right-0 flex items-center justify-between pt-0.5 px-0.5 text-[9px] font-medium">
-                    <span className="text-red-600 dark:text-red-400">
-                      {language === 'es' ? 'Neg' : 'Neg'}
+                    <span className="text-red-600 dark:text-red-400" title={language === 'es' ? 'Dólar bajando (menos Bs por USD)' : 'Dollar falling (fewer BOB per USD)'}>
+                      {language === 'es' ? 'USD ↓' : 'USD ↓'}
                     </span>
-                    <span className="text-gray-500 dark:text-gray-500">
+                    <span className="text-gray-500 dark:text-gray-500" title={language === 'es' ? 'Sin cambio claro' : 'No clear change'}>
                       {language === 'es' ? 'Neu' : 'Neu'}
                     </span>
-                    <span className="text-green-600 dark:text-green-400">
-                      {language === 'es' ? 'Pos' : 'Pos'}
+                    <span className="text-green-600 dark:text-green-400" title={language === 'es' ? 'Dólar subiendo (más Bs por USD)' : 'Dollar rising (more BOB per USD)'}>
+                      {language === 'es' ? 'USD ↑' : 'USD ↑'}
                     </span>
                   </div>
                 </div>
                 
                 {/* Score Display */}
-                <div className={`flex items-center transition-all duration-200 ${
-                  isPositive 
-                    ? 'text-emerald-400' 
-                    : isNegative 
-                    ? 'text-rose-400'
-                    : 'text-gray-400'
-                }`}>
+                <div 
+                  className={`flex items-center transition-all duration-200 ${
+                    isPositive 
+                      ? 'text-emerald-400' 
+                      : isNegative 
+                      ? 'text-rose-400'
+                      : 'text-gray-400'
+                  }`}
+                  title={
+                    isPositive 
+                      ? (language === 'es' ? `Dólar subiendo: el tipo de cambio podría aumentar (ej: 10 → 11 Bs por USD)` : `Dollar rising: exchange rate may increase (e.g., 10 → 11 BOB per USD)`)
+                      : isNegative
+                      ? (language === 'es' ? `Dólar bajando: el tipo de cambio podría disminuir (ej: 10 → 9 Bs por USD)` : `Dollar falling: exchange rate may decrease (e.g., 10 → 9 BOB per USD)`)
+                      : (language === 'es' ? 'Sin cambio claro en el tipo de cambio' : 'No clear change in exchange rate')
+                  }
+                >
                   <span className="text-sm font-bold tabular-nums min-w-[2.5rem] text-right">
                     {sentimentScore > 0 ? '+' : ''}{sentimentScore}
                   </span>
@@ -517,7 +526,10 @@ function SentimentNewsCard() {
 
               {/* Positive Count Pill */}
               {dailySentiment.up > 0 && (
-                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-emerald-900/30 border border-emerald-800 transition-all duration-200">
+                <div 
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-emerald-900/30 border border-emerald-800 transition-all duration-200"
+                  title={language === 'es' ? `${dailySentiment.up} artículos indican dólar subiendo` : `${dailySentiment.up} articles indicate dollar rising`}
+                >
                   <span className="text-xs font-bold text-emerald-400">↗</span>
                   <span className="text-xs font-semibold text-emerald-400">{dailySentiment.up}</span>
                 </div>
@@ -525,7 +537,10 @@ function SentimentNewsCard() {
 
               {/* Negative Count Pill */}
               {dailySentiment.down > 0 && (
-                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-rose-900/30 border border-rose-800 transition-all duration-200">
+                <div 
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-rose-900/30 border border-rose-800 transition-all duration-200"
+                  title={language === 'es' ? `${dailySentiment.down} artículos indican dólar bajando` : `${dailySentiment.down} articles indicate dollar falling`}
+                >
                   <span className="text-xs font-bold text-rose-400">↘</span>
                   <span className="text-xs font-semibold text-rose-400">{dailySentiment.down}</span>
                 </div>

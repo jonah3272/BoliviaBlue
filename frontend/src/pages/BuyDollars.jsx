@@ -9,6 +9,56 @@ import BinanceBanner from '../components/BinanceBanner';
 import { Link } from 'react-router-dom';
 import { fetchBlueRate } from '../utils/api';
 
+// Platform Card Component for Secondary Options
+function PlatformCard({ name, description, features, link, color, iconColor, language }) {
+  return (
+    <a
+      href={link}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="block bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-xl transition-all border border-gray-200 dark:border-gray-700 overflow-hidden group"
+    >
+      <div className={`h-2 bg-gradient-to-r ${color}`}></div>
+      <div className="p-5">
+        <div className="flex items-center gap-3 mb-3">
+          <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${color} flex items-center justify-center ${iconColor} font-bold text-lg`}>
+            {name.charAt(0)}
+          </div>
+          <div>
+            <h3 className="font-bold text-gray-900 dark:text-white">{name}</h3>
+            <div className="flex items-center gap-1">
+              {[...Array(5)].map((_, i) => (
+                <svg key={i} className="w-3 h-3 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              ))}
+            </div>
+          </div>
+        </div>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
+          {description}
+        </p>
+        <ul className="space-y-1.5 mb-4">
+          {features.map((feature, index) => (
+            <li key={index} className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+              <svg className="w-3 h-3 text-green-600 dark:text-green-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              {feature}
+            </li>
+          ))}
+        </ul>
+        <div className="inline-flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+          {language === 'es' ? 'Abrir Plataforma' : 'Open Platform'}
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+        </div>
+      </div>
+    </a>
+  );
+}
+
 function BuyDollars() {
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
@@ -133,13 +183,89 @@ function BuyDollars() {
       </section>
 
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
         {/* Current Rates */}
         <section>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
             {t('buyDollarsCurrentRates')}
           </h2>
           <BlueRateCards />
+        </section>
+
+        {/* PRIMARY: Binance - Featured Prominently */}
+        <section className="bg-gradient-to-br from-yellow-50 via-orange-50 to-yellow-50 dark:from-gray-800 dark:via-gray-800 dark:to-gray-800 rounded-xl shadow-xl border-2 border-yellow-300 dark:border-yellow-700 p-8">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="bg-gray-900 dark:bg-white p-3 rounded-lg">
+              <svg className="w-8 h-8 text-white dark:text-gray-900" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M16.624 13.9202l2.7175 2.7154-7.353 7.353-7.353-7.352 2.7175-2.7164 4.6355 4.6595 4.6356-4.6595zm4.6366-4.6366L24 12l-2.7154 2.7164L18.5682 12l2.6924-2.7164zm-9.272.001l2.7163 2.6914-2.7164 2.7174v-.001L9.2721 12l2.7164-2.7154zm-9.2722-.001L5.4088 12l-2.6914 2.6924L0 12l2.7164-2.7164zM11.9885.0115l7.353 7.329-2.7174 2.7154-4.6356-4.6356-4.6355 4.6595-2.7174-2.7154 7.353-7.353z"/>
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+                Binance P2P
+              </h2>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                {language === 'es' ? '⭐ Recomendado - La plataforma más grande y confiable' : '⭐ Recommended - The largest and most trusted platform'}
+              </p>
+            </div>
+          </div>
+          
+          <div className="space-y-4 text-gray-700 dark:text-gray-300 mb-6">
+            <p className="leading-relaxed text-lg">
+              {language === 'es' 
+                ? 'Binance es el exchange de criptomonedas más grande del mundo con servicio P2P seguro y confiable. Más de 200 millones de usuarios confían en Binance para comprar y vender USDT.'
+                : 'Binance is the world\'s largest cryptocurrency exchange with secure and reliable P2P service. Over 200 million users trust Binance to buy and sell USDT.'}
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+              <div className="flex items-center gap-2">
+                <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span className="text-sm">{language === 'es' ? 'Bajas comisiones' : 'Low fees'}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span className="text-sm">{language === 'es' ? 'Alta liquidez' : 'High liquidity'}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span className="text-sm">{language === 'es' ? 'Seguridad avanzada' : 'Advanced security'}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Primary CTA - Binance Referral Link */}
+          <div className="flex flex-col sm:flex-row gap-4">
+            <a
+              href={referralLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 inline-flex items-center justify-center px-8 py-4 bg-yellow-400 hover:bg-yellow-500 dark:bg-yellow-500 dark:hover:bg-yellow-600 text-gray-900 font-bold text-lg rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+            >
+              <svg className="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M16.624 13.9202l2.7175 2.7154-7.353 7.353-7.353-7.352 2.7175-2.7164 4.6355 4.6595 4.6356-4.6595zm4.6366-4.6366L24 12l-2.7154 2.7164L18.5682 12l2.6924-2.7164zm-9.272.001l2.7163 2.6914-2.7164 2.7174v-.001L9.2721 12l2.7164-2.7154zm-9.2722-.001L5.4088 12l-2.6914 2.6924L0 12l2.7164-2.7164zM11.9885.0115l7.353 7.329-2.7174 2.7154-4.6356-4.6356-4.6355 4.6595-2.7174-2.7154 7.353-7.353z"/>
+              </svg>
+              {language === 'es' ? 'Crear Cuenta en Binance (Recomendado)' : 'Create Binance Account (Recommended)'}
+              <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </a>
+            <a
+              href={binanceP2PLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center px-6 py-4 bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all border-2 border-gray-300 dark:border-gray-600"
+            >
+              {language === 'es' ? 'Ir a P2P' : 'Go to P2P'}
+              <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </a>
+          </div>
         </section>
 
         {/* What is Binance P2P */}
@@ -275,37 +401,122 @@ function BuyDollars() {
           </ul>
         </section>
 
-        {/* CTA Section */}
-        <section className="bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-700 dark:to-indigo-700 rounded-lg shadow-xl p-8 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
-            {t('buyDollarsReadyToStart')}
-          </h2>
-          <p className="text-blue-100 dark:text-blue-200 mb-6 max-w-2xl mx-auto">
-            {t('buyDollarsReadyDesc')}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a
-              href={referralLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center px-6 py-3 bg-white text-blue-600 font-semibold rounded-lg shadow-lg hover:bg-gray-100 transition-colors"
-            >
-              {t('buyDollarsCreateAccount')}
-              <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </a>
-            <a
-              href={binanceP2PLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow-lg hover:bg-blue-400 transition-colors"
-            >
-              {t('buyDollarsGoToP2P')}
-              <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </a>
+        {/* OTHER PLATFORMS - Secondary Options */}
+        <section>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+              {language === 'es' ? 'Otras Plataformas' : 'Other Platforms'}
+            </h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              {language === 'es' ? 'Opciones alternativas' : 'Alternative options'}
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Eldorado */}
+            <PlatformCard
+              name="Eldorado"
+              description={language === 'es' 
+                ? "Marketplace P2P para comprar y vender criptomonedas de forma segura y directa."
+                : "P2P marketplace to buy and sell cryptocurrencies safely and directly."}
+              features={language === 'es' 
+                ? ["P2P directo", "Bajas fees", "Escrow seguro"]
+                : ["Direct P2P", "Low fees", "Secure escrow"]}
+              link="https://eldorado.app"
+              color="from-gray-800 to-gray-900"
+              iconColor="text-yellow-400"
+              language={language}
+            />
+
+            {/* SaldoAr */}
+            <PlatformCard
+              name="SaldoAr"
+              description={language === 'es'
+                ? "Plataforma argentina para comprar y vender USDT con pesos y otras divisas."
+                : "Argentine platform to buy and sell USDT with pesos and other currencies."}
+              features={language === 'es'
+                ? ["Interfaz simple", "Transacciones rápidas", "Soporte regional"]
+                : ["Simple interface", "Fast transactions", "Regional support"]}
+              link="https://saldoar.com"
+              color="from-purple-600 to-purple-700"
+              iconColor="text-purple-200"
+              language={language}
+            />
+
+            {/* Bitget */}
+            <PlatformCard
+              name="Bitget"
+              description={language === 'es'
+                ? "Exchange global con servicio P2P para comprar USDT con moneda local."
+                : "Global exchange with P2P service to buy USDT with local currency."}
+              features={language === 'es'
+                ? ["Trading avanzado", "P2P seguro", "Alta liquidez"]
+                : ["Advanced trading", "Secure P2P", "High liquidity"]}
+              link="https://www.bitget.com"
+              color="from-blue-600 to-blue-700"
+              iconColor="text-blue-200"
+              language={language}
+            />
+
+            {/* Bybit */}
+            <PlatformCard
+              name="Bybit"
+              description={language === 'es'
+                ? "Plataforma de trading con P2P y amplia variedad de métodos de pago."
+                : "Trading platform with P2P and wide variety of payment methods."}
+              features={language === 'es'
+                ? ["Opciones variadas", "Trading profesional", "Seguridad robusta"]
+                : ["Varied options", "Professional trading", "Robust security"]}
+              link="https://www.bybit.com"
+              color="from-orange-600 to-orange-700"
+              iconColor="text-orange-200"
+              language={language}
+            />
+
+            {/* Meru */}
+            <PlatformCard
+              name="Meru"
+              description={language === 'es'
+                ? "Compra y vende criptomonedas con cuentas bancarias virtuales y facilidad."
+                : "Buy and sell cryptocurrencies with virtual bank accounts and ease."}
+              features={language === 'es'
+                ? ["Cuentas virtuales", "Transferencias rápidas", "KYC para mayor seguridad"]
+                : ["Virtual accounts", "Fast transfers", "KYC for greater security"]}
+              link="https://meru.com"
+              color="from-green-600 to-green-700"
+              iconColor="text-green-200"
+              language={language}
+            />
+
+            {/* Nebeus */}
+            <PlatformCard
+              name="Nebeus"
+              description={language === 'es'
+                ? "Compra, vende y gestiona USDT con préstamos en criptomonedas."
+                : "Buy, sell and manage USDT with cryptocurrency loans."}
+              features={language === 'es'
+                ? ["Préstamos crypto", "Tarjeta de débito", "Staking rewards"]
+                : ["Crypto loans", "Debit card", "Staking rewards"]}
+              link="https://nebeus.com"
+              color="from-purple-500 to-purple-600"
+              iconColor="text-purple-200"
+              language={language}
+            />
+
+            {/* Takenos */}
+            <PlatformCard
+              name="Takenos"
+              description={language === 'es'
+                ? "Recibe pagos internacionales en dólares o criptomonedas al instante."
+                : "Receive international payments in dollars or cryptocurrencies instantly."}
+              features={language === 'es'
+                ? ["Pagos instantáneos", "Sin fronteras", "Múltiples divisas"]
+                : ["Instant payments", "Borderless", "Multiple currencies"]}
+              link="https://takenos.com"
+              color="from-pink-600 to-pink-700"
+              iconColor="text-pink-200"
+              language={language}
+            />
           </div>
         </section>
 

@@ -58,11 +58,16 @@ function Home() {
       <header className="bg-white dark:bg-gray-800 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
           <div className="flex items-center justify-between gap-4">
-            <Link to="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity min-w-0">
+            <Link to="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity min-w-0 flex-1">
               <img src="/favicon.svg" alt="Bolivia Blue con Paz - Tipo de Cambio Dólar Boliviano" className="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0" />
-              <h1 className="text-base sm:text-xl font-bold text-gray-900 dark:text-white truncate">
-                {t('title')}
-              </h1>
+              <div className="flex flex-col min-w-0">
+                <h1 className="text-base sm:text-xl font-bold text-gray-900 dark:text-white truncate">
+                  {t('title')}
+                </h1>
+                <p className="hidden md:block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mt-0.5">
+                  {t('subtitle')}
+                </p>
+              </div>
             </Link>
             <div className="flex gap-2 sm:gap-3 flex-shrink-0">
               <LanguageToggle />
@@ -74,17 +79,6 @@ function Home() {
 
       {/* Navigation */}
       <Navigation />
-
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <p className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white max-w-3xl mx-auto leading-tight">
-              {t('subtitle')}
-            </p>
-          </div>
-        </div>
-      </section>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">

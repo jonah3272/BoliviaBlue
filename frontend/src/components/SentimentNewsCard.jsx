@@ -382,12 +382,12 @@ function SentimentNewsCard() {
   };
 
   return (
-    <div className="bg-white dark:bg-[#121416] rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden h-[280px] flex flex-col">
+    <div className="bg-white dark:bg-[#121416] rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden h-[220px] flex flex-col">
       {/* Top Bar - Sentiment Summary */}
-      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30 flex-shrink-0">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30 flex-shrink-0">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           {/* Left: Sentiment Label & Compass */}
-          <div className="flex items-center gap-4 flex-wrap">
+          <div className="flex items-center gap-3 flex-wrap">
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 {language === 'es' ? "Sentimiento del USD hoy" : "Today's USD Sentiment"}
@@ -600,7 +600,7 @@ function SentimentNewsCard() {
       {/* Rotating Article Content */}
       <div className="flex-1 flex flex-col min-h-0">
         {articles.length === 0 ? (
-          <div className="p-6 text-center flex-1 flex items-center justify-center">
+          <div className="p-4 text-center flex-1 flex items-center justify-center">
             <p className="text-sm text-gray-600 dark:text-gray-400">
               {language === 'es' 
                 ? 'No hay artículos recientes con movimiento de sentimiento.'
@@ -613,7 +613,7 @@ function SentimentNewsCard() {
               href={articles[currentIndex].url}
               target="_blank"
               rel="noopener noreferrer"
-              className="block px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-900/30 transition-colors group flex-1 flex flex-col min-h-0"
+              className="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-900/30 transition-colors group flex-1 flex flex-col min-h-0"
             >
             <div className="flex items-start gap-3">
               {/* Favicon */}
@@ -623,6 +623,8 @@ function SentimentNewsCard() {
                     src={getFaviconUrl(articles[currentIndex].source, articles[currentIndex].url)} 
                     alt={articles[currentIndex].source}
                     className="w-4 h-4 rounded-sm"
+                    loading="lazy"
+                    decoding="async"
                     onError={(e) => {
                       e.target.style.display = 'none';
                     }}
@@ -634,7 +636,7 @@ function SentimentNewsCard() {
 
               {/* Article Content */}
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1.5">
+                <div className="flex items-center gap-2 mb-1">
                   <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">
                     {articles[currentIndex].source}
                   </span>
@@ -667,11 +669,11 @@ function SentimentNewsCard() {
                     })()}
                   </span>
                 </div>
-                <h3 className="text-sm font-bold text-gray-900 dark:text-white line-clamp-2 mb-1 leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors flex-shrink-0">
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white line-clamp-2 leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors flex-shrink-0">
                   {articles[currentIndex].title}
                 </h3>
                 {articles[currentIndex].summary && cleanSummary(articles[currentIndex].summary) && (
-                  <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 leading-snug mt-1 flex-shrink-0">
+                  <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-1 leading-snug mt-0.5 flex-shrink-0">
                     {cleanSummary(articles[currentIndex].summary)}
                   </p>
                 )}
@@ -679,14 +681,14 @@ function SentimentNewsCard() {
 
               {/* Sentiment Indicator */}
               <div className="flex-shrink-0">
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
                   articles[currentIndex].sentiment === 'up'
                     ? 'bg-green-100 dark:bg-green-900/30'
                     : articles[currentIndex].sentiment === 'down'
                     ? 'bg-red-100 dark:bg-red-900/30'
                     : 'bg-gray-100 dark:bg-gray-700/50'
                 }`}>
-                  <span className={`text-xl font-bold ${
+                  <span className={`text-lg font-bold ${
                     articles[currentIndex].sentiment === 'up'
                       ? 'text-green-600 dark:text-green-400'
                       : articles[currentIndex].sentiment === 'down'
@@ -702,7 +704,7 @@ function SentimentNewsCard() {
 
             {/* Navigation Controls */}
             {articles.length > 1 && (
-              <div className="flex items-center justify-between px-6 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30 flex-shrink-0">
+              <div className="flex items-center justify-between px-4 py-2 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30 flex-shrink-0">
               {/* Left Arrow */}
               <button
                 onClick={(e) => {

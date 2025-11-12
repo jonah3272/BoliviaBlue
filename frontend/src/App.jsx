@@ -5,10 +5,11 @@ import Home from './pages/Home';
 // Lazy load routes for code splitting
 const Calculator = lazy(() => import('./pages/Calculator'));
 const News = lazy(() => import('./pages/News'));
-const About = lazy(() => import('./pages/About'));
-const FAQ = lazy(() => import('./pages/FAQ'));
-const RodrigoPaz = lazy(() => import('./pages/RodrigoPaz'));
-const BuyDollars = lazy(() => import('./pages/BuyDollars'));
+    const About = lazy(() => import('./pages/About'));
+    const FAQ = lazy(() => import('./pages/FAQ'));
+    const RodrigoPaz = lazy(() => import('./pages/RodrigoPaz'));
+    const BuyDollars = lazy(() => import('./pages/BuyDollars'));
+    const Blog = lazy(() => import('./pages/Blog'));
 
 // Loading fallback component
 function LoadingFallback() {
@@ -30,10 +31,12 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/calculator" element={<Calculator />} />
           <Route path="/news" element={<News />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/rodrigo-paz" element={<RodrigoPaz />} />
-          <Route path="/buy-dollars" element={<BuyDollars />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/faq" element={<FAQ />} />
+              <Route path="/rodrigo-paz" element={<RodrigoPaz />} />
+              <Route path="/buy-dollars" element={<BuyDollars />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:slug" element={<Blog />} />
         </Routes>
       </Suspense>
     </Router>

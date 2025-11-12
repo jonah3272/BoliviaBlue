@@ -395,11 +395,11 @@ function SentimentNewsCard() {
             {/* Sentiment Compass Gauge - Dynamic Zoom with Labels */}
             <div className="flex items-center gap-2">
               {/* Compact Compass Indicator */}
-              <div className="inline-flex items-center gap-2.5 px-3 py-2 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
+              <div className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
                 {/* Compass Track with Labels */}
-                <div className="relative w-40 flex flex-col items-center" style={{ minHeight: '3.5rem' }}>
+                <div className="relative w-40 flex flex-col items-center">
                   {/* Track Container */}
-                  <div className="relative w-full h-7 flex items-center mb-4">
+                  <div className="relative w-full h-7 flex items-center overflow-visible">
                     {/* Background track */}
                     <div className="absolute inset-0 rounded-full bg-gray-200 dark:bg-gray-700"></div>
                     
@@ -463,21 +463,21 @@ function SentimentNewsCard() {
                             : 'bg-gray-600 dark:bg-gray-400'
                         } rounded-full shadow-md`}
                       ></div>
-                      {/* Downward arrow - larger */}
+                      {/* Downward arrow - positioned within track bounds */}
                       <div 
-                        className={`absolute -bottom-2 w-0 h-0 border-l-[5px] border-r-[5px] border-t-[7px] border-l-transparent border-r-transparent ${
+                        className={`absolute bottom-0 w-0 h-0 border-l-[4px] border-r-[4px] border-t-[5px] border-l-transparent border-r-transparent ${
                           isPositive 
                             ? 'border-t-green-600 dark:border-t-green-400' 
                             : isNegative 
                             ? 'border-t-red-600 dark:border-t-red-400'
                             : 'border-t-gray-600 dark:border-t-gray-400'
-                        } drop-shadow-sm`}
+                        }`}
                       ></div>
                     </div>
                   </div>
                   
-                  {/* Labels: Negative (left) and Positive (right) */}
-                  <div className="absolute top-full left-0 right-0 flex items-center justify-between mt-1 text-[9px] font-medium">
+                  {/* Labels: Negative (left) and Positive (right) - inline with track */}
+                  <div className="absolute top-full left-0 right-0 flex items-center justify-between pt-0.5 text-[9px] font-medium">
                     <span className="text-red-600 dark:text-red-400">
                       {language === 'es' ? 'Negativo' : 'Negative'}
                     </span>

@@ -73,6 +73,29 @@ function BlueChart() {
           });
         }
         
+        // Determine date format based on data span
+        let dateFormat = null;
+        if (range === 'ALL' && result.points.length > 0) {
+          const firstDate = new Date(result.points[0].t);
+          const lastDate = new Date(result.points[result.points.length - 1].t);
+          const spanMonths = lastDate.getMonth() !== firstDate.getMonth() || 
+                            lastDate.getFullYear() !== firstDate.getFullYear();
+          const spanYears = lastDate.getFullYear() !== firstDate.getFullYear();
+          
+          if (spanYears) {
+            // Multiple years: show month + day + year
+            dateFormat = { month: 'short', day: 'numeric', year: 'numeric' };
+          } else if (spanMonths) {
+            // Multiple months, same year: show month + day
+            dateFormat = { month: 'short', day: 'numeric' };
+          } else {
+            // Same month: show day + time or just day if many points
+            dateFormat = result.points.length > 30 
+              ? { day: 'numeric' }
+              : { month: 'short', day: 'numeric' };
+          }
+        }
+        
         // Transform data with better formatting
         const chartData = result.points.map((point, index) => {
           const date = new Date(point.t);
@@ -88,7 +111,15 @@ function BlueChart() {
               month: 'short', 
               day: 'numeric' 
             });
+          } else if (range === 'ALL') {
+            // Use determined format for ALL range
+            timeLabel = date.toLocaleDateString(language === 'es' ? 'es-BO' : 'en-US', dateFormat || { 
+              month: 'short', 
+              day: 'numeric',
+              year: 'numeric'
+            });
           } else {
+            // 1Y range: show month + year
             timeLabel = date.toLocaleDateString(language === 'es' ? 'es-BO' : 'en-US', { 
               month: 'short', 
               year: '2-digit' 

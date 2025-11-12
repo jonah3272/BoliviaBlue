@@ -140,28 +140,30 @@ function BlueRateCards() {
         </Helmet>
       )}
       
-      {/* Toggle Switch */}
-      <div className="flex items-center justify-center gap-4 mb-4">
-        <button
-          onClick={() => setShowOfficial(false)}
-          className={`px-6 py-2.5 rounded-lg font-medium text-sm transition-all ${
-            !showOfficial
-              ? 'bg-blue-600 dark:bg-blue-500 text-white shadow-md'
-              : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
-          }`}
-        >
-          {t('blueMarketTitle')}
-        </button>
-        <button
-          onClick={() => setShowOfficial(true)}
-          className={`px-6 py-2.5 rounded-lg font-medium text-sm transition-all ${
-            showOfficial
-              ? 'bg-gray-600 dark:bg-gray-500 text-white shadow-md'
-              : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
-          }`}
-        >
-          {t('officialRateTitle')}
-        </button>
+      {/* Toggle Switch - Segmented Control Style */}
+      <div className="flex items-center justify-center mb-6">
+        <div className="inline-flex items-center bg-gray-100 dark:bg-gray-800 rounded-xl p-1.5 shadow-inner border border-gray-200 dark:border-gray-700">
+          <button
+            onClick={() => setShowOfficial(false)}
+            className={`px-8 py-3 rounded-lg font-semibold text-sm transition-all duration-200 min-w-[200px] ${
+              !showOfficial
+                ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-md border-2 border-blue-200 dark:border-blue-600'
+                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+            }`}
+          >
+            {t('blueMarketTitle')}
+          </button>
+          <button
+            onClick={() => setShowOfficial(true)}
+            className={`px-8 py-3 rounded-lg font-semibold text-sm transition-all duration-200 min-w-[200px] ${
+              showOfficial
+                ? 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 shadow-md border-2 border-gray-300 dark:border-gray-600'
+                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+            }`}
+          >
+            {t('officialRateTitle')}
+          </button>
+        </div>
       </div>
 
       {/* Rate Cards - Show based on toggle */}

@@ -7,6 +7,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { Link } from 'react-router-dom';
 import { fetchNews } from '../utils/api';
 import SentimentLegend from '../components/SentimentLegend';
+import { cleanSummary, cleanTitle } from '../utils/formatters';
 
 const CATEGORIES = {
   all: { es: 'Todas', en: 'All', color: 'gray' },
@@ -281,13 +282,13 @@ function News() {
 
                   {/* Title */}
                   <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-3">
-                    {article.title}
+                    {cleanTitle(article.title)}
                   </h3>
 
                   {/* Summary */}
-                  {article.summary && (
+                  {article.summary && cleanSummary(article.summary) && (
                     <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-3 flex-grow">
-                      {article.summary}
+                      {cleanSummary(article.summary)}
                     </p>
                   )}
 

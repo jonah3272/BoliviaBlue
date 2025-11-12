@@ -73,14 +73,18 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
   );
 });
 
-function BlueRateCards() {
+function BlueRateCards({ showOfficial = false, setShowOfficial }) {
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showOfficial, setShowOfficial] = useState(false);
+  
+  // Fallback to internal state if props not provided (for backward compatibility)
+  const [internalShowOfficial, setInternalShowOfficial] = useState(false);
+  const effectiveShowOfficial = setShowOfficial !== undefined ? showOfficial : internalShowOfficial;
+  const effectiveSetShowOfficial = setShowOfficial !== undefined ? setShowOfficial : setInternalShowOfficial;
 
   const loadData = useCallback(async () => {
     try {
@@ -126,9 +130,9 @@ function BlueRateCards() {
       "unitCode": "USD"
     },
     "validFrom": data.updated_at_iso,
-    "rateType": showOfficial ? "Official" : "Blue Market (Parallel)",
+    "rateType": effectiveShowOfficial ? "Official" : "Blue Market (Parallel)",
     "exchangeRateSpread": (data.sell_bob_per_usd - data.buy_bob_per_usd).toFixed(4)
-  } : null, [data, showOfficial]);
+  } : null, [data, effectiveShowOfficial]);
 
   return (
     <div className="space-y-6">
@@ -144,9 +148,9 @@ function BlueRateCards() {
       <div className="flex items-center justify-center mb-6">
         <div className="inline-flex items-center bg-gray-100 dark:bg-gray-800 rounded-xl p-1.5 shadow-inner border border-gray-200 dark:border-gray-700">
           <button
-            onClick={() => setShowOfficial(false)}
+            onClick={() => effectiveSetShowOfficial(false)}
             className={`px-8 py-3 rounded-lg font-semibold text-sm transition-all duration-200 min-w-[200px] ${
-              !showOfficial
+              !effectiveShowOfficial
                 ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-md border-2 border-blue-200 dark:border-blue-600'
                 : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
             }`}
@@ -154,9 +158,9 @@ function BlueRateCards() {
             {t('blueMarketTitle')}
           </button>
           <button
-            onClick={() => setShowOfficial(true)}
+            onClick={() => effectiveSetShowOfficial(true)}
             className={`px-8 py-3 rounded-lg font-semibold text-sm transition-all duration-200 min-w-[200px] ${
-              showOfficial
+              effectiveShowOfficial
                 ? 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 shadow-md border-2 border-gray-300 dark:border-gray-600'
                 : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
             }`}
@@ -167,7 +171,7 @@ function BlueRateCards() {
       </div>
 
       {/* Rate Cards - Show based on toggle */}
-      {!showOfficial ? (
+      {!effectiveShowOfficial ? (
         // Blue Market Rates
         <div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">

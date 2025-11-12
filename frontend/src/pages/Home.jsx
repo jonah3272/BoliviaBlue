@@ -2,7 +2,7 @@ import ThemeToggle from '../components/ThemeToggle';
 import LanguageToggle from '../components/LanguageToggle';
 import BlueRateCards from '../components/BlueRateCards';
 import BinanceBanner from '../components/BinanceBanner';
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useState } from 'react';
 const BlueChart = lazy(() => import('../components/BlueChart'));
 import NewsTabs from '../components/NewsTabs';
 import About from '../components/About';
@@ -18,6 +18,7 @@ function Home() {
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
+  const [showOfficial, setShowOfficial] = useState(false);
   
   // Organization schema for homepage
   const organizationSchema = {
@@ -84,7 +85,7 @@ function Home() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
         {/* Blue Rate Cards - At the Top */}
         <section>
-          <BlueRateCards />
+          <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} />
         </section>
 
         {/* Combined Sentiment + News Card */}
@@ -100,7 +101,7 @@ function Home() {
               <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded"></div>
             </div>
           }>
-            <BlueChart />
+            <BlueChart showOfficial={showOfficial} />
           </Suspense>
         </section>
 

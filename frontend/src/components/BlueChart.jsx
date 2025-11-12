@@ -3,7 +3,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { fetchBlueHistory } from '../utils/api';
 import { useLanguage } from '../contexts/LanguageContext';
 
-function BlueChart() {
+function BlueChart({ showOfficial = false }) {
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
@@ -61,14 +61,15 @@ function BlueChart() {
           const ageInDays = Math.floor((now - firstPoint) / (1000 * 60 * 60 * 24));
           setDataAge(ageInDays);
           
-          // Calculate stats
-          const firstBuy = result.points[0].buy;
-          const latestBuy = lastPoint.buy;
-          const change = ((latestBuy - firstBuy) / firstBuy * 100).toFixed(2);
+          // Calculate stats based on selected rate type
+          const firstBuy = showOfficial ? result.points[0].official_buy : result.points[0].buy;
+          const latestBuy = showOfficial ? lastPoint.official_buy : lastPoint.buy;
+          const latestSell = showOfficial ? lastPoint.official_sell : lastPoint.sell;
+          const change = firstBuy ? ((latestBuy - firstBuy) / firstBuy * 100).toFixed(2) : '0';
           
           setStats({
-            latestBuy: latestBuy,
-            latestSell: lastPoint.sell,
+            latestBuy: latestBuy || 0,
+            latestSell: latestSell || 0,
             change: parseFloat(change)
           });
         }
@@ -121,6 +122,12 @@ function BlueChart() {
             blue_buy: point.buy,
             blue_sell: point.sell,
             blue_mid: point.mid,
+            official_buy: point.official_buy,
+            official_sell: point.official_sell,
+            official_mid: point.official_mid,
+            // Use selected rate type for chart display
+            buy: showOfficial ? point.official_buy : point.buy,
+            sell: showOfficial ? point.official_sell : point.sell,
             dateKey: range === 'ALL' ? date.toDateString() : null, // For grouping labels by day
             index
           };
@@ -148,13 +155,13 @@ function BlueChart() {
     };
 
     loadData();
-  }, [range, language]);
+  }, [range, language, showOfficial]);
 
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length > 0) {
       const data = payload[0].payload;
-      const buyValue = data.blue_buy;
-      const sellValue = data.blue_sell;
+      const buyValue = data.buy; // Use the selected rate type
+      const sellValue = data.sell; // Use the selected rate type
       const spread = buyValue && sellValue ? ((buyValue - sellValue) / sellValue * 100).toFixed(2) : 0;
       
       return (
@@ -376,7 +383,7 @@ function BlueChart() {
               <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#9CA3AF', strokeWidth: 1 }} />
               <Area 
                 type="monotone" 
-                dataKey="blue_buy" 
+                dataKey="buy" 
                 stroke="#10B981" 
                 strokeWidth={3}
                 fill="url(#colorBuy)"
@@ -387,7 +394,7 @@ function BlueChart() {
               />
               <Area 
                 type="monotone" 
-                dataKey="blue_sell" 
+                dataKey="sell" 
                 stroke="#EF4444" 
                 strokeWidth={3}
                 fill="url(#colorSell)"

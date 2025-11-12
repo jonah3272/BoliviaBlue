@@ -1,6 +1,6 @@
 import { useState, useEffect, memo } from 'react';
 import { fetchNews } from '../utils/api';
-import { formatTimeAgo, cleanSummary } from '../utils/formatters';
+import { formatTimeAgo, cleanSummary, cleanTitle } from '../utils/formatters';
 import { useLanguage } from '../contexts/LanguageContext';
 import SentimentLegend from './SentimentLegend';
 
@@ -49,7 +49,7 @@ const NewsCard = memo(function NewsCard({ item }) {
     >
       <div className="flex items-start justify-between mb-2">
         <h3 className="font-medium text-gray-900 dark:text-white line-clamp-2 flex-1">
-          {item.title}
+          {cleanTitle(item.title)}
         </h3>
         <div className="ml-2 flex-shrink-0 text-xl">
           <SentimentArrow sentiment={item.sentiment} />

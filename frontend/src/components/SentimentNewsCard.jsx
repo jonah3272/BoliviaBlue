@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { fetchNews } from '../utils/api';
 import { useLanguage } from '../contexts/LanguageContext';
-import { cleanSummary } from '../utils/formatters';
+import { cleanSummary, cleanTitle } from '../utils/formatters';
 
 /**
  * Binance/Kalshi-inspired News Sentiment Dashboard Component
@@ -77,11 +77,11 @@ function SentimentNewsCard() {
         const scoreDiff = upScore - downScore;
         
         // Calculate base score from weighted difference
-        let sentimentScore = 0;
+        let rawSentimentScore = 0;
         if (totalScore > 0) {
           // Normalize to -50 to +50 based on score difference
           const normalizedDiff = (scoreDiff / totalScore) * 50;
-          sentimentScore = Math.max(-50, Math.min(50, Math.round(normalizedDiff)));
+          rawSentimentScore = Math.max(-50, Math.min(50, normalizedDiff));
         }
         
         // Also consider article count difference for more granular scoring
@@ -90,11 +90,28 @@ function SentimentNewsCard() {
         if (totalCount > 0) {
           const countBasedScore = (countDiff / totalCount) * 50;
           // Blend both scores (70% weighted score, 30% count-based)
-          sentimentScore = Math.round(sentimentScore * 0.7 + countBasedScore * 0.3);
-          sentimentScore = Math.max(-50, Math.min(50, sentimentScore));
+          rawSentimentScore = rawSentimentScore * 0.7 + countBasedScore * 0.3;
+          rawSentimentScore = Math.max(-50, Math.min(50, rawSentimentScore));
         }
         
-        // Determine trend label and strength
+        // Confidence-weighted scoring: Dampen scores when sample size is small
+        // This prevents extreme scores from appearing when there are few articles
+        // Sample size confidence: reaches full confidence (1.0) at 30+ articles
+        // Uses exponential approach for smoother scaling: 1 - e^(-n/15)
+        // Examples: 5 articles ≈ 0.28, 10 articles ≈ 0.49, 20 articles ≈ 0.74, 30+ articles ≈ 0.86+
+        const sampleSizeConfidence = Math.min(1, 1 - Math.exp(-dailyArticles.length / 15));
+        
+        // Apply confidence weighting to the raw score based on sample size
+        // With few articles, scores are dampened significantly
+        // With many articles, scores approach their full value
+        // Example: 5 articles with raw score -30 → -30 * 0.28 ≈ -8 (much less extreme)
+        // Example: 30 articles with raw score -30 → -30 * 0.86 ≈ -26 (closer to full value)
+        const sentimentScore = Math.round(rawSentimentScore * sampleSizeConfidence);
+        
+        // Calculate confidence percentage for display (based on sample size)
+        const confidencePercentage = Math.round(sampleSizeConfidence * 100);
+        
+        // Determine trend label and strength based on adjusted score
         let trend = 'neutral';
         let trendStrength = 'moderate';
         
@@ -124,7 +141,7 @@ function SentimentNewsCard() {
           trend,
           trendStrength,
           score: sentimentScore,
-          confidence: totalScore > 0 ? Math.round((Math.abs(scoreDiff) / totalScore) * 100) : 0,
+          confidence: confidencePercentage, // Show sample size confidence as percentage
           upScore: Math.round(upScore * 10) / 10,
           downScore: Math.round(downScore * 10) / 10
         });
@@ -670,7 +687,7 @@ function SentimentNewsCard() {
                   </span>
                 </div>
                 <h3 className="text-sm font-bold text-gray-900 dark:text-white line-clamp-2 leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors flex-shrink-0">
-                  {articles[currentIndex].title}
+                  {cleanTitle(articles[currentIndex].title)}
                 </h3>
                 {articles[currentIndex].summary && cleanSummary(articles[currentIndex].summary) && (
                   <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-1 leading-snug mt-0.5 flex-shrink-0">

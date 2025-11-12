@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { fetchTweets } from '../utils/api';
-import { formatTimeAgo, cleanSummary } from '../utils/formatters';
+import { formatTimeAgo, cleanSummary, cleanTitle } from '../utils/formatters';
 import { useLanguage } from '../contexts/LanguageContext';
 
 // Sentiment indicator for tweets - Matches legend colors
@@ -54,7 +54,7 @@ function TweetCard({ tweet }) {
           </svg>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 truncate">
-              {tweet.title}
+              {cleanTitle(tweet.title)}
             </p>
           </div>
         </div>

@@ -395,11 +395,11 @@ function SentimentNewsCard() {
             {/* Sentiment Compass Gauge - Dynamic Zoom with Labels */}
             <div className="flex items-center gap-2">
               {/* Compact Compass Indicator */}
-              <div className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
+              <div className="inline-flex items-center gap-2.5 px-3 py-2 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
                 {/* Compass Track with Labels */}
-                <div className="relative w-40 h-8 flex flex-col items-center">
+                <div className="relative w-40 flex flex-col items-center" style={{ minHeight: '3.5rem' }}>
                   {/* Track Container */}
-                  <div className="relative w-full h-7 flex items-center">
+                  <div className="relative w-full h-7 flex items-center mb-4">
                     {/* Background track */}
                     <div className="absolute inset-0 rounded-full bg-gray-200 dark:bg-gray-700"></div>
                     
@@ -477,7 +477,7 @@ function SentimentNewsCard() {
                   </div>
                   
                   {/* Labels: Negative (left) and Positive (right) */}
-                  <div className="absolute -bottom-4 left-0 right-0 flex items-center justify-between text-[9px] font-medium">
+                  <div className="absolute top-full left-0 right-0 flex items-center justify-between mt-1 text-[9px] font-medium">
                     <span className="text-red-600 dark:text-red-400">
                       {language === 'es' ? 'Negativo' : 'Negative'}
                     </span>

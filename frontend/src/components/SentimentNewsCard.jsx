@@ -380,16 +380,21 @@ function SentimentNewsCard() {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+    <div className="bg-white dark:bg-[#121416] rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
       {/* Top Bar - Sentiment Summary */}
       <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           {/* Left: Sentiment Label & Compass */}
           <div className="flex items-center gap-4 flex-wrap">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col gap-1">
               <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 {t('dailySentimentTitle')}
               </span>
+              <p className="text-[10px] text-gray-400 dark:text-gray-500">
+                {language === 'es' 
+                  ? 'Actualizado cada hora desde fuentes principales de noticias bolivianas.'
+                  : 'Updated hourly from major Bolivian news sources.'}
+              </p>
             </div>
             
             {/* Sentiment Compass Gauge - Dynamic Zoom with Labels */}
@@ -399,7 +404,7 @@ function SentimentNewsCard() {
                 {/* Compass Track with Labels */}
                 <div className="relative w-40 flex flex-col items-center">
                   {/* Track Container */}
-                  <div className="relative w-full h-7 flex items-center overflow-visible">
+                  <div className="relative w-full h-7 flex items-center overflow-visible hover:bg-[#1C1F22] transition-colors rounded-full">
                     {/* Background track */}
                     <div className="absolute inset-0 rounded-full bg-gray-200 dark:bg-gray-700"></div>
                     
@@ -453,7 +458,7 @@ function SentimentNewsCard() {
                       className="absolute top-0 bottom-0 flex flex-col items-center transform -translate-x-1/2 transition-all duration-500 ease-out z-30"
                       style={{ left: `${compassPosition}%` }}
                     >
-                      {/* Vertical indicator line - thicker and more visible */}
+                      {/* Vertical indicator line - thicker and more visible with glow */}
                       <div 
                         className={`w-1.5 h-full ${
                           isPositive 
@@ -461,7 +466,13 @@ function SentimentNewsCard() {
                             : isNegative 
                             ? 'bg-red-600 dark:bg-red-400'
                             : 'bg-gray-600 dark:bg-gray-400'
-                        } rounded-full shadow-md`}
+                        } rounded-full shadow-md ${
+                          isNegative 
+                            ? 'shadow-[0_0_6px_rgba(255,77,77,0.5)]' 
+                            : isPositive
+                            ? 'shadow-[0_0_6px_rgba(16,185,129,0.5)]'
+                            : ''
+                        }`}
                       ></div>
                       {/* Downward arrow - positioned within track bounds */}
                       <div 
@@ -476,22 +487,28 @@ function SentimentNewsCard() {
                     </div>
                   </div>
                   
-                  {/* Labels: Negative (left) and Positive (right) - inline with track */}
-                  <div className="absolute top-full left-0 right-0 flex items-center justify-between pt-0.5 text-[9px] font-medium">
+                  {/* Labels: Negative (left) and Positive (right) - tighter spacing */}
+                  <div className="absolute top-full left-0 right-0 flex items-center justify-between pt-0.5 px-0.5 text-[9px] font-medium">
                     <span className="text-red-600 dark:text-red-400">
-                      {language === 'es' ? 'Negativo' : 'Negative'}
+                      {language === 'es' ? 'Neg' : 'Neg'}
                     </span>
-                    <span className="text-gray-400 dark:text-gray-500">
-                      {language === 'es' ? 'Neutral' : 'Neutral'}
+                    <span className="text-gray-500 dark:text-gray-500">
+                      {language === 'es' ? 'Neu' : 'Neu'}
                     </span>
                     <span className="text-green-600 dark:text-green-400">
-                      {language === 'es' ? 'Positivo' : 'Positive'}
+                      {language === 'es' ? 'Pos' : 'Pos'}
                     </span>
                   </div>
                 </div>
                 
                 {/* Score Display */}
-                <div className={`flex items-center ${scoreColor}`}>
+                <div className={`flex items-center transition-all duration-200 ${
+                  isPositive 
+                    ? 'text-emerald-400' 
+                    : isNegative 
+                    ? 'text-rose-400'
+                    : 'text-gray-400'
+                }`}>
                   <span className="text-sm font-bold tabular-nums min-w-[2.5rem] text-right">
                     {sentimentScore > 0 ? '+' : ''}{sentimentScore}
                   </span>
@@ -500,17 +517,17 @@ function SentimentNewsCard() {
 
               {/* Positive Count Pill */}
               {dailySentiment.up > 0 && (
-                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
-                  <span className="text-xs font-bold text-green-600 dark:text-green-400">↗</span>
-                  <span className="text-xs font-semibold text-green-700 dark:text-green-300">{dailySentiment.up}</span>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-emerald-900/30 border border-emerald-800 transition-all duration-200">
+                  <span className="text-xs font-bold text-emerald-400">↗</span>
+                  <span className="text-xs font-semibold text-emerald-400">{dailySentiment.up}</span>
                 </div>
               )}
 
               {/* Negative Count Pill */}
               {dailySentiment.down > 0 && (
-                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
-                  <span className="text-xs font-bold text-red-600 dark:text-red-400">↘</span>
-                  <span className="text-xs font-semibold text-red-700 dark:text-red-300">{dailySentiment.down}</span>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-rose-900/30 border border-rose-800 transition-all duration-200">
+                  <span className="text-xs font-bold text-rose-400">↘</span>
+                  <span className="text-xs font-semibold text-rose-400">{dailySentiment.down}</span>
                 </div>
               )}
             </div>

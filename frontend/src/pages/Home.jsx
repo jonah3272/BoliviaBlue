@@ -1,10 +1,9 @@
 import ThemeToggle from '../components/ThemeToggle';
 import LanguageToggle from '../components/LanguageToggle';
-import RateCards from '../components/RateCards';
+import BlueRateCards from '../components/BlueRateCards';
 import BinanceBanner from '../components/BinanceBanner';
 import BlueChart from '../components/BlueChart';
-import NewsFeed from '../components/NewsFeed';
-import TweetsFeed from '../components/TweetsFeed';
+import NewsTabs from '../components/NewsTabs';
 import About from '../components/About';
 import PageMeta from '../components/PageMeta';
 import RotatingNewsCarousel from '../components/RotatingNewsCarousel';
@@ -89,19 +88,14 @@ function Home() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+        {/* Blue Rate Cards - At the Top */}
+        <section>
+          <BlueRateCards />
+        </section>
+
         {/* Rotating News Carousel */}
         <section>
           <RotatingNewsCarousel />
-        </section>
-        
-        {/* Rate Cards */}
-        <section>
-          <RateCards />
-        </section>
-
-        {/* Binance Banner */}
-        <section>
-          <BinanceBanner />
         </section>
 
         {/* Chart */}
@@ -109,26 +103,14 @@ function Home() {
           <BlueChart />
         </section>
 
-        {/* News Feed */}
+        {/* Binance Banner - Under Chart */}
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-            {t('newsTitle')}
-          </h2>
-          <NewsFeed />
+          <BinanceBanner />
         </section>
 
-        {/* Tweets Feed (Social Media) */}
+        {/* News & Twitter Tabs */}
         <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-            <span className="flex items-center gap-2">
-              {/* Twitter/X Icon */}
-              <svg className="w-6 h-6 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-              </svg>
-              {t('twitterSection')}
-            </span>
-          </h2>
-          <TweetsFeed maxItems={10} />
+          <NewsTabs />
         </section>
 
         {/* About */}

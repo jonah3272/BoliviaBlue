@@ -251,7 +251,17 @@ export const translations = {
     // Sentiment tooltips
     neutralTooltip: 'Neutral - Sin impacto claro en divisas',
     upTooltip: 'Dólar Subiendo - Boliviano Debilitándose',
-    downTooltip: 'Dólar Bajando - Boliviano Fortaleciéndose'
+    downTooltip: 'Dólar Bajando - Boliviano Fortaleciéndose',
+    
+    // Daily Sentiment Summary
+    dailySentimentTitle: 'Sentimiento del Día',
+    dailySentimentTotal: 'Total',
+    dailySentimentArticles: 'artículos',
+    dailySentimentPositive: 'Positivo',
+    dailySentimentNegative: 'Negativo',
+    dailySentimentTrendUp: 'Tendencia Alcista',
+    dailySentimentTrendDown: 'Tendencia Bajista',
+    dailySentimentNeutral: 'Neutral'
   },
   
   en: {
@@ -502,7 +512,17 @@ export const translations = {
     // Sentiment tooltips
     neutralTooltip: 'Neutral - No clear currency impact',
     upTooltip: 'Dollar Rising - Boliviano Weakening',
-    downTooltip: 'Dollar Falling - Boliviano Strengthening'
+    downTooltip: 'Dollar Falling - Boliviano Strengthening',
+    
+    // Daily Sentiment Summary
+    dailySentimentTitle: 'Today\'s Sentiment',
+    dailySentimentTotal: 'Total',
+    dailySentimentArticles: 'articles',
+    dailySentimentPositive: 'Positive',
+    dailySentimentNegative: 'Negative',
+    dailySentimentTrendUp: 'Bullish Trend',
+    dailySentimentTrendDown: 'Bearish Trend',
+    dailySentimentNeutral: 'Neutral'
   }
 };
 

@@ -308,8 +308,39 @@ function SentimentNewsCard() {
   const isNegative = sentimentScore < 0;
   const isNeutral = sentimentScore === 0;
   
-  // Calculate position on compass (0% = left/negative, 50% = center, 100% = right/positive)
-  const compassPosition = ((sentimentScore + 50) / 100) * 100; // Convert -50 to +50 to 0-100%
+  // Dynamic zoom: Calculate visible range based on score magnitude
+  // If score is small, zoom in. If large, show full range.
+  const scoreMagnitude = Math.abs(sentimentScore);
+  let minRange, maxRange, visibleRange;
+  
+  if (scoreMagnitude <= 5) {
+    // Very small score: zoom in to ±10 range
+    minRange = -10;
+    maxRange = 10;
+    visibleRange = 20;
+  } else if (scoreMagnitude <= 15) {
+    // Small score: zoom in to ±25 range
+    minRange = -25;
+    maxRange = 25;
+    visibleRange = 50;
+  } else if (scoreMagnitude <= 30) {
+    // Medium score: show ±40 range
+    minRange = -40;
+    maxRange = 40;
+    visibleRange = 80;
+  } else {
+    // Large score: show full ±50 range
+    minRange = -50;
+    maxRange = 50;
+    visibleRange = 100;
+  }
+  
+  // Clamp score to visible range for display
+  const clampedScore = Math.max(minRange, Math.min(maxRange, sentimentScore));
+  
+  // Calculate position on compass within the visible range
+  // Convert score to percentage: (score - minRange) / visibleRange * 100
+  const compassPosition = ((clampedScore - minRange) / visibleRange) * 100;
   
   // Determine colors based on score
   const getScoreColor = () => {
@@ -361,50 +392,66 @@ function SentimentNewsCard() {
               </span>
             </div>
             
-            {/* Sentiment Compass Gauge - Option 1: Minimalist Design */}
+            {/* Sentiment Compass Gauge - Dynamic Zoom with Labels */}
             <div className="flex items-center gap-2">
               {/* Compact Compass Indicator */}
               <div className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
-                {/* Compass Track */}
-                <div className="relative w-36 h-7 flex items-center">
-                  {/* Background track */}
-                  <div className="absolute inset-0 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-                  
-                  {/* Center line (neutral point) - subtle */}
-                  <div className="absolute left-1/2 transform -translate-x-1/2 w-px h-full bg-gray-300 dark:bg-gray-600 z-10"></div>
-                  
-                  {/* Range markers: Left (-50), Center (0), Right (+50) */}
-                  <div className="absolute inset-0 flex items-center justify-between px-0.5">
-                    <div className="w-0.5 h-3 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
-                    <div className="w-0.5 h-3 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
-                    <div className="w-0.5 h-3 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
+                {/* Compass Track with Labels */}
+                <div className="relative w-40 h-8 flex flex-col items-center">
+                  {/* Track Container */}
+                  <div className="relative w-full h-7 flex items-center">
+                    {/* Background track */}
+                    <div className="absolute inset-0 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                    
+                    {/* Center line (neutral point) - subtle */}
+                    <div className="absolute left-1/2 transform -translate-x-1/2 w-px h-full bg-gray-300 dark:bg-gray-600 z-10"></div>
+                    
+                    {/* Range markers: Left, Center, Right */}
+                    <div className="absolute inset-0 flex items-center justify-between px-0.5">
+                      <div className="w-0.5 h-3 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
+                      <div className="w-0.5 h-3 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
+                      <div className="w-0.5 h-3 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
+                    </div>
+                    
+                    {/* Indicator: Vertical line with downward arrow */}
+                    <div 
+                      className="absolute top-0 bottom-0 flex flex-col items-center transform -translate-x-1/2 transition-all duration-500 ease-out z-20"
+                      style={{ left: `${compassPosition}%` }}
+                    >
+                      {/* Vertical indicator line */}
+                      <div 
+                        className={`w-1 h-full ${
+                          isPositive 
+                            ? 'bg-green-600 dark:bg-green-400' 
+                            : isNegative 
+                            ? 'bg-red-600 dark:bg-red-400'
+                            : 'bg-gray-500 dark:bg-gray-400'
+                        } rounded-full shadow-sm`}
+                      ></div>
+                      {/* Downward arrow */}
+                      <div 
+                        className={`absolute -bottom-1.5 w-0 h-0 border-l-[4px] border-r-[4px] border-t-[6px] border-l-transparent border-r-transparent ${
+                          isPositive 
+                            ? 'border-t-green-600 dark:border-t-green-400' 
+                            : isNegative 
+                            ? 'border-t-red-600 dark:border-t-red-400'
+                            : 'border-t-gray-500 dark:border-t-gray-400'
+                        }`}
+                      ></div>
+                    </div>
                   </div>
                   
-                  {/* Indicator: Vertical line with downward arrow */}
-                  <div 
-                    className="absolute top-0 bottom-0 flex flex-col items-center transform -translate-x-1/2 transition-all duration-300 z-20"
-                    style={{ left: `${compassPosition}%` }}
-                  >
-                    {/* Vertical indicator line */}
-                    <div 
-                      className={`w-1 h-full ${
-                        isPositive 
-                          ? 'bg-green-600 dark:bg-green-400' 
-                          : isNegative 
-                          ? 'bg-red-600 dark:bg-red-400'
-                          : 'bg-gray-500 dark:bg-gray-400'
-                      } rounded-full shadow-sm`}
-                    ></div>
-                    {/* Downward arrow */}
-                    <div 
-                      className={`absolute -bottom-1.5 w-0 h-0 border-l-[4px] border-r-[4px] border-t-[6px] border-l-transparent border-r-transparent ${
-                        isPositive 
-                          ? 'border-t-green-600 dark:border-t-green-400' 
-                          : isNegative 
-                          ? 'border-t-red-600 dark:border-t-red-400'
-                          : 'border-t-gray-500 dark:border-t-gray-400'
-                      }`}
-                    ></div>
+                  {/* Labels: Negative (left) and Positive (right) */}
+                  <div className="absolute -bottom-4 left-0 right-0 flex items-center justify-between text-[9px] font-medium">
+                    <span className="text-red-600 dark:text-red-400">
+                      {language === 'es' ? 'Negativo' : 'Negative'}
+                    </span>
+                    <span className="text-gray-400 dark:text-gray-500">
+                      {language === 'es' ? 'Neutral' : 'Neutral'}
+                    </span>
+                    <span className="text-green-600 dark:text-green-400">
+                      {language === 'es' ? 'Positivo' : 'Positive'}
+                    </span>
                   </div>
                 </div>
                 

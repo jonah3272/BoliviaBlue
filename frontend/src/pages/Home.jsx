@@ -10,7 +10,6 @@ import PageMeta from '../components/PageMeta';
 import RotatingNewsCarousel from '../components/RotatingNewsCarousel';
 import Navigation from '../components/Navigation';
 import DailySentimentHeader from '../components/DailySentimentHeader';
-import SentimentDashboard from '../components/SentimentDashboard';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Link } from 'react-router-dom';
 
@@ -93,12 +92,7 @@ function Home() {
           <BlueRateCards />
         </section>
 
-        {/* Sentiment Dashboard - New Financial Analytics Style */}
-        <section>
-          <SentimentDashboard />
-        </section>
-
-        {/* Daily Sentiment - Below Rate Cards (Legacy) */}
+        {/* Daily Sentiment - Below Rate Cards */}
         <section>
           <DailySentimentHeader />
         </section>

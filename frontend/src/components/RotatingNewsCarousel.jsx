@@ -154,6 +154,23 @@ function RotatingNewsCarousel() {
     setTimeout(() => setIsPaused(false), 10000);
   }, [articles.length]);
 
+  // Memoize current article and derived values - MUST be before early returns
+  const currentArticle = useMemo(() => articles[currentIndex], [articles, currentIndex]);
+  
+  const { sentimentColor, sentimentBg, sentimentIcon } = useMemo(() => {
+    if (!currentArticle) return { sentimentColor: '', sentimentBg: '', sentimentIcon: '' };
+    return {
+      sentimentColor: currentArticle.sentiment === 'up' 
+        ? 'text-green-600 dark:text-green-400' 
+        : 'text-red-600 dark:text-red-400',
+      sentimentBg: currentArticle.sentiment === 'up'
+        ? 'bg-green-100 dark:bg-green-900/30'
+        : 'bg-red-100 dark:bg-red-900/30',
+      sentimentIcon: currentArticle.sentiment === 'up' ? '↗' : '↘'
+    };
+  }, [currentArticle]);
+
+  // Early returns AFTER all hooks
   if (isLoading) {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 animate-pulse">
@@ -182,22 +199,6 @@ function RotatingNewsCarousel() {
       </div>
     );
   }
-
-  // Memoize current article and derived values
-  const currentArticle = useMemo(() => articles[currentIndex], [articles, currentIndex]);
-  
-  const { sentimentColor, sentimentBg, sentimentIcon } = useMemo(() => {
-    if (!currentArticle) return { sentimentColor: '', sentimentBg: '', sentimentIcon: '' };
-    return {
-      sentimentColor: currentArticle.sentiment === 'up' 
-        ? 'text-green-600 dark:text-green-400' 
-        : 'text-red-600 dark:text-red-400',
-      sentimentBg: currentArticle.sentiment === 'up'
-        ? 'bg-green-100 dark:bg-green-900/30'
-        : 'bg-red-100 dark:bg-red-900/30',
-      sentimentIcon: currentArticle.sentiment === 'up' ? '↗' : '↘'
-    };
-  }, [currentArticle]);
 
   if (!dailySentiment || !currentArticle) {
     return null;

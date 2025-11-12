@@ -448,30 +448,30 @@ function SentimentNewsCard() {
                       <div className="w-0.5 h-3 bg-gray-500 dark:bg-gray-400 rounded-full z-10"></div>
                     </div>
                     
-                    {/* Indicator: Vertical line with downward arrow */}
+                    {/* Indicator: Vertical line with downward arrow - More prominent */}
                     <div 
-                      className="absolute top-0 bottom-0 flex flex-col items-center transform -translate-x-1/2 transition-all duration-500 ease-out z-20"
+                      className="absolute top-0 bottom-0 flex flex-col items-center transform -translate-x-1/2 transition-all duration-500 ease-out z-30"
                       style={{ left: `${compassPosition}%` }}
                     >
-                      {/* Vertical indicator line */}
+                      {/* Vertical indicator line - thicker and more visible */}
                       <div 
-                        className={`w-1 h-full ${
+                        className={`w-1.5 h-full ${
                           isPositive 
                             ? 'bg-green-600 dark:bg-green-400' 
                             : isNegative 
                             ? 'bg-red-600 dark:bg-red-400'
-                            : 'bg-gray-500 dark:bg-gray-400'
-                        } rounded-full shadow-sm`}
+                            : 'bg-gray-600 dark:bg-gray-400'
+                        } rounded-full shadow-md`}
                       ></div>
-                      {/* Downward arrow */}
+                      {/* Downward arrow - larger */}
                       <div 
-                        className={`absolute -bottom-1.5 w-0 h-0 border-l-[4px] border-r-[4px] border-t-[6px] border-l-transparent border-r-transparent ${
+                        className={`absolute -bottom-2 w-0 h-0 border-l-[5px] border-r-[5px] border-t-[7px] border-l-transparent border-r-transparent ${
                           isPositive 
                             ? 'border-t-green-600 dark:border-t-green-400' 
                             : isNegative 
                             ? 'border-t-red-600 dark:border-t-red-400'
-                            : 'border-t-gray-500 dark:border-t-gray-400'
-                        }`}
+                            : 'border-t-gray-600 dark:border-t-gray-400'
+                        } drop-shadow-sm`}
                       ></div>
                     </div>
                   </div>

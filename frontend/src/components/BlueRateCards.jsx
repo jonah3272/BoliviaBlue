@@ -76,9 +76,11 @@ function RateCard({ type, rate, timestamp, isStaleData, isLoading, error, dailyC
 function BlueRateCards() {
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
+  const language = languageContext?.language || 'es';
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showOfficial, setShowOfficial] = useState(false);
 
   const loadData = async () => {
     try {
@@ -122,7 +124,7 @@ function BlueRateCards() {
       "unitCode": "USD"
     },
     "validFrom": data.updated_at_iso,
-    "rateType": "Blue Market (Parallel)",
+    "rateType": showOfficial ? "Official" : "Blue Market (Parallel)",
     "exchangeRateSpread": (data.sell_bob_per_usd - data.buy_bob_per_usd).toFixed(4)
   } : null;
 
@@ -135,40 +137,60 @@ function BlueRateCards() {
           </script>
         </Helmet>
       )}
-      {/* Blue Market Rates */}
-      <div>
-        <h3 className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-3 text-center">
+      
+      {/* Toggle Switch */}
+      <div className="flex items-center justify-center gap-4 mb-4">
+        <button
+          onClick={() => setShowOfficial(false)}
+          className={`px-6 py-2.5 rounded-lg font-medium text-sm transition-all ${
+            !showOfficial
+              ? 'bg-blue-600 dark:bg-blue-500 text-white shadow-md'
+              : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+          }`}
+        >
           {t('blueMarketTitle')}
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
-          <RateCard
-            type="buy"
-            rate={data?.buy_bob_per_usd}
-            timestamp={data?.updated_at_iso}
-            isStaleData={isDataStale}
-            isLoading={isLoading}
-            error={error}
-            dailyChange={buyChange}
-          />
-          <RateCard
-            type="sell"
-            rate={data?.sell_bob_per_usd}
-            timestamp={data?.updated_at_iso}
-            isStaleData={isDataStale}
-            isLoading={isLoading}
-            error={error}
-            dailyChange={sellChange}
-          />
-        </div>
+        </button>
+        <button
+          onClick={() => setShowOfficial(true)}
+          className={`px-6 py-2.5 rounded-lg font-medium text-sm transition-all ${
+            showOfficial
+              ? 'bg-gray-600 dark:bg-gray-500 text-white shadow-md'
+              : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+          }`}
+        >
+          {t('officialRateTitle')}
+        </button>
       </div>
 
-      {/* Official Rates - Horizontal Scroll */}
-      <div>
-        <h3 className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-3 text-center">
-          {t('officialRateTitle')}
-        </h3>
-        <div className="overflow-x-auto pb-2">
-          <div className="flex gap-4 min-w-max md:min-w-0 md:justify-center md:grid md:grid-cols-2 md:max-w-4xl md:mx-auto">
+      {/* Rate Cards - Show based on toggle */}
+      {!showOfficial ? (
+        // Blue Market Rates
+        <div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+            <RateCard
+              type="buy"
+              rate={data?.buy_bob_per_usd}
+              timestamp={data?.updated_at_iso}
+              isStaleData={isDataStale}
+              isLoading={isLoading}
+              error={error}
+              dailyChange={buyChange}
+            />
+            <RateCard
+              type="sell"
+              rate={data?.sell_bob_per_usd}
+              timestamp={data?.updated_at_iso}
+              isStaleData={isDataStale}
+              isLoading={isLoading}
+              error={error}
+              dailyChange={sellChange}
+            />
+          </div>
+        </div>
+      ) : (
+        // Official Rates
+        <div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
             <RateCard
               type="buy"
               rate={data?.official_buy}
@@ -189,10 +211,9 @@ function BlueRateCards() {
             />
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
 
 export default BlueRateCards;
-

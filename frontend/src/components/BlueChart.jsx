@@ -226,19 +226,19 @@ function BlueChart() {
       </div>
 
       {isLoading && (
-        <div className="h-80 flex items-center justify-center">
+        <div className="h-64 sm:h-80 flex items-center justify-center">
           <div className="animate-pulse text-gray-500 dark:text-gray-400">Cargando datos...</div>
         </div>
       )}
 
       {error && (
-        <div className="h-80 flex items-center justify-center">
+        <div className="h-64 sm:h-80 flex items-center justify-center">
           <div className="text-red-500">Error al cargar el gráfico</div>
         </div>
       )}
 
       {!isLoading && !error && data.length === 0 && (
-        <div className="h-80 flex items-center justify-center">
+        <div className="h-64 sm:h-80 flex items-center justify-center">
           <div className="text-center">
             <div className="text-gray-500 dark:text-gray-400 mb-2">
               Recopilando datos históricos...

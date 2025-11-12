@@ -361,12 +361,14 @@ function SentimentNewsCard() {
       `Ponderación temporal: artículos más recientes tienen mayor peso. ` +
       `Artículos de divisas (${dailySentiment.currencyUp + dailySentiment.currencyDown}) tienen 1.5x peso. ` +
       `Confianza: ${trendDetails.confidence}%. ` +
-      `Puntuación: ↗ ${trendDetails.upScore} vs ↘ ${trendDetails.downScore}`
+      `Puntuación: ↗ ${trendDetails.upScore} vs ↘ ${trendDetails.downScore}. ` +
+      `\n\nPositivo = Dólar sube (más Bs por USD, ej: 10 → 11). Negativo = Dólar baja (menos Bs por USD, ej: 10 → 9).`
     : `Smart analysis based on ${dailySentiment.total} articles from last 24h. ` +
       `Time-weighted: more recent articles have higher weight. ` +
       `Currency articles (${dailySentiment.currencyUp + dailySentiment.currencyDown}) have 1.5x weight. ` +
       `Confidence: ${trendDetails.confidence}%. ` +
-      `Score: ↗ ${trendDetails.upScore} vs ↘ ${trendDetails.downScore}`;
+      `Score: ↗ ${trendDetails.upScore} vs ↘ ${trendDetails.downScore}. ` +
+      `\n\nPositive = Dollar rising (more BOB per USD, e.g., 10 → 11). Negative = Dollar falling (fewer BOB per USD, e.g., 10 → 9).`;
 
   // Get source favicon URL helper
   const getFaviconUrl = (source, url) => {
@@ -386,15 +388,10 @@ function SentimentNewsCard() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           {/* Left: Sentiment Label & Compass */}
           <div className="flex items-center gap-4 flex-wrap">
-            <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
               <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                {t('dailySentimentTitle')}
+                {language === 'es' ? "Sentimiento del USD hoy" : "Today's USD Sentiment"}
               </span>
-              <p className="text-[10px] text-gray-400 dark:text-gray-500">
-                {language === 'es' 
-                  ? 'Positivo = Dólar sube (más Bs por USD). Negativo = Dólar baja (menos Bs por USD).'
-                  : 'Positive = Dollar rising (more BOB per USD). Negative = Dollar falling (fewer BOB per USD).'}
-              </p>
             </div>
             
             {/* Sentiment Compass Gauge - Dynamic Zoom with Labels */}

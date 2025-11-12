@@ -73,16 +73,14 @@ function Home() {
       {/* Navigation */}
       <Navigation />
 
-      {/* Hero Section with Sentiment */}
+      {/* Hero Section */}
       <section className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-4">
+          <div className="text-center">
             <p className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white max-w-3xl mx-auto leading-tight">
               {t('subtitle')}
             </p>
           </div>
-          {/* Daily Sentiment in Header */}
-          <DailySentimentHeader />
         </div>
       </section>
 
@@ -91,6 +89,11 @@ function Home() {
         {/* Blue Rate Cards - At the Top */}
         <section>
           <BlueRateCards />
+        </section>
+
+        {/* Daily Sentiment - Below Rate Cards */}
+        <section>
+          <DailySentimentHeader />
         </section>
 
         {/* Rotating News Carousel */}

@@ -8,6 +8,7 @@ function DailySentimentHeader() {
   const language = languageContext?.language || 'es';
   const [dailySentiment, setDailySentiment] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [trendDetails, setTrendDetails] = useState(null);
 
   useEffect(() => {
     const loadSentiment = async () => {
@@ -17,6 +18,7 @@ function DailySentimentHeader() {
         // Calculate daily sentiment from articles in last 24h
         const oneDayAgo = new Date();
         oneDayAgo.setHours(oneDayAgo.getHours() - 24);
+        const now = new Date();
         
         const dailyArticles = allNews.filter(article => {
           const publishedDate = article.published_at || article.published_at_iso;
@@ -25,14 +27,79 @@ function DailySentimentHeader() {
           return !isNaN(articleDate.getTime()) && articleDate >= oneDayAgo;
         });
         
+        // Smart trend calculation with time-weighted scoring
+        let upScore = 0;
+        let downScore = 0;
+        let currencyUpCount = 0;
+        let currencyDownCount = 0;
+        
+        dailyArticles.forEach(article => {
+          const publishedDate = new Date(article.published_at || article.published_at_iso);
+          const hoursAgo = (now - publishedDate) / (1000 * 60 * 60); // Hours since publication
+          
+          // Time-weighting: More recent articles have higher weight
+          // Exponential decay: weight = e^(-hoursAgo/12)
+          // Articles from last 6 hours get ~60% weight, 12 hours get ~37%, 24 hours get ~14%
+          const timeWeight = Math.exp(-hoursAgo / 12);
+          
+          // Category weighting: Currency-related articles are more important
+          const categoryWeight = article.category === 'currency' ? 1.5 : 1.0;
+          
+          // Combined weight
+          const weight = timeWeight * categoryWeight;
+          
+          if (article.sentiment === 'up') {
+            upScore += weight;
+            if (article.category === 'currency') currencyUpCount++;
+          } else if (article.sentiment === 'down') {
+            downScore += weight;
+            if (article.category === 'currency') currencyDownCount++;
+          }
+        });
+        
         const upCount = dailyArticles.filter(a => a.sentiment === 'up').length;
         const downCount = dailyArticles.filter(a => a.sentiment === 'down').length;
+        const neutralCount = dailyArticles.filter(a => a.sentiment === 'neutral').length;
+        
+        // Determine trend with confidence threshold
+        // Need at least 20% difference in weighted scores OR 2+ article difference
+        const scoreDiff = Math.abs(upScore - downScore);
+        const totalScore = upScore + downScore;
+        const confidence = totalScore > 0 ? (scoreDiff / totalScore) * 100 : 0;
+        
+        // Trend determination: Consider both weighted scores and counts
+        let trend = 'neutral';
+        let trendStrength = 'moderate';
+        
+        if (upScore > downScore && (confidence > 20 || upCount >= downCount + 2)) {
+          trend = 'bullish';
+          if (confidence > 50 || upCount >= downCount * 1.5) {
+            trendStrength = 'strong';
+          }
+        } else if (downScore > upScore && (confidence > 20 || downCount >= upCount + 2)) {
+          trend = 'bearish';
+          if (confidence > 50 || downCount >= upCount * 1.5) {
+            trendStrength = 'strong';
+          }
+        }
         
         setDailySentiment({
           total: dailyArticles.length,
           up: upCount,
-          down: downCount
+          down: downCount,
+          neutral: neutralCount,
+          currencyUp: currencyUpCount,
+          currencyDown: currencyDownCount
         });
+        
+        setTrendDetails({
+          trend,
+          trendStrength,
+          confidence: Math.round(confidence),
+          upScore: Math.round(upScore * 10) / 10,
+          downScore: Math.round(downScore * 10) / 10
+        });
+        
         setIsLoading(false);
       } catch (error) {
         console.error('Error loading sentiment:', error);
@@ -46,17 +113,19 @@ function DailySentimentHeader() {
     return () => clearInterval(refreshInterval);
   }, []);
 
-  if (isLoading || !dailySentiment || dailySentiment.total === 0) {
+  if (isLoading || !dailySentiment || !trendDetails || dailySentiment.total === 0) {
     return null;
   }
 
   // Determine overall trend
-  const isBullish = dailySentiment.up > dailySentiment.down;
-  const isBearish = dailySentiment.down > dailySentiment.up;
+  const isBullish = trendDetails.trend === 'bullish';
+  const isBearish = trendDetails.trend === 'bearish';
+  const isStrong = trendDetails.trendStrength === 'strong';
+  
   const trendBg = isBullish
-    ? 'bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-700'
+    ? (isStrong ? 'bg-green-200 dark:bg-green-800/40 border-green-400 dark:border-green-600' : 'bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-700')
     : isBearish
-    ? 'bg-red-100 dark:bg-red-900/30 border-red-300 dark:border-red-700'
+    ? (isStrong ? 'bg-red-200 dark:bg-red-800/40 border-red-400 dark:border-red-600' : 'bg-red-100 dark:bg-red-900/30 border-red-300 dark:border-red-700')
     : 'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700';
   const trendColor = isBullish 
     ? 'text-green-700 dark:text-green-300' 
@@ -65,15 +134,31 @@ function DailySentimentHeader() {
     : 'text-gray-700 dark:text-gray-300';
   const trendIcon = isBullish ? '↗' : isBearish ? '↘' : '○';
   const trendText = isBullish 
-    ? t('dailySentimentTrendUp') 
+    ? (isStrong ? t('dailySentimentTrendUp') + ' ' + (language === 'es' ? '(Fuerte)' : '(Strong)') : t('dailySentimentTrendUp'))
     : isBearish 
-    ? t('dailySentimentTrendDown') 
+    ? (isStrong ? t('dailySentimentTrendDown') + ' ' + (language === 'es' ? '(Fuerte)' : '(Strong)') : t('dailySentimentTrendDown'))
     : t('dailySentimentNeutral');
+
+  // Tooltip text explaining the methodology
+  const tooltipText = language === 'es'
+    ? `Análisis inteligente basado en ${dailySentiment.total} artículos de las últimas 24h. ` +
+      `Ponderación temporal: artículos más recientes tienen mayor peso. ` +
+      `Artículos de divisas (${dailySentiment.currencyUp + dailySentiment.currencyDown}) tienen 1.5x peso. ` +
+      `Confianza: ${trendDetails.confidence}%. ` +
+      `Puntuación: ↗ ${trendDetails.upScore} vs ↘ ${trendDetails.downScore}`
+    : `Smart analysis based on ${dailySentiment.total} articles from last 24h. ` +
+      `Time-weighted: more recent articles have higher weight. ` +
+      `Currency articles (${dailySentiment.currencyUp + dailySentiment.currencyDown}) have 1.5x weight. ` +
+      `Confidence: ${trendDetails.confidence}%. ` +
+      `Score: ↗ ${trendDetails.upScore} vs ↘ ${trendDetails.downScore}`;
 
   return (
     <div className="flex flex-wrap items-center justify-center gap-3 mt-2">
-      {/* Main Trend Badge - Most Prominent */}
-      <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border-2 ${trendBg} shadow-sm`}>
+      {/* Main Trend Badge - Most Prominent with Tooltip */}
+      <div 
+        className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border-2 ${trendBg} shadow-sm relative group cursor-help`}
+        title={tooltipText}
+      >
         <span className={`text-2xl font-bold ${trendColor}`}>{trendIcon}</span>
         <div className="flex flex-col">
           <span className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
@@ -82,6 +167,13 @@ function DailySentimentHeader() {
           <span className={`text-sm font-bold ${trendColor} leading-tight`}>
             {trendText}
           </span>
+        </div>
+        {/* Tooltip on hover */}
+        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 dark:bg-gray-800 text-white text-xs rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 max-w-xs text-center whitespace-normal">
+          {tooltipText}
+          <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1">
+            <div className="border-4 border-transparent border-t-gray-900 dark:border-t-gray-800"></div>
+          </div>
         </div>
       </div>
 

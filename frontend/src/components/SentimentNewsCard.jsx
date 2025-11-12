@@ -406,11 +406,46 @@ function SentimentNewsCard() {
                     {/* Center line (neutral point) - subtle */}
                     <div className="absolute left-1/2 transform -translate-x-1/2 w-px h-full bg-gray-300 dark:bg-gray-600 z-10"></div>
                     
-                    {/* Range markers: Left, Center, Right */}
+                    {/* Sub-tick marks: Show scale divisions based on visible range */}
+                    {(() => {
+                      // Calculate tick interval based on visible range
+                      // For smaller ranges, show ticks every 2-5 points. For larger ranges, every 5-10 points.
+                      let tickInterval;
+                      if (visibleRange <= 20) {
+                        tickInterval = 2; // Every 2 points for ±10 range
+                      } else if (visibleRange <= 50) {
+                        tickInterval = 5; // Every 5 points for ±25 range
+                      } else if (visibleRange <= 80) {
+                        tickInterval = 10; // Every 10 points for ±40 range
+                      } else {
+                        tickInterval = 10; // Every 10 points for ±50 range
+                      }
+                      
+                      // Generate tick marks
+                      const ticks = [];
+                      for (let value = minRange; value <= maxRange; value += tickInterval) {
+                        // Skip center (0) as it's already marked
+                        if (value === 0) continue;
+                        
+                        // Calculate position percentage
+                        const tickPosition = ((value - minRange) / visibleRange) * 100;
+                        
+                        ticks.push(
+                          <div
+                            key={value}
+                            className="absolute w-px h-2 bg-gray-400 dark:bg-gray-500 rounded-full transform -translate-x-1/2"
+                            style={{ left: `${tickPosition}%` }}
+                          ></div>
+                        );
+                      }
+                      return ticks;
+                    })()}
+                    
+                    {/* Major range markers: Left, Center, Right */}
                     <div className="absolute inset-0 flex items-center justify-between px-0.5">
-                      <div className="w-0.5 h-3 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
-                      <div className="w-0.5 h-3 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
-                      <div className="w-0.5 h-3 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
+                      <div className="w-0.5 h-3 bg-gray-500 dark:bg-gray-400 rounded-full z-10"></div>
+                      <div className="w-0.5 h-3 bg-gray-500 dark:bg-gray-400 rounded-full z-10"></div>
+                      <div className="w-0.5 h-3 bg-gray-500 dark:bg-gray-400 rounded-full z-10"></div>
                     </div>
                     
                     {/* Indicator: Vertical line with downward arrow */}

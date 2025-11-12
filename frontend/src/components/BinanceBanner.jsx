@@ -1,4 +1,5 @@
 import { useLanguage } from '../contexts/LanguageContext';
+import { Link } from 'react-router-dom';
 
 function BinanceBanner() {
   const languageContext = useLanguage();
@@ -33,8 +34,16 @@ function BinanceBanner() {
             </div>
           </div>
           
-          {/* Right side - CTA Button */}
-          <div className="flex-shrink-0">
+          {/* Right side - CTA Buttons */}
+          <div className="flex-shrink-0 flex gap-3">
+            <Link
+              to="/buy-dollars"
+              className="inline-flex items-center gap-2 bg-gray-600 hover:bg-gray-700 dark:bg-gray-500 dark:hover:bg-gray-600 text-white font-medium px-5 py-2.5 rounded-lg shadow-sm hover:shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+            >
+              <span className="text-sm">
+                {t('learnMore')}
+              </span>
+            </Link>
             <a
               href={referralLink}
               target="_blank"

@@ -66,34 +66,58 @@ function DailySentimentHeader() {
     : t('dailySentimentNeutral');
 
   return (
-    <div className="flex items-center justify-center gap-4 text-sm">
-      <span className="text-gray-600 dark:text-gray-400 font-medium">
-        {t('dailySentimentTitle')}:
-      </span>
-      <div className="flex items-center gap-2">
-        <span className={`text-lg font-bold ${trendColor}`}>{trendIcon}</span>
-        <span className={`font-semibold ${trendColor}`}>{trendText}</span>
+    <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 text-xs sm:text-sm px-2">
+      {/* Mobile: Compact single line with icons only */}
+      <div className="flex items-center gap-2 sm:hidden">
+        <span className="text-gray-600 dark:text-gray-400 font-medium">
+          {t('dailySentimentTitle')}:
+        </span>
+        <span className={`text-base font-bold ${trendColor}`}>{trendIcon}</span>
+        <span className="text-gray-500 dark:text-gray-500">•</span>
+        <span className="text-gray-600 dark:text-gray-400 font-medium">
+          {dailySentiment.total}
+        </span>
+        {dailySentiment.up > 0 && (
+          <span className={`flex items-center gap-0.5 text-green-700 dark:text-green-300 font-semibold`}>
+            <span className="text-sm">↗</span> {dailySentiment.up}
+          </span>
+        )}
+        {dailySentiment.down > 0 && (
+          <span className={`flex items-center gap-0.5 text-red-700 dark:text-red-300 font-semibold`}>
+            <span className="text-sm">↘</span> {dailySentiment.down}
+          </span>
+        )}
       </div>
-      <span className="text-gray-500 dark:text-gray-500">•</span>
-      <span className="text-gray-600 dark:text-gray-400">
-        {dailySentiment.total} {language === 'es' ? 'artículos' : 'articles'}
-      </span>
-      {dailySentiment.up > 0 && (
-        <span className="flex items-center gap-1 text-green-700 dark:text-green-300 font-medium">
-          <span className="font-bold">↗</span> {dailySentiment.up}
+
+      {/* Desktop: Full layout with labels */}
+      <div className="hidden sm:flex items-center gap-3 flex-wrap justify-center">
+        <span className="text-gray-600 dark:text-gray-400 font-medium">
+          {t('dailySentimentTitle')}:
         </span>
-      )}
-      {dailySentiment.down > 0 && (
-        <span className="flex items-center gap-1 text-red-700 dark:text-red-300 font-medium">
-          <span className="font-bold">↘</span> {dailySentiment.down}
+        <div className="flex items-center gap-2">
+          <span className={`text-lg font-bold ${trendColor}`}>{trendIcon}</span>
+          <span className={`font-semibold ${trendColor}`}>{trendText}</span>
+        </div>
+        <span className="text-gray-500 dark:text-gray-500">•</span>
+        <span className="text-gray-600 dark:text-gray-400">
+          {dailySentiment.total} {language === 'es' ? 'artículos' : 'articles'}
         </span>
-      )}
-      <span className="text-xs text-gray-500 dark:text-gray-500">
-        ({language === 'es' ? 'Últimas 24h' : 'Last 24h'})
-      </span>
+        {dailySentiment.up > 0 && (
+          <span className="flex items-center gap-1 text-green-700 dark:text-green-300 font-medium">
+            <span className="font-bold">↗</span> {dailySentiment.up}
+          </span>
+        )}
+        {dailySentiment.down > 0 && (
+          <span className="flex items-center gap-1 text-red-700 dark:text-red-300 font-medium">
+            <span className="font-bold">↘</span> {dailySentiment.down}
+          </span>
+        )}
+        <span className="text-xs text-gray-500 dark:text-gray-500">
+          ({language === 'es' ? 'Últimas 24h' : 'Last 24h'})
+        </span>
+      </div>
     </div>
   );
 }
 
 export default DailySentimentHeader;
-

@@ -229,113 +229,101 @@ function DailySentimentHeader() {
       `Score: ↗ ${trendDetails.upScore} vs ↘ ${trendDetails.downScore}`;
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-4">
-      {/* Header Row */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <div 
-            ref={badgeRef}
-            className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border-2 ${trendBg} shadow-sm relative cursor-help`}
-            onMouseEnter={() => handleTooltipToggle(true)}
-            onMouseLeave={() => handleTooltipToggle(false)}
+    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-3">
+      {/* Single Row - Compact Layout */}
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        {/* Left: Sentiment Badge */}
+        <div 
+          ref={badgeRef}
+          className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border-2 ${trendBg} shadow-sm relative cursor-help`}
+          onMouseEnter={() => handleTooltipToggle(true)}
+          onMouseLeave={() => handleTooltipToggle(false)}
+        >
+          <span className={`text-xl font-bold ${trendColor}`}>{trendIcon}</span>
+          <div className="flex flex-col">
+            <span className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide leading-tight">
+              {t('dailySentimentTitle')}
+            </span>
+            <span className={`text-xs font-bold ${trendColor} leading-tight`}>
+              {trendText}
+            </span>
+          </div>
+          {/* Info Icon */}
+          <button
+            type="button"
+            className="ml-0.5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+            aria-label={language === 'es' ? 'Información sobre el análisis de sentimiento' : 'Information about sentiment analysis'}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleTooltipToggle(!showTooltip);
+            }}
           >
-            <span className={`text-2xl font-bold ${trendColor}`}>{trendIcon}</span>
-            <div className="flex flex-col">
-              <span className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
-                {t('dailySentimentTitle')}
-              </span>
-              <span className={`text-sm font-bold ${trendColor} leading-tight`}>
-                {trendText}
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </button>
+          {/* Tooltip with smart positioning */}
+          {showTooltip && (
+            <div 
+              ref={tooltipRef}
+              className={`absolute ${tooltipPosition === 'top' ? 'bottom-full mb-2' : 'top-full mt-2'} left-1/2 transform -translate-x-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-800 text-white text-xs rounded-lg shadow-xl z-50 max-w-xs text-center whitespace-normal`}
+              style={{ minWidth: '280px' }}
+            >
+              <div className="flex items-start gap-2">
+                <svg className="w-4 h-4 flex-shrink-0 mt-0.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span className="text-left">{tooltipText}</span>
+              </div>
+              {/* Arrow pointing to badge */}
+              <div className={`absolute ${tooltipPosition === 'top' ? 'top-full -mt-1' : 'bottom-full -mb-1'} left-1/2 transform -translate-x-1/2`}>
+                <div className={`border-4 border-transparent ${tooltipPosition === 'top' ? 'border-t-gray-900 dark:border-t-gray-800' : 'border-b-gray-900 dark:border-b-gray-800'}`}></div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Center: Article Metrics */}
+        <div className="flex items-center gap-2 flex-1 justify-center">
+          <span className="text-xs text-gray-500 dark:text-gray-400">
+            {language === 'es' ? 'Basado en' : 'Based on'}
+          </span>
+          <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
+            <span className="text-sm font-bold text-gray-900 dark:text-white">
+              {dailySentiment.total}
+            </span>
+            <span className="text-xs text-gray-600 dark:text-gray-400">
+              {language === 'es' ? 'artículos' : 'articles'}
+            </span>
+          </div>
+
+          {/* Positive Count */}
+          {dailySentiment.up > 0 && (
+            <div className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
+              <span className="text-sm font-bold text-green-700 dark:text-green-300">↗</span>
+              <span className="text-xs font-bold text-green-700 dark:text-green-300">
+                {dailySentiment.up}
               </span>
             </div>
-            {/* Info Icon */}
-            <button
-              type="button"
-              className="ml-1 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
-              aria-label={language === 'es' ? 'Información sobre el análisis de sentimiento' : 'Information about sentiment analysis'}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleTooltipToggle(!showTooltip);
-              }}
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </button>
-            {/* Tooltip with smart positioning */}
-            {showTooltip && (
-              <div 
-                ref={tooltipRef}
-                className={`absolute ${tooltipPosition === 'top' ? 'bottom-full mb-2' : 'top-full mt-2'} left-1/2 transform -translate-x-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-800 text-white text-xs rounded-lg shadow-xl z-50 max-w-xs text-center whitespace-normal`}
-                style={{ minWidth: '280px' }}
-              >
-                <div className="flex items-start gap-2">
-                  <svg className="w-4 h-4 flex-shrink-0 mt-0.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span className="text-left">{tooltipText}</span>
-                </div>
-                {/* Arrow pointing to badge */}
-                <div className={`absolute ${tooltipPosition === 'top' ? 'top-full -mt-1' : 'bottom-full -mb-1'} left-1/2 transform -translate-x-1/2`}>
-                  <div className={`border-4 border-transparent ${tooltipPosition === 'top' ? 'border-t-gray-900 dark:border-t-gray-800' : 'border-b-gray-900 dark:border-b-gray-800'}`}></div>
-                </div>
-              </div>
-            )}
-          </div>
+          )}
+
+          {/* Negative Count */}
+          {dailySentiment.down > 0 && (
+            <div className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+              <span className="text-sm font-bold text-red-700 dark:text-red-300">↘</span>
+              <span className="text-xs font-bold text-red-700 dark:text-red-300">
+                {dailySentiment.down}
+              </span>
+            </div>
+          )}
         </div>
-        
-        {/* Timeframe Badge */}
-        <div className="inline-flex items-center px-3 py-1.5 rounded-lg bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
+
+        {/* Right: Timeframe */}
+        <div className="inline-flex items-center px-2 py-1 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
           <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
-            {language === 'es' ? 'Últimas 24h' : 'Last 24h'}
+            {language === 'es' ? '24h' : '24h'}
           </span>
         </div>
-      </div>
-
-      {/* Metrics Row - Connected to Articles */}
-      <div className="flex items-center gap-3 flex-wrap">
-        <div className="text-xs font-medium text-gray-500 dark:text-gray-400">
-          {language === 'es' ? 'Basado en' : 'Based on'}:
-        </div>
-        
-        {/* Total Articles */}
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
-          <span className="text-base font-bold text-gray-900 dark:text-white">
-            {dailySentiment.total}
-          </span>
-          <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
-            {language === 'es' ? 'artículos' : 'articles'}
-          </span>
-        </div>
-
-        {/* Divider */}
-        <div className="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
-
-        {/* Positive Count */}
-        {dailySentiment.up > 0 && (
-          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
-            <span className="text-base font-bold text-green-700 dark:text-green-300">↗</span>
-            <span className="text-sm font-bold text-green-700 dark:text-green-300">
-              {dailySentiment.up}
-            </span>
-            <span className="text-xs font-medium text-green-600 dark:text-green-400">
-              {language === 'es' ? 'sube' : 'up'}
-            </span>
-          </div>
-        )}
-
-        {/* Negative Count */}
-        {dailySentiment.down > 0 && (
-          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
-            <span className="text-base font-bold text-red-700 dark:text-red-300">↘</span>
-            <span className="text-sm font-bold text-red-700 dark:text-red-300">
-              {dailySentiment.down}
-            </span>
-            <span className="text-xs font-medium text-red-600 dark:text-red-400">
-              {language === 'es' ? 'baja' : 'down'}
-            </span>
-          </div>
-        )}
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { fetchNews } from '../utils/api';
 import { useLanguage } from '../contexts/LanguageContext';
-import { cleanSummary, formatTimeAgo } from '../utils/formatters';
+import { cleanSummary } from '../utils/formatters';
 
 /**
  * Binance/Kalshi-inspired News Sentiment Dashboard Component
@@ -15,11 +15,14 @@ function SentimentNewsCard() {
   const [articles, setArticles] = useState([]);
   const [dailySentiment, setDailySentiment] = useState(null);
   const [trendDetails, setTrendDetails] = useState(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isPaused, setIsPaused] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
   const tooltipRef = useRef(null);
   const infoIconRef = useRef(null);
+  const autoRotateIntervalRef = useRef(null);
 
   // Load articles and calculate sentiment
   useEffect(() => {
@@ -105,22 +108,50 @@ function SentimentNewsCard() {
           downScore: Math.round(downScore * 10) / 10
         });
         
-        // Get latest 5-8 articles for display
-        const latestArticles = allNews
-          .filter(article => {
+        // Filter articles from last 24 hours with up or down sentiment for rotation
+        const oneDayAgo = new Date();
+        oneDayAgo.setHours(oneDayAgo.getHours() - 24);
+        
+        const filteredArticles = allNews.filter(article => {
+          const publishedDate = article.published_at || article.published_at_iso;
+          if (!publishedDate) return false;
+          
+          const articleDate = new Date(publishedDate);
+          if (isNaN(articleDate.getTime())) return false;
+          
+          const hasMovement = article.sentiment === 'up' || article.sentiment === 'down';
+          const isRecent = articleDate >= oneDayAgo;
+          
+          return hasMovement && isRecent;
+        });
+        
+        // If no articles in last 24h, show articles from last 7 days instead
+        let articlesToShow = filteredArticles;
+        if (filteredArticles.length === 0) {
+          const sevenDaysAgo = new Date();
+          sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+          
+          articlesToShow = allNews.filter(article => {
             const publishedDate = article.published_at || article.published_at_iso;
             if (!publishedDate) return false;
+            
             const articleDate = new Date(publishedDate);
-            return !isNaN(articleDate.getTime());
-          })
-          .sort((a, b) => {
-            const dateA = new Date(a.published_at || a.published_at_iso);
-            const dateB = new Date(b.published_at || b.published_at_iso);
-            return dateB - dateA;
-          })
-          .slice(0, 8);
+            if (isNaN(articleDate.getTime())) return false;
+            
+            const hasMovement = article.sentiment === 'up' || article.sentiment === 'down';
+            const isRecent = articleDate >= sevenDaysAgo;
+            return hasMovement && isRecent;
+          });
+        }
         
-        setArticles(latestArticles);
+        // Sort by most recent first
+        articlesToShow.sort((a, b) => {
+          const dateA = new Date(a.published_at || a.published_at_iso);
+          const dateB = new Date(b.published_at || b.published_at_iso);
+          return dateB - dateA;
+        });
+        
+        setArticles(articlesToShow);
         setIsLoading(false);
       } catch (err) {
         console.error('Error loading sentiment and articles:', err);
@@ -136,6 +167,48 @@ function SentimentNewsCard() {
     
     return () => clearInterval(refreshInterval);
   }, []);
+
+  // Auto-rotate every 5 seconds
+  useEffect(() => {
+    if (articles.length === 0 || isPaused) {
+      if (autoRotateIntervalRef.current) {
+        clearInterval(autoRotateIntervalRef.current);
+        autoRotateIntervalRef.current = null;
+      }
+      return;
+    }
+    
+    autoRotateIntervalRef.current = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % articles.length);
+    }, 5000);
+    
+    return () => {
+      if (autoRotateIntervalRef.current) {
+        clearInterval(autoRotateIntervalRef.current);
+        autoRotateIntervalRef.current = null;
+      }
+    };
+  }, [articles.length, isPaused]);
+
+  // Reset index if current article doesn't exist
+  useEffect(() => {
+    if (articles.length > 0 && (!articles[currentIndex] || currentIndex >= articles.length)) {
+      setCurrentIndex(0);
+    }
+  }, [articles, currentIndex]);
+
+  // Navigation functions
+  const goToPrevious = useCallback(() => {
+    setIsPaused(true);
+    setCurrentIndex((prev) => (prev === 0 ? articles.length - 1 : prev - 1));
+    setTimeout(() => setIsPaused(false), 10000);
+  }, [articles.length]);
+
+  const goToNext = useCallback(() => {
+    setIsPaused(true);
+    setCurrentIndex((prev) => (prev + 1) % articles.length);
+    setTimeout(() => setIsPaused(false), 10000);
+  }, [articles.length]);
 
   // Calculate tooltip position
   const handleTooltipToggle = useCallback((show) => {
@@ -362,92 +435,163 @@ function SentimentNewsCard() {
         </div>
       </div>
 
-      {/* News List */}
-      <div className="divide-y divide-gray-200 dark:divide-gray-700">
-        {articles.length === 0 ? (
-          <div className="p-6 text-center">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              {language === 'es' 
-                ? 'No hay artículos disponibles.'
-                : 'No articles available.'}
-            </p>
-          </div>
-        ) : (
-          articles.map((article) => {
-            const faviconUrl = getFaviconUrl(article.source, article.url);
-            const sentimentColor = article.sentiment === 'up' 
-              ? 'text-green-600 dark:text-green-400' 
-              : article.sentiment === 'down'
-              ? 'text-red-600 dark:text-red-400'
-              : 'text-gray-500 dark:text-gray-400';
-            const sentimentIcon = article.sentiment === 'up' ? '↗' : article.sentiment === 'down' ? '↘' : '○';
+      {/* Rotating Article Content */}
+      {articles.length === 0 ? (
+        <div className="p-6 text-center">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            {language === 'es' 
+              ? 'No hay artículos recientes con movimiento de sentimiento.'
+              : 'No recent articles with sentiment movement.'}
+          </p>
+        </div>
+      ) : articles[currentIndex] ? (
+        <>
+          <a
+            href={articles[currentIndex].url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-900/30 transition-colors group"
+          >
+            <div className="flex items-start gap-3">
+              {/* Favicon */}
+              <div className="flex-shrink-0 mt-0.5">
+                {getFaviconUrl(articles[currentIndex].source, articles[currentIndex].url) ? (
+                  <img 
+                    src={getFaviconUrl(articles[currentIndex].source, articles[currentIndex].url)} 
+                    alt={articles[currentIndex].source}
+                    className="w-4 h-4 rounded-sm"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                ) : (
+                  <div className="w-4 h-4 rounded-sm bg-gray-300 dark:bg-gray-600"></div>
+                )}
+              </div>
 
-            return (
-              <a
-                key={article.id}
-                href={article.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-900/30 transition-colors group"
-              >
-                <div className="flex items-start gap-3">
-                  {/* Favicon */}
-                  <div className="flex-shrink-0 mt-0.5">
-                    {faviconUrl ? (
-                      <img 
-                        src={faviconUrl} 
-                        alt={article.source}
-                        className="w-4 h-4 rounded-sm"
-                        onError={(e) => {
-                          e.target.style.display = 'none';
-                        }}
-                      />
-                    ) : (
-                      <div className="w-4 h-4 rounded-sm bg-gray-300 dark:bg-gray-600"></div>
-                    )}
-                  </div>
-
-                  {/* Article Content */}
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white line-clamp-2 mb-1.5 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                      {article.title}
-                    </h3>
-                    
-                    <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-                      <span className="font-medium">{article.source}</span>
-                      <span>•</span>
-                      <span>{formatTimeAgo(article.published_at_iso)}</span>
-                      {article.category && article.category !== 'general' && (
-                        <>
-                          <span>•</span>
-                          <span className="px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-medium">
-                            {article.category}
-                          </span>
-                        </>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Sentiment Indicator */}
-                  <div className="flex-shrink-0">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                      article.sentiment === 'up'
-                        ? 'bg-green-100 dark:bg-green-900/30'
-                        : article.sentiment === 'down'
-                        ? 'bg-red-100 dark:bg-red-900/30'
-                        : 'bg-gray-100 dark:bg-gray-700/50'
-                    }`}>
-                      <span className={`text-sm font-bold ${sentimentColor}`}>
-                        {sentimentIcon}
-                      </span>
-                    </div>
-                  </div>
+              {/* Article Content */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">
+                    {articles[currentIndex].source}
+                  </span>
+                  <span className="text-xs text-gray-400 dark:text-gray-500">
+                    • {(() => {
+                      const publishedDate = articles[currentIndex].published_at || articles[currentIndex].published_at_iso;
+                      if (!publishedDate) return '';
+                      
+                      const date = new Date(publishedDate);
+                      if (isNaN(date.getTime())) return '';
+                      
+                      const now = new Date();
+                      const diffMs = now - date;
+                      const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+                      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                      
+                      if (diffHours < 1) {
+                        return language === 'es' ? 'Hace <1h' : '<1h ago';
+                      } else if (diffHours < 24) {
+                        return language === 'es' 
+                          ? `Hace ${diffHours}h` 
+                          : `${diffHours}h ago`;
+                      } else if (diffDays < 2) {
+                        return language === 'es' ? 'Hace 1d' : '1d ago';
+                      } else {
+                        return language === 'es' 
+                          ? `Hace ${diffDays}d` 
+                          : `${diffDays}d ago`;
+                      }
+                    })()}
+                  </span>
                 </div>
-              </a>
-            );
-          })
-        )}
-      </div>
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white line-clamp-2 mb-1 leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  {articles[currentIndex].title}
+                </h3>
+                {articles[currentIndex].summary && cleanSummary(articles[currentIndex].summary) && (
+                  <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 leading-snug mt-1">
+                    {cleanSummary(articles[currentIndex].summary)}
+                  </p>
+                )}
+              </div>
+
+              {/* Sentiment Indicator */}
+              <div className="flex-shrink-0">
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                  articles[currentIndex].sentiment === 'up'
+                    ? 'bg-green-100 dark:bg-green-900/30'
+                    : articles[currentIndex].sentiment === 'down'
+                    ? 'bg-red-100 dark:bg-red-900/30'
+                    : 'bg-gray-100 dark:bg-gray-700/50'
+                }`}>
+                  <span className={`text-xl font-bold ${
+                    articles[currentIndex].sentiment === 'up'
+                      ? 'text-green-600 dark:text-green-400'
+                      : articles[currentIndex].sentiment === 'down'
+                      ? 'text-red-600 dark:text-red-400'
+                      : 'text-gray-500 dark:text-gray-400'
+                  }`}>
+                    {articles[currentIndex].sentiment === 'up' ? '↗' : articles[currentIndex].sentiment === 'down' ? '↘' : '○'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </a>
+
+          {/* Navigation Controls */}
+          {articles.length > 1 && (
+            <div className="flex items-center justify-between px-6 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30">
+              {/* Left Arrow */}
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  goToPrevious();
+                }}
+                className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                aria-label={language === 'es' ? 'Artículo anterior' : 'Previous article'}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+
+              {/* Progress Dots */}
+              <div className="flex items-center gap-2">
+                <div className="flex gap-1">
+                  {articles.slice(0, Math.min(articles.length, 8)).map((_, index) => (
+                    <div
+                      key={index}
+                      className={`h-1.5 rounded-full transition-all duration-300 ${
+                        index === currentIndex
+                          ? 'bg-blue-600 dark:bg-blue-400 w-3'
+                          : 'bg-gray-300 dark:bg-gray-600 w-1.5'
+                      }`}
+                    />
+                  ))}
+                </div>
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium ml-2">
+                  {currentIndex + 1}/{articles.length}
+                </span>
+              </div>
+
+              {/* Right Arrow */}
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  goToNext();
+                }}
+                className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                aria-label={language === 'es' ? 'Siguiente artículo' : 'Next article'}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          )}
+        </>
+      ) : null}
     </div>
   );
 }

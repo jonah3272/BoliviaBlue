@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { fetchNews } from '../utils/api';
 import { formatTimeAgo } from '../utils/formatters';
 import { useLanguage } from '../contexts/LanguageContext';
 import SentimentLegend from './SentimentLegend';
 
 // AI-Powered Sentiment Indicator - Matches legend colors
-function SentimentArrow({ sentiment }) {
+const SentimentArrow = memo(function SentimentArrow({ sentiment }) {
   if (!sentiment || sentiment === 'neutral') {
     return (
       <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700/50">
@@ -37,9 +37,9 @@ function SentimentArrow({ sentiment }) {
   }
   
   return null;
-}
+});
 
-function NewsCard({ item }) {
+const NewsCard = memo(function NewsCard({ item }) {
   return (
     <a
       href={item.url}
@@ -75,7 +75,7 @@ function NewsCard({ item }) {
       </div>
     </a>
   );
-}
+});
 
 function NewsFeed() {
   const languageContext = useLanguage();

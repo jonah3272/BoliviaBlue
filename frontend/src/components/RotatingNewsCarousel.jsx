@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { fetchNews } from '../utils/api';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -139,20 +139,20 @@ function RotatingNewsCarousel() {
     }
   }, [articles, currentIndex]);
 
-  // Navigation functions
-  const goToPrevious = () => {
+  // Navigation functions - memoized with useCallback
+  const goToPrevious = useCallback(() => {
     setIsPaused(true);
     setCurrentIndex((prev) => (prev === 0 ? articles.length - 1 : prev - 1));
     // Resume auto-rotation after 10 seconds
     setTimeout(() => setIsPaused(false), 10000);
-  };
+  }, [articles.length]);
 
-  const goToNext = () => {
+  const goToNext = useCallback(() => {
     setIsPaused(true);
     setCurrentIndex((prev) => (prev + 1) % articles.length);
     // Resume auto-rotation after 10 seconds
     setTimeout(() => setIsPaused(false), 10000);
-  };
+  }, [articles.length]);
 
   if (isLoading) {
     return (
@@ -183,18 +183,25 @@ function RotatingNewsCarousel() {
     );
   }
 
-  if (!dailySentiment || !articles[currentIndex]) {
+  // Memoize current article and derived values
+  const currentArticle = useMemo(() => articles[currentIndex], [articles, currentIndex]);
+  
+  const { sentimentColor, sentimentBg, sentimentIcon } = useMemo(() => {
+    if (!currentArticle) return { sentimentColor: '', sentimentBg: '', sentimentIcon: '' };
+    return {
+      sentimentColor: currentArticle.sentiment === 'up' 
+        ? 'text-green-600 dark:text-green-400' 
+        : 'text-red-600 dark:text-red-400',
+      sentimentBg: currentArticle.sentiment === 'up'
+        ? 'bg-green-100 dark:bg-green-900/30'
+        : 'bg-red-100 dark:bg-red-900/30',
+      sentimentIcon: currentArticle.sentiment === 'up' ? '↗' : '↘'
+    };
+  }, [currentArticle]);
+
+  if (!dailySentiment || !currentArticle) {
     return null;
   }
-
-  const currentArticle = articles[currentIndex];
-  const sentimentColor = currentArticle.sentiment === 'up' 
-    ? 'text-green-600 dark:text-green-400' 
-    : 'text-red-600 dark:text-red-400';
-  const sentimentBg = currentArticle.sentiment === 'up'
-    ? 'bg-green-100 dark:bg-green-900/30'
-    : 'bg-red-100 dark:bg-red-900/30';
-  const sentimentIcon = currentArticle.sentiment === 'up' ? '↗' : '↘';
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow">

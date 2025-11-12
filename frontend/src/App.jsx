@@ -1,24 +1,41 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Suspense, lazy } from 'react';
 import Home from './pages/Home';
-import Calculator from './pages/Calculator';
-import News from './pages/News';
-import About from './pages/About';
-import FAQ from './pages/FAQ';
-import RodrigoPaz from './pages/RodrigoPaz';
-import BuyDollars from './pages/BuyDollars';
+
+// Lazy load routes for code splitting
+const Calculator = lazy(() => import('./pages/Calculator'));
+const News = lazy(() => import('./pages/News'));
+const About = lazy(() => import('./pages/About'));
+const FAQ = lazy(() => import('./pages/FAQ'));
+const RodrigoPaz = lazy(() => import('./pages/RodrigoPaz'));
+const BuyDollars = lazy(() => import('./pages/BuyDollars'));
+
+// Loading fallback component
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen bg-brand-bg dark:bg-gray-900 flex items-center justify-center">
+      <div className="text-center">
+        <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-blue-600 mb-4"></div>
+        <p className="text-gray-600 dark:text-gray-400">Cargando...</p>
+      </div>
+    </div>
+  );
+}
 
 function App() {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/calculator" element={<Calculator />} />
-        <Route path="/news" element={<News />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/faq" element={<FAQ />} />
-        <Route path="/rodrigo-paz" element={<RodrigoPaz />} />
-        <Route path="/buy-dollars" element={<BuyDollars />} />
-      </Routes>
+      <Suspense fallback={<LoadingFallback />}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/calculator" element={<Calculator />} />
+          <Route path="/news" element={<News />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/rodrigo-paz" element={<RodrigoPaz />} />
+          <Route path="/buy-dollars" element={<BuyDollars />} />
+        </Routes>
+      </Suspense>
     </Router>
   );
 }

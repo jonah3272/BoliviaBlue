@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo, useCallback, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { fetchBlueRate } from '../utils/api';
 import { formatRate, formatDateTime, isStale } from '../utils/formatters';
 import { useLanguage } from '../contexts/LanguageContext';
 
-function RateCard({ type, rate, timestamp, isStaleData, isLoading, error, dailyChange, isOfficial }) {
+const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, isLoading, error, dailyChange, isOfficial }) {
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const isBuy = type === 'buy';
@@ -71,7 +71,7 @@ function RateCard({ type, rate, timestamp, isStaleData, isLoading, error, dailyC
       )}
     </div>
   );
-}
+});
 
 function BlueRateCards() {
   const languageContext = useLanguage();
@@ -82,7 +82,7 @@ function BlueRateCards() {
   const [error, setError] = useState(null);
   const [showOfficial, setShowOfficial] = useState(false);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const result = await fetchBlueRate();
       setData(result);
@@ -93,7 +93,7 @@ function BlueRateCards() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     loadData();
@@ -102,17 +102,19 @@ function BlueRateCards() {
     const interval = setInterval(loadData, 60000);
     
     return () => clearInterval(interval);
-  }, []);
+  }, [loadData]);
 
-  const isDataStale = data?.updated_at_iso ? 
-    (isStale(data.updated_at_iso) || data.is_stale) : false;
+  const isDataStale = useMemo(() => 
+    data?.updated_at_iso ? (isStale(data.updated_at_iso) || data.is_stale) : false,
+    [data?.updated_at_iso, data?.is_stale]
+  );
 
   // Use daily change from API
   const buyChange = data?.buy_change_24h;
   const sellChange = data?.sell_change_24h;
 
   // Generate ExchangeRate structured data
-  const exchangeRateSchema = data && data.buy_bob_per_usd && data.sell_bob_per_usd ? {
+  const exchangeRateSchema = useMemo(() => data && data.buy_bob_per_usd && data.sell_bob_per_usd ? {
     "@context": "https://schema.org",
     "@type": "ExchangeRateSpecification",
     "currency": "BOB",
@@ -126,7 +128,7 @@ function BlueRateCards() {
     "validFrom": data.updated_at_iso,
     "rateType": showOfficial ? "Official" : "Blue Market (Parallel)",
     "exchangeRateSpread": (data.sell_bob_per_usd - data.buy_bob_per_usd).toFixed(4)
-  } : null;
+  } : null, [data, showOfficial]);
 
   return (
     <div className="space-y-6">

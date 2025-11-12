@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { fetchNews } from '../utils/api';
 import { useLanguage } from '../contexts/LanguageContext';
 

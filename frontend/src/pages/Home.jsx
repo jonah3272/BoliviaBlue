@@ -2,7 +2,8 @@ import ThemeToggle from '../components/ThemeToggle';
 import LanguageToggle from '../components/LanguageToggle';
 import BlueRateCards from '../components/BlueRateCards';
 import BinanceBanner from '../components/BinanceBanner';
-import BlueChart from '../components/BlueChart';
+import { lazy, Suspense } from 'react';
+const BlueChart = lazy(() => import('../components/BlueChart'));
 import NewsTabs from '../components/NewsTabs';
 import About from '../components/About';
 import PageMeta from '../components/PageMeta';
@@ -103,7 +104,14 @@ function Home() {
 
         {/* Chart */}
         <section>
-          <BlueChart />
+          <Suspense fallback={
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 animate-pulse">
+              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-4"></div>
+              <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded"></div>
+            </div>
+          }>
+            <BlueChart />
+          </Suspense>
         </section>
 
         {/* Binance Banner - Under Chart */}

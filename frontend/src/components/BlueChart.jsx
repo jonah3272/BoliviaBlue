@@ -179,16 +179,20 @@ function BlueChart() {
             {t('historicalPriceChart')}
           </h2>
           {stats.latestBuy > 0 && (
-            <div className="flex items-center gap-4 text-sm">
+            <div className="flex items-center gap-3 sm:gap-4 text-sm flex-wrap">
               <span className="font-mono font-semibold text-green-600 dark:text-green-400">
                 {stats.latestBuy.toFixed(2)} Bs
               </span>
-              <span className={`flex items-center gap-1 font-medium ${
-                stats.change >= 0 ? 'text-red-500' : 'text-green-500'
+              <span className={`flex items-center gap-1 font-semibold ${
+                stats.change >= 0 
+                  ? 'text-green-600 dark:text-green-400' 
+                  : stats.change < 0 
+                  ? 'text-red-600 dark:text-red-400'
+                  : 'text-gray-500 dark:text-gray-400'
               }`}>
-                {stats.change >= 0 ? '↗' : '↘'}
+                {stats.change > 0 ? '↗' : stats.change < 0 ? '↘' : '○'}
                 {Math.abs(stats.change).toFixed(2)}%
-                <span className="text-xs text-gray-500 dark:text-gray-400">
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-normal">
                   ({range})
                 </span>
               </span>
@@ -258,7 +262,7 @@ function BlueChart() {
       {!isLoading && !error && data.length > 0 && (
         <div className="relative">
           {/* Legend */}
-          <div className="flex justify-center gap-6 mb-4">
+          <div className="flex justify-center gap-6 mb-3 sm:mb-4">
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 rounded-full bg-green-500 shadow-lg shadow-green-500/50"></div>
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -273,7 +277,8 @@ function BlueChart() {
             </div>
           </div>
           
-          <ResponsiveContainer width="100%" height={420}>
+          <div className="h-[280px] sm:h-[420px]">
+            <ResponsiveContainer width="100%" height="100%">
             <AreaChart 
               data={data} 
               margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
@@ -345,6 +350,7 @@ function BlueChart() {
               />
             </AreaChart>
           </ResponsiveContainer>
+          </div>
         </div>
       )}
     </div>

@@ -36,46 +36,56 @@ function DailySentimentSummary({ sentiment }) {
     : t('dailySentimentNeutral');
 
   return (
-    <div className={`rounded-lg border-2 p-4 ${trendBg} transition-all hover:shadow-md`}>
-      <div className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-3 uppercase tracking-wide">
-        {t('dailySentimentTitle')}
-      </div>
-      
-      {/* Overall Trend */}
-      <div className="flex items-center gap-2 mb-4">
-        <span className={`text-2xl font-bold ${trendColor}`}>
-          {trendIcon}
-        </span>
-        <span className={`text-sm font-semibold ${trendColor}`}>
-          {trendText}
-        </span>
+    <div className={`rounded-xl border-2 p-5 ${trendBg} transition-all hover:shadow-lg backdrop-blur-sm h-full flex flex-col`}>
+      {/* Header */}
+      <div className="mb-4">
+        <div className="text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider">
+          {t('dailySentimentTitle')}
+        </div>
+        
+        {/* Overall Trend - More Prominent */}
+        <div className="flex items-center gap-3 mt-3">
+          <div className={`w-12 h-12 rounded-xl ${isBullish ? 'bg-green-500/20 dark:bg-green-500/30' : isBearish ? 'bg-red-500/20 dark:bg-red-500/30' : 'bg-gray-500/20 dark:bg-gray-500/30'} flex items-center justify-center`}>
+            <span className={`text-3xl font-bold ${trendColor}`}>
+              {trendIcon}
+            </span>
+          </div>
+          <div>
+            <div className={`text-base font-bold ${trendColor}`}>
+              {trendText}
+            </div>
+            <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+              {language === 'es' ? 'Últimas 24 horas' : 'Last 24 hours'}
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Stats */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-600 dark:text-gray-400">
+      {/* Stats - Modern Card Style */}
+      <div className="space-y-3 mt-auto">
+        <div className="flex items-center justify-between p-2.5 rounded-lg bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm">
+          <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
             {t('dailySentimentTotal')}
           </span>
-          <span className="text-sm font-bold text-gray-900 dark:text-white">
-            {sentiment.total} {t('dailySentimentArticles')}
+          <span className="text-base font-bold text-gray-900 dark:text-white">
+            {sentiment.total}
           </span>
         </div>
         
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-green-700 dark:text-green-300 flex items-center gap-1">
-            <span className="font-bold">↗</span> {t('dailySentimentPositive')}
+        <div className="flex items-center justify-between p-2.5 rounded-lg bg-green-50/50 dark:bg-green-900/20 backdrop-blur-sm">
+          <span className="text-xs font-medium text-green-700 dark:text-green-300 flex items-center gap-1.5">
+            <span className="text-base font-bold">↗</span> {t('dailySentimentPositive')}
           </span>
-          <span className="text-sm font-semibold text-green-600 dark:text-green-400">
+          <span className="text-base font-bold text-green-600 dark:text-green-400">
             {sentiment.up}
           </span>
         </div>
         
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-red-700 dark:text-red-300 flex items-center gap-1">
-            <span className="font-bold">↘</span> {t('dailySentimentNegative')}
+        <div className="flex items-center justify-between p-2.5 rounded-lg bg-red-50/50 dark:bg-red-900/20 backdrop-blur-sm">
+          <span className="text-xs font-medium text-red-700 dark:text-red-300 flex items-center gap-1.5">
+            <span className="text-base font-bold">↘</span> {t('dailySentimentNegative')}
           </span>
-          <span className="text-sm font-semibold text-red-600 dark:text-red-400">
+          <span className="text-base font-bold text-red-600 dark:text-red-400">
             {sentiment.down}
           </span>
         </div>
@@ -245,22 +255,23 @@ function RotatingNewsCarousel() {
   if (isLoading) {
     console.log('⏳ Rendering loading state');
     return (
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         <div className="lg:col-span-1">
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 animate-pulse">
-            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-3"></div>
-            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4"></div>
-            <div className="space-y-2">
-              <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded"></div>
-              <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded"></div>
-              <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded"></div>
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 animate-pulse h-full">
+            <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-4"></div>
+            <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-xl w-full mb-4"></div>
+            <div className="space-y-3 mt-6">
+              <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+              <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+              <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
             </div>
           </div>
         </div>
         <div className="lg:col-span-2">
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 rounded-lg p-4 border border-blue-200 dark:border-gray-700 animate-pulse">
-            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
-            <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 animate-pulse h-full">
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-3"></div>
+            <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-4"></div>
+            <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded"></div>
           </div>
         </div>
       </div>
@@ -271,10 +282,10 @@ function RotatingNewsCarousel() {
   if (error) {
     console.log('❌ Rendering error state:', error);
     return (
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         <div className="lg:col-span-1">
-          <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-4 border border-red-200 dark:border-red-800">
-            <div className="text-xs font-semibold text-red-600 dark:text-red-400 mb-2 uppercase tracking-wide">
+          <div className="bg-red-50 dark:bg-red-900/20 rounded-xl p-5 border-2 border-red-200 dark:border-red-800">
+            <div className="text-xs font-bold text-red-600 dark:text-red-400 mb-2 uppercase tracking-wide">
               {t('dailySentimentTitle')}
             </div>
             <p className="text-sm text-red-600 dark:text-red-400">
@@ -285,7 +296,7 @@ function RotatingNewsCarousel() {
           </div>
         </div>
         <div className="lg:col-span-2">
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 rounded-lg p-4 border border-blue-200 dark:border-gray-700">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border-2 border-red-200 dark:border-red-800">
             <p className="text-sm text-red-600 dark:text-red-400 text-center py-4">
               {error}
             </p>
@@ -299,13 +310,13 @@ function RotatingNewsCarousel() {
   if (articles.length === 0 && !isLoading) {
     console.log('📭 Rendering empty state');
     return (
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         <div className="lg:col-span-1">
           {dailySentiment && dailySentiment.total > 0 ? (
             <DailySentimentSummary sentiment={dailySentiment} />
           ) : (
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-              <div className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2 uppercase tracking-wide">
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 h-full flex flex-col justify-center">
+              <div className="text-xs font-bold text-gray-600 dark:text-gray-400 mb-2 uppercase tracking-wide">
                 {t('dailySentimentTitle')}
               </div>
               <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -317,8 +328,8 @@ function RotatingNewsCarousel() {
           )}
         </div>
         <div className="lg:col-span-2">
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 rounded-lg p-4 border border-blue-200 dark:border-gray-700">
-            <p className="text-sm text-gray-600 dark:text-gray-400 text-center py-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 h-full flex items-center justify-center">
+            <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
               {language === 'es' 
                 ? 'No hay artículos recientes con movimiento de sentimiento. Los artículos se actualizan cada 15 minutos.'
                 : 'No recent articles with sentiment movement. Articles update every 15 minutes.'}
@@ -333,22 +344,23 @@ function RotatingNewsCarousel() {
     // Still loading, show loading state
     console.log('⏳ Still loading daily sentiment');
     return (
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         <div className="lg:col-span-1">
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 animate-pulse">
-            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-3"></div>
-            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4"></div>
-            <div className="space-y-2">
-              <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded"></div>
-              <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded"></div>
-              <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded"></div>
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 animate-pulse h-full">
+            <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-4"></div>
+            <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-xl w-full mb-4"></div>
+            <div className="space-y-3 mt-6">
+              <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+              <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+              <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
             </div>
           </div>
         </div>
         <div className="lg:col-span-2">
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 rounded-lg p-4 border border-blue-200 dark:border-gray-700 animate-pulse">
-            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
-            <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 animate-pulse h-full">
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-3"></div>
+            <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-4"></div>
+            <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded"></div>
           </div>
         </div>
       </div>
@@ -358,13 +370,13 @@ function RotatingNewsCarousel() {
   if (!articles || articles.length === 0) {
     console.warn('⚠️ No articles available, showing empty state');
     return (
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         <div className="lg:col-span-1">
           {dailySentiment && dailySentiment.total > 0 ? (
             <DailySentimentSummary sentiment={dailySentiment} />
           ) : (
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-              <div className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2 uppercase tracking-wide">
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 h-full flex flex-col justify-center">
+              <div className="text-xs font-bold text-gray-600 dark:text-gray-400 mb-2 uppercase tracking-wide">
                 {t('dailySentimentTitle')}
               </div>
               <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -376,8 +388,8 @@ function RotatingNewsCarousel() {
           )}
         </div>
         <div className="lg:col-span-2">
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 rounded-lg p-4 border border-blue-200 dark:border-gray-700">
-            <p className="text-sm text-gray-600 dark:text-gray-400 text-center py-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 h-full flex items-center justify-center">
+            <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
               {language === 'es' 
                 ? 'No hay artículos disponibles'
                 : 'No articles available'}
@@ -425,7 +437,7 @@ function RotatingNewsCarousel() {
   const sentimentIcon = currentArticle.sentiment === 'up' ? '↗' : '↘';
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
       {/* Daily Sentiment Summary - Left Side */}
       <div className="lg:col-span-1">
         <DailySentimentSummary sentiment={dailySentiment} />
@@ -437,84 +449,91 @@ function RotatingNewsCarousel() {
           href={currentArticle.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="block bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 rounded-lg p-4 border border-blue-200 dark:border-gray-700 hover:shadow-lg transition-all group"
+          className="block bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 hover:shadow-xl hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 group h-full"
         >
-          <div className="flex items-start gap-3">
-            {/* Sentiment Indicator */}
-            <div className={`flex-shrink-0 w-10 h-10 rounded-full ${sentimentBg} flex items-center justify-center`}>
-              <span className={`text-xl font-bold ${sentimentColor}`}>
+          <div className="flex items-start gap-4 h-full">
+            {/* Sentiment Indicator - Larger and More Prominent */}
+            <div className={`flex-shrink-0 w-14 h-14 rounded-xl ${sentimentBg} flex items-center justify-center shadow-sm`}>
+              <span className={`text-2xl font-bold ${sentimentColor}`}>
                 {sentimentIcon}
               </span>
             </div>
             
             {/* Article Content */}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                  {currentArticle.source}
-                </span>
-                <span className="text-xs text-gray-400 dark:text-gray-500">
-                  • {(() => {
-                    const publishedDate = currentArticle.published_at || currentArticle.published_at_iso;
-                    if (!publishedDate) return '';
-                    
-                    const date = new Date(publishedDate);
-                    if (isNaN(date.getTime())) return '';
-                    
-                    const now = new Date();
-                    const diffMs = now - date;
-                    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-                    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-                    
-                    if (diffHours < 1) {
-                      return language === 'es' ? 'Hace menos de 1 hora' : 'Less than 1 hour ago';
-                    } else if (diffHours < 24) {
-                      return language === 'es' 
-                        ? `Hace ${diffHours} hora${diffHours > 1 ? 's' : ''}` 
-                        : `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-                    } else if (diffDays < 2) {
-                      return language === 'es' ? 'Hace 1 día' : '1 day ago';
-                    } else {
-                      return language === 'es' 
-                        ? `Hace ${diffDays} días` 
-                        : `${diffDays} days ago`;
-                    }
-                  })()}
-                </span>
+            <div className="flex-1 min-w-0 flex flex-col justify-between h-full">
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                    {currentArticle.source}
+                  </span>
+                  <span className="text-xs text-gray-400 dark:text-gray-500">
+                    • {(() => {
+                      const publishedDate = currentArticle.published_at || currentArticle.published_at_iso;
+                      if (!publishedDate) return '';
+                      
+                      const date = new Date(publishedDate);
+                      if (isNaN(date.getTime())) return '';
+                      
+                      const now = new Date();
+                      const diffMs = now - date;
+                      const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+                      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                      
+                      if (diffHours < 1) {
+                        return language === 'es' ? 'Hace menos de 1 hora' : 'Less than 1 hour ago';
+                      } else if (diffHours < 24) {
+                        return language === 'es' 
+                          ? `Hace ${diffHours} hora${diffHours > 1 ? 's' : ''}` 
+                          : `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+                      } else if (diffDays < 2) {
+                        return language === 'es' ? 'Hace 1 día' : '1 day ago';
+                      } else {
+                        return language === 'es' 
+                          ? `Hace ${diffDays} días` 
+                          : `${diffDays} days ago`;
+                      }
+                    })()}
+                  </span>
+                </div>
+                <h3 className="text-base font-bold text-gray-900 dark:text-white line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-2 leading-snug">
+                  {currentArticle.title}
+                </h3>
+                {currentArticle.summary && (
+                  <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 leading-relaxed">
+                    {currentArticle.summary}
+                  </p>
+                )}
               </div>
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-white line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                {currentArticle.title}
-              </h3>
-              {currentArticle.summary && (
-                <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 line-clamp-1">
-                  {currentArticle.summary}
-                </p>
+              
+              {/* Progress Indicator */}
+              {articles.length > 1 && (
+                <div className="flex items-center gap-2 mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                  <div className="flex gap-1.5 flex-1">
+                    {articles.slice(0, Math.min(articles.length, 5)).map((_, index) => (
+                      <div
+                        key={index}
+                        className={`h-1.5 rounded-full transition-all duration-300 ${
+                          index === currentIndex
+                            ? 'bg-blue-600 dark:bg-blue-400 flex-1'
+                            : 'bg-gray-200 dark:bg-gray-700 w-1.5'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-xs text-gray-400 dark:text-gray-500 font-medium">
+                    {currentIndex + 1}/{articles.length}
+                  </span>
+                </div>
               )}
             </div>
             
             {/* Arrow Icon */}
-            <div className="flex-shrink-0 text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="flex-shrink-0 text-gray-300 dark:text-gray-600 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors self-start">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </div>
           </div>
-          
-          {/* Progress Indicator */}
-          {articles.length > 1 && (
-            <div className="flex gap-1 mt-3 justify-center">
-              {articles.slice(0, Math.min(articles.length, 5)).map((_, index) => (
-                <div
-                  key={index}
-                  className={`h-1 rounded-full transition-all ${
-                    index === currentIndex
-                      ? 'bg-blue-600 dark:bg-blue-400 w-6'
-                      : 'bg-gray-300 dark:bg-gray-600 w-1'
-                  }`}
-                />
-              ))}
-            </div>
-          )}
         </a>
       </div>
     </div>

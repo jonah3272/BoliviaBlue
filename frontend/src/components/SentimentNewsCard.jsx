@@ -335,12 +335,12 @@ function SentimentNewsCard() {
     visibleRange = 100;
   }
   
-  // Clamp score to visible range for display
-  const clampedScore = Math.max(minRange, Math.min(maxRange, sentimentScore));
-  
   // Calculate position on compass within the visible range
+  // Use actual score (not clamped) for precise positioning, but clamp for visual bounds
   // Convert score to percentage: (score - minRange) / visibleRange * 100
-  const compassPosition = ((clampedScore - minRange) / visibleRange) * 100;
+  // Ensure it stays within 0-100% bounds
+  const rawPosition = ((sentimentScore - minRange) / visibleRange) * 100;
+  const compassPosition = Math.max(0, Math.min(100, rawPosition));
   
   // Determine colors based on score
   const getScoreColor = () => {

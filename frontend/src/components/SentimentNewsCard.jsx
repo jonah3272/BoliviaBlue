@@ -361,45 +361,43 @@ function SentimentNewsCard() {
               </span>
             </div>
             
-            {/* Sentiment Compass Gauge */}
+            {/* Sentiment Compass Gauge - Option 1: Minimalist Design */}
             <div className="flex items-center gap-2">
               {/* Compact Compass Indicator */}
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
-                {/* Compass Track with Range Labels */}
-                <div className="relative w-32 h-8 flex items-center">
+              <div className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
+                {/* Compass Track */}
+                <div className="relative w-36 h-7 flex items-center">
                   {/* Background track */}
                   <div className="absolute inset-0 rounded-full bg-gray-200 dark:bg-gray-700"></div>
                   
-                  {/* Positive (green) gradient - fills from center to right */}
-                  <div 
-                    className="absolute left-1/2 h-full rounded-r-full bg-gradient-to-r from-green-500 to-green-600 opacity-60"
-                    style={{ width: `${Math.max(0, compassPosition - 50)}%`, left: '50%' }}
-                  ></div>
+                  {/* Center line (neutral point) - subtle */}
+                  <div className="absolute left-1/2 transform -translate-x-1/2 w-px h-full bg-gray-300 dark:bg-gray-600 z-10"></div>
                   
-                  {/* Negative (red) gradient - fills from center to left */}
-                  <div 
-                    className="absolute right-1/2 h-full rounded-l-full bg-gradient-to-l from-red-500 to-red-600 opacity-60"
-                    style={{ width: `${Math.max(0, 50 - compassPosition)}%`, right: '50%' }}
-                  ></div>
-                  
-                  {/* Center line (neutral point) */}
-                  <div className="absolute left-1/2 transform -translate-x-1/2 w-px h-full bg-gray-400 dark:bg-gray-500 z-10"></div>
-                  
-                  {/* Range markers */}
-                  <div className="absolute left-0 top-0 bottom-0 w-full flex items-center justify-between px-1">
-                    <div className="w-0.5 h-2 bg-gray-400 dark:bg-gray-500"></div>
-                    <div className="w-0.5 h-2 bg-gray-400 dark:bg-gray-500"></div>
-                    <div className="w-0.5 h-2 bg-gray-400 dark:bg-gray-500"></div>
+                  {/* Range markers: Left (-50), Center (0), Right (+50) */}
+                  <div className="absolute inset-0 flex items-center justify-between px-0.5">
+                    <div className="w-0.5 h-3 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
+                    <div className="w-0.5 h-3 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
+                    <div className="w-0.5 h-3 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
                   </div>
                   
-                  {/* Needle indicator (horizontal arrow pointing to score) */}
+                  {/* Indicator: Vertical line with downward arrow */}
                   <div 
-                    className="absolute top-0 bottom-0 flex items-center justify-center transform -translate-x-1/2 transition-all duration-300 z-20"
+                    className="absolute top-0 bottom-0 flex flex-col items-center transform -translate-x-1/2 transition-all duration-300 z-20"
                     style={{ left: `${compassPosition}%` }}
                   >
-                    {/* Needle triangle pointing down */}
+                    {/* Vertical indicator line */}
                     <div 
-                      className={`w-0 h-0 border-l-[6px] border-r-[6px] border-t-[8px] border-l-transparent border-r-transparent ${
+                      className={`w-1 h-full ${
+                        isPositive 
+                          ? 'bg-green-600 dark:bg-green-400' 
+                          : isNegative 
+                          ? 'bg-red-600 dark:bg-red-400'
+                          : 'bg-gray-500 dark:bg-gray-400'
+                      } rounded-full shadow-sm`}
+                    ></div>
+                    {/* Downward arrow */}
+                    <div 
+                      className={`absolute -bottom-1.5 w-0 h-0 border-l-[4px] border-r-[4px] border-t-[6px] border-l-transparent border-r-transparent ${
                         isPositive 
                           ? 'border-t-green-600 dark:border-t-green-400' 
                           : isNegative 
@@ -407,22 +405,12 @@ function SentimentNewsCard() {
                           : 'border-t-gray-500 dark:border-t-gray-400'
                       }`}
                     ></div>
-                    {/* Needle stem */}
-                    <div 
-                      className={`absolute top-0 bottom-0 w-0.5 ${
-                        isPositive 
-                          ? 'bg-green-600 dark:bg-green-400' 
-                          : isNegative 
-                          ? 'bg-red-600 dark:bg-red-400'
-                          : 'bg-gray-500 dark:bg-gray-400'
-                      }`}
-                    ></div>
                   </div>
                 </div>
                 
                 {/* Score Display */}
-                <div className={`flex items-center gap-1 ${scoreColor}`}>
-                  <span className="text-xs font-bold tabular-nums min-w-[2rem] text-right">
+                <div className={`flex items-center ${scoreColor}`}>
+                  <span className="text-sm font-bold tabular-nums min-w-[2.5rem] text-right">
                     {sentimentScore > 0 ? '+' : ''}{sentimentScore}
                   </span>
                 </div>

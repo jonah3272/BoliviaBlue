@@ -117,46 +117,7 @@ function DailySentimentHeader() {
     return () => clearInterval(refreshInterval);
   }, []);
 
-  if (isLoading || !dailySentiment || !trendDetails || dailySentiment.total === 0) {
-    return null;
-  }
-
-  // Determine overall trend
-  const isBullish = trendDetails.trend === 'bullish';
-  const isBearish = trendDetails.trend === 'bearish';
-  const isStrong = trendDetails.trendStrength === 'strong';
-  
-  const trendBg = isBullish
-    ? (isStrong ? 'bg-green-200 dark:bg-green-800/40 border-green-400 dark:border-green-600' : 'bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-700')
-    : isBearish
-    ? (isStrong ? 'bg-red-200 dark:bg-red-800/40 border-red-400 dark:border-red-600' : 'bg-red-100 dark:bg-red-900/30 border-red-300 dark:border-red-700')
-    : 'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700';
-  const trendColor = isBullish 
-    ? 'text-green-700 dark:text-green-300' 
-    : isBearish 
-    ? 'text-red-700 dark:text-red-300' 
-    : 'text-gray-700 dark:text-gray-300';
-  const trendIcon = isBullish ? '↗' : isBearish ? '↘' : '○';
-  const trendText = isBullish 
-    ? (isStrong ? t('dailySentimentTrendUp') + ' ' + (language === 'es' ? '(Fuerte)' : '(Strong)') : t('dailySentimentTrendUp'))
-    : isBearish 
-    ? (isStrong ? t('dailySentimentTrendDown') + ' ' + (language === 'es' ? '(Fuerte)' : '(Strong)') : t('dailySentimentTrendDown'))
-    : t('dailySentimentNeutral');
-
-  // Tooltip text explaining the methodology
-  const tooltipText = language === 'es'
-    ? `Análisis inteligente basado en ${dailySentiment.total} artículos de las últimas 24h. ` +
-      `Ponderación temporal: artículos más recientes tienen mayor peso. ` +
-      `Artículos de divisas (${dailySentiment.currencyUp + dailySentiment.currencyDown}) tienen 1.5x peso. ` +
-      `Confianza: ${trendDetails.confidence}%. ` +
-      `Puntuación: ↗ ${trendDetails.upScore} vs ↘ ${trendDetails.downScore}`
-    : `Smart analysis based on ${dailySentiment.total} articles from last 24h. ` +
-      `Time-weighted: more recent articles have higher weight. ` +
-      `Currency articles (${dailySentiment.currencyUp + dailySentiment.currencyDown}) have 1.5x weight. ` +
-      `Confidence: ${trendDetails.confidence}%. ` +
-      `Score: ↗ ${trendDetails.upScore} vs ↘ ${trendDetails.downScore}`;
-
-  // Calculate tooltip position to prevent off-screen
+  // Calculate tooltip position to prevent off-screen - MUST be before early return
   const handleTooltipToggle = useCallback((show) => {
     if (!show) {
       setShowTooltip(false);
@@ -216,7 +177,7 @@ function DailySentimentHeader() {
     }, 0);
   }, []);
 
-  // Recalculate position on window resize
+  // Recalculate position on window resize - MUST be before early return
   useEffect(() => {
     if (showTooltip) {
       const handleResize = () => {
@@ -226,6 +187,46 @@ function DailySentimentHeader() {
       return () => window.removeEventListener('resize', handleResize);
     }
   }, [showTooltip, handleTooltipToggle]);
+
+  // Early return AFTER all hooks
+  if (isLoading || !dailySentiment || !trendDetails || dailySentiment.total === 0) {
+    return null;
+  }
+
+  // Determine overall trend
+  const isBullish = trendDetails.trend === 'bullish';
+  const isBearish = trendDetails.trend === 'bearish';
+  const isStrong = trendDetails.trendStrength === 'strong';
+  
+  const trendBg = isBullish
+    ? (isStrong ? 'bg-green-200 dark:bg-green-800/40 border-green-400 dark:border-green-600' : 'bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-700')
+    : isBearish
+    ? (isStrong ? 'bg-red-200 dark:bg-red-800/40 border-red-400 dark:border-red-600' : 'bg-red-100 dark:bg-red-900/30 border-red-300 dark:border-red-700')
+    : 'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700';
+  const trendColor = isBullish 
+    ? 'text-green-700 dark:text-green-300' 
+    : isBearish 
+    ? 'text-red-700 dark:text-red-300' 
+    : 'text-gray-700 dark:text-gray-300';
+  const trendIcon = isBullish ? '↗' : isBearish ? '↘' : '○';
+  const trendText = isBullish 
+    ? (isStrong ? t('dailySentimentTrendUp') + ' ' + (language === 'es' ? '(Fuerte)' : '(Strong)') : t('dailySentimentTrendUp'))
+    : isBearish 
+    ? (isStrong ? t('dailySentimentTrendDown') + ' ' + (language === 'es' ? '(Fuerte)' : '(Strong)') : t('dailySentimentTrendDown'))
+    : t('dailySentimentNeutral');
+
+  // Tooltip text explaining the methodology
+  const tooltipText = language === 'es'
+    ? `Análisis inteligente basado en ${dailySentiment.total} artículos de las últimas 24h. ` +
+      `Ponderación temporal: artículos más recientes tienen mayor peso. ` +
+      `Artículos de divisas (${dailySentiment.currencyUp + dailySentiment.currencyDown}) tienen 1.5x peso. ` +
+      `Confianza: ${trendDetails.confidence}%. ` +
+      `Puntuación: ↗ ${trendDetails.upScore} vs ↘ ${trendDetails.downScore}`
+    : `Smart analysis based on ${dailySentiment.total} articles from last 24h. ` +
+      `Time-weighted: more recent articles have higher weight. ` +
+      `Currency articles (${dailySentiment.currencyUp + dailySentiment.currencyDown}) have 1.5x weight. ` +
+      `Confidence: ${trendDetails.confidence}%. ` +
+      `Score: ↗ ${trendDetails.upScore} vs ↘ ${trendDetails.downScore}`;
 
   return (
     <div className="flex flex-wrap items-center justify-center gap-3 mt-2">

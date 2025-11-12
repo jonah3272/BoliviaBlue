@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { fetchNews } from '../utils/api';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -9,6 +9,10 @@ function DailySentimentHeader() {
   const [dailySentiment, setDailySentiment] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [trendDetails, setTrendDetails] = useState(null);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [tooltipPosition, setTooltipPosition] = useState('top');
+  const badgeRef = useRef(null);
+  const tooltipRef = useRef(null);
 
   useEffect(() => {
     const loadSentiment = async () => {
@@ -152,12 +156,79 @@ function DailySentimentHeader() {
       `Confidence: ${trendDetails.confidence}%. ` +
       `Score: ↗ ${trendDetails.upScore} vs ↘ ${trendDetails.downScore}`;
 
+  // Calculate tooltip position to prevent off-screen
+  const handleTooltipToggle = useCallback((show) => {
+    if (!show) {
+      setShowTooltip(false);
+      return;
+    }
+
+    if (!badgeRef.current || !tooltipRef.current) {
+      setShowTooltip(true);
+      setTooltipPosition('top');
+      return;
+    }
+
+    const badgeRect = badgeRef.current.getBoundingClientRect();
+    const tooltipRect = tooltipRef.current.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+    const viewportWidth = window.innerWidth;
+
+    // Check if tooltip would go above viewport
+    const spaceAbove = badgeRect.top;
+    const spaceBelow = viewportHeight - badgeRect.bottom;
+    const tooltipHeight = tooltipRect.height || 150; // Estimate if not rendered yet
+    const tooltipWidth = tooltipRect.width || 300;
+
+    // Determine vertical position
+    let verticalPos = 'top';
+    if (spaceAbove < tooltipHeight + 10 && spaceBelow > tooltipHeight + 10) {
+      verticalPos = 'bottom';
+    }
+
+    // Check horizontal position
+    const badgeCenterX = badgeRect.left + badgeRect.width / 2;
+    const tooltipHalfWidth = tooltipWidth / 2;
+    let horizontalOffset = 0;
+    
+    if (badgeCenterX - tooltipHalfWidth < 10) {
+      // Too far left, shift right
+      horizontalOffset = 10 - (badgeCenterX - tooltipHalfWidth);
+    } else if (badgeCenterX + tooltipHalfWidth > viewportWidth - 10) {
+      // Too far right, shift left
+      horizontalOffset = (viewportWidth - 10) - (badgeCenterX + tooltipHalfWidth);
+    }
+
+    setTooltipPosition(verticalPos);
+    setShowTooltip(true);
+
+    // Adjust horizontal position if needed
+    if (tooltipRef.current && horizontalOffset !== 0) {
+      tooltipRef.current.style.left = `calc(50% + ${horizontalOffset}px)`;
+    } else if (tooltipRef.current) {
+      tooltipRef.current.style.left = '50%';
+    }
+  }, []);
+
+  // Recalculate position on window resize
+  useEffect(() => {
+    if (showTooltip) {
+      const handleResize = () => {
+        handleTooltipToggle(true);
+      };
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
+  }, [showTooltip, handleTooltipToggle]);
+
   return (
     <div className="flex flex-wrap items-center justify-center gap-3 mt-2">
       {/* Main Trend Badge - Most Prominent with Tooltip */}
       <div 
-        className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border-2 ${trendBg} shadow-sm relative group cursor-help`}
-        title={tooltipText}
+        ref={badgeRef}
+        className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border-2 ${trendBg} shadow-sm relative cursor-help`}
+        onMouseEnter={() => handleTooltipToggle(true)}
+        onMouseLeave={() => handleTooltipToggle(false)}
       >
         <span className={`text-2xl font-bold ${trendColor}`}>{trendIcon}</span>
         <div className="flex flex-col">
@@ -168,13 +239,39 @@ function DailySentimentHeader() {
             {trendText}
           </span>
         </div>
-        {/* Tooltip on hover */}
-        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 dark:bg-gray-800 text-white text-xs rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 max-w-xs text-center whitespace-normal">
-          {tooltipText}
-          <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1">
-            <div className="border-4 border-transparent border-t-gray-900 dark:border-t-gray-800"></div>
+        {/* Info Icon */}
+        <button
+          type="button"
+          className="ml-1 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+          aria-label={language === 'es' ? 'Información sobre el análisis de sentimiento' : 'Information about sentiment analysis'}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleTooltipToggle(!showTooltip);
+          }}
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </button>
+        {/* Tooltip with smart positioning */}
+        {showTooltip && (
+          <div 
+            ref={tooltipRef}
+            className={`absolute ${tooltipPosition === 'top' ? 'bottom-full mb-2' : 'top-full mt-2'} left-1/2 transform -translate-x-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-800 text-white text-xs rounded-lg shadow-xl z-50 max-w-xs text-center whitespace-normal`}
+            style={{ minWidth: '280px' }}
+          >
+            <div className="flex items-start gap-2">
+              <svg className="w-4 h-4 flex-shrink-0 mt-0.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span className="text-left">{tooltipText}</span>
+            </div>
+            {/* Arrow pointing to badge */}
+            <div className={`absolute ${tooltipPosition === 'top' ? 'top-full -mt-1' : 'bottom-full -mb-1'} left-1/2 transform -translate-x-1/2`}>
+              <div className={`border-4 border-transparent ${tooltipPosition === 'top' ? 'border-t-gray-900 dark:border-t-gray-800' : 'border-b-gray-900 dark:border-b-gray-800'}`}></div>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Total Articles Badge */}

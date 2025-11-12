@@ -1,6 +1,6 @@
 import { useState, useEffect, memo } from 'react';
 import { fetchNews } from '../utils/api';
-import { formatTimeAgo } from '../utils/formatters';
+import { formatTimeAgo, cleanSummary } from '../utils/formatters';
 import { useLanguage } from '../contexts/LanguageContext';
 import SentimentLegend from './SentimentLegend';
 
@@ -58,7 +58,7 @@ const NewsCard = memo(function NewsCard({ item }) {
       
       {item.summary && (
         <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-3">
-          {item.summary}
+          {cleanSummary(item.summary)}
         </p>
       )}
       

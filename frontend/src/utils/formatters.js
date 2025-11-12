@@ -8,6 +8,30 @@ export function formatRate(value) {
 /**
  * Format ISO timestamp to relative time
  */
+/**
+ * Clean article summary by removing HTML tags and URLs
+ */
+export function cleanSummary(text) {
+  if (!text) return '';
+  
+  // Remove HTML tags
+  let cleaned = text.replace(/<[^>]*>/g, '');
+  
+  // Remove URL patterns (http/https URLs)
+  cleaned = cleaned.replace(/https?:\/\/[^\s]+/g, '');
+  
+  // Remove common HTML entities
+  cleaned = cleaned.replace(/&[a-z]+;/gi, '');
+  
+  // Remove href="..." patterns
+  cleaned = cleaned.replace(/href=["'][^"']*["']/gi, '');
+  
+  // Clean up extra whitespace
+  cleaned = cleaned.replace(/\s+/g, ' ').trim();
+  
+  return cleaned;
+}
+
 export function formatTimeAgo(isoString) {
   const date = new Date(isoString);
   const now = new Date();

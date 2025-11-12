@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { fetchNews } from '../utils/api';
 import { useLanguage } from '../contexts/LanguageContext';
+import { cleanSummary } from '../utils/formatters';
 
 function RotatingNewsCarousel() {
   const languageContext = useLanguage();
@@ -262,7 +263,7 @@ function RotatingNewsCarousel() {
               </h3>
               {currentArticle.summary && (
                 <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 leading-snug">
-                  {currentArticle.summary}
+                  {cleanSummary(currentArticle.summary)}
                 </p>
               )}
             </div>

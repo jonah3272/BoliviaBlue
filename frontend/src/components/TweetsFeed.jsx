@@ -62,7 +62,7 @@ function TweetCard({ tweet }) {
       </div>
       
       <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-3">
-        {tweet.summary}
+        {cleanSummary(tweet.summary)}
       </p>
       
       <div className="flex items-center justify-between text-xs">

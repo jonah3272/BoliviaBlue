@@ -365,36 +365,64 @@ function SentimentNewsCard() {
             <div className="flex items-center gap-2">
               {/* Compact Compass Indicator */}
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
-                {/* Compass Bar */}
-                <div className="relative w-24 h-6 flex items-center">
+                {/* Compass Track with Range Labels */}
+                <div className="relative w-32 h-8 flex items-center">
                   {/* Background track */}
                   <div className="absolute inset-0 rounded-full bg-gray-200 dark:bg-gray-700"></div>
                   
-                  {/* Positive (green) gradient */}
+                  {/* Positive (green) gradient - fills from center to right */}
                   <div 
-                    className="absolute left-1/2 h-full rounded-r-full bg-gradient-to-r from-green-500 to-green-600"
+                    className="absolute left-1/2 h-full rounded-r-full bg-gradient-to-r from-green-500 to-green-600 opacity-60"
                     style={{ width: `${Math.max(0, compassPosition - 50)}%`, left: '50%' }}
                   ></div>
                   
-                  {/* Negative (red) gradient */}
+                  {/* Negative (red) gradient - fills from center to left */}
                   <div 
-                    className="absolute right-1/2 h-full rounded-l-full bg-gradient-to-l from-red-500 to-red-600"
+                    className="absolute right-1/2 h-full rounded-l-full bg-gradient-to-l from-red-500 to-red-600 opacity-60"
                     style={{ width: `${Math.max(0, 50 - compassPosition)}%`, right: '50%' }}
                   ></div>
                   
-                  {/* Center indicator */}
-                  <div className="absolute left-1/2 transform -translate-x-1/2 w-0.5 h-full bg-gray-900 dark:bg-gray-100"></div>
+                  {/* Center line (neutral point) */}
+                  <div className="absolute left-1/2 transform -translate-x-1/2 w-px h-full bg-gray-400 dark:bg-gray-500 z-10"></div>
                   
-                  {/* Score indicator (needle) */}
+                  {/* Range markers */}
+                  <div className="absolute left-0 top-0 bottom-0 w-full flex items-center justify-between px-1">
+                    <div className="w-0.5 h-2 bg-gray-400 dark:bg-gray-500"></div>
+                    <div className="w-0.5 h-2 bg-gray-400 dark:bg-gray-500"></div>
+                    <div className="w-0.5 h-2 bg-gray-400 dark:bg-gray-500"></div>
+                  </div>
+                  
+                  {/* Needle indicator (horizontal arrow pointing to score) */}
                   <div 
-                    className="absolute top-0 bottom-0 w-1 bg-gray-900 dark:bg-gray-100 rounded-full shadow-lg transform -translate-x-1/2 transition-all duration-300"
+                    className="absolute top-0 bottom-0 flex items-center justify-center transform -translate-x-1/2 transition-all duration-300 z-20"
                     style={{ left: `${compassPosition}%` }}
-                  ></div>
+                  >
+                    {/* Needle triangle pointing down */}
+                    <div 
+                      className={`w-0 h-0 border-l-[6px] border-r-[6px] border-t-[8px] border-l-transparent border-r-transparent ${
+                        isPositive 
+                          ? 'border-t-green-600 dark:border-t-green-400' 
+                          : isNegative 
+                          ? 'border-t-red-600 dark:border-t-red-400'
+                          : 'border-t-gray-500 dark:border-t-gray-400'
+                      }`}
+                    ></div>
+                    {/* Needle stem */}
+                    <div 
+                      className={`absolute top-0 bottom-0 w-0.5 ${
+                        isPositive 
+                          ? 'bg-green-600 dark:bg-green-400' 
+                          : isNegative 
+                          ? 'bg-red-600 dark:bg-red-400'
+                          : 'bg-gray-500 dark:bg-gray-400'
+                      }`}
+                    ></div>
+                  </div>
                 </div>
                 
                 {/* Score Display */}
                 <div className={`flex items-center gap-1 ${scoreColor}`}>
-                  <span className="text-xs font-bold tabular-nums">
+                  <span className="text-xs font-bold tabular-nums min-w-[2rem] text-right">
                     {sentimentScore > 0 ? '+' : ''}{sentimentScore}
                   </span>
                 </div>

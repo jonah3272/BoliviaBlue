@@ -395,7 +395,7 @@ function SentimentNewsCard() {
             {/* Sentiment Compass Gauge - Dynamic Zoom with Labels */}
             <div className="flex items-center gap-2">
               {/* Compact Compass Indicator */}
-              <div className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
+              <div className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-md bg-gray-50 dark:bg-gray-800/50">
                 {/* Compass Track with Labels */}
                 <div className="relative w-40 flex flex-col items-center">
                   {/* Track Container */}

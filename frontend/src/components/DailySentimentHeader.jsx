@@ -163,51 +163,57 @@ function DailySentimentHeader() {
       return;
     }
 
-    if (!badgeRef.current || !tooltipRef.current) {
+    if (!badgeRef.current) {
       setShowTooltip(true);
       setTooltipPosition('top');
       return;
     }
 
     const badgeRect = badgeRef.current.getBoundingClientRect();
-    const tooltipRect = tooltipRef.current.getBoundingClientRect();
     const viewportHeight = window.innerHeight;
     const viewportWidth = window.innerWidth;
+
+    // Estimate tooltip dimensions (will be adjusted after render)
+    const estimatedTooltipHeight = 150;
+    const estimatedTooltipWidth = 300;
 
     // Check if tooltip would go above viewport
     const spaceAbove = badgeRect.top;
     const spaceBelow = viewportHeight - badgeRect.bottom;
-    const tooltipHeight = tooltipRect.height || 150; // Estimate if not rendered yet
-    const tooltipWidth = tooltipRect.width || 300;
 
     // Determine vertical position
     let verticalPos = 'top';
-    if (spaceAbove < tooltipHeight + 10 && spaceBelow > tooltipHeight + 10) {
+    if (spaceAbove < estimatedTooltipHeight + 10 && spaceBelow > estimatedTooltipHeight + 10) {
       verticalPos = 'bottom';
-    }
-
-    // Check horizontal position
-    const badgeCenterX = badgeRect.left + badgeRect.width / 2;
-    const tooltipHalfWidth = tooltipWidth / 2;
-    let horizontalOffset = 0;
-    
-    if (badgeCenterX - tooltipHalfWidth < 10) {
-      // Too far left, shift right
-      horizontalOffset = 10 - (badgeCenterX - tooltipHalfWidth);
-    } else if (badgeCenterX + tooltipHalfWidth > viewportWidth - 10) {
-      // Too far right, shift left
-      horizontalOffset = (viewportWidth - 10) - (badgeCenterX + tooltipHalfWidth);
     }
 
     setTooltipPosition(verticalPos);
     setShowTooltip(true);
 
-    // Adjust horizontal position if needed
-    if (tooltipRef.current && horizontalOffset !== 0) {
-      tooltipRef.current.style.left = `calc(50% + ${horizontalOffset}px)`;
-    } else if (tooltipRef.current) {
-      tooltipRef.current.style.left = '50%';
-    }
+    // Adjust horizontal position after tooltip renders
+    setTimeout(() => {
+      if (!tooltipRef.current || !badgeRef.current) return;
+      
+      const tooltipRect = tooltipRef.current.getBoundingClientRect();
+      const badgeRect = badgeRef.current.getBoundingClientRect();
+      const badgeCenterX = badgeRect.left + badgeRect.width / 2;
+      const tooltipHalfWidth = tooltipRect.width / 2;
+      let horizontalOffset = 0;
+      
+      if (badgeCenterX - tooltipHalfWidth < 10) {
+        // Too far left, shift right
+        horizontalOffset = 10 - (badgeCenterX - tooltipHalfWidth);
+      } else if (badgeCenterX + tooltipHalfWidth > viewportWidth - 10) {
+        // Too far right, shift left
+        horizontalOffset = (viewportWidth - 10) - (badgeCenterX + tooltipHalfWidth);
+      }
+
+      if (horizontalOffset !== 0) {
+        tooltipRef.current.style.left = `calc(50% + ${horizontalOffset}px)`;
+      } else {
+        tooltipRef.current.style.left = '50%';
+      }
+    }, 0);
   }, []);
 
   // Recalculate position on window resize

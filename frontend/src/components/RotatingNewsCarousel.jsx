@@ -36,25 +36,25 @@ function DailySentimentSummary({ sentiment }) {
     : t('dailySentimentNeutral');
 
   return (
-    <div className={`rounded-xl border-2 p-5 ${trendBg} transition-all hover:shadow-lg backdrop-blur-sm h-full flex flex-col`}>
+    <div className={`rounded-xl border-2 p-3.5 ${trendBg} transition-all hover:shadow-lg backdrop-blur-sm h-full flex flex-col`}>
       {/* Header */}
-      <div className="mb-4">
+      <div className="mb-2.5">
         <div className="text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider">
           {t('dailySentimentTitle')}
         </div>
         
         {/* Overall Trend - More Prominent */}
-        <div className="flex items-center gap-3 mt-3">
-          <div className={`w-12 h-12 rounded-xl ${isBullish ? 'bg-green-500/20 dark:bg-green-500/30' : isBearish ? 'bg-red-500/20 dark:bg-red-500/30' : 'bg-gray-500/20 dark:bg-gray-500/30'} flex items-center justify-center`}>
-            <span className={`text-3xl font-bold ${trendColor}`}>
+        <div className="flex items-center gap-2.5 mt-2">
+          <div className={`w-10 h-10 rounded-lg ${isBullish ? 'bg-green-500/20 dark:bg-green-500/30' : isBearish ? 'bg-red-500/20 dark:bg-red-500/30' : 'bg-gray-500/20 dark:bg-gray-500/30'} flex items-center justify-center`}>
+            <span className={`text-2xl font-bold ${trendColor}`}>
               {trendIcon}
             </span>
           </div>
           <div>
-            <div className={`text-base font-bold ${trendColor}`}>
+            <div className={`text-sm font-bold ${trendColor}`}>
               {trendText}
             </div>
-            <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+            <div className="text-xs text-gray-500 dark:text-gray-400">
               {language === 'es' ? 'Últimas 24 horas' : 'Last 24 hours'}
             </div>
           </div>
@@ -62,30 +62,30 @@ function DailySentimentSummary({ sentiment }) {
       </div>
 
       {/* Stats - Modern Card Style */}
-      <div className="space-y-3 mt-auto">
-        <div className="flex items-center justify-between p-2.5 rounded-lg bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm">
+      <div className="space-y-2 mt-auto">
+        <div className="flex items-center justify-between p-2 rounded-lg bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm">
           <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
             {t('dailySentimentTotal')}
           </span>
-          <span className="text-base font-bold text-gray-900 dark:text-white">
+          <span className="text-sm font-bold text-gray-900 dark:text-white">
             {sentiment.total}
           </span>
         </div>
         
-        <div className="flex items-center justify-between p-2.5 rounded-lg bg-green-50/50 dark:bg-green-900/20 backdrop-blur-sm">
-          <span className="text-xs font-medium text-green-700 dark:text-green-300 flex items-center gap-1.5">
-            <span className="text-base font-bold">↗</span> {t('dailySentimentPositive')}
+        <div className="flex items-center justify-between p-2 rounded-lg bg-green-50/50 dark:bg-green-900/20 backdrop-blur-sm">
+          <span className="text-xs font-medium text-green-700 dark:text-green-300 flex items-center gap-1">
+            <span className="text-sm font-bold">↗</span> {t('dailySentimentPositive')}
           </span>
-          <span className="text-base font-bold text-green-600 dark:text-green-400">
+          <span className="text-sm font-bold text-green-600 dark:text-green-400">
             {sentiment.up}
           </span>
         </div>
         
-        <div className="flex items-center justify-between p-2.5 rounded-lg bg-red-50/50 dark:bg-red-900/20 backdrop-blur-sm">
-          <span className="text-xs font-medium text-red-700 dark:text-red-300 flex items-center gap-1.5">
-            <span className="text-base font-bold">↘</span> {t('dailySentimentNegative')}
+        <div className="flex items-center justify-between p-2 rounded-lg bg-red-50/50 dark:bg-red-900/20 backdrop-blur-sm">
+          <span className="text-xs font-medium text-red-700 dark:text-red-300 flex items-center gap-1">
+            <span className="text-sm font-bold">↘</span> {t('dailySentimentNegative')}
           </span>
-          <span className="text-base font-bold text-red-600 dark:text-red-400">
+          <span className="text-sm font-bold text-red-600 dark:text-red-400">
             {sentiment.down}
           </span>
         </div>
@@ -257,21 +257,21 @@ function RotatingNewsCarousel() {
     return (
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         <div className="lg:col-span-1">
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 animate-pulse h-full">
-            <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-4"></div>
-            <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-xl w-full mb-4"></div>
-            <div className="space-y-3 mt-6">
-              <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
-              <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
-              <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3.5 border border-gray-200 dark:border-gray-700 animate-pulse h-full">
+            <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-2.5"></div>
+            <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-lg w-full mb-2.5"></div>
+            <div className="space-y-2 mt-auto">
+              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
             </div>
           </div>
         </div>
         <div className="lg:col-span-2">
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 animate-pulse h-full">
-            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-3"></div>
-            <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-4"></div>
-            <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded"></div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3.5 border border-gray-200 dark:border-gray-700 animate-pulse h-full">
+            <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
+            <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-2"></div>
+            <div className="h-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
           </div>
         </div>
       </div>
@@ -284,8 +284,8 @@ function RotatingNewsCarousel() {
     return (
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         <div className="lg:col-span-1">
-          <div className="bg-red-50 dark:bg-red-900/20 rounded-xl p-5 border-2 border-red-200 dark:border-red-800">
-            <div className="text-xs font-bold text-red-600 dark:text-red-400 mb-2 uppercase tracking-wide">
+          <div className="bg-red-50 dark:bg-red-900/20 rounded-xl p-3.5 border-2 border-red-200 dark:border-red-800">
+            <div className="text-xs font-bold text-red-600 dark:text-red-400 mb-1.5 uppercase tracking-wide">
               {t('dailySentimentTitle')}
             </div>
             <p className="text-sm text-red-600 dark:text-red-400">
@@ -296,8 +296,8 @@ function RotatingNewsCarousel() {
           </div>
         </div>
         <div className="lg:col-span-2">
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border-2 border-red-200 dark:border-red-800">
-            <p className="text-sm text-red-600 dark:text-red-400 text-center py-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3.5 border-2 border-red-200 dark:border-red-800">
+            <p className="text-sm text-red-600 dark:text-red-400 text-center py-2">
               {error}
             </p>
           </div>
@@ -315,8 +315,8 @@ function RotatingNewsCarousel() {
           {dailySentiment && dailySentiment.total > 0 ? (
             <DailySentimentSummary sentiment={dailySentiment} />
           ) : (
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 h-full flex flex-col justify-center">
-              <div className="text-xs font-bold text-gray-600 dark:text-gray-400 mb-2 uppercase tracking-wide">
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3.5 border border-gray-200 dark:border-gray-700 h-full flex flex-col justify-center">
+              <div className="text-xs font-bold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
                 {t('dailySentimentTitle')}
               </div>
               <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -328,7 +328,7 @@ function RotatingNewsCarousel() {
           )}
         </div>
         <div className="lg:col-span-2">
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 h-full flex items-center justify-center">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3.5 border border-gray-200 dark:border-gray-700 h-full flex items-center justify-center">
             <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
               {language === 'es' 
                 ? 'No hay artículos recientes con movimiento de sentimiento. Los artículos se actualizan cada 15 minutos.'
@@ -346,21 +346,21 @@ function RotatingNewsCarousel() {
     return (
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         <div className="lg:col-span-1">
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 animate-pulse h-full">
-            <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-4"></div>
-            <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-xl w-full mb-4"></div>
-            <div className="space-y-3 mt-6">
-              <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
-              <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
-              <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3.5 border border-gray-200 dark:border-gray-700 animate-pulse h-full">
+            <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-2.5"></div>
+            <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-lg w-full mb-2.5"></div>
+            <div className="space-y-2 mt-auto">
+              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
             </div>
           </div>
         </div>
         <div className="lg:col-span-2">
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 animate-pulse h-full">
-            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-3"></div>
-            <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-4"></div>
-            <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded"></div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3.5 border border-gray-200 dark:border-gray-700 animate-pulse h-full">
+            <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
+            <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-2"></div>
+            <div className="h-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
           </div>
         </div>
       </div>
@@ -449,12 +449,12 @@ function RotatingNewsCarousel() {
           href={currentArticle.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="block bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 hover:shadow-xl hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 group h-full"
+          className="block bg-white dark:bg-gray-800 rounded-xl p-3.5 border border-gray-200 dark:border-gray-700 hover:shadow-xl hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 group h-full"
         >
-          <div className="flex items-start gap-4 h-full">
-            {/* Sentiment Indicator - Larger and More Prominent */}
-            <div className={`flex-shrink-0 w-14 h-14 rounded-xl ${sentimentBg} flex items-center justify-center shadow-sm`}>
-              <span className={`text-2xl font-bold ${sentimentColor}`}>
+          <div className="flex items-start gap-3 h-full">
+            {/* Sentiment Indicator - Compact */}
+            <div className={`flex-shrink-0 w-11 h-11 rounded-lg ${sentimentBg} flex items-center justify-center shadow-sm`}>
+              <span className={`text-xl font-bold ${sentimentColor}`}>
                 {sentimentIcon}
               </span>
             </div>
@@ -462,7 +462,7 @@ function RotatingNewsCarousel() {
             {/* Article Content */}
             <div className="flex-1 min-w-0 flex flex-col justify-between h-full">
               <div>
-                <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-center gap-1.5 mb-1.5">
                   <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
                     {currentArticle.source}
                   </span>
@@ -495,11 +495,11 @@ function RotatingNewsCarousel() {
                     })()}
                   </span>
                 </div>
-                <h3 className="text-base font-bold text-gray-900 dark:text-white line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-2 leading-snug">
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-1.5 leading-tight">
                   {currentArticle.title}
                 </h3>
                 {currentArticle.summary && (
-                  <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 leading-snug">
                     {currentArticle.summary}
                   </p>
                 )}
@@ -507,15 +507,15 @@ function RotatingNewsCarousel() {
               
               {/* Progress Indicator */}
               {articles.length > 1 && (
-                <div className="flex items-center gap-2 mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                <div className="flex items-center gap-2 mt-2.5 pt-2.5 border-t border-gray-100 dark:border-gray-700">
                   <div className="flex gap-1.5 flex-1">
                     {articles.slice(0, Math.min(articles.length, 5)).map((_, index) => (
                       <div
                         key={index}
-                        className={`h-1.5 rounded-full transition-all duration-300 ${
+                        className={`h-1 rounded-full transition-all duration-300 ${
                           index === currentIndex
                             ? 'bg-blue-600 dark:bg-blue-400 flex-1'
-                            : 'bg-gray-200 dark:bg-gray-700 w-1.5'
+                            : 'bg-gray-200 dark:bg-gray-700 w-1'
                         }`}
                       />
                     ))}
@@ -529,7 +529,7 @@ function RotatingNewsCarousel() {
             
             {/* Arrow Icon */}
             <div className="flex-shrink-0 text-gray-300 dark:text-gray-600 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors self-start">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </div>

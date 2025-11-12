@@ -3,21 +3,50 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Initialize Supabase client
+// Check for local mode (read-only, no writes to Supabase)
+export const LOCAL_MODE = process.env.LOCAL_MODE === 'true';
+
+// Initialize Supabase client (optional in local mode)
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseKey) {
-  console.error('Missing Supabase credentials. Please set SUPABASE_URL and SUPABASE_SERVICE_KEY in .env');
-  process.exit(1);
+let supabase = null;
+
+if (LOCAL_MODE) {
+  console.log('🔧 LOCAL MODE: Running in read-only mode. No data will be written to Supabase.');
+  if (supabaseUrl && supabaseKey) {
+    // Still create client for reads if credentials are provided
+    supabase = createClient(supabaseUrl, supabaseKey);
+    console.log('✅ Supabase client created for read-only access');
+  } else {
+    console.log('⚠️  No Supabase credentials provided. API will use cached/mock data only.');
+  }
+} else {
+  // Production mode - Supabase is required
+  if (!supabaseUrl || !supabaseKey) {
+    console.error('Missing Supabase credentials. Please set SUPABASE_URL and SUPABASE_SERVICE_KEY in .env');
+    console.error('Or set LOCAL_MODE=true to run in local development mode');
+    process.exit(1);
+  }
+  supabase = createClient(supabaseUrl, supabaseKey);
 }
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+export { supabase };
 
 /**
  * Insert a new rate record
  */
 export async function insertRate(t, buy, sell, mid, official_buy, official_sell, official_mid) {
+  // Skip writes in local mode
+  if (LOCAL_MODE) {
+    console.log(`[LOCAL MODE] Skipping rate insert: ${buy}/${sell} BOB at ${t}`);
+    return null;
+  }
+
+  if (!supabase) {
+    throw new Error('Supabase client not initialized');
+  }
+
   const { data, error } = await supabase
     .from('rates')
     .insert({
@@ -43,6 +72,10 @@ export async function insertRate(t, buy, sell, mid, official_buy, official_sell,
  * Get the most recent rate
  */
 export async function getLatestRate() {
+  if (!supabase) {
+    return null; // Return null if no Supabase client (local mode without credentials)
+  }
+
   const { data, error } = await supabase
     .from('rates')
     .select('*')
@@ -61,6 +94,10 @@ export async function getLatestRate() {
  * Get rates within a time range
  */
 export async function getRatesInRange(startDate) {
+  if (!supabase) {
+    return []; // Return empty array if no Supabase client
+  }
+
   const { data, error } = await supabase
     .from('rates')
     .select('t, buy, sell, mid, official_buy, official_sell, official_mid')
@@ -78,6 +115,10 @@ export async function getRatesInRange(startDate) {
  * Get all rates
  */
 export async function getAllRates() {
+  if (!supabase) {
+    return []; // Return empty array if no Supabase client
+  }
+
   const { data, error } = await supabase
     .from('rates')
     .select('t, buy, sell, mid, official_buy, official_sell, official_mid')
@@ -94,6 +135,10 @@ export async function getAllRates() {
  * Get total count of rates
  */
 export async function getTotalRatesCount() {
+  if (!supabase) {
+    return { count: 0 }; // Return 0 if no Supabase client
+  }
+
   const { count, error } = await supabase
     .from('rates')
     .select('*', { count: 'exact', head: true });
@@ -110,6 +155,16 @@ export async function getTotalRatesCount() {
  * Uses upsert with conflict resolution on URL to prevent duplicates
  */
 export async function insertNews(id, source, url, title, summary, published_at, sentiment, category = 'general', type = 'article') {
+  // Skip writes in local mode
+  if (LOCAL_MODE) {
+    console.log(`[LOCAL MODE] Skipping news insert: ${title.substring(0, 50)}...`);
+    return null;
+  }
+
+  if (!supabase) {
+    return null; // Return null if no Supabase client
+  }
+
   // First check if URL already exists to avoid unnecessary upsert
   const { data: existing } = await supabase
     .from('news')
@@ -156,6 +211,10 @@ export async function insertNews(id, source, url, title, summary, published_at, 
  * Get recent news items
  */
 export async function getRecentNews(limit = 100) {
+  if (!supabase) {
+    return []; // Return empty array if no Supabase client
+  }
+
   const { data, error } = await supabase
     .from('news')
     .select('*')

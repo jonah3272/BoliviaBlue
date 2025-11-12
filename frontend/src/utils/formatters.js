@@ -10,6 +10,7 @@ export function formatRate(value) {
  */
 /**
  * Clean article summary by removing HTML tags and URLs
+ * Returns empty string if result is blank or only contains HTML/URLs
  */
 export function cleanSummary(text) {
   if (!text) return '';
@@ -23,11 +24,19 @@ export function cleanSummary(text) {
   // Remove common HTML entities
   cleaned = cleaned.replace(/&[a-z]+;/gi, '');
   
-  // Remove href="..." patterns
-  cleaned = cleaned.replace(/href=["'][^"']*["']/gi, '');
+  // Remove href="..." patterns (including the href=" part)
+  cleaned = cleaned.replace(/href\s*=\s*["'][^"']*["']/gi, '');
+  
+  // Remove any remaining HTML-like patterns (e.g., <a href=...>)
+  cleaned = cleaned.replace(/<a\s+[^>]*>/gi, '');
   
   // Clean up extra whitespace
   cleaned = cleaned.replace(/\s+/g, ' ').trim();
+  
+  // Return empty string if cleaned result is blank or only contains special characters
+  if (!cleaned || cleaned.length === 0 || /^[\s\-\.]+$/.test(cleaned)) {
+    return '';
+  }
   
   return cleaned;
 }

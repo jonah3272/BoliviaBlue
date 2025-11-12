@@ -56,7 +56,7 @@ const NewsCard = memo(function NewsCard({ item }) {
         </div>
       </div>
       
-      {item.summary && (
+      {item.summary && cleanSummary(item.summary) && (
         <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-3">
           {cleanSummary(item.summary)}
         </p>

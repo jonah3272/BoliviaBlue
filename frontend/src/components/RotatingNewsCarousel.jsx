@@ -261,7 +261,7 @@ function RotatingNewsCarousel() {
               <h3 className="text-sm font-bold text-gray-900 dark:text-white line-clamp-2 mb-1 leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400">
                 {currentArticle.title}
               </h3>
-              {currentArticle.summary && (
+              {currentArticle.summary && cleanSummary(currentArticle.summary) && (
                 <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 leading-snug">
                   {cleanSummary(currentArticle.summary)}
                 </p>

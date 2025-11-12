@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { fetchTweets } from '../utils/api';
-import { formatTimeAgo } from '../utils/formatters';
+import { formatTimeAgo, cleanSummary } from '../utils/formatters';
 import { useLanguage } from '../contexts/LanguageContext';
 
 // Sentiment indicator for tweets - Matches legend colors
@@ -61,9 +61,11 @@ function TweetCard({ tweet }) {
         <SentimentArrow sentiment={tweet.sentiment} />
       </div>
       
-      <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-3">
-        {cleanSummary(tweet.summary)}
-      </p>
+      {tweet.summary && cleanSummary(tweet.summary) && (
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-3">
+          {cleanSummary(tweet.summary)}
+        </p>
+      )}
       
       <div className="flex items-center justify-between text-xs">
         <span className="text-gray-500 dark:text-gray-500">

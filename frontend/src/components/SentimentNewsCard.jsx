@@ -71,22 +71,41 @@ function SentimentNewsCard() {
         const downCount = dailyArticles.filter(a => a.sentiment === 'down').length;
         const neutralCount = dailyArticles.filter(a => a.sentiment === 'neutral' || !a.sentiment).length;
         
-        // Determine trend
-        const scoreDiff = Math.abs(upScore - downScore);
+        // Calculate sentiment score on a -50 to +50 scale (political compass style)
+        // Normalize based on weighted scores and article counts
         const totalScore = upScore + downScore;
-        const confidence = totalScore > 0 ? (scoreDiff / totalScore) * 100 : 0;
+        const scoreDiff = upScore - downScore;
         
+        // Calculate base score from weighted difference
+        let sentimentScore = 0;
+        if (totalScore > 0) {
+          // Normalize to -50 to +50 based on score difference
+          const normalizedDiff = (scoreDiff / totalScore) * 50;
+          sentimentScore = Math.max(-50, Math.min(50, Math.round(normalizedDiff)));
+        }
+        
+        // Also consider article count difference for more granular scoring
+        const countDiff = upCount - downCount;
+        const totalCount = upCount + downCount;
+        if (totalCount > 0) {
+          const countBasedScore = (countDiff / totalCount) * 50;
+          // Blend both scores (70% weighted score, 30% count-based)
+          sentimentScore = Math.round(sentimentScore * 0.7 + countBasedScore * 0.3);
+          sentimentScore = Math.max(-50, Math.min(50, sentimentScore));
+        }
+        
+        // Determine trend label and strength
         let trend = 'neutral';
         let trendStrength = 'moderate';
         
-        if (upScore > downScore && (confidence > 20 || upCount >= downCount + 2)) {
+        if (sentimentScore > 10) {
           trend = 'bullish';
-          if (confidence > 50 || upCount >= downCount * 1.5) {
+          if (sentimentScore > 30) {
             trendStrength = 'strong';
           }
-        } else if (downScore > upScore && (confidence > 20 || downCount >= upCount + 2)) {
+        } else if (sentimentScore < -10) {
           trend = 'bearish';
-          if (confidence > 50 || downCount >= upCount * 1.5) {
+          if (sentimentScore < -30) {
             trendStrength = 'strong';
           }
         }
@@ -97,13 +116,15 @@ function SentimentNewsCard() {
           down: downCount,
           neutral: neutralCount,
           currencyUp: currencyUpCount,
-          currencyDown: currencyDownCount
+          currencyDown: currencyDownCount,
+          score: sentimentScore // Add score to dailySentiment
         });
         
         setTrendDetails({
           trend,
           trendStrength,
-          confidence: Math.round(confidence),
+          score: sentimentScore,
+          confidence: totalScore > 0 ? Math.round((Math.abs(scoreDiff) / totalScore) * 100) : 0,
           upScore: Math.round(upScore * 10) / 10,
           downScore: Math.round(downScore * 10) / 10
         });
@@ -281,26 +302,28 @@ function SentimentNewsCard() {
     return null;
   }
 
-  // Determine overall sentiment styling
-  const isBullish = trendDetails.trend === 'bullish';
-  const isBearish = trendDetails.trend === 'bearish';
-  const isStrong = trendDetails.trendStrength === 'strong';
+  // Get sentiment score (-50 to +50)
+  const sentimentScore = trendDetails?.score || 0;
+  const isPositive = sentimentScore > 0;
+  const isNegative = sentimentScore < 0;
+  const isNeutral = sentimentScore === 0;
   
-  const trendBg = isBullish
-    ? (isStrong ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' : 'bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-800/50')
-    : isBearish
-    ? (isStrong ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800' : 'bg-red-50 dark:bg-red-900/10 border-red-200 dark:border-red-800/50')
-    : 'bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700';
-  const trendColor = isBullish 
-    ? 'text-green-600 dark:text-green-400' 
-    : isBearish 
-    ? 'text-red-600 dark:text-red-400' 
-    : 'text-gray-600 dark:text-gray-400';
-  const trendText = isBullish 
-    ? (isStrong ? t('dailySentimentTrendUp') + ' ' + (language === 'es' ? '(Fuerte)' : '(Strong)') : t('dailySentimentTrendUp'))
-    : isBearish 
-    ? (isStrong ? t('dailySentimentTrendDown') + ' ' + (language === 'es' ? '(Fuerte)' : '(Strong)') : t('dailySentimentTrendDown'))
-    : t('dailySentimentNeutral');
+  // Calculate position on compass (0% = left/negative, 50% = center, 100% = right/positive)
+  const compassPosition = ((sentimentScore + 50) / 100) * 100; // Convert -50 to +50 to 0-100%
+  
+  // Determine colors based on score
+  const getScoreColor = () => {
+    if (isPositive) {
+      if (sentimentScore > 30) return 'text-green-600 dark:text-green-400';
+      return 'text-green-500 dark:text-green-500';
+    } else if (isNegative) {
+      if (sentimentScore < -30) return 'text-red-600 dark:text-red-400';
+      return 'text-red-500 dark:text-red-500';
+    }
+    return 'text-gray-500 dark:text-gray-400';
+  };
+  
+  const scoreColor = getScoreColor();
 
   const tooltipText = language === 'es'
     ? `Análisis inteligente basado en ${dailySentiment.total} artículos de las últimas 24h. ` +
@@ -330,7 +353,7 @@ function SentimentNewsCard() {
       {/* Top Bar - Sentiment Summary */}
       <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          {/* Left: Sentiment Label & Pills */}
+          {/* Left: Sentiment Label & Compass */}
           <div className="flex items-center gap-4 flex-wrap">
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -338,30 +361,43 @@ function SentimentNewsCard() {
               </span>
             </div>
             
-            {/* Sentiment Pills */}
+            {/* Sentiment Compass Gauge */}
             <div className="flex items-center gap-2">
-              {/* Neutral Pill */}
-              <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border ${trendBg} ${trendColor} transition-all`}>
-                <div className="relative w-4 h-4 flex items-center justify-center">
-                  <div className="absolute inset-0 rounded-full border-2 border-current opacity-50"></div>
-                  <svg 
-                    className="w-2.5 h-2.5 transition-transform duration-500"
-                    style={{
-                      transform: isBullish 
-                        ? 'rotate(-45deg)' 
-                        : isBearish 
-                        ? 'rotate(45deg)' 
-                        : 'rotate(0deg)'
-                    }}
-                    fill="none" 
-                    stroke="currentColor" 
-                    strokeWidth="3" 
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                  </svg>
+              {/* Compact Compass Indicator */}
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
+                {/* Compass Bar */}
+                <div className="relative w-24 h-6 flex items-center">
+                  {/* Background track */}
+                  <div className="absolute inset-0 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                  
+                  {/* Positive (green) gradient */}
+                  <div 
+                    className="absolute left-1/2 h-full rounded-r-full bg-gradient-to-r from-green-500 to-green-600"
+                    style={{ width: `${Math.max(0, compassPosition - 50)}%`, left: '50%' }}
+                  ></div>
+                  
+                  {/* Negative (red) gradient */}
+                  <div 
+                    className="absolute right-1/2 h-full rounded-l-full bg-gradient-to-l from-red-500 to-red-600"
+                    style={{ width: `${Math.max(0, 50 - compassPosition)}%`, right: '50%' }}
+                  ></div>
+                  
+                  {/* Center indicator */}
+                  <div className="absolute left-1/2 transform -translate-x-1/2 w-0.5 h-full bg-gray-900 dark:bg-gray-100"></div>
+                  
+                  {/* Score indicator (needle) */}
+                  <div 
+                    className="absolute top-0 bottom-0 w-1 bg-gray-900 dark:bg-gray-100 rounded-full shadow-lg transform -translate-x-1/2 transition-all duration-300"
+                    style={{ left: `${compassPosition}%` }}
+                  ></div>
                 </div>
-                <span className="text-xs font-semibold">{trendText}</span>
+                
+                {/* Score Display */}
+                <div className={`flex items-center gap-1 ${scoreColor}`}>
+                  <span className="text-xs font-bold tabular-nums">
+                    {sentimentScore > 0 ? '+' : ''}{sentimentScore}
+                  </span>
+                </div>
               </div>
 
               {/* Positive Count Pill */}

@@ -73,30 +73,8 @@ function BlueChart() {
           });
         }
         
-        // Determine date format based on data span
-        let dateFormat = null;
-        if (range === 'ALL' && result.points.length > 0) {
-          const firstDate = new Date(result.points[0].t);
-          const lastDate = new Date(result.points[result.points.length - 1].t);
-          const spanMonths = lastDate.getMonth() !== firstDate.getMonth() || 
-                            lastDate.getFullYear() !== firstDate.getFullYear();
-          const spanYears = lastDate.getFullYear() !== firstDate.getFullYear();
-          
-          if (spanYears) {
-            // Multiple years: show month + day + year
-            dateFormat = { month: 'short', day: 'numeric', year: 'numeric' };
-          } else if (spanMonths) {
-            // Multiple months, same year: show month + day
-            dateFormat = { month: 'short', day: 'numeric' };
-          } else {
-            // Same month: show day + time or just day if many points
-            dateFormat = result.points.length > 30 
-              ? { day: 'numeric' }
-              : { month: 'short', day: 'numeric' };
-          }
-        }
-        
         // Transform data with better formatting
+        // For ALL range, group by day and show full dates
         const chartData = result.points.map((point, index) => {
           const date = new Date(point.t);
           let timeLabel = '';
@@ -112,12 +90,23 @@ function BlueChart() {
               day: 'numeric' 
             });
           } else if (range === 'ALL') {
-            // Use determined format for ALL range
-            timeLabel = date.toLocaleDateString(language === 'es' ? 'es-BO' : 'en-US', dateFormat || { 
-              month: 'short', 
-              day: 'numeric',
-              year: 'numeric'
-            });
+            // Group by day: show full date (MM/DD/YYYY or DD/MM/YYYY)
+            // Format: "12/11/2025" or "11/12/2025" depending on locale
+            if (language === 'es') {
+              // Spanish format: DD/MM/YYYY
+              timeLabel = date.toLocaleDateString('es-BO', { 
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+              });
+            } else {
+              // English format: MM/DD/YYYY
+              timeLabel = date.toLocaleDateString('en-US', { 
+                month: '2-digit',
+                day: '2-digit',
+                year: 'numeric'
+              });
+            }
           } else {
             // 1Y range: show month + year
             timeLabel = date.toLocaleDateString(language === 'es' ? 'es-BO' : 'en-US', { 
@@ -132,9 +121,49 @@ function BlueChart() {
             blue_buy: point.buy,
             blue_sell: point.sell,
             blue_mid: point.mid,
+            dateKey: range === 'ALL' ? date.toDateString() : null, // For grouping by day
             index
           };
         });
+        
+        // For ALL range, group points by day and show only one label per day
+        if (range === 'ALL' && chartData.length > 0) {
+          const groupedByDay = new Map();
+          chartData.forEach((point, index) => {
+            const dayKey = point.dateKey;
+            if (!groupedByDay.has(dayKey)) {
+              groupedByDay.set(dayKey, []);
+            }
+            groupedByDay.get(dayKey).push({ ...point, originalIndex: index });
+          });
+          
+          // Create new chart data with one entry per day (using the first point of each day)
+          const groupedData = [];
+          groupedByDay.forEach((dayPoints, dayKey) => {
+            // Use the first point of the day as the representative
+            const representative = dayPoints[0];
+            groupedData.push({
+              ...representative,
+              // Keep the date label
+              time: representative.time,
+              // Average the values for the day (optional - or use first/last)
+              blue_buy: dayPoints.reduce((sum, p) => sum + p.blue_buy, 0) / dayPoints.length,
+              blue_sell: dayPoints.reduce((sum, p) => sum + p.blue_sell, 0) / dayPoints.length,
+              blue_mid: dayPoints.reduce((sum, p) => sum + p.blue_mid, 0) / dayPoints.length,
+            });
+          });
+          
+          // Sort by date
+          groupedData.sort((a, b) => {
+            const dateA = new Date(a.dateKey);
+            const dateB = new Date(b.dateKey);
+            return dateA - dateB;
+          });
+          
+          // Replace chartData with grouped data
+          chartData.length = 0;
+          chartData.push(...groupedData);
+        }
         
         setData(chartData);
         setError(null);

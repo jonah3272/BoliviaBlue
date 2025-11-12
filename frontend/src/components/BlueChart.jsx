@@ -74,7 +74,7 @@ function BlueChart() {
         }
         
         // Transform data with better formatting
-        // For ALL range, group by day and show full dates
+        // For ALL range, keep all data points but group labels by day
         const chartData = result.points.map((point, index) => {
           const date = new Date(point.t);
           let timeLabel = '';
@@ -90,7 +90,7 @@ function BlueChart() {
               day: 'numeric' 
             });
           } else if (range === 'ALL') {
-            // Group by day: show full date (MM/DD/YYYY or DD/MM/YYYY)
+            // Group labels by day: show full date (MM/DD/YYYY or DD/MM/YYYY)
             // Format: "12/11/2025" or "11/12/2025" depending on locale
             if (language === 'es') {
               // Spanish format: DD/MM/YYYY
@@ -121,48 +121,20 @@ function BlueChart() {
             blue_buy: point.buy,
             blue_sell: point.sell,
             blue_mid: point.mid,
-            dateKey: range === 'ALL' ? date.toDateString() : null, // For grouping by day
+            dateKey: range === 'ALL' ? date.toDateString() : null, // For grouping labels by day
             index
           };
         });
         
-        // For ALL range, group points by day and show only one label per day
+        // For ALL range, deduplicate labels but keep all data points
+        // We'll use a custom tick formatter to show only one label per day
         if (range === 'ALL' && chartData.length > 0) {
-          const groupedByDay = new Map();
-          chartData.forEach((point, index) => {
-            const dayKey = point.dateKey;
-            if (!groupedByDay.has(dayKey)) {
-              groupedByDay.set(dayKey, []);
-            }
-            groupedByDay.get(dayKey).push({ ...point, originalIndex: index });
+          // Track which dates we've shown labels for
+          const shownDates = new Set();
+          chartData.forEach((point) => {
+            // Mark this date as having a label
+            shownDates.add(point.dateKey);
           });
-          
-          // Create new chart data with one entry per day (using the first point of each day)
-          const groupedData = [];
-          groupedByDay.forEach((dayPoints, dayKey) => {
-            // Use the first point of the day as the representative
-            const representative = dayPoints[0];
-            groupedData.push({
-              ...representative,
-              // Keep the date label
-              time: representative.time,
-              // Average the values for the day (optional - or use first/last)
-              blue_buy: dayPoints.reduce((sum, p) => sum + p.blue_buy, 0) / dayPoints.length,
-              blue_sell: dayPoints.reduce((sum, p) => sum + p.blue_sell, 0) / dayPoints.length,
-              blue_mid: dayPoints.reduce((sum, p) => sum + p.blue_mid, 0) / dayPoints.length,
-            });
-          });
-          
-          // Sort by date
-          groupedData.sort((a, b) => {
-            const dateA = new Date(a.dateKey);
-            const dateB = new Date(b.dateKey);
-            return dateA - dateB;
-          });
-          
-          // Replace chartData with grouped data
-          chartData.length = 0;
-          chartData.push(...groupedData);
         }
         
         setData(chartData);
@@ -370,13 +342,28 @@ function BlueChart() {
                 className="dark:stroke-gray-700" 
                 vertical={false}
               />
-              <XAxis 
-                dataKey="time" 
-                tick={{ fill: '#6B7280', fontSize: 11, fontFamily: 'Inter' }}
-                stroke="#D1D5DB"
-                tickLine={false}
-                axisLine={{ strokeWidth: 2 }}
-              />
+                    <XAxis 
+                      dataKey="time" 
+                      tick={{ fill: '#6B7280', fontSize: 11, fontFamily: 'Inter' }}
+                      stroke="#D1D5DB"
+                      tickLine={false}
+                      axisLine={{ strokeWidth: 2 }}
+                      tickFormatter={(value, index) => {
+                        // For ALL range, only show label for first occurrence of each date
+                        if (range === 'ALL' && data.length > 0) {
+                          const currentPoint = data[index];
+                          if (!currentPoint) return '';
+                          
+                          // Check if this is the first occurrence of this date
+                          const firstOccurrenceIndex = data.findIndex(p => p.dateKey === currentPoint.dateKey);
+                          if (firstOccurrenceIndex === index) {
+                            return value;
+                          }
+                          return ''; // Don't show label for duplicate dates
+                        }
+                        return value;
+                      }}
+                    />
               <YAxis 
                 tick={{ fill: '#6B7280', fontSize: 11, fontFamily: 'Space Mono' }}
                 stroke="#D1D5DB"

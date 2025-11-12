@@ -382,9 +382,9 @@ function SentimentNewsCard() {
   };
 
   return (
-    <div className="bg-white dark:bg-[#121416] rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+    <div className="bg-white dark:bg-[#121416] rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden h-[280px] flex flex-col">
       {/* Top Bar - Sentiment Summary */}
-      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30">
+      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30 flex-shrink-0">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           {/* Left: Sentiment Label & Compass */}
           <div className="flex items-center gap-4 flex-wrap">
@@ -598,22 +598,23 @@ function SentimentNewsCard() {
       </div>
 
       {/* Rotating Article Content */}
-      {articles.length === 0 ? (
-        <div className="p-6 text-center">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            {language === 'es' 
-              ? 'No hay artículos recientes con movimiento de sentimiento.'
-              : 'No recent articles with sentiment movement.'}
-          </p>
-        </div>
-      ) : articles[currentIndex] ? (
-        <>
-          <a
-            href={articles[currentIndex].url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-900/30 transition-colors group"
-          >
+      <div className="flex-1 flex flex-col min-h-0">
+        {articles.length === 0 ? (
+          <div className="p-6 text-center flex-1 flex items-center justify-center">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              {language === 'es' 
+                ? 'No hay artículos recientes con movimiento de sentimiento.'
+                : 'No recent articles with sentiment movement.'}
+            </p>
+          </div>
+        ) : articles[currentIndex] ? (
+          <>
+            <a
+              href={articles[currentIndex].url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-900/30 transition-colors group flex-1 flex flex-col min-h-0"
+            >
             <div className="flex items-start gap-3">
               {/* Favicon */}
               <div className="flex-shrink-0 mt-0.5">
@@ -666,11 +667,11 @@ function SentimentNewsCard() {
                     })()}
                   </span>
                 </div>
-                <h3 className="text-sm font-bold text-gray-900 dark:text-white line-clamp-2 mb-1 leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white line-clamp-2 mb-1 leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors flex-shrink-0">
                   {articles[currentIndex].title}
                 </h3>
                 {articles[currentIndex].summary && cleanSummary(articles[currentIndex].summary) && (
-                  <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 leading-snug mt-1">
+                  <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 leading-snug mt-1 flex-shrink-0">
                     {cleanSummary(articles[currentIndex].summary)}
                   </p>
                 )}
@@ -699,9 +700,9 @@ function SentimentNewsCard() {
             </div>
           </a>
 
-          {/* Navigation Controls */}
-          {articles.length > 1 && (
-            <div className="flex items-center justify-between px-6 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30">
+            {/* Navigation Controls */}
+            {articles.length > 1 && (
+              <div className="flex items-center justify-between px-6 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30 flex-shrink-0">
               {/* Left Arrow */}
               <button
                 onClick={(e) => {
@@ -750,10 +751,11 @@ function SentimentNewsCard() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </button>
-            </div>
-          )}
-        </>
-      ) : null}
+              </div>
+            )}
+          </>
+        ) : null}
+      </div>
     </div>
   );
 }

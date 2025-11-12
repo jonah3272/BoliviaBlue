@@ -229,19 +229,19 @@ function DailySentimentHeader() {
       `Score: ↗ ${trendDetails.upScore} vs ↘ ${trendDetails.downScore}`;
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-3">
-      {/* Single Row - Compact Layout */}
-      <div className="flex items-center justify-between gap-3 flex-wrap">
-        {/* Left: Sentiment Badge */}
+    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-2.5">
+      {/* Single Row - Ultra Compact Layout */}
+      <div className="flex items-center gap-2 flex-wrap">
+        {/* Sentiment Badge */}
         <div 
           ref={badgeRef}
-          className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border-2 ${trendBg} shadow-sm relative cursor-help`}
+          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border-2 ${trendBg} shadow-sm relative cursor-help`}
           onMouseEnter={() => handleTooltipToggle(true)}
           onMouseLeave={() => handleTooltipToggle(false)}
         >
-          <span className={`text-xl font-bold ${trendColor}`}>{trendIcon}</span>
-          <div className="flex flex-col">
-            <span className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide leading-tight">
+          <span className={`text-lg font-bold ${trendColor}`}>{trendIcon}</span>
+          <div className="flex flex-col leading-tight">
+            <span className="text-[10px] font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
               {t('dailySentimentTitle')}
             </span>
             <span className={`text-xs font-bold ${trendColor} leading-tight`}>
@@ -258,7 +258,7 @@ function DailySentimentHeader() {
               handleTooltipToggle(!showTooltip);
             }}
           >
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </button>
@@ -283,45 +283,40 @@ function DailySentimentHeader() {
           )}
         </div>
 
-        {/* Center: Article Metrics */}
-        <div className="flex items-center gap-2 flex-1 justify-center">
-          <span className="text-xs text-gray-500 dark:text-gray-400">
-            {language === 'es' ? 'Basado en' : 'Based on'}
+        {/* Article Metrics - Compact */}
+        <div className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
+          <span className="text-xs font-bold text-gray-900 dark:text-white">
+            {dailySentiment.total}
           </span>
-          <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
-            <span className="text-sm font-bold text-gray-900 dark:text-white">
-              {dailySentiment.total}
-            </span>
-            <span className="text-xs text-gray-600 dark:text-gray-400">
-              {language === 'es' ? 'artículos' : 'articles'}
-            </span>
-          </div>
-
-          {/* Positive Count */}
-          {dailySentiment.up > 0 && (
-            <div className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
-              <span className="text-sm font-bold text-green-700 dark:text-green-300">↗</span>
-              <span className="text-xs font-bold text-green-700 dark:text-green-300">
-                {dailySentiment.up}
-              </span>
-            </div>
-          )}
-
-          {/* Negative Count */}
-          {dailySentiment.down > 0 && (
-            <div className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
-              <span className="text-sm font-bold text-red-700 dark:text-red-300">↘</span>
-              <span className="text-xs font-bold text-red-700 dark:text-red-300">
-                {dailySentiment.down}
-              </span>
-            </div>
-          )}
+          <span className="text-[10px] text-gray-600 dark:text-gray-400">
+            {language === 'es' ? 'art.' : 'art.'}
+          </span>
         </div>
 
-        {/* Right: Timeframe */}
-        <div className="inline-flex items-center px-2 py-1 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
-          <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
-            {language === 'es' ? '24h' : '24h'}
+        {/* Positive Count */}
+        {dailySentiment.up > 0 && (
+          <div className="inline-flex items-center gap-0.5 px-1.5 py-1 rounded-md bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
+            <span className="text-xs font-bold text-green-700 dark:text-green-300">↗</span>
+            <span className="text-xs font-bold text-green-700 dark:text-green-300">
+              {dailySentiment.up}
+            </span>
+          </div>
+        )}
+
+        {/* Negative Count */}
+        {dailySentiment.down > 0 && (
+          <div className="inline-flex items-center gap-0.5 px-1.5 py-1 rounded-md bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+            <span className="text-xs font-bold text-red-700 dark:text-red-300">↘</span>
+            <span className="text-xs font-bold text-red-700 dark:text-red-300">
+              {dailySentiment.down}
+            </span>
+          </div>
+        )}
+
+        {/* Timeframe */}
+        <div className="inline-flex items-center px-1.5 py-1 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
+          <span className="text-[10px] font-medium text-gray-600 dark:text-gray-400">
+            24h
           </span>
         </div>
       </div>

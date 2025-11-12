@@ -211,54 +211,44 @@ function SentimentNewsCard() {
     setTimeout(() => setIsPaused(false), 10000);
   }, [articles.length]);
 
-  // Calculate tooltip position
+  // Calculate tooltip position - position to the right
   const handleTooltipToggle = useCallback((show) => {
     if (!show) {
       setShowTooltip(false);
       return;
     }
 
-    if (!badgeRef.current) {
-      setShowTooltip(true);
-      setTooltipPosition('top');
-      return;
-    }
-
-    const badgeRect = badgeRef.current.getBoundingClientRect();
-    const viewportHeight = window.innerHeight;
-    const spaceAbove = badgeRect.top;
-    const spaceBelow = viewportHeight - badgeRect.bottom;
-    const estimatedTooltipHeight = 150;
-
-    let verticalPos = 'top';
-    if (spaceAbove < estimatedTooltipHeight + 10 && spaceBelow > estimatedTooltipHeight + 10) {
-      verticalPos = 'bottom';
-    }
-
-    setTooltipPosition(verticalPos);
     setShowTooltip(true);
+    setTooltipPosition('right');
 
+    // Adjust position after tooltip renders
     setTimeout(() => {
       if (!tooltipRef.current || !badgeRef.current) return;
       
       const tooltipRect = tooltipRef.current.getBoundingClientRect();
       const badgeRect = badgeRef.current.getBoundingClientRect();
-      const badgeCenterX = badgeRect.left + badgeRect.width / 2;
-      const tooltipHalfWidth = tooltipRect.width / 2;
       const viewportWidth = window.innerWidth;
-      let horizontalOffset = 0;
+      const viewportHeight = window.innerHeight;
       
-      if (badgeCenterX - tooltipHalfWidth < 10) {
-        horizontalOffset = 10 - (badgeCenterX - tooltipHalfWidth);
-      } else if (badgeCenterX + tooltipHalfWidth > viewportWidth - 10) {
-        horizontalOffset = (viewportWidth - 10) - (badgeCenterX + tooltipHalfWidth);
+      // Position to the right of the badge
+      let leftPos = badgeRect.right + 10;
+      let topPos = badgeRect.top + (badgeRect.height / 2) - (tooltipRect.height / 2);
+      
+      // If tooltip goes off right edge, position to the left instead
+      if (leftPos + tooltipRect.width > viewportWidth - 10) {
+        leftPos = badgeRect.left - tooltipRect.width - 10;
       }
-
-      if (horizontalOffset !== 0) {
-        tooltipRef.current.style.left = `calc(50% + ${horizontalOffset}px)`;
-      } else {
-        tooltipRef.current.style.left = '50%';
+      
+      // Adjust vertical position if tooltip goes off screen
+      if (topPos < 10) {
+        topPos = 10;
+      } else if (topPos + tooltipRect.height > viewportHeight - 10) {
+        topPos = viewportHeight - tooltipRect.height - 10;
       }
+      
+      tooltipRef.current.style.left = `${leftPos}px`;
+      tooltipRef.current.style.top = `${topPos}px`;
+      tooltipRef.current.style.transform = 'none';
     }, 0);
   }, []);
 
@@ -379,11 +369,11 @@ function SentimentNewsCard() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </button>
-            {/* Tooltip */}
+            {/* Tooltip - Positioned to the right */}
             {showTooltip && (
               <div 
                 ref={tooltipRef}
-                className={`absolute ${tooltipPosition === 'top' ? 'bottom-full mb-2' : 'top-full mt-2'} left-1/2 transform -translate-x-1/2 px-3 py-2 bg-gray-900 dark:bg-gray-800 text-white text-xs rounded-lg shadow-xl z-50 max-w-xs text-center whitespace-normal`}
+                className="fixed px-3 py-2 bg-gray-900 dark:bg-gray-800 text-white text-xs rounded-lg shadow-xl z-50 max-w-xs whitespace-normal"
                 style={{ minWidth: '280px' }}
               >
                 <div className="flex items-start gap-2">
@@ -392,8 +382,9 @@ function SentimentNewsCard() {
                   </svg>
                   <span className="text-left">{tooltipText}</span>
                 </div>
-                <div className={`absolute ${tooltipPosition === 'top' ? 'top-full -mt-1' : 'bottom-full -mb-1'} left-1/2 transform -translate-x-1/2`}>
-                  <div className={`border-4 border-transparent ${tooltipPosition === 'top' ? 'border-t-gray-900 dark:border-t-gray-800' : 'border-b-gray-900 dark:border-b-gray-800'}`}></div>
+                {/* Arrow pointing to badge (left side) */}
+                <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-full">
+                  <div className="border-4 border-transparent border-r-gray-900 dark:border-r-gray-800"></div>
                 </div>
               </div>
             )}

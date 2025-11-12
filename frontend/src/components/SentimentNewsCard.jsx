@@ -22,6 +22,7 @@ function SentimentNewsCard() {
   const [showTooltip, setShowTooltip] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState('top');
   const badgeRef = useRef(null);
+  const timeframeRef = useRef(null);
   const tooltipRef = useRef(null);
   const autoRotateIntervalRef = useRef(null);
 
@@ -211,7 +212,7 @@ function SentimentNewsCard() {
     setTimeout(() => setIsPaused(false), 10000);
   }, [articles.length]);
 
-  // Calculate tooltip position - position to the right
+  // Calculate tooltip position - position to the right of 24h badge
   const handleTooltipToggle = useCallback((show) => {
     if (!show) {
       setShowTooltip(false);
@@ -223,20 +224,20 @@ function SentimentNewsCard() {
 
     // Adjust position after tooltip renders
     setTimeout(() => {
-      if (!tooltipRef.current || !badgeRef.current) return;
+      if (!tooltipRef.current || !timeframeRef.current) return;
       
       const tooltipRect = tooltipRef.current.getBoundingClientRect();
-      const badgeRect = badgeRef.current.getBoundingClientRect();
+      const timeframeRect = timeframeRef.current.getBoundingClientRect();
       const viewportWidth = window.innerWidth;
       const viewportHeight = window.innerHeight;
       
-      // Position to the right of the badge
-      let leftPos = badgeRect.right + 10;
-      let topPos = badgeRect.top + (badgeRect.height / 2) - (tooltipRect.height / 2);
+      // Position to the right of the 24h badge
+      let leftPos = timeframeRect.right + 10;
+      let topPos = timeframeRect.top + (timeframeRect.height / 2) - (tooltipRect.height / 2);
       
       // If tooltip goes off right edge, position to the left instead
       if (leftPos + tooltipRect.width > viewportWidth - 10) {
-        leftPos = badgeRect.left - tooltipRect.width - 10;
+        leftPos = timeframeRect.left - tooltipRect.width - 10;
       }
       
       // Adjust vertical position if tooltip goes off screen
@@ -342,9 +343,7 @@ function SentimentNewsCard() {
           {/* Sentiment Badge */}
           <div 
             ref={badgeRef}
-            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border-2 ${trendBg} shadow-sm relative cursor-help`}
-            onMouseEnter={() => handleTooltipToggle(true)}
-            onMouseLeave={() => handleTooltipToggle(false)}
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border-2 ${trendBg} shadow-sm`}
           >
             <span className={`text-lg font-bold ${trendColor}`}>{trendIcon}</span>
             <div className="flex flex-col leading-tight">
@@ -355,39 +354,6 @@ function SentimentNewsCard() {
                 {trendText}
               </span>
             </div>
-            {/* Info Icon */}
-            <button
-              type="button"
-              className="ml-0.5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
-              aria-label={language === 'es' ? 'Información sobre el análisis de sentimiento' : 'Information about sentiment analysis'}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleTooltipToggle(!showTooltip);
-              }}
-            >
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </button>
-            {/* Tooltip - Positioned to the right */}
-            {showTooltip && (
-              <div 
-                ref={tooltipRef}
-                className="fixed px-3 py-2 bg-gray-900 dark:bg-gray-800 text-white text-xs rounded-lg shadow-xl z-50 max-w-xs whitespace-normal"
-                style={{ minWidth: '280px' }}
-              >
-                <div className="flex items-start gap-2">
-                  <svg className="w-4 h-4 flex-shrink-0 mt-0.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span className="text-left">{tooltipText}</span>
-                </div>
-                {/* Arrow pointing to badge (left side) */}
-                <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-full">
-                  <div className="border-4 border-transparent border-r-gray-900 dark:border-r-gray-800"></div>
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Article Metrics */}
@@ -420,11 +386,49 @@ function SentimentNewsCard() {
             </div>
           )}
 
-          {/* Timeframe */}
-          <div className="inline-flex items-center px-1.5 py-1 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
+          {/* Timeframe with Info Icon */}
+          <div 
+            ref={timeframeRef}
+            className="inline-flex items-center gap-1 px-1.5 py-1 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 relative cursor-help"
+            onMouseEnter={() => handleTooltipToggle(true)}
+            onMouseLeave={() => handleTooltipToggle(false)}
+          >
             <span className="text-[10px] font-medium text-gray-600 dark:text-gray-400">
               24h
             </span>
+            {/* Info Icon */}
+            <button
+              type="button"
+              className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+              aria-label={language === 'es' ? 'Información sobre el análisis de sentimiento' : 'Information about sentiment analysis'}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleTooltipToggle(!showTooltip);
+              }}
+            >
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </button>
+            {/* Tooltip - Positioned to the right of 24h badge */}
+            {showTooltip && (
+              <div 
+                ref={tooltipRef}
+                className="fixed px-3 py-2 bg-gray-900 dark:bg-gray-800 text-white text-xs rounded-lg shadow-xl z-50 max-w-xs whitespace-normal"
+                style={{ minWidth: '280px' }}
+              >
+                <div className="flex items-start gap-2">
+                  <svg className="w-4 h-4 flex-shrink-0 mt-0.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="text-left">{tooltipText}</span>
+                </div>
+                {/* Arrow pointing to 24h badge (left side) */}
+                <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-full">
+                  <div className="border-4 border-transparent border-r-gray-900 dark:border-r-gray-800"></div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

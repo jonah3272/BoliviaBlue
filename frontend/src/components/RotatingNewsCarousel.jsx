@@ -232,6 +232,14 @@ function RotatingNewsCarousel() {
     return () => clearInterval(interval);
   }, [articles.length]);
 
+  // Reset index if current article doesn't exist - MUST be before any conditional returns
+  useEffect(() => {
+    if (articles.length > 0 && (!articles[currentIndex] || currentIndex >= articles.length)) {
+      console.warn('⚠️ Current article index out of bounds, resetting to 0');
+      setCurrentIndex(0);
+    }
+  }, [articles, currentIndex]);
+
   console.log('🎨 Rendering component:', { isLoading, articlesCount: articles.length, hasDailySentiment: !!dailySentiment, error });
   
   if (isLoading) {
@@ -379,14 +387,6 @@ function RotatingNewsCarousel() {
       </div>
     );
   }
-
-  // Reset index if current article doesn't exist
-  useEffect(() => {
-    if (articles.length > 0 && (!articles[currentIndex] || currentIndex >= articles.length)) {
-      console.warn('⚠️ Current article index out of bounds, resetting to 0');
-      setCurrentIndex(0);
-    }
-  }, [articles, currentIndex]);
 
   const currentArticle = articles[currentIndex];
   if (!currentArticle && articles.length > 0) {

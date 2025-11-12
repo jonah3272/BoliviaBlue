@@ -129,12 +129,13 @@ async function refreshNews(includeTwitter = false) {
     
     // Store in Supabase
     let insertedCount = 0;
+    let duplicateCount = 0;
     for (const item of allNewsItems) {
       try {
         // Determine type: tweets from twitter.com, everything else is articles
         const type = item.source === 'twitter.com' ? 'tweet' : 'article';
         
-        await insertNews(
+        const result = await insertNews(
           item.id,
           item.source,
           item.url,
@@ -145,16 +146,20 @@ async function refreshNews(includeTwitter = false) {
           item.category,
           type
         );
-        insertedCount++;
-      } catch (error) {
-        // Ignore duplicate key errors
-        if (!error.message.includes('duplicate') && !error.message.includes('unique')) {
-          console.error('Error inserting news item:', error);
+        
+        // insertNews returns null if duplicate, data object if inserted
+        if (result) {
+          insertedCount++;
+        } else {
+          duplicateCount++;
         }
+      } catch (error) {
+        // Log unexpected errors (not duplicate-related)
+        console.error('Error inserting news item:', error);
       }
     }
     
-    console.log(`News updated: ${insertedCount} new items stored (${rssNews.length} RSS, ${twitterNews.length} Twitter)`);
+    console.log(`News updated: ${insertedCount} new items stored, ${duplicateCount} duplicates skipped (${rssNews.length} RSS, ${twitterNews.length} Twitter)`);
     
     // Prune old articles after inserting new ones
     await pruneOldNews();

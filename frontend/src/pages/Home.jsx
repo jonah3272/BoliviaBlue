@@ -9,6 +9,7 @@ import About from '../components/About';
 import PageMeta from '../components/PageMeta';
 import RotatingNewsCarousel from '../components/RotatingNewsCarousel';
 import Navigation from '../components/Navigation';
+import DailySentimentHeader from '../components/DailySentimentHeader';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Link } from 'react-router-dom';
 
@@ -73,20 +74,24 @@ function Home() {
       {/* Navigation */}
       <Navigation />
 
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            {t('title')}
-          </h2>
-          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            {t('subtitle')}
-          </p>
+      {/* Hero Section with Sentiment */}
+      <section className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-2">
+              {t('title')}
+            </h2>
+            <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              {t('subtitle')}
+            </p>
+          </div>
+          {/* Daily Sentiment in Header */}
+          <DailySentimentHeader />
         </div>
       </section>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
         {/* Rotating News Carousel */}
         <section>
           <RotatingNewsCarousel />

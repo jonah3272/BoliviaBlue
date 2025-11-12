@@ -107,8 +107,22 @@ export async function getTotalRatesCount() {
 
 /**
  * Insert a news item
+ * Uses upsert with conflict resolution on URL to prevent duplicates
  */
 export async function insertNews(id, source, url, title, summary, published_at, sentiment, category = 'general', type = 'article') {
+  // First check if URL already exists to avoid unnecessary upsert
+  const { data: existing } = await supabase
+    .from('news')
+    .select('id')
+    .eq('url', url)
+    .maybeSingle();
+
+  // If URL already exists, skip insertion (prevent duplicate)
+  if (existing) {
+    return null; // Return null to indicate duplicate was skipped
+  }
+
+  // Insert new article
   const { data, error } = await supabase
     .from('news')
     .insert({
@@ -125,8 +139,13 @@ export async function insertNews(id, source, url, title, summary, published_at, 
     .select()
     .single();
 
-  // Ignore duplicate key errors (PGRST23P01 = unique constraint violation)
-  if (error && error.code !== '23505') {
+  // Handle errors (including race conditions where URL was inserted between check and insert)
+  if (error) {
+    // Ignore duplicate key errors (23505 = unique constraint violation)
+    // This can happen in race conditions where multiple processes try to insert the same URL
+    if (error.code === '23505' || error.message.includes('duplicate') || error.message.includes('unique')) {
+      return null; // Duplicate detected, skip silently
+    }
     throw new Error(`Failed to insert news: ${error.message}`);
   }
 

@@ -2,7 +2,6 @@ import { useLanguage } from '../contexts/LanguageContext';
 import ThemeToggle from '../components/ThemeToggle';
 import LanguageToggle from '../components/LanguageToggle';
 import PageMeta from '../components/PageMeta';
-import Breadcrumbs from '../components/Breadcrumbs';
 import Navigation from '../components/Navigation';
 import { Link } from 'react-router-dom';
 
@@ -62,10 +61,9 @@ function RodrigoPaz() {
       {/* Navigation */}
       <Navigation />
 
-      {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <Breadcrumbs />
-        <article className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 sm:p-8 lg:p-12">
+          {/* Main Content */}
+          <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <article className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 sm:p-8 lg:p-12">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-6">
             {t('rodrigoPazPageTitle')}
           </h1>

@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import ThemeToggle from '../components/ThemeToggle';
 import LanguageToggle from '../components/LanguageToggle';
 import PageMeta from '../components/PageMeta';
-import Breadcrumbs from '../components/Breadcrumbs';
 import Navigation from '../components/Navigation';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Link } from 'react-router-dom';
@@ -223,7 +222,6 @@ function News() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
-        <Breadcrumbs />
         {/* Sentiment Legend - Using compact version to match dashboard */}
         <SentimentLegend compact={true} />
         

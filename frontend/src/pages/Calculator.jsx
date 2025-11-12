@@ -4,7 +4,6 @@ import RateCards from '../components/RateCards';
 import CurrencyCalculator from '../components/CurrencyCalculator';
 import BinanceBanner from '../components/BinanceBanner';
 import PageMeta from '../components/PageMeta';
-import Breadcrumbs from '../components/Breadcrumbs';
 import Navigation from '../components/Navigation';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Link } from 'react-router-dom';
@@ -62,10 +61,9 @@ function Calculator() {
         </div>
       </section>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
-        <Breadcrumbs />
-        {/* Rate Cards */}
+          {/* Main Content */}
+          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
+            {/* Rate Cards */}
         <section>
           <RateCards />
         </section>

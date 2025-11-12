@@ -348,11 +348,12 @@ function BlueChart() {
                       stroke="#D1D5DB"
                       tickLine={false}
                       axisLine={{ strokeWidth: 2 }}
+                      interval={range === 'ALL' ? 0 : 'preserveStartEnd'}
                       tickFormatter={(value, index) => {
                         // For ALL range, only show label for first occurrence of each date
-                        if (range === 'ALL' && data.length > 0) {
+                        if (range === 'ALL' && data.length > 0 && index !== undefined) {
                           const currentPoint = data[index];
-                          if (!currentPoint) return '';
+                          if (!currentPoint || !currentPoint.dateKey) return '';
                           
                           // Check if this is the first occurrence of this date
                           const firstOccurrenceIndex = data.findIndex(p => p.dateKey === currentPoint.dateKey);

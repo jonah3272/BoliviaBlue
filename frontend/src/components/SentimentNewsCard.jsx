@@ -343,7 +343,7 @@ function SentimentNewsCard() {
           {/* Sentiment Badge */}
           <div 
             ref={badgeRef}
-            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border-2 ${trendBg} shadow-sm`}
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border-2 ${trendBg} shadow-sm h-[28px]`}
           >
             <span className={`text-lg font-bold ${trendColor}`}>{trendIcon}</span>
             <div className="flex flex-col leading-tight">
@@ -357,7 +357,7 @@ function SentimentNewsCard() {
           </div>
 
           {/* Article Metrics */}
-          <div className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
+          <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 h-[28px]">
             <span className="text-xs font-bold text-gray-900 dark:text-white">
               {dailySentiment.total}
             </span>
@@ -368,7 +368,7 @@ function SentimentNewsCard() {
 
           {/* Positive Count */}
           {dailySentiment.up > 0 && (
-            <div className="inline-flex items-center gap-0.5 px-1.5 py-1 rounded-md bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
+            <div className="inline-flex items-center gap-0.5 px-2.5 py-1 rounded-md bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 h-[28px]">
               <span className="text-xs font-bold text-green-700 dark:text-green-300">↗</span>
               <span className="text-xs font-bold text-green-700 dark:text-green-300">
                 {dailySentiment.up}
@@ -378,7 +378,7 @@ function SentimentNewsCard() {
 
           {/* Negative Count */}
           {dailySentiment.down > 0 && (
-            <div className="inline-flex items-center gap-0.5 px-1.5 py-1 rounded-md bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+            <div className="inline-flex items-center gap-0.5 px-2.5 py-1 rounded-md bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 h-[28px]">
               <span className="text-xs font-bold text-red-700 dark:text-red-300">↘</span>
               <span className="text-xs font-bold text-red-700 dark:text-red-300">
                 {dailySentiment.down}
@@ -387,7 +387,7 @@ function SentimentNewsCard() {
           )}
 
           {/* Timeframe */}
-          <div className="inline-flex items-center px-1.5 py-1 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
+          <div className="inline-flex items-center px-2.5 py-1 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 h-[28px]">
             <span className="text-[10px] font-medium text-gray-600 dark:text-gray-400">
               24h
             </span>
@@ -397,7 +397,7 @@ function SentimentNewsCard() {
           <button
             ref={infoIconRef}
             type="button"
-            className="inline-flex items-center justify-center w-6 h-6 rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative"
+            className="inline-flex items-center justify-center w-[28px] h-[28px] rounded-md bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative"
             aria-label={language === 'es' ? 'Información sobre el análisis de sentimiento' : 'Information about sentiment analysis'}
             onMouseEnter={() => handleTooltipToggle(true)}
             onMouseLeave={() => handleTooltipToggle(false)}

@@ -53,11 +53,16 @@ function DailySentimentHeader() {
   // Determine overall trend
   const isBullish = dailySentiment.up > dailySentiment.down;
   const isBearish = dailySentiment.down > dailySentiment.up;
+  const trendBg = isBullish
+    ? 'bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-700'
+    : isBearish
+    ? 'bg-red-100 dark:bg-red-900/30 border-red-300 dark:border-red-700'
+    : 'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700';
   const trendColor = isBullish 
-    ? 'text-green-600 dark:text-green-400' 
+    ? 'text-green-700 dark:text-green-300' 
     : isBearish 
-    ? 'text-red-600 dark:text-red-400' 
-    : 'text-gray-600 dark:text-gray-400';
+    ? 'text-red-700 dark:text-red-300' 
+    : 'text-gray-700 dark:text-gray-300';
   const trendIcon = isBullish ? '↗' : isBearish ? '↘' : '○';
   const trendText = isBullish 
     ? t('dailySentimentTrendUp') 
@@ -66,54 +71,60 @@ function DailySentimentHeader() {
     : t('dailySentimentNeutral');
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 text-xs sm:text-sm px-2">
-      {/* Mobile: Compact single line with icons only */}
-      <div className="flex items-center gap-2 sm:hidden">
-        <span className="text-gray-600 dark:text-gray-400 font-medium">
-          {t('dailySentimentTitle')}:
-        </span>
-        <span className={`text-base font-bold ${trendColor}`}>{trendIcon}</span>
-        <span className="text-gray-500 dark:text-gray-500">•</span>
-        <span className="text-gray-600 dark:text-gray-400 font-medium">
-          {dailySentiment.total}
-        </span>
-        {dailySentiment.up > 0 && (
-          <span className={`flex items-center gap-0.5 text-green-700 dark:text-green-300 font-semibold`}>
-            <span className="text-sm">↗</span> {dailySentiment.up}
+    <div className="flex flex-wrap items-center justify-center gap-3 mt-2">
+      {/* Main Trend Badge - Most Prominent */}
+      <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border-2 ${trendBg} shadow-sm`}>
+        <span className={`text-2xl font-bold ${trendColor}`}>{trendIcon}</span>
+        <div className="flex flex-col">
+          <span className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
+            {t('dailySentimentTitle')}
           </span>
-        )}
-        {dailySentiment.down > 0 && (
-          <span className={`flex items-center gap-0.5 text-red-700 dark:text-red-300 font-semibold`}>
-            <span className="text-sm">↘</span> {dailySentiment.down}
+          <span className={`text-sm font-bold ${trendColor} leading-tight`}>
+            {trendText}
           </span>
-        )}
+        </div>
       </div>
 
-      {/* Desktop: Full layout with labels */}
-      <div className="hidden sm:flex items-center gap-3 flex-wrap justify-center">
-        <span className="text-gray-600 dark:text-gray-400 font-medium">
-          {t('dailySentimentTitle')}:
+      {/* Total Articles Badge */}
+      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 shadow-sm">
+        <span className="text-lg font-bold text-gray-900 dark:text-white">
+          {dailySentiment.total}
         </span>
-        <div className="flex items-center gap-2">
-          <span className={`text-lg font-bold ${trendColor}`}>{trendIcon}</span>
-          <span className={`font-semibold ${trendColor}`}>{trendText}</span>
+        <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+          {language === 'es' ? 'artículos' : 'articles'}
+        </span>
+      </div>
+
+      {/* Positive Count Badge */}
+      {dailySentiment.up > 0 && (
+        <div className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-green-50 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-800 shadow-sm">
+          <span className="text-lg font-bold text-green-700 dark:text-green-300">↗</span>
+          <span className="text-sm font-bold text-green-700 dark:text-green-300">
+            {dailySentiment.up}
+          </span>
+          <span className="text-xs font-medium text-green-600 dark:text-green-400">
+            {language === 'es' ? 'sube' : 'up'}
+          </span>
         </div>
-        <span className="text-gray-500 dark:text-gray-500">•</span>
-        <span className="text-gray-600 dark:text-gray-400">
-          {dailySentiment.total} {language === 'es' ? 'artículos' : 'articles'}
-        </span>
-        {dailySentiment.up > 0 && (
-          <span className="flex items-center gap-1 text-green-700 dark:text-green-300 font-medium">
-            <span className="font-bold">↗</span> {dailySentiment.up}
+      )}
+
+      {/* Negative Count Badge */}
+      {dailySentiment.down > 0 && (
+        <div className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-800 shadow-sm">
+          <span className="text-lg font-bold text-red-700 dark:text-red-300">↘</span>
+          <span className="text-sm font-bold text-red-700 dark:text-red-300">
+            {dailySentiment.down}
           </span>
-        )}
-        {dailySentiment.down > 0 && (
-          <span className="flex items-center gap-1 text-red-700 dark:text-red-300 font-medium">
-            <span className="font-bold">↘</span> {dailySentiment.down}
+          <span className="text-xs font-medium text-red-600 dark:text-red-400">
+            {language === 'es' ? 'baja' : 'down'}
           </span>
-        )}
-        <span className="text-xs text-gray-500 dark:text-gray-500">
-          ({language === 'es' ? 'Últimas 24h' : 'Last 24h'})
+        </div>
+      )}
+
+      {/* Timeframe Badge */}
+      <div className="inline-flex items-center px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
+        <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+          {language === 'es' ? 'Últimas 24h' : 'Last 24h'}
         </span>
       </div>
     </div>

@@ -5,7 +5,7 @@ const LanguageContext = createContext();
 export const translations = {
   es: {
     // Header
-    title: 'Bolivia Blue con Paz',
+    title: 'Bolivia Blue Rate con Paz',
     subtitle: 'Siguiendo el pulso del Boliviano bajo el Presidente Paz',
     
     // Rate Cards
@@ -331,7 +331,7 @@ export const translations = {
   
   en: {
     // Header
-    title: 'Bolivia Blue with Paz',
+    title: 'Bolivia Blue Rate with Paz',
     subtitle: 'Tracking the Boliviano\'s pulse under President Paz',
     
     // Rate Cards

@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { 
@@ -19,31 +21,73 @@ const __dirname = dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const ORIGIN = process.env.ORIGIN || '*';
+// Use specific domain in production, allow localhost for development
+const ORIGIN = process.env.ORIGIN || (process.env.NODE_ENV === 'production' ? 'https://boliviablue.com' : '*');
 const STALE_THRESHOLD = 45 * 60 * 1000; // 45 minutes
+
+// Security Headers - Helmet
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      scriptSrc: ["'self'", "https://pagead2.googlesyndication.com"],
+      imgSrc: ["'self'", "data:", "https:", "http:"],
+      connectSrc: ["'self'", "https://api.binance.com", "https://p2p.binance.com"],
+    },
+  },
+  crossOriginEmbedderPolicy: false, // Allow embedding for charts/ads
+}));
+
+// Rate Limiting
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Apply rate limiting to API routes
+app.use('/api/', apiLimiter);
 
 // Middleware - Allow multiple origins
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
   'https://bolivia-blue-con-paz.vercel.app',
-  'https://boliviablueconpaz.vercel.app', // Actual Vercel domain
+  'https://boliviablueconpaz.vercel.app',
+  'https://boliviablue.com',
   ORIGIN
 ].filter(Boolean);
 
-app.use(cors({ 
+// Only allow wildcard in development
+const corsOptions = {
   origin: (origin, callback) => {
     // Allow requests with no origin (like mobile apps or curl)
     if (!origin) return callback(null, true);
     
-    if (allowedOrigins.includes(origin) || ORIGIN === '*') {
-      callback(null, true);
+    // In production, only allow specific origins
+    if (process.env.NODE_ENV === 'production' && ORIGIN !== '*') {
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
     } else {
-      callback(new Error('Not allowed by CORS'));
+      // Development: allow all or specific origins
+      if (allowedOrigins.includes(origin) || ORIGIN === '*') {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
     }
   },
   credentials: true
-}));
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Serve frontend static files in production

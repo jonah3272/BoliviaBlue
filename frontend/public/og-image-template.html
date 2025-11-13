@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OG Image Template</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            width: 1200px;
+            height: 630px;
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #10b981 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: white;
+            padding: 60px;
+            position: relative;
+            overflow: hidden;
+        }
+        .pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.1;
+            background-image: 
+                repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.1) 10px, rgba(255,255,255,0.1) 20px);
+        }
+        .content {
+            z-index: 1;
+            text-align: center;
+            max-width: 900px;
+        }
+        .logo {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .title {
+            font-size: 64px;
+            font-weight: 800;
+            margin-bottom: 30px;
+            line-height: 1.2;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .subtitle {
+            font-size: 32px;
+            font-weight: 400;
+            opacity: 0.95;
+            margin-bottom: 40px;
+        }
+        .features {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 500;
+        }
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .badge {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 20px;
+            font-weight: 600;
+            margin-top: 20px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="pattern"></div>
+    <div class="content">
+        <div class="logo">🇧🇴 Bolivia Blue con Paz</div>
+        <div class="title">Bolivia Blue Rate</div>
+        <div class="subtitle">Real-Time Blue Dollar Exchange Rate</div>
+        <div class="features">
+            <div class="feature">📊 Live Rates</div>
+            <div class="feature">📈 Charts</div>
+            <div class="feature">📰 News</div>
+        </div>
+        <div class="badge">Updated Every 15 Minutes</div>
+    </div>
+</body>
+</html>
+

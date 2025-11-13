@@ -1,84 +1,50 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
-import { Helmet } from 'react-helmet-async';
 
-/**
- * Breadcrumb navigation component with structured data
- */
-export default function Breadcrumbs({ items }) {
+function Breadcrumbs({ items }) {
   const languageContext = useLanguage();
   const language = languageContext?.language || 'es';
-  const t = languageContext?.t || ((key) => key || '');
-  const location = useLocation();
-  const baseUrl = 'https://boliviablue.com';
 
-  // Auto-generate breadcrumbs from route if items not provided
-  const breadcrumbItems = items || (() => {
-    const pathSegments = location.pathname.split('/').filter(Boolean);
-    const crumbs = [
-      { name: t('breadcrumbHome'), path: '/' }
-    ];
-
-    pathSegments.forEach((segment, index) => {
-      const path = '/' + pathSegments.slice(0, index + 1).join('/');
-      let name = segment;
-
-      // Translate common paths
-      if (segment === 'calculator') name = t('navCalculator');
-      else if (segment === 'news') name = t('navNews');
-      else if (segment === 'about') name = t('navAbout');
-      else if (segment === 'faq') name = t('navFAQ');
-      else if (segment === 'rodrigo-paz') name = t('navRodrigoPaz');
-      else name = segment.charAt(0).toUpperCase() + segment.slice(1);
-
-      crumbs.push({ name, path });
-    });
-
-    return crumbs;
-  })();
-
-  // Generate BreadcrumbList structured data
+  // Generate structured data for breadcrumbs
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    "itemListElement": breadcrumbItems.map((item, index) => ({
+    "itemListElement": items.map((item, index) => ({
       "@type": "ListItem",
       "position": index + 1,
       "name": item.name,
-      "item": `${baseUrl}${item.path}`
+      "item": item.url
     }))
   };
 
   return (
     <>
-      <Helmet>
-        <script type="application/ld+json">
-          {JSON.stringify(breadcrumbSchema)}
-        </script>
-      </Helmet>
-      
-      <nav className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400 mb-6" aria-label="Breadcrumb">
-        {breadcrumbItems.map((item, index) => (
-          <span key={item.path} className="flex items-center">
-            {index > 0 && (
-              <svg className="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            )}
-            {index === breadcrumbItems.length - 1 ? (
-              <span className="font-medium text-gray-900 dark:text-white">{item.name}</span>
-            ) : (
-              <Link
-                to={item.path}
-                className="hover:text-gray-900 dark:hover:text-white transition-colors"
-              >
-                {item.name}
-              </Link>
-            )}
-          </span>
-        ))}
+      <script type="application/ld+json">
+        {JSON.stringify(breadcrumbSchema)}
+      </script>
+      <nav className="mb-6" aria-label="Breadcrumb">
+        <ol className="flex items-center space-x-2 text-sm">
+          {items.map((item, index) => (
+            <li key={index} className="flex items-center">
+              {index > 0 && <span className="text-gray-400 dark:text-gray-600 mx-2">/</span>}
+              {index === items.length - 1 ? (
+                <span className="text-gray-900 dark:text-white font-medium">
+                  {item.name}
+                </span>
+              ) : (
+                <Link
+                  to={item.url}
+                  className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                >
+                  {item.name}
+                </Link>
+              )}
+            </li>
+          ))}
+        </ol>
       </nav>
     </>
   );
 }
 
+export default Breadcrumbs;

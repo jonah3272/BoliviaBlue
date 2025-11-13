@@ -5,6 +5,8 @@ import LanguageToggle from '../components/LanguageToggle';
 import Navigation from '../components/Navigation';
 import PageMeta from '../components/PageMeta';
 import BinanceBanner from '../components/BinanceBanner';
+import SocialShare from '../components/SocialShare';
+import Breadcrumbs from '../components/Breadcrumbs';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { fetchBlogArticles, fetchBlogArticleBySlug } from '../utils/blogApi';
 import { articlesEs, articlesEn } from '../data/blogArticles'; // Fallback
@@ -220,15 +222,14 @@ function Blog() {
         <Navigation />
 
         <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <Link
-            to="/blog"
-            className="mb-6 text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-2"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            {language === 'es' ? 'Volver al blog' : 'Back to blog'}
-          </Link>
+          {/* Breadcrumbs */}
+          <Breadcrumbs
+            items={[
+              { name: language === 'es' ? 'Inicio' : 'Home', url: '/' },
+              { name: language === 'es' ? 'Blog' : 'Blog', url: '/blog' },
+              { name: selectedArticleData?.title || '', url: `/blog/${slug}` }
+            ]}
+          />
 
           {isLoading ? (
             <div className="text-center py-12">
@@ -270,6 +271,15 @@ function Blog() {
               </p>
               <div className="mt-4 text-sm text-gray-500 dark:text-gray-400">
                 {language === 'es' ? 'Por' : 'By'} <span className="font-semibold">{selectedArticleData.author}</span>
+              </div>
+              
+              {/* Social Share */}
+              <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                <SocialShare
+                  url={`https://boliviablue.com/blog/${selectedArticleData.slug}`}
+                  title={selectedArticleData.title}
+                  description={selectedArticleData.excerpt}
+                />
               </div>
             </header>
 

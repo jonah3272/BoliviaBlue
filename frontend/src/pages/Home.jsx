@@ -44,6 +44,95 @@ function Home() {
       "availableLanguage": ["Spanish", "English"]
     }
   };
+
+  // FAQ Schema for homepage
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": language === 'es' ? [
+      {
+        "@type": "Question",
+        "name": "¿Qué es el Bolivia blue rate?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "El Bolivia blue rate es el tipo de cambio del dólar estadounidense en el mercado paralelo de Bolivia. También conocido como bolivia blue exchange rate, este valor refleja la tasa real a la que los bolivianos intercambian dólares fuera del sistema bancario oficial."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "¿Con qué frecuencia se actualiza el bolivia blue exchange rate?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "El bolivia blue exchange rate se actualiza cada 15 minutos utilizando datos en tiempo real de Binance P2P, proporcionando la información más precisa y actualizada sobre el tipo de cambio."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "¿De dónde proviene el bolivia blue rate?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "El bolivia blue rate proviene de datos públicos de Binance P2P para el par USDT/BOB. Calculamos la mediana de las ofertas de compra y venta para obtener una estimación representativa del mercado paralelo."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "¿Cuál es la diferencia entre el bolivia blue rate y la tasa oficial?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "El bolivia blue rate refleja el mercado paralelo y puede diferir significativamente de la tasa oficial del Banco Central de Bolivia. La tasa oficial es fija o se ajusta muy raramente, mientras que el bolivia blue exchange rate fluctúa según la oferta y demanda del mercado."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "¿Por qué es importante conocer el bolivia blue rate?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Conocer el bolivia blue rate es importante porque refleja la realidad del mercado cambiario boliviano y es utilizado por millones de bolivianos para transacciones diarias. Te ayuda a tomar mejores decisiones financieras y entender el verdadero valor del dólar en Bolivia."
+        }
+      }
+    ] : [
+      {
+        "@type": "Question",
+        "name": "What is Bolivia blue rate?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The Bolivia blue rate is the exchange rate of the US dollar in Bolivia's parallel market. Also known as the bolivia blue exchange rate, this value reflects the real rate at which Bolivians exchange dollars outside the official banking system."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How often is the bolivia blue exchange rate updated?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The bolivia blue exchange rate is updated every 15 minutes using real-time data from Binance P2P, providing the most accurate and up-to-date exchange rate information."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Where does the bolivia blue rate come from?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The bolivia blue rate comes from public Binance P2P data for the USDT/BOB pair. We calculate the median of buy and sell offers to obtain a representative estimate of the parallel market."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What's the difference between bolivia blue rate and the official rate?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The bolivia blue rate reflects the parallel market and can differ significantly from the official rate set by the Central Bank of Bolivia. The official rate is fixed or adjusted very rarely, while the bolivia blue exchange rate fluctuates according to market supply and demand."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Why is it important to know the bolivia blue rate?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Knowing the bolivia blue rate is important because it reflects the reality of Bolivia's exchange market and is used by millions of Bolivians for daily transactions. It helps you make better financial decisions and understand the true value of the dollar in Bolivia."
+        }
+      }
+    ]
+  };
   
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
@@ -58,7 +147,7 @@ function Home() {
           ? "bolivia blue rate, bolivia blue exchange rate, dólar bolivia, tipo de cambio bolivia, boliviano dólar, blue bolivia, dólar blue bolivia, tipo cambio bolivia, cambio dólar bolivia, mercado paralelo bolivia, dólar paralelo, Rodrigo Paz, BCB, banco central bolivia, binance bolivia, usdt bob, usdt a bob, boliviano a dólar, dólar a boliviano, cotización dólar bolivia, precio dólar bolivia, tasa cambio bolivia, bolivian blue, bolivianblue, mejor que bolivianblue.net"
           : "bolivia blue rate, bolivia blue exchange rate, bolivia dollar, exchange rate bolivia, boliviano dollar, blue dollar bolivia, bolivia blue dollar, bolivia exchange rate, bolivia currency, parallel market bolivia, bolivia parallel dollar, Rodrigo Paz, BCB, central bank bolivia, binance bolivia, usdt bob, usdt to bob, boliviano to dollar, dollar to boliviano, bolivia dollar rate, bolivia dollar price, bolivia exchange rate, bolivian blue, bolivianblue, better than bolivianblue.net, bolivia blue market, bolivia dollar calculator"}
         canonical="/"
-        structuredData={organizationSchema}
+        structuredData={[organizationSchema, faqSchema]}
       />
       
       {/* Header */}
@@ -89,16 +178,62 @@ function Home() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8 space-y-4 sm:space-y-6 md:space-y-8">
-        {/* SEO H1 - Visually Hidden but Accessible */}
-        <h1 className="sr-only">
+        {/* Visible H1 with Keywords */}
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-2 text-center">
           {language === 'es' 
-            ? 'Bolivia Blue Rate - Tipo de Cambio Dólar Blue en Tiempo Real'
-            : 'Bolivia Blue Rate - Real-Time Blue Dollar Exchange Rate Bolivia'}
+            ? 'Bolivia Blue Rate - Tipo de Cambio en Tiempo Real'
+            : 'Bolivia Blue Rate - Real-Time Exchange Rate'}
         </h1>
+        <p className="text-center text-lg text-gray-600 dark:text-gray-400 mb-6">
+          {language === 'es'
+            ? 'Seguimiento en tiempo real del bolivia blue exchange rate actualizado cada 15 minutos'
+            : 'Real-time tracking of the bolivia blue exchange rate updated every 15 minutes'}
+        </p>
         
         {/* Blue Rate Cards - At the Top */}
         <section>
           <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} />
+        </section>
+        
+        {/* Content Section with Keywords */}
+        <section className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 sm:p-8 md:p-10">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
+              {language === 'es' ? '¿Qué es el Bolivia Blue Rate?' : 'What is Bolivia Blue Rate?'}
+            </h2>
+            <div className="prose prose-lg dark:prose-invert max-w-none">
+              <p className="text-gray-700 dark:text-gray-300 mb-4">
+                {language === 'es' 
+                  ? 'El <strong>Bolivia blue rate</strong> es el tipo de cambio del dólar estadounidense en el mercado paralelo de Bolivia. También conocido como <strong>bolivia blue exchange rate</strong>, este valor refleja la tasa real a la que los bolivianos intercambian dólares fuera del sistema bancario oficial.'
+                  : 'The <strong>Bolivia blue rate</strong> is the exchange rate of the US dollar in Bolivia\'s parallel market. Also known as the <strong>bolivia blue exchange rate</strong>, this value reflects the real rate at which Bolivians exchange dollars outside the official banking system.'}
+              </p>
+              <p className="text-gray-700 dark:text-gray-300 mb-4">
+                {language === 'es'
+                  ? 'Nuestra plataforma rastrea el <strong>bolivia blue rate</strong> en tiempo real utilizando datos de Binance P2P, actualizando el <strong>bolivia blue exchange rate</strong> cada 15 minutos para brindarte la información más precisa y actualizada.'
+                  : 'Our platform tracks the <strong>Bolivia blue rate</strong> in real-time using Binance P2P data, updating the <strong>Bolivia blue exchange rate</strong> every 15 minutes to provide you with the most accurate and up-to-date information.'}
+              </p>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
+                {language === 'es' ? '¿Por qué es importante el Bolivia Blue Rate?' : 'Why is Bolivia Blue Rate Important?'}
+              </h3>
+              <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 mb-4">
+                {language === 'es' ? (
+                  <>
+                    <li>El <strong>bolivia blue rate</strong> refleja la realidad del mercado cambiario boliviano</li>
+                    <li>El <strong>bolivia blue exchange rate</strong> es utilizado por millones de bolivianos para transacciones diarias</li>
+                    <li>Conocer el <strong>bolivia blue rate</strong> te ayuda a tomar mejores decisiones financieras</li>
+                    <li>El <strong>bolivia blue exchange rate</strong> puede diferir significativamente de la tasa oficial</li>
+                  </>
+                ) : (
+                  <>
+                    <li>The <strong>Bolivia blue rate</strong> reflects the reality of Bolivia\'s exchange market</li>
+                    <li>The <strong>Bolivia blue exchange rate</strong> is used by millions of Bolivians for daily transactions</li>
+                    <li>Knowing the <strong>Bolivia blue rate</strong> helps you make better financial decisions</li>
+                    <li>The <strong>Bolivia blue exchange rate</strong> can differ significantly from the official rate</li>
+                  </>
+                )}
+              </ul>
+            </div>
+          </div>
         </section>
 
         {/* Combined Sentiment + News Card */}

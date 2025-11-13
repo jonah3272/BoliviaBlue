@@ -10,6 +10,8 @@ const News = lazy(() => import('./pages/News'));
     const RodrigoPaz = lazy(() => import('./pages/RodrigoPaz'));
     const BuyDollars = lazy(() => import('./pages/BuyDollars'));
     const Blog = lazy(() => import('./pages/Blog'));
+    const BoliviaBlueRate = lazy(() => import('./pages/BoliviaBlueRate'));
+    const Contact = lazy(() => import('./pages/Contact'));
 
 // Loading fallback component
 function LoadingFallback() {
@@ -37,6 +39,8 @@ function App() {
               <Route path="/buy-dollars" element={<BuyDollars />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<Blog />} />
+              <Route path="/bolivia-blue-rate" element={<BoliviaBlueRate />} />
+              <Route path="/contact" element={<Contact />} />
         </Routes>
       </Suspense>
     </Router>

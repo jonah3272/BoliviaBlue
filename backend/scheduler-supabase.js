@@ -4,6 +4,7 @@ import { fetchNews } from './newsClient.js'; // Already has Bolivia filtering
 import { fetchTwitterNews } from './twitterClient.js'; // Twitter/X integration
 import { insertRate, insertNews, supabase } from './db-supabase.js';
 import { median } from './median.js';
+import { checkAlerts } from './alertChecker.js';
 
 const REFRESH_INTERVAL = 15 * 60 * 1000; // 15 minutes for rates
 const NEWS_REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes for RSS news
@@ -59,6 +60,9 @@ async function refreshBlueRate() {
     
     console.log(`Blue rate: Buy ${blueRateData.buy_bob_per_usd}, Sell ${blueRateData.sell_bob_per_usd}`);
     console.log(`Official rate: Buy ${officialRateData.official_buy}, Sell ${officialRateData.official_sell}`);
+    
+    // Check alerts after updating rates
+    await checkAlerts();
     
   } catch (error) {
     console.error('Failed to refresh rates:', error);

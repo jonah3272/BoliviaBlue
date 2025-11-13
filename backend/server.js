@@ -10,7 +10,9 @@ import {
   getRatesInRange, 
   getAllRates, 
   getTotalRatesCount,
-  getRecentNews 
+  getRecentNews,
+  createAlert,
+  deactivateAlert
 } from './db-supabase.js';
 import { startScheduler, cache } from './scheduler-supabase.js';
 
@@ -246,6 +248,101 @@ app.get('/api/news', async (req, res) => {
     
   } catch (error) {
     console.error('Error fetching news:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: error.message
+    });
+  }
+});
+
+/**
+ * Create a new rate alert
+ */
+app.post('/api/alerts', async (req, res) => {
+  try {
+    const { email, alert_type, threshold, direction } = req.body;
+
+    // Validation
+    if (!email || !alert_type || !threshold || !direction) {
+      return res.status(400).json({
+        error: 'Missing required fields',
+        message: 'Email, alert_type, threshold, and direction are required'
+      });
+    }
+
+    if (!['buy', 'sell', 'both'].includes(alert_type)) {
+      return res.status(400).json({
+        error: 'Invalid alert_type',
+        message: 'alert_type must be "buy", "sell", or "both"'
+      });
+    }
+
+    if (!['above', 'below'].includes(direction)) {
+      return res.status(400).json({
+        error: 'Invalid direction',
+        message: 'direction must be "above" or "below"'
+      });
+    }
+
+    if (isNaN(threshold) || threshold <= 0) {
+      return res.status(400).json({
+        error: 'Invalid threshold',
+        message: 'threshold must be a positive number'
+      });
+    }
+
+    const alert = await createAlert(email, alert_type, parseFloat(threshold), direction);
+
+    res.json({
+      success: true,
+      alert: {
+        id: alert.id,
+        email: alert.email,
+        alert_type: alert.alert_type,
+        threshold: alert.threshold,
+        direction: alert.direction
+      }
+    });
+
+  } catch (error) {
+    console.error('Error creating alert:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: error.message
+    });
+  }
+});
+
+/**
+ * Unsubscribe from alerts
+ */
+app.post('/api/alerts/unsubscribe', async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    if (!token) {
+      return res.status(400).json({
+        error: 'Missing token',
+        message: 'Unsubscribe token is required'
+      });
+    }
+
+    const alert = await deactivateAlert(token);
+
+    if (!alert) {
+      return res.status(404).json({
+        error: 'Alert not found',
+        message: 'Invalid unsubscribe token'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Alert unsubscribed successfully'
+    });
+
+  } catch (error) {
+    console.error('Error unsubscribing:', error);
     res.status(500).json({
       error: 'Internal server error',
       message: error.message

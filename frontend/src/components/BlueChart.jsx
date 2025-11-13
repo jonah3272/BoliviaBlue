@@ -212,8 +212,8 @@ function BlueChart({ showOfficial = false }) {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-4 sm:p-5 md:p-6 border border-gray-200 dark:border-gray-700">
       {/* Header with Stats */}
-      <div className="flex flex-col gap-3 sm:gap-4 mb-4 sm:mb-5 md:mb-6">
-        <div>
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4 mb-4 sm:mb-5 md:mb-6">
+        <div className="flex-1">
           <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">
             {t('historicalPriceChart')}
           </h2>
@@ -239,7 +239,7 @@ function BlueChart({ showOfficial = false }) {
           )}
         </div>
         
-        <div className="flex flex-wrap gap-1.5 sm:gap-2">
+        <div className="flex flex-wrap gap-1.5 sm:gap-2 sm:flex-shrink-0">
           {TIME_RANGES.map(({ value, label, minDays }) => {
             const isDisabled = minDays > 0 && dataAge < minDays;
             return (

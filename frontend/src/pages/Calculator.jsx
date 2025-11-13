@@ -37,9 +37,9 @@ function Calculator() {
             <Link to="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity min-w-0 flex-1">
               <img src="/favicon.svg" alt="Bolivia Blue con Paz - Tipo de Cambio Dólar Boliviano" className="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0" />
               <div className="flex flex-col min-w-0">
-                <h1 className="text-base sm:text-xl font-bold text-gray-900 dark:text-white truncate">
+                <div className="text-base sm:text-xl font-bold text-gray-900 dark:text-white truncate">
                   {t('title')}
-                </h1>
+                </div>
                 <p className="hidden md:block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mt-0.5">
                   {t('subtitle')}
                 </p>
@@ -58,6 +58,18 @@ function Calculator() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8 space-y-4 sm:space-y-6 md:space-y-8">
+        {/* Page Title - H1 */}
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-2 text-center">
+          {language === 'es' 
+            ? 'Calculadora de Divisas USD/BOB'
+            : 'USD/BOB Currency Calculator'}
+        </h1>
+        <p className="text-center text-lg text-gray-600 dark:text-gray-400 mb-6">
+          {language === 'es'
+            ? 'Convierte dólares a bolivianos y viceversa usando el tipo de cambio blue en tiempo real'
+            : 'Convert US dollars to bolivianos and vice versa using real-time blue exchange rate'}
+        </p>
+
         {/* Rate Cards */}
         <section>
           <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} />

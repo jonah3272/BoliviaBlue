@@ -195,9 +195,9 @@ function News() {
             <Link to="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity min-w-0 flex-1">
               <img src="/favicon.svg" alt="Bolivia Blue con Paz - Tipo de Cambio Dólar Boliviano" className="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0" />
               <div className="flex flex-col min-w-0">
-                <h1 className="text-base sm:text-xl font-bold text-gray-900 dark:text-white truncate">
+                <div className="text-base sm:text-xl font-bold text-gray-900 dark:text-white truncate">
                   {t('title')}
-                </h1>
+                </div>
                 <p className="hidden md:block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mt-0.5">
                   {t('subtitle')}
                 </p>
@@ -224,9 +224,9 @@ function News() {
               </svg>
               {language === 'es' ? 'Actualizado cada 5 minutos' : 'Updated every 5 minutes'}
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-              📰 {language === 'es' ? 'Noticias del Mercado Cambiario' : 'Currency Market News'}
-            </h2>
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+              {language === 'es' ? 'Noticias del Mercado Cambiario' : 'Currency Market News'}
+            </h1>
             <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               {language === 'es' 
                 ? 'Análisis con IA del sentimiento de noticias económicas y su impacto en el dólar blue. Mantente informado sobre lo que mueve el mercado.' 

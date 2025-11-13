@@ -157,9 +157,9 @@ function Home() {
             <Link to="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity min-w-0 flex-1">
               <img src="/favicon.svg" alt="Bolivia Blue con Paz - Tipo de Cambio Dólar Boliviano" className="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0" />
               <div className="flex flex-col min-w-0">
-                <h1 className="text-base sm:text-xl font-bold text-gray-900 dark:text-white truncate">
+                <div className="text-base sm:text-xl font-bold text-gray-900 dark:text-white truncate">
                   {t('title')}
-                </h1>
+                </div>
                 <p className="hidden md:block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mt-0.5">
                   {t('subtitle')}
                 </p>
@@ -209,8 +209,8 @@ function Home() {
               </p>
               <p className="text-gray-700 dark:text-gray-300 mb-4">
                 {language === 'es'
-                  ? 'Nuestra plataforma rastrea el <strong>bolivia blue rate</strong> en tiempo real utilizando datos de Binance P2P, actualizando el <strong>bolivia blue exchange rate</strong> cada 15 minutos para brindarte la información más precisa y actualizada.'
-                  : 'Our platform tracks the <strong>Bolivia blue rate</strong> in real-time using Binance P2P data, updating the <strong>Bolivia blue exchange rate</strong> every 15 minutes to provide you with the most accurate and up-to-date information.'}
+                  ? 'Nuestra plataforma rastrea el <strong>bolivia blue rate</strong> en tiempo real utilizando datos de Binance P2P, actualizando el <strong>bolivia blue exchange rate</strong> cada 15 minutos para brindarte la información más precisa y actualizada. <Link to="/bolivia-blue-rate" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Aprende más sobre el Bolivia Blue Rate</Link> o <Link to="/calculator" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">usa nuestra calculadora</Link> para convertir divisas.'
+                  : 'Our platform tracks the <strong>Bolivia blue rate</strong> in real-time using Binance P2P data, updating the <strong>Bolivia blue exchange rate</strong> every 15 minutes to provide you with the most accurate and up-to-date information. <Link to="/bolivia-blue-rate" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Learn more about Bolivia Blue Rate</Link> or <Link to="/calculator" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">use our calculator</Link> to convert currencies.'}
               </p>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
                 {language === 'es' ? '¿Por qué es importante el Bolivia Blue Rate?' : 'Why is Bolivia Blue Rate Important?'}
@@ -405,7 +405,7 @@ function Home() {
               .map((article) => (
                 <Link
                   key={article.id}
-                  to={`/blog`}
+                  to={`/blog/${article.slug || article.id}`}
                   className="group bg-white dark:bg-gray-800 rounded-xl p-5 shadow-lg hover:shadow-2xl transition-all border-2 border-transparent hover:border-purple-500"
                 >
                   <div className="mb-3">

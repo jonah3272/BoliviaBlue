@@ -207,9 +207,9 @@ function Blog() {
             <div className="flex items-center justify-between gap-4">
               <Link to="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity min-w-0">
                 <img src="/favicon.svg" alt="Bolivia Blue con Paz" className="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0" />
-                <h1 className="text-base sm:text-xl font-bold text-gray-900 dark:text-white truncate">
+                <div className="text-base sm:text-xl font-bold text-gray-900 dark:text-white truncate">
                   {t('title')}
-                </h1>
+                </div>
               </Link>
               <div className="flex gap-2 sm:gap-3 flex-shrink-0">
                 <LanguageToggle />
@@ -387,9 +387,9 @@ function Blog() {
             <Link to="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity min-w-0 flex-1">
               <img src="/favicon.svg" alt="Bolivia Blue con Paz - Tipo de Cambio Dólar Boliviano" className="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0" />
               <div className="flex flex-col min-w-0">
-                <h1 className="text-base sm:text-xl font-bold text-gray-900 dark:text-white truncate">
+                <div className="text-base sm:text-xl font-bold text-gray-900 dark:text-white truncate">
                   {t('title')}
-                </h1>
+                </div>
                 <p className="hidden md:block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mt-0.5">
                   {t('subtitle')}
                 </p>

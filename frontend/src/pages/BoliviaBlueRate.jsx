@@ -81,9 +81,9 @@ function BoliviaBlueRate() {
             <Link to="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity min-w-0 flex-1">
               <img src="/favicon.svg" alt="Bolivia Blue con Paz - Tipo de Cambio Dólar Boliviano" className="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0" />
               <div className="flex flex-col min-w-0">
-                <h1 className="text-base sm:text-xl font-bold text-gray-900 dark:text-white truncate">
+                <div className="text-base sm:text-xl font-bold text-gray-900 dark:text-white truncate">
                   {t('title')}
-                </h1>
+                </div>
                 <p className="hidden md:block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mt-0.5">
                   {t('subtitle')}
                 </p>
@@ -154,8 +154,8 @@ function BoliviaBlueRate() {
             </h2>
             <p className="text-gray-700 dark:text-gray-300 mb-6">
               {language === 'es'
-                ? 'Nuestra plataforma calcula el <strong>bolivia blue rate</strong> utilizando datos en tiempo real de Binance P2P para el par USDT/BOB. Procesamos las ofertas públicas de compra y venta, calculando la mediana de estas ofertas para obtener una estimación representativa del <strong>bolivia blue exchange rate</strong>. Este método nos permite proporcionar una tasa precisa que refleja las condiciones reales del mercado paralelo.'
-                : 'Our platform calculates the <strong>Bolivia blue rate</strong> using real-time data from Binance P2P for the USDT/BOB pair. We process public buy and sell offers, calculating the median of these offers to obtain a representative estimate of the <strong>Bolivia blue exchange rate</strong>. This method allows us to provide an accurate rate that reflects the real conditions of the parallel market.'}
+                ? 'Nuestra plataforma calcula el <strong>bolivia blue rate</strong> utilizando datos en tiempo real de Binance P2P para el par USDT/BOB. Procesamos las ofertas públicas de compra y venta, calculando la mediana de estas ofertas para obtener una estimación representativa del <strong>bolivia blue exchange rate</strong>. Este método nos permite proporcionar una tasa precisa que refleja las condiciones reales del mercado paralelo. <Link to="/calculator" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Usa nuestra calculadora</Link> para convertir divisas o <Link to="/about" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">aprende más sobre nuestra metodología</Link>.'
+                : 'Our platform calculates the <strong>Bolivia blue rate</strong> using real-time data from Binance P2P for the USDT/BOB pair. We process public buy and sell offers, calculating the median of these offers to obtain a representative estimate of the <strong>Bolivia blue exchange rate</strong>. This method allows us to provide an accurate rate that reflects the real conditions of the parallel market. <Link to="/calculator" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Use our calculator</Link> to convert currencies or <Link to="/about" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">learn more about our methodology</Link>.'}
             </p>
 
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6 mt-12">

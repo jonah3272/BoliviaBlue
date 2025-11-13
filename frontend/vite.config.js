@@ -1,17 +1,18 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import { visualizer } from 'rollup-plugin-visualizer';
+// import { visualizer } from 'rollup-plugin-visualizer';
 
 export default defineConfig({
   plugins: [
     react(),
     // Bundle analyzer - generates stats.html in dist folder after build
-    visualizer({
-      filename: './dist/stats.html',
-      open: false,
-      gzipSize: true,
-      brotliSize: true,
-    })
+    // Commented out to fix dev server startup - only needed for production builds
+    // visualizer({
+    //   filename: './dist/stats.html',
+    //   open: false,
+    //   gzipSize: true,
+    //   brotliSize: true,
+    // })
   ],
   server: {
     port: 5173,

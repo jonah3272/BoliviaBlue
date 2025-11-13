@@ -8,6 +8,7 @@ import BlueRateCards from '../components/BlueRateCards';
 import BinanceBanner from '../components/BinanceBanner';
 import { Link } from 'react-router-dom';
 import { fetchBlueRate } from '../utils/api';
+import { BINANCE_REFERRAL_LINK, BINANCE_P2P_LINK } from '../config/referrals';
 
 // Platform Card Component for Secondary Options
 function PlatformCard({ name, description, features, link, color, iconColor, language }) {
@@ -77,8 +78,6 @@ function BuyDollars() {
     loadRate();
   }, []);
 
-  const referralLink = "https://www.binance.com/referral/earn-together/refer2earn-usdc/claim?hl=en&ref=GRO_28502_RNV8W&utm_source=default";
-  const binanceP2PLink = "https://www.binance.com/en/p2p";
   const airtmReferralLink = "https://app.airtm.io/ivt/dasyl1sfs6fzr";
 
   // HowTo structured data
@@ -154,11 +153,16 @@ function BuyDollars() {
       <header className="bg-white dark:bg-gray-800 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
           <div className="flex items-center justify-between gap-4">
-            <Link to="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity min-w-0">
+            <Link to="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity min-w-0 flex-1">
               <img src="/favicon.svg" alt="Bolivia Blue con Paz - Tipo de Cambio Dólar Boliviano" className="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0" />
-              <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white truncate">
-                Bolivia Blue
-              </h1>
+              <div className="flex flex-col min-w-0">
+                <h1 className="text-base sm:text-xl font-bold text-gray-900 dark:text-white truncate">
+                  {t('title')}
+                </h1>
+                <p className="hidden md:block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mt-0.5">
+                  {t('subtitle')}
+                </p>
+              </div>
             </Link>
             <div className="flex gap-2 sm:gap-3 flex-shrink-0">
               <LanguageToggle />
@@ -244,7 +248,7 @@ function BuyDollars() {
             {/* Primary CTA - Binance Referral Link */}
             <div className="flex flex-col gap-3">
               <a
-                href={referralLink}
+                href={BINANCE_REFERRAL_LINK}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full inline-flex items-center justify-center px-6 py-4 bg-yellow-400 hover:bg-yellow-500 dark:bg-yellow-500 dark:hover:bg-yellow-600 text-gray-900 font-bold text-lg rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
@@ -258,7 +262,7 @@ function BuyDollars() {
                 </svg>
               </a>
               <a
-                href={binanceP2PLink}
+                href={BINANCE_REFERRAL_LINK}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center px-6 py-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all border-2 border-gray-300 dark:border-gray-600"

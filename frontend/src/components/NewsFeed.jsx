@@ -45,13 +45,13 @@ const NewsCard = memo(function NewsCard({ item }) {
       href={item.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="block bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow p-4 border border-gray-200 dark:border-gray-700"
+      className="block bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow p-3 sm:p-4 border border-gray-200 dark:border-gray-700"
     >
-      <div className="flex items-start justify-between mb-2">
-        <h3 className="font-medium text-gray-900 dark:text-white line-clamp-2 flex-1">
+      <div className="flex items-start justify-between mb-2 gap-2">
+        <h3 className="text-sm sm:text-base font-medium text-gray-900 dark:text-white line-clamp-2 flex-1 min-w-0">
           {cleanTitle(item.title)}
         </h3>
-        <div className="ml-2 flex-shrink-0 text-xl">
+        <div className="ml-1 sm:ml-2 flex-shrink-0">
           <SentimentArrow sentiment={item.sentiment} />
         </div>
       </div>

@@ -44,21 +44,23 @@ function TweetCard({ tweet }) {
       href={tweet.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="block bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-lg transition-all duration-200"
+      className="block bg-white dark:bg-gray-800 rounded-xl p-3 sm:p-4 border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-lg transition-all duration-200"
     >
-      <div className="flex items-start justify-between gap-3 mb-2">
-        <div className="flex items-center gap-2 min-w-0">
+      <div className="flex items-start justify-between gap-2 sm:gap-3 mb-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
           {/* Twitter/X Icon */}
-          <svg className="w-4 h-4 text-blue-400 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+          <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-400 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
             <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
           </svg>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 truncate">
+            <p className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 line-clamp-2">
               {cleanTitle(tweet.title)}
             </p>
           </div>
         </div>
-        <SentimentArrow sentiment={tweet.sentiment} />
+        <div className="flex-shrink-0">
+          <SentimentArrow sentiment={tweet.sentiment} />
+        </div>
       </div>
       
       {tweet.summary && cleanSummary(tweet.summary) && (

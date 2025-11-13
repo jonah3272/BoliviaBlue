@@ -401,29 +401,98 @@ function SentimentNewsCard() {
   return (
     <div className="bg-white dark:bg-[#121416] rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden h-[220px] flex flex-col">
       {/* Top Bar - Sentiment Summary */}
-      <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30 flex-shrink-0">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          {/* Left: Sentiment Label & Compass */}
-          <div className="flex items-center gap-3 flex-wrap">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                {language === 'es' ? "Sentimiento del USD hoy" : "Today's USD Sentiment"}
-              </span>
+      <div className="px-3 sm:px-4 py-3 sm:py-3.5 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30 flex-shrink-0">
+        <div className="flex flex-col gap-3">
+          {/* Header Row */}
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              {language === 'es' ? "Sentimiento del USD hoy" : "Today's USD Sentiment"}
+            </span>
+            {/* Info Icon - Larger touch target */}
+            <button
+              ref={infoIconRef}
+              type="button"
+              className="inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors relative"
+              aria-label={language === 'es' ? 'Información sobre el análisis de sentimiento' : 'Information about sentiment analysis'}
+              onMouseEnter={() => handleTooltipToggle(true)}
+              onMouseLeave={() => handleTooltipToggle(false)}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleTooltipToggle(!showTooltip);
+              }}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {/* Tooltip */}
+              {showTooltip && (
+                <div 
+                  ref={tooltipRef}
+                  className="fixed px-3 py-2 bg-gray-900 dark:bg-gray-800 text-white text-xs rounded-lg shadow-xl z-50 max-w-xs whitespace-normal"
+                  style={{ minWidth: '280px' }}
+                >
+                  <div className="flex items-start gap-2">
+                    <svg className="w-4 h-4 flex-shrink-0 mt-0.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span className="text-left">{tooltipText}</span>
+                  </div>
+                  <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-full">
+                    <div className="border-4 border-transparent border-r-gray-900 dark:border-r-gray-800"></div>
+                  </div>
+                </div>
+              )}
+            </button>
+          </div>
+          
+          {/* Main Content Row: Score + Gauge + Counts */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Score Display with Context */}
+            <div className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg border flex-shrink-0 ${
+              isPositive 
+                ? 'bg-green-900/20 border-green-800 dark:bg-green-900/30' 
+                : isNegative 
+                ? 'bg-red-900/20 border-red-800 dark:bg-red-900/30'
+                : 'bg-gray-100 border-gray-300 dark:bg-gray-800 dark:border-gray-700'
+            }`}>
+              <div className="flex flex-col items-center">
+                <span className={`text-xs font-medium ${
+                  isPositive 
+                    ? 'text-green-600 dark:text-green-400' 
+                    : isNegative 
+                    ? 'text-red-600 dark:text-red-400'
+                    : 'text-gray-600 dark:text-gray-400'
+                }`}>
+                  {language === 'es' ? 'Puntaje' : 'Score'}
+                </span>
+                <div className="flex items-baseline gap-0.5">
+                  <span className={`text-lg sm:text-xl font-bold tabular-nums ${
+                    isPositive 
+                      ? 'text-green-600 dark:text-green-400' 
+                      : isNegative 
+                      ? 'text-red-600 dark:text-red-400'
+                      : 'text-gray-600 dark:text-gray-400'
+                  }`}>
+                    {sentimentScore > 0 ? '+' : ''}{sentimentScore}
+                  </span>
+                  <span className="text-xs text-gray-500 dark:text-gray-500">/50</span>
+                </div>
+              </div>
             </div>
-            
-            {/* Sentiment Compass Gauge - Dynamic Zoom with Labels */}
-            <div className="flex items-center gap-2">
-              {/* Compact Compass Indicator */}
-              <div className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-md bg-gray-50 dark:bg-gray-800/50">
-                {/* Compass Track with Labels */}
-                <div className="relative w-40 flex flex-col items-center">
+
+            {/* Gauge Visualization */}
+            <div className="flex-1 min-w-0 px-2 sm:px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-800/50">
+              <div className="relative w-full flex flex-col items-center">
                   {/* Track Container */}
-                  <div className="relative w-full h-7 flex items-center overflow-visible hover:bg-[#1C1F22] transition-colors rounded-full">
-                    {/* Background track */}
-                    <div className="absolute inset-0 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                  <div className="relative w-full h-7 flex items-center overflow-visible rounded-full">
+                    {/* Gradient background track */}
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-r from-red-500/20 via-gray-500/10 to-green-500/20 dark:from-red-500/30 dark:via-gray-500/15 dark:to-green-500/30"></div>
                     
-                    {/* Center line (neutral point) - subtle */}
-                    <div className="absolute left-1/2 transform -translate-x-1/2 w-px h-full bg-gray-300 dark:bg-gray-600 z-10"></div>
+                    {/* Base track */}
+                    <div className="absolute inset-0 rounded-full bg-gray-200/50 dark:bg-gray-700/50"></div>
+                    
+                    {/* Center line (neutral point) - more prominent */}
+                    <div className="absolute left-1/2 transform -translate-x-1/2 w-0.5 h-full bg-gray-400 dark:bg-gray-500 z-10"></div>
                     
                     {/* Sub-tick marks: Show scale divisions based on visible range */}
                     {(() => {
@@ -452,7 +521,7 @@ function SentimentNewsCard() {
                         ticks.push(
                           <div
                             key={value}
-                            className="absolute w-px h-2 bg-gray-400 dark:bg-gray-500 rounded-full transform -translate-x-1/2"
+                            className="absolute w-px h-2.5 bg-gray-400 dark:bg-gray-500 rounded-full transform -translate-x-1/2 z-10"
                             style={{ left: `${tickPosition}%` }}
                           ></div>
                         );
@@ -460,37 +529,35 @@ function SentimentNewsCard() {
                       return ticks;
                     })()}
                     
-                    {/* Major range markers: Left, Center, Right */}
+                    {/* Major range markers: Left, Center, Right with values */}
                     <div className="absolute inset-0 flex items-center justify-between px-0.5">
-                      <div className="w-0.5 h-3 bg-gray-500 dark:bg-gray-400 rounded-full z-10"></div>
-                      <div className="w-0.5 h-3 bg-gray-500 dark:bg-gray-400 rounded-full z-10"></div>
-                      <div className="w-0.5 h-3 bg-gray-500 dark:bg-gray-400 rounded-full z-10"></div>
+                      <div className="flex flex-col items-center">
+                        <div className="w-0.5 h-4 bg-red-500 dark:bg-red-400 rounded-full z-10"></div>
+                      </div>
+                      <div className="w-0.5 h-4 bg-gray-500 dark:bg-gray-400 rounded-full z-10"></div>
+                      <div className="flex flex-col items-center">
+                        <div className="w-0.5 h-4 bg-green-500 dark:bg-green-400 rounded-full z-10"></div>
+                      </div>
                     </div>
                     
-                    {/* Indicator: Vertical line with downward arrow - More prominent */}
+                    {/* Indicator: Vertical line with downward arrow - More prominent with glow */}
                     <div 
                       className="absolute top-0 bottom-0 flex flex-col items-center transform -translate-x-1/2 transition-all duration-500 ease-out z-30"
                       style={{ left: `${compassPosition}%` }}
                     >
                       {/* Vertical indicator line - thicker and more visible with glow */}
                       <div 
-                        className={`w-1.5 h-full ${
+                        className={`w-2 h-full rounded-full shadow-lg ${
                           isPositive 
-                            ? 'bg-green-600 dark:bg-green-400' 
+                            ? 'bg-green-600 dark:bg-green-400 shadow-green-500/50' 
                             : isNegative 
-                            ? 'bg-red-600 dark:bg-red-400'
-                            : 'bg-gray-600 dark:bg-gray-400'
-                        } rounded-full shadow-md ${
-                          isNegative 
-                            ? 'shadow-[0_0_6px_rgba(255,77,77,0.5)]' 
-                            : isPositive
-                            ? 'shadow-[0_0_6px_rgba(16,185,129,0.5)]'
-                            : ''
+                            ? 'bg-red-600 dark:bg-red-400 shadow-red-500/50'
+                            : 'bg-gray-600 dark:bg-gray-400 shadow-gray-500/30'
                         }`}
                       ></div>
                       {/* Downward arrow - positioned within track bounds */}
                       <div 
-                        className={`absolute bottom-0 w-0 h-0 border-l-[4px] border-r-[4px] border-t-[5px] border-l-transparent border-r-transparent ${
+                        className={`absolute bottom-0 w-0 h-0 border-l-[5px] border-r-[5px] border-t-[6px] border-l-transparent border-r-transparent ${
                           isPositive 
                             ? 'border-t-green-600 dark:border-t-green-400' 
                             : isNegative 
@@ -501,121 +568,59 @@ function SentimentNewsCard() {
                     </div>
                   </div>
                   
-                  {/* Labels: Negative (left) and Positive (right) - tighter spacing */}
-                  <div className="absolute top-full left-0 right-0 flex items-center justify-between pt-0.5 px-0.5 text-[9px] font-medium">
-                    <span className="text-red-600 dark:text-red-400" title={language === 'es' ? 'Dólar bajando (menos Bs por USD)' : 'Dollar falling (fewer BOB per USD)'}>
-                      {language === 'es' ? 'USD ↓' : 'USD ↓'}
+                  {/* Labels: Negative (left), Neutral (center), Positive (right) */}
+                  <div className="absolute top-full left-0 right-0 flex items-center justify-between pt-1 px-0.5 text-[9px] font-medium">
+                    <span className="text-red-600 dark:text-red-400 flex items-center gap-0.5">
+                      {minRange}
                     </span>
-                    <span className="text-gray-500 dark:text-gray-500" title={language === 'es' ? 'Sin cambio claro' : 'No clear change'}>
-                      {language === 'es' ? 'Neu' : 'Neu'}
+                    <span className="text-gray-500 dark:text-gray-500">
+                      0
                     </span>
-                    <span className="text-green-600 dark:text-green-400" title={language === 'es' ? 'Dólar subiendo (más Bs por USD)' : 'Dollar rising (more BOB per USD)'}>
-                      {language === 'es' ? 'USD ↑' : 'USD ↑'}
+                    <span className="text-green-600 dark:text-green-400 flex items-center gap-0.5">
+                      +{maxRange}
                     </span>
                   </div>
                 </div>
-                
-                {/* Score Display */}
-                <div 
-                  className={`flex items-center transition-all duration-200 ${
-                    isPositive 
-                      ? 'text-emerald-400' 
-                      : isNegative 
-                      ? 'text-rose-400'
-                      : 'text-gray-400'
-                  }`}
-                  title={
-                    isPositive 
-                      ? (language === 'es' ? `Dólar subiendo: el tipo de cambio podría aumentar (ej: 10 → 11 Bs por USD)` : `Dollar rising: exchange rate may increase (e.g., 10 → 11 BOB per USD)`)
-                      : isNegative
-                      ? (language === 'es' ? `Dólar bajando: el tipo de cambio podría disminuir (ej: 10 → 9 Bs por USD)` : `Dollar falling: exchange rate may decrease (e.g., 10 → 9 BOB per USD)`)
-                      : (language === 'es' ? 'Sin cambio claro en el tipo de cambio' : 'No clear change in exchange rate')
-                  }
-                >
-                  <span className="text-sm font-bold tabular-nums min-w-[2.5rem] text-right">
-                    {sentimentScore > 0 ? '+' : ''}{sentimentScore}
-                  </span>
-                </div>
-              </div>
+            </div>
 
-              {/* Positive Count Pill */}
+            {/* Article Counts Compact - Right Side */}
+            <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+              {/* Total Articles */}
+              <div className="flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+                <span className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white">{dailySentiment.total}</span>
+                <span className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">art</span>
+              </div>
+              
+              {/* Positive/Negative Pills */}
               {dailySentiment.up > 0 && (
                 <div 
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-emerald-900/30 border border-emerald-800 transition-all duration-200"
+                  className="flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-2 py-1 sm:py-1.5 rounded-md bg-emerald-900/30 border border-emerald-800 flex-shrink-0"
                   title={language === 'es' ? `${dailySentiment.up} artículos indican dólar subiendo` : `${dailySentiment.up} articles indicate dollar rising`}
                 >
-                  <span className="text-xs font-bold text-emerald-400">↗</span>
-                  <span className="text-xs font-semibold text-emerald-400">{dailySentiment.up}</span>
+                  <span className="text-xs font-bold text-emerald-400">↗{dailySentiment.up}</span>
                 </div>
               )}
 
-              {/* Negative Count Pill */}
               {dailySentiment.down > 0 && (
                 <div 
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-rose-900/30 border border-rose-800 transition-all duration-200"
+                  className="flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-2 py-1 sm:py-1.5 rounded-md bg-rose-900/30 border border-rose-800 flex-shrink-0"
                   title={language === 'es' ? `${dailySentiment.down} artículos indican dólar bajando` : `${dailySentiment.down} articles indicate dollar falling`}
                 >
-                  <span className="text-xs font-bold text-rose-400">↘</span>
-                  <span className="text-xs font-semibold text-rose-400">{dailySentiment.down}</span>
+                  <span className="text-xs font-bold text-rose-400">↘{dailySentiment.down}</span>
                 </div>
               )}
+              
+              {/* 24h Badge */}
+              <div className="flex items-center px-1.5 sm:px-2 py-1 sm:py-1.5 rounded-md bg-blue-900/20 border border-blue-800/50">
+                <span className="text-[10px] sm:text-xs font-medium text-blue-400">24h</span>
+              </div>
             </div>
-          </div>
-
-          {/* Right: Article Count & Info */}
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-              <span className="text-sm font-bold text-gray-900 dark:text-white">{dailySentiment.total}</span>
-              <span className="text-xs text-gray-600 dark:text-gray-400">
-                {language === 'es' ? 'artículos' : 'articles'}
-              </span>
-            </div>
-
-            <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-              <span>24h</span>
-            </div>
-
-            {/* Info Icon */}
-            <button
-              ref={infoIconRef}
-              type="button"
-              className="inline-flex items-center justify-center w-7 h-7 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors relative"
-              aria-label={language === 'es' ? 'Información sobre el análisis de sentimiento' : 'Information about sentiment analysis'}
-              onMouseEnter={() => handleTooltipToggle(true)}
-              onMouseLeave={() => handleTooltipToggle(false)}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleTooltipToggle(!showTooltip);
-              }}
-            >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              {/* Tooltip */}
-              {showTooltip && (
-                <div 
-                  ref={tooltipRef}
-                  className="fixed px-3 py-2 bg-gray-900 dark:bg-gray-800 text-white text-xs rounded-lg shadow-xl z-50 max-w-xs whitespace-normal"
-                  style={{ minWidth: '280px' }}
-                >
-                  <div className="flex items-start gap-2">
-                    <svg className="w-4 h-4 flex-shrink-0 mt-0.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span className="text-left">{tooltipText}</span>
-                  </div>
-                  <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-full">
-                    <div className="border-4 border-transparent border-r-gray-900 dark:border-r-gray-800"></div>
-                  </div>
-                </div>
-              )}
-            </button>
           </div>
         </div>
       </div>
 
       {/* Rotating Article Content */}
-      <div className="flex-1 flex flex-col min-h-0">
+      <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
         {articles.length === 0 ? (
           <div className="p-4 text-center flex-1 flex items-center justify-center">
             <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -625,154 +630,154 @@ function SentimentNewsCard() {
             </p>
           </div>
         ) : articles[currentIndex] ? (
-          <>
+          <div className="flex flex-col h-full">
             <a
               href={articles[currentIndex].url}
               target="_blank"
               rel="noopener noreferrer"
-              className="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-900/30 transition-colors group flex-1 flex flex-col min-h-0"
+              className="block px-3 sm:px-4 pt-2.5 sm:pt-3 pb-2.5 sm:pb-3 hover:bg-gray-50 dark:hover:bg-gray-900/30 transition-colors group flex-shrink-0"
             >
-            <div className="flex items-start gap-3">
-              {/* Favicon */}
-              <div className="flex-shrink-0 mt-0.5">
-                {getFaviconUrl(articles[currentIndex].source, articles[currentIndex].url) ? (
-                  <img 
-                    src={getFaviconUrl(articles[currentIndex].source, articles[currentIndex].url)} 
-                    alt={articles[currentIndex].source}
-                    className="w-4 h-4 rounded-sm"
-                    loading="lazy"
-                    decoding="async"
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                    }}
-                  />
-                ) : (
-                  <div className="w-4 h-4 rounded-sm bg-gray-300 dark:bg-gray-600"></div>
-                )}
-              </div>
-
-              {/* Article Content */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">
-                    {articles[currentIndex].source}
-                  </span>
-                  <span className="text-xs text-gray-400 dark:text-gray-500">
-                    • {(() => {
-                      const publishedDate = articles[currentIndex].published_at || articles[currentIndex].published_at_iso;
-                      if (!publishedDate) return '';
-                      
-                      const date = new Date(publishedDate);
-                      if (isNaN(date.getTime())) return '';
-                      
-                      const now = new Date();
-                      const diffMs = now - date;
-                      const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-                      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-                      
-                      if (diffHours < 1) {
-                        return language === 'es' ? 'Hace <1h' : '<1h ago';
-                      } else if (diffHours < 24) {
-                        return language === 'es' 
-                          ? `Hace ${diffHours}h` 
-                          : `${diffHours}h ago`;
-                      } else if (diffDays < 2) {
-                        return language === 'es' ? 'Hace 1d' : '1d ago';
-                      } else {
-                        return language === 'es' 
-                          ? `Hace ${diffDays}d` 
-                          : `${diffDays}d ago`;
-                      }
-                    })()}
-                  </span>
+              <div className="flex items-start gap-2 sm:gap-3">
+                {/* Favicon */}
+                <div className="flex-shrink-0 mt-0.5">
+                  {getFaviconUrl(articles[currentIndex].source, articles[currentIndex].url) ? (
+                    <img 
+                      src={getFaviconUrl(articles[currentIndex].source, articles[currentIndex].url)} 
+                      alt={articles[currentIndex].source}
+                      className="w-4 h-4 rounded-sm"
+                      loading="lazy"
+                      decoding="async"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                      }}
+                    />
+                  ) : (
+                    <div className="w-4 h-4 rounded-sm bg-gray-300 dark:bg-gray-600"></div>
+                  )}
                 </div>
-                <h3 className="text-sm font-bold text-gray-900 dark:text-white line-clamp-2 leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors flex-shrink-0">
-                  {cleanTitle(articles[currentIndex].title)}
-                </h3>
-                {articles[currentIndex].summary && cleanSummary(articles[currentIndex].summary) && (
-                  <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-1 leading-snug mt-0.5 flex-shrink-0">
-                    {cleanSummary(articles[currentIndex].summary)}
-                  </p>
-                )}
-              </div>
 
-              {/* Sentiment Indicator */}
-              <div className="flex-shrink-0">
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                  articles[currentIndex].sentiment === 'up'
-                    ? 'bg-green-100 dark:bg-green-900/30'
-                    : articles[currentIndex].sentiment === 'down'
-                    ? 'bg-red-100 dark:bg-red-900/30'
-                    : 'bg-gray-100 dark:bg-gray-700/50'
-                }`}>
-                  <span className={`text-lg font-bold ${
+                {/* Article Content */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">
+                      {articles[currentIndex].source}
+                    </span>
+                    <span className="text-xs text-gray-400 dark:text-gray-500">
+                      • {(() => {
+                        const publishedDate = articles[currentIndex].published_at || articles[currentIndex].published_at_iso;
+                        if (!publishedDate) return '';
+                        
+                        const date = new Date(publishedDate);
+                        if (isNaN(date.getTime())) return '';
+                        
+                        const now = new Date();
+                        const diffMs = now - date;
+                        const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+                        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                        
+                        if (diffHours < 1) {
+                          return language === 'es' ? 'Hace <1h' : '<1h ago';
+                        } else if (diffHours < 24) {
+                          return language === 'es' 
+                            ? `Hace ${diffHours}h` 
+                            : `${diffHours}h ago`;
+                        } else if (diffDays < 2) {
+                          return language === 'es' ? 'Hace 1d' : '1d ago';
+                        } else {
+                          return language === 'es' 
+                            ? `Hace ${diffDays}d` 
+                            : `${diffDays}d ago`;
+                        }
+                      })()}
+                    </span>
+                  </div>
+                  <h3 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white line-clamp-2 leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors flex-shrink-0">
+                    {cleanTitle(articles[currentIndex].title)}
+                  </h3>
+                  {articles[currentIndex].summary && cleanSummary(articles[currentIndex].summary) && (
+                    <p className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400 line-clamp-1 leading-snug mt-0.5 flex-shrink-0">
+                      {cleanSummary(articles[currentIndex].summary)}
+                    </p>
+                  )}
+                </div>
+
+                {/* Sentiment Indicator */}
+                <div className="flex-shrink-0">
+                  <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center ${
                     articles[currentIndex].sentiment === 'up'
-                      ? 'text-green-600 dark:text-green-400'
+                      ? 'bg-green-100 dark:bg-green-900/30'
                       : articles[currentIndex].sentiment === 'down'
-                      ? 'text-red-600 dark:text-red-400'
-                      : 'text-gray-500 dark:text-gray-400'
+                      ? 'bg-red-100 dark:bg-red-900/30'
+                      : 'bg-gray-100 dark:bg-gray-700/50'
                   }`}>
-                    {articles[currentIndex].sentiment === 'up' ? '↗' : articles[currentIndex].sentiment === 'down' ? '↘' : '○'}
-                  </span>
+                    <span className={`text-base sm:text-lg font-bold ${
+                      articles[currentIndex].sentiment === 'up'
+                        ? 'text-green-600 dark:text-green-400'
+                        : articles[currentIndex].sentiment === 'down'
+                        ? 'text-red-600 dark:text-red-400'
+                        : 'text-gray-500 dark:text-gray-400'
+                    }`}>
+                      {articles[currentIndex].sentiment === 'up' ? '↗' : articles[currentIndex].sentiment === 'down' ? '↘' : '○'}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </a>
+            </a>
 
             {/* Navigation Controls */}
             {articles.length > 1 && (
-              <div className="flex items-center justify-between px-4 py-2 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30 flex-shrink-0">
-              {/* Left Arrow */}
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  goToPrevious();
-                }}
-                className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-                aria-label={language === 'es' ? 'Artículo anterior' : 'Previous article'}
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
+              <div className="flex items-center justify-between px-3 sm:px-4 py-1.5 sm:py-2 bg-gray-50 dark:bg-gray-900/30 flex-shrink-0 gap-2 border-t border-gray-200 dark:border-gray-700 mt-auto">
+                  {/* Left Arrow */}
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      goToPrevious();
+                    }}
+                    className="p-1 sm:p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white flex-shrink-0"
+                    aria-label={language === 'es' ? 'Artículo anterior' : 'Previous article'}
+                  >
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
 
-              {/* Progress Dots */}
-              <div className="flex items-center gap-2">
-                <div className="flex gap-1">
-                  {articles.slice(0, Math.min(articles.length, 8)).map((_, index) => (
-                    <div
-                      key={index}
-                      className={`h-1.5 rounded-full transition-all duration-300 ${
-                        index === currentIndex
-                          ? 'bg-blue-600 dark:bg-blue-400 w-3'
-                          : 'bg-gray-300 dark:bg-gray-600 w-1.5'
-                      }`}
-                    />
-                  ))}
-                </div>
-                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium ml-2">
-                  {currentIndex + 1}/{articles.length}
-                </span>
-              </div>
+                  {/* Progress Dots */}
+                  <div className="flex items-center gap-1.5 sm:gap-2 flex-1 min-w-0 justify-center">
+                    <div className="flex gap-0.5 sm:gap-1">
+                      {articles.slice(0, Math.min(articles.length, 8)).map((_, index) => (
+                        <div
+                          key={index}
+                          className={`h-1 sm:h-1.5 rounded-full transition-all duration-300 ${
+                            index === currentIndex
+                              ? 'bg-blue-600 dark:bg-blue-400 w-2 sm:w-3'
+                              : 'bg-gray-300 dark:bg-gray-600 w-1 sm:w-1.5'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 font-medium ml-1 sm:ml-2 whitespace-nowrap">
+                      {currentIndex + 1}/{articles.length}
+                    </span>
+                  </div>
 
-              {/* Right Arrow */}
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  goToNext();
-                }}
-                className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-                aria-label={language === 'es' ? 'Siguiente artículo' : 'Next article'}
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
+                  {/* Right Arrow */}
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      goToNext();
+                    }}
+                    className="p-1 sm:p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white flex-shrink-0"
+                    aria-label={language === 'es' ? 'Siguiente artículo' : 'Next article'}
+                  >
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
               </div>
             )}
-          </>
+          </div>
         ) : null}
       </div>
     </div>

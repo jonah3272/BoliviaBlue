@@ -13,6 +13,7 @@ import DailySentimentHeader from '../components/DailySentimentHeader';
 import SentimentNewsCard from '../components/SentimentNewsCard';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Link } from 'react-router-dom';
+import { articlesEs, articlesEn } from '../data/blogArticles';
 
 function Home() {
   const languageContext = useLanguage();
@@ -82,7 +83,7 @@ function Home() {
       <Navigation />
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+      <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8 space-y-4 sm:space-y-6 md:space-y-8">
         {/* Blue Rate Cards - At the Top */}
         <section>
           <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} />
@@ -110,9 +111,194 @@ function Home() {
           <BinanceBanner />
         </section>
 
+        {/* How It Works Section */}
+        <section className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 sm:p-8 md:p-10 shadow-xl">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-3">
+              🔍 {language === 'es' ? '¿Cómo Funciona?' : 'How Does It Work?'}
+            </h2>
+            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              {language === 'es' 
+                ? 'Te mostramos el tipo de cambio real del dólar en Bolivia en 3 simples pasos'
+                : 'We show you the real dollar exchange rate in Bolivia in 3 simple steps'}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+            {/* Step 1 */}
+            <div className="relative">
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg hover:shadow-2xl transition-all border-2 border-blue-200 dark:border-blue-800">
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                  <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center text-xl font-bold shadow-lg">
+                    1
+                  </div>
+                </div>
+                <div className="mt-6 text-center">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+                    {language === 'es' ? 'Recopilamos Datos' : 'We Collect Data'}
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+                    {language === 'es' 
+                      ? 'Monitoreamos Binance P2P cada 15 minutos para obtener el precio real de USDT/BOB en el mercado paralelo'
+                      : 'We monitor Binance P2P every 15 minutes to get the real USDT/BOB price in the parallel market'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 2 */}
+            <div className="relative">
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg hover:shadow-2xl transition-all border-2 border-green-200 dark:border-green-800">
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                  <div className="w-12 h-12 bg-green-600 text-white rounded-full flex items-center justify-center text-xl font-bold shadow-lg">
+                    2
+                  </div>
+                </div>
+                <div className="mt-6 text-center">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+                    {language === 'es' ? 'Analizamos con IA' : 'We Analyze with AI'}
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+                    {language === 'es' 
+                      ? 'Nuestra IA analiza noticias económicas y calcula el sentimiento del mercado para predecir tendencias'
+                      : 'Our AI analyzes economic news and calculates market sentiment to predict trends'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 3 */}
+            <div className="relative">
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg hover:shadow-2xl transition-all border-2 border-purple-200 dark:border-purple-800">
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                  <div className="w-12 h-12 bg-purple-600 text-white rounded-full flex items-center justify-center text-xl font-bold shadow-lg">
+                    3
+                  </div>
+                </div>
+                <div className="mt-6 text-center">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+                    {language === 'es' ? 'Te Lo Mostramos' : 'We Show You'}
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+                    {language === 'es' 
+                      ? 'Visualizamos todo en gráficos fáciles de entender, con noticias relevantes y herramientas prácticas'
+                      : 'We visualize everything in easy-to-understand charts, with relevant news and practical tools'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Additional Info */}
+          <div className="mt-8 bg-white/50 dark:bg-gray-800/50 rounded-xl p-6 backdrop-blur-sm">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+              <div>
+                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">15 min</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  {language === 'es' ? 'Actualización' : 'Update Frequency'}
+                </div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-green-600 dark:text-green-400">100%</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  {language === 'es' ? 'Gratis' : 'Free'}
+                </div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                  {language === 'es' ? '2 idiomas' : '2 Languages'}
+                </div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  {language === 'es' ? 'ES & EN' : 'ES & EN'}
+                </div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">24/7</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  {language === 'es' ? 'Disponible' : 'Available'}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* News & Twitter Tabs */}
         <section>
           <NewsTabs />
+        </section>
+
+        {/* Featured Blog Articles */}
+        <section className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 sm:p-8 shadow-xl">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                {language === 'es' ? 'Guías y Recursos' : 'Guides & Resources'}
+              </h2>
+              <p className="text-gray-600 dark:text-gray-300">
+                {language === 'es' 
+                  ? 'Aprende todo sobre el dólar blue, USDT y finanzas en Bolivia'
+                  : 'Learn everything about the blue dollar, USDT and finance in Bolivia'}
+              </p>
+            </div>
+            <Link
+              to="/blog"
+              className="hidden sm:inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors font-medium"
+            >
+              {language === 'es' ? 'Ver Todos' : 'View All'}
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            {(language === 'es' ? articlesEs : articlesEn)
+              .filter(a => a.featured)
+              .slice(0, 2)
+              .map((article) => (
+                <Link
+                  key={article.id}
+                  to={`/blog`}
+                  className="group bg-white dark:bg-gray-800 rounded-xl p-5 shadow-lg hover:shadow-2xl transition-all border-2 border-transparent hover:border-purple-500"
+                >
+                  <div className="mb-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded text-xs font-semibold">
+                        {article.category}
+                      </span>
+                      {article.readTime && (
+                        <span className="text-xs text-gray-500 dark:text-gray-400">{article.readTime}</span>
+                      )}
+                    </div>
+                    <h3 className="font-bold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors mb-2 line-clamp-2">
+                      {article.title}
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
+                      {article.excerpt}
+                    </p>
+                  </div>
+                  <div className="flex items-center justify-between text-sm mt-3 pt-3">
+                    <span className="text-gray-500 dark:text-gray-400">{article.author}</span>
+                    <span className="text-purple-600 dark:text-purple-400 font-medium group-hover:underline flex items-center gap-1">
+                      {language === 'es' ? 'Leer' : 'Read'}
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </span>
+                  </div>
+                </Link>
+              ))}
+          </div>
+
+          <Link
+            to="/blog"
+            className="sm:hidden mt-4 w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors font-medium"
+          >
+            {language === 'es' ? 'Ver Todos los Artículos' : 'View All Articles'}
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
         </section>
 
         {/* About */}

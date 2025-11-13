@@ -1,17 +1,19 @@
 import ThemeToggle from '../components/ThemeToggle';
 import LanguageToggle from '../components/LanguageToggle';
-import RateCards from '../components/RateCards';
+import BlueRateCards from '../components/BlueRateCards';
 import CurrencyCalculator from '../components/CurrencyCalculator';
 import BinanceBanner from '../components/BinanceBanner';
 import PageMeta from '../components/PageMeta';
 import Navigation from '../components/Navigation';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
 
 function Calculator() {
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
+  const [showOfficial, setShowOfficial] = useState(false);
   
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
@@ -32,11 +34,16 @@ function Calculator() {
       <header className="bg-white dark:bg-gray-800 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
           <div className="flex items-center justify-between gap-4">
-            <Link to="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity min-w-0">
+            <Link to="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity min-w-0 flex-1">
               <img src="/favicon.svg" alt="Bolivia Blue con Paz - Tipo de Cambio Dólar Boliviano" className="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0" />
-              <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white truncate">
-                Bolivia Blue
-              </h1>
+              <div className="flex flex-col min-w-0">
+                <h1 className="text-base sm:text-xl font-bold text-gray-900 dark:text-white truncate">
+                  {t('title')}
+                </h1>
+                <p className="hidden md:block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mt-0.5">
+                  {t('subtitle')}
+                </p>
+              </div>
             </Link>
             <div className="flex gap-2 sm:gap-3 flex-shrink-0">
               <LanguageToggle />
@@ -49,33 +56,21 @@ function Calculator() {
       {/* Navigation */}
       <Navigation />
 
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            {t('title')}
-          </h2>
-          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            {t('subtitle')}
-          </p>
-        </div>
-      </section>
-
-          {/* Main Content */}
-          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
-            {/* Rate Cards */}
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8 space-y-4 sm:space-y-6 md:space-y-8">
+        {/* Rate Cards */}
         <section>
-          <RateCards />
+          <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} />
+        </section>
+
+        {/* Binance Banner - Above Calculator */}
+        <section>
+          <BinanceBanner />
         </section>
 
         {/* Calculator */}
         <section>
           <CurrencyCalculator />
-        </section>
-
-        {/* Binance Banner */}
-        <section>
-          <BinanceBanner />
         </section>
       </main>
 

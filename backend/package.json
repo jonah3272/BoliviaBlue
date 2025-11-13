@@ -9,7 +9,8 @@
     "start:supabase": "node server-supabase.js",
     "dev": "node --watch server.js",
     "dev:supabase": "node --watch server-supabase.js",
-    "test": "node --test tests/*.test.js"
+    "test": "node --test tests/*.test.js",
+    "setup:blog": "node setup-blog-articles.js"
   },
   "keywords": [
     "bolivia",

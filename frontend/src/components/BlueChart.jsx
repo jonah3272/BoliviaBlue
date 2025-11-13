@@ -210,15 +210,15 @@ function BlueChart({ showOfficial = false }) {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 border border-gray-200 dark:border-gray-700">
+    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-4 sm:p-5 md:p-6 border border-gray-200 dark:border-gray-700">
       {/* Header with Stats */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+      <div className="flex flex-col gap-3 sm:gap-4 mb-4 sm:mb-5 md:mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">
             {t('historicalPriceChart')}
           </h2>
           {stats.latestBuy > 0 && (
-            <div className="flex items-center gap-3 sm:gap-4 text-sm flex-wrap">
+            <div className="flex items-center gap-2 sm:gap-3 md:gap-4 text-xs sm:text-sm flex-wrap">
               <span className="font-mono font-semibold text-green-600 dark:text-green-400">
                 {stats.latestBuy.toFixed(2)} Bs
               </span>
@@ -239,7 +239,7 @@ function BlueChart({ showOfficial = false }) {
           )}
         </div>
         
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-1.5 sm:gap-2">
           {TIME_RANGES.map(({ value, label, minDays }) => {
             const isDisabled = minDays > 0 && dataAge < minDays;
             return (
@@ -248,7 +248,7 @@ function BlueChart({ showOfficial = false }) {
                 onClick={() => !isDisabled && setRange(value)}
                 disabled={isDisabled}
                 title={isDisabled ? `Disponible después de ${minDays} días de datos` : ''}
-                className={`px-4 py-2.5 rounded-lg text-sm font-semibold transition-all transform hover:scale-105 ${
+                className={`px-3 sm:px-4 py-1.5 sm:py-2 md:py-2.5 rounded-lg text-xs sm:text-sm font-semibold transition-all transform hover:scale-105 ${
                   range === value
                     ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30'
                     : isDisabled
@@ -301,26 +301,26 @@ function BlueChart({ showOfficial = false }) {
       {!isLoading && !error && data.length > 0 && (
         <div className="relative">
           {/* Legend */}
-          <div className="flex justify-center gap-6 mb-3 sm:mb-4">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-green-500 shadow-lg shadow-green-500/50"></div>
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <div className="flex justify-center gap-4 sm:gap-6 mb-2 sm:mb-3 md:mb-4">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-green-500 shadow-lg shadow-green-500/50"></div>
+              <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
                 {language === 'es' ? 'Compra' : 'Buy'}
               </span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-red-500 shadow-lg shadow-red-500/50"></div>
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-red-500 shadow-lg shadow-red-500/50"></div>
+              <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
                 {t('chartSell')}
               </span>
             </div>
           </div>
           
-          <div className="h-[280px] sm:h-[420px]">
+          <div className="h-[240px] sm:h-[320px] md:h-[420px]">
             <ResponsiveContainer width="100%" height="100%">
             <AreaChart 
               data={data} 
-              margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+              margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
             >
               <defs>
                 <linearGradient id="colorBuy" x1="0" y1="0" x2="0" y2="1">

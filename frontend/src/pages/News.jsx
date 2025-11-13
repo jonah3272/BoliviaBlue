@@ -192,11 +192,16 @@ function News() {
       <header className="bg-white dark:bg-gray-800 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
           <div className="flex items-center justify-between gap-4">
-            <Link to="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity min-w-0">
+            <Link to="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity min-w-0 flex-1">
               <img src="/favicon.svg" alt="Bolivia Blue con Paz - Tipo de Cambio Dólar Boliviano" className="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0" />
-              <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white truncate">
-                Bolivia Blue
-              </h1>
+              <div className="flex flex-col min-w-0">
+                <h1 className="text-base sm:text-xl font-bold text-gray-900 dark:text-white truncate">
+                  {t('title')}
+                </h1>
+                <p className="hidden md:block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mt-0.5">
+                  {t('subtitle')}
+                </p>
+              </div>
             </Link>
             <div className="flex gap-2 sm:gap-3 flex-shrink-0">
               <LanguageToggle />
@@ -210,36 +215,76 @@ function News() {
       <Navigation />
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            {language === 'es' ? 'Noticias Económicas' : 'Economic News'}
-          </h2>
-          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            {t('newsSubtitle')}
-          </p>
+      <section className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-semibold mb-4">
+              <svg className="w-4 h-4 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
+                <circle cx="10" cy="10" r="8"/>
+              </svg>
+              {language === 'es' ? 'Actualizado cada 5 minutos' : 'Updated every 5 minutes'}
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+              📰 {language === 'es' ? 'Noticias del Mercado Cambiario' : 'Currency Market News'}
+            </h2>
+            <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              {language === 'es' 
+                ? 'Análisis con IA del sentimiento de noticias económicas y su impacto en el dólar blue. Mantente informado sobre lo que mueve el mercado.' 
+                : 'AI-powered sentiment analysis of economic news and its impact on the blue dollar. Stay informed about what moves the market.'}
+            </p>
+          </div>
+          
+          {/* Quick Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-4 text-center shadow-md">
+              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                {news.length}+
+              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                {language === 'es' ? 'Noticias Hoy' : 'News Today'}
+              </div>
+            </div>
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-4 text-center shadow-md">
+              <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                🤖 IA
+              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                {language === 'es' ? 'Análisis Automático' : 'Automated Analysis'}
+              </div>
+            </div>
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-4 text-center shadow-md">
+              <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                {availableCategories.length - 1}
+              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                {language === 'es' ? 'Categorías' : 'Categories'}
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
+      <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-8 md:py-12 space-y-4 sm:space-y-6 md:space-y-8">
         {/* Sentiment Legend - Using compact version to match dashboard */}
-        <SentimentLegend compact={true} />
+        <div className="px-1">
+          <SentimentLegend compact={true} />
+        </div>
         
         {/* Category Filters - Only show categories with articles */}
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 px-1">
           {Object.entries(CATEGORIES).filter(([key]) => availableCategories.includes(key)).map(([key, cat]) => (
             <button
               key={key}
               onClick={() => setSelectedCategory(key)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all ${
                 selectedCategory === key
                   ? `bg-${cat.color}-500 text-white shadow-lg`
                   : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
               }`}
             >
               <CategoryIcon category={key} />
-              {language === 'es' ? cat.es : cat.en}
+              <span className="whitespace-nowrap">{language === 'es' ? cat.es : cat.en}</span>
             </button>
           ))}
         </div>
@@ -263,37 +308,39 @@ function News() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
             {news.map((article) => {
               const cat = CATEGORIES[article.category] || CATEGORIES.all;
               return (
                 <article
                   key={article.id}
-                  className="bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all p-6 flex flex-col"
+                  className="bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all p-4 sm:p-5 md:p-6 flex flex-col"
                 >
                   {/* Category Badge & Sentiment */}
-                  <div className="flex items-center justify-between mb-3">
-                    <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-${cat.color}-100 dark:bg-${cat.color}-900/30 text-${cat.color}-700 dark:text-${cat.color}-300`}>
+                  <div className="flex items-center justify-between mb-2 sm:mb-3 gap-2">
+                    <span className={`inline-flex items-center gap-1 px-2 sm:px-3 py-1 rounded-full text-xs font-medium bg-${cat.color}-100 dark:bg-${cat.color}-900/30 text-${cat.color}-700 dark:text-${cat.color}-300 flex-shrink-0`}>
                       <CategoryIcon category={article.category} />
-                      {language === 'es' ? cat.es : cat.en}
+                      <span className="whitespace-nowrap">{language === 'es' ? cat.es : cat.en}</span>
                     </span>
-                    <SentimentArrow sentiment={article.sentiment} language={language} />
+                    <div className="flex-shrink-0">
+                      <SentimentArrow sentiment={article.sentiment} language={language} />
+                    </div>
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-3">
+                  <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-3">
                     {cleanTitle(article.title)}
                   </h3>
 
                   {/* Summary */}
                   {article.summary && cleanSummary(article.summary) && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-3 flex-grow">
+                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-3 sm:mb-4 line-clamp-3 flex-grow">
                       {cleanSummary(article.summary)}
                     </p>
                   )}
 
                   {/* Footer */}
-                  <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-500 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-500 pt-4">
                     <span className="font-medium">{article.source}</span>
                     <span>{formatDate(article.published_at_iso)}</span>
                   </div>

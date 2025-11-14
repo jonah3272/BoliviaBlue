@@ -221,9 +221,6 @@ function BuyDollars() {
             <div className="flex flex-col gap-3">
               <BinanceButton size="lg" className="w-full justify-center">
                 {language === 'es' ? 'Crear Cuenta en Binance' : 'Create Binance Account'}
-                <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
               </BinanceButton>
               <a
                 href={BINANCE_P2P_LINK}
@@ -289,9 +286,6 @@ function BuyDollars() {
             <div className="flex flex-col gap-3">
               <AirtmButton size="lg" className="w-full justify-center">
                 {language === 'es' ? 'Crear Cuenta en Airtm' : 'Create Airtm Account'}
-                <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
               </AirtmButton>
               <div className="text-xs text-gray-600 dark:text-gray-400 text-center">
                 {language === 'es' ? 'Protege tus ahorros' : 'Protect your savings'}

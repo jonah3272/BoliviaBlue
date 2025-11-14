@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
-import ThemeToggle from '../components/ThemeToggle';
-import LanguageToggle from '../components/LanguageToggle';
+import Header from '../components/Header';
 import PageMeta from '../components/PageMeta';
 import Navigation from '../components/Navigation';
 import BlueRateCards from '../components/BlueRateCards';
@@ -9,6 +8,7 @@ import BinanceBanner from '../components/BinanceBanner';
 import { Link } from 'react-router-dom';
 import { fetchBlueRate } from '../utils/api';
 import { BINANCE_REFERRAL_LINK, BINANCE_P2P_LINK } from '../config/referrals';
+import { BinanceButton, AirtmButton } from '../components/BrandButton';
 
 // Platform Card Component for Secondary Options
 function PlatformCard({ name, description, features, link, color, iconColor, language }) {
@@ -150,27 +150,7 @@ function BuyDollars() {
         structuredData={howToSchema}
       />
       
-      <header className="bg-white dark:bg-gray-800 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
-          <div className="flex items-center justify-between gap-4">
-            <Link to="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity min-w-0 flex-1">
-              <img src="/favicon.svg" alt="Bolivia Blue con Paz - Tipo de Cambio Dólar Boliviano" className="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0" />
-              <div className="flex flex-col min-w-0">
-                <div className="text-base sm:text-xl font-bold text-gray-900 dark:text-white truncate">
-                  {t('title')}
-                </div>
-                <p className="hidden md:block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mt-0.5">
-                  {t('subtitle')}
-                </p>
-              </div>
-            </Link>
-            <div className="flex gap-2 sm:gap-3 flex-shrink-0">
-              <LanguageToggle />
-              <ThemeToggle />
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* Navigation */}
       <Navigation />
@@ -189,14 +169,6 @@ function BuyDollars() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
-        {/* Current Rates */}
-        <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-            {t('buyDollarsCurrentRates')}
-          </h2>
-          <BlueRateCards />
-        </section>
-
         {/* PRIMARY OPTIONS: Binance & Airtm - Featured Prominently */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Binance - Primary Option */}
@@ -247,22 +219,14 @@ function BuyDollars() {
 
             {/* Primary CTA - Binance Referral Link */}
             <div className="flex flex-col gap-3">
-              <a
-                href={BINANCE_REFERRAL_LINK}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full inline-flex items-center justify-center px-6 py-4 bg-yellow-400 hover:bg-yellow-500 dark:bg-yellow-500 dark:hover:bg-yellow-600 text-gray-900 font-bold text-lg rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
-              >
-                <svg className="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M16.624 13.9202l2.7175 2.7154-7.353 7.353-7.353-7.352 2.7175-2.7164 4.6355 4.6595 4.6356-4.6595zm4.6366-4.6366L24 12l-2.7154 2.7164L18.5682 12l2.6924-2.7164zm-9.272.001l2.7163 2.6914-2.7164 2.7174v-.001L9.2721 12l2.7164-2.7154zm-9.2722-.001L5.4088 12l-2.6914 2.6924L0 12l2.7164-2.7164zM11.9885.0115l7.353 7.329-2.7174 2.7154-4.6356-4.6356-4.6355 4.6595-2.7174-2.7154 7.353-7.353z"/>
-                </svg>
+              <BinanceButton size="lg" className="w-full justify-center">
                 {language === 'es' ? 'Crear Cuenta en Binance' : 'Create Binance Account'}
                 <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
-              </a>
+              </BinanceButton>
               <a
-                href={BINANCE_REFERRAL_LINK}
+                href={BINANCE_P2P_LINK}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center px-6 py-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all border-2 border-gray-300 dark:border-gray-600"
@@ -323,20 +287,12 @@ function BuyDollars() {
 
             {/* Primary CTA - Airtm Referral Link */}
             <div className="flex flex-col gap-3">
-              <a
-                href={airtmReferralLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full inline-flex items-center justify-center px-6 py-4 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-bold text-lg rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
-              >
-                <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
+              <AirtmButton size="lg" className="w-full justify-center">
                 {language === 'es' ? 'Crear Cuenta en Airtm' : 'Create Airtm Account'}
                 <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
-              </a>
+              </AirtmButton>
               <div className="text-xs text-gray-600 dark:text-gray-400 text-center">
                 {language === 'es' ? 'Protege tus ahorros' : 'Protect your savings'}
               </div>

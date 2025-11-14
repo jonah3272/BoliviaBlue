@@ -69,9 +69,27 @@ const pages = [
     lastmod: currentDate
   },
   {
+    path: '/bolivia-blue-rate-hoy',
+    changefreq: 'hourly',
+    priority: '0.95',
+    lastmod: currentDate
+  },
+  {
+    path: '/comparison',
+    changefreq: 'weekly',
+    priority: '0.8',
+    lastmod: currentDate
+  },
+  {
     path: '/contact',
     changefreq: 'monthly',
     priority: '0.6',
+    lastmod: currentDate
+  },
+  {
+    path: '/bancos',
+    changefreq: 'monthly',
+    priority: '0.8',
     lastmod: currentDate
   }
 ];

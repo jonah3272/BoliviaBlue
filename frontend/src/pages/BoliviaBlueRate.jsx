@@ -1,22 +1,25 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
-import ThemeToggle from '../components/ThemeToggle';
-import LanguageToggle from '../components/LanguageToggle';
+import Header from '../components/Header';
 import PageMeta from '../components/PageMeta';
 import Navigation from '../components/Navigation';
 import BlueRateCards from '../components/BlueRateCards';
 import BinanceBanner from '../components/BinanceBanner';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { fetchBlueRate } from '../utils/api';
 import { lazy, Suspense } from 'react';
 const BlueChart = lazy(() => import('../components/BlueChart'));
+import Breadcrumbs from '../components/Breadcrumbs';
 
 function BoliviaBlueRate() {
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
+  const location = useLocation();
+  const isHoyPage = location.pathname === '/bolivia-blue-rate-hoy';
   const [showOfficial, setShowOfficial] = useState(false);
   const [currentRate, setCurrentRate] = useState(null);
+  const [lastUpdated, setLastUpdated] = useState(new Date());
 
   useEffect(() => {
     const loadRate = async () => {
@@ -61,70 +64,68 @@ function BoliviaBlueRate() {
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
-        title={language === 'es'
-          ? 'Bolivia Blue Rate - Tipo de Cambio Dólar Blue en Tiempo Real | Guía Completa'
-          : 'Bolivia Blue Rate - Real-Time Blue Dollar Exchange Rate | Complete Guide'}
-        description={language === 'es'
-          ? 'Guía completa sobre el Bolivia blue rate y bolivia blue exchange rate. Información actualizada cada 15 minutos, gráficos históricos, análisis del mercado paralelo y todo lo que necesitas saber sobre el tipo de cambio en Bolivia.'
-          : 'Complete guide about Bolivia blue rate and bolivia blue exchange rate. Information updated every 15 minutes, historical charts, parallel market analysis and everything you need to know about exchange rates in Bolivia.'}
-        keywords={language === 'es'
-          ? "bolivia blue rate, bolivia blue exchange rate, dólar blue bolivia, tipo de cambio bolivia, mercado paralelo bolivia, cotización dólar bolivia, precio dólar bolivia, tasa cambio bolivia"
-          : "bolivia blue rate, bolivia blue exchange rate, blue dollar bolivia, exchange rate bolivia, parallel market bolivia, bolivia dollar rate, bolivia dollar price, bolivia exchange rate"}
-        canonical="/bolivia-blue-rate"
+        title={isHoyPage 
+          ? (language === 'es'
+            ? 'Bolivia Blue Rate Hoy - Tipo de Cambio Actual | Actualizado en Tiempo Real'
+            : 'Bolivia Blue Rate Today - Current Exchange Rate | Real-Time Updates')
+          : (language === 'es'
+            ? 'Bolivia Blue Rate - Tipo de Cambio Dólar Blue en Tiempo Real | Guía Completa'
+            : 'Bolivia Blue Rate - Real-Time Blue Dollar Exchange Rate | Complete Guide')}
+        description={isHoyPage
+          ? (language === 'es'
+            ? 'Bolivia blue rate hoy actualizado cada 15 minutos. Consulta el tipo de cambio del dólar blue en Bolivia en tiempo real. Cotización actual, gráficos y análisis.'
+            : 'Bolivia blue rate today updated every 15 minutes. Check the real-time blue dollar exchange rate in Bolivia. Current quote, charts and analysis.')
+          : (language === 'es'
+            ? 'Guía completa sobre el Bolivia blue rate y bolivia blue exchange rate. Información actualizada cada 15 minutos, gráficos históricos, análisis del mercado paralelo y todo lo que necesitas saber sobre el tipo de cambio en Bolivia.'
+            : 'Complete guide about Bolivia blue rate and bolivia blue exchange rate. Information updated every 15 minutes, historical charts, parallel market analysis and everything you need to know about exchange rates in Bolivia.')}
+        keywords={isHoyPage
+          ? (language === 'es'
+            ? "bolivia blue rate hoy, bolivia blue rate actual, tipo de cambio hoy bolivia, dólar blue hoy, cotización dólar hoy bolivia, precio dólar hoy"
+            : "bolivia blue rate today, bolivia blue rate current, exchange rate today bolivia, blue dollar today, dollar quote today bolivia, dollar price today")
+          : (language === 'es'
+            ? "bolivia blue rate, bolivia blue exchange rate, dólar blue bolivia, tipo de cambio bolivia, mercado paralelo bolivia, cotización dólar bolivia, precio dólar bolivia, tasa cambio bolivia"
+            : "bolivia blue rate, bolivia blue exchange rate, blue dollar bolivia, exchange rate bolivia, parallel market bolivia, bolivia dollar rate, bolivia dollar price, bolivia exchange rate")}
+        canonical={isHoyPage ? "/bolivia-blue-rate-hoy" : "/bolivia-blue-rate"}
         structuredData={articleSchema}
       />
 
       {/* Header */}
-      <header className="bg-white dark:bg-gray-800 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
-          <div className="flex items-center justify-between gap-4">
-            <Link to="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity min-w-0 flex-1">
-              <img src="/favicon.svg" alt="Bolivia Blue con Paz - Tipo de Cambio Dólar Boliviano" className="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0" />
-              <div className="flex flex-col min-w-0">
-                <div className="text-base sm:text-xl font-bold text-gray-900 dark:text-white truncate">
-                  {t('title')}
-                </div>
-                <p className="hidden md:block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mt-0.5">
-                  {t('subtitle')}
-                </p>
-              </div>
-            </Link>
-            <div className="flex gap-2 sm:gap-3 flex-shrink-0">
-              <LanguageToggle />
-              <ThemeToggle />
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       <Navigation />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Breadcrumbs */}
-        <nav className="mb-6" aria-label="Breadcrumb">
-          <ol className="flex items-center space-x-2 text-sm">
-            <li>
-              <Link to="/" className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
-                {language === 'es' ? 'Inicio' : 'Home'}
-              </Link>
-            </li>
-            <li className="text-gray-400 dark:text-gray-600">/</li>
-            <li className="text-gray-900 dark:text-white font-medium">
-              {language === 'es' ? 'Bolivia Blue Rate' : 'Bolivia Blue Rate'}
-            </li>
-          </ol>
-        </nav>
+      <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8 space-y-6 md:space-y-8">
+        <Breadcrumbs items={[
+          { name: language === 'es' ? 'Inicio' : 'Home', url: '/' },
+          { name: isHoyPage 
+            ? (language === 'es' ? 'Bolivia Blue Rate Hoy' : 'Bolivia Blue Rate Today')
+            : (language === 'es' ? 'Bolivia Blue Rate' : 'Bolivia Blue Rate'),
+            url: isHoyPage ? '/bolivia-blue-rate-hoy' : '/bolivia-blue-rate' }
+        ]} />
 
         {/* Page Title */}
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-          {language === 'es' 
-            ? 'Bolivia Blue Rate - Guía Completa'
-            : 'Bolivia Blue Rate - Complete Guide'}
-        </h1>
-        <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
-          {language === 'es'
-            ? 'Todo lo que necesitas saber sobre el bolivia blue exchange rate y el mercado paralelo en Bolivia'
-            : 'Everything you need to know about the bolivia blue exchange rate and parallel market in Bolivia'}
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white">
+            {isHoyPage
+              ? (language === 'es' 
+                ? 'Bolivia Blue Rate Hoy'
+                : 'Bolivia Blue Rate Today')
+              : (language === 'es' 
+                ? 'Bolivia Blue Rate - Guía Completa'
+                : 'Bolivia Blue Rate - Complete Guide')}
+          </h1>
+          <span className="text-xs text-gray-500 dark:text-gray-400">
+            {language === 'es' ? 'Última actualización:' : 'Last updated:'} {lastUpdated.toLocaleDateString(language === 'es' ? 'es-BO' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+          </span>
+        </div>
+        <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
+          {isHoyPage
+            ? (language === 'es'
+              ? 'Consulta el tipo de cambio del dólar blue en Bolivia actualizado cada 15 minutos'
+              : 'Check the blue dollar exchange rate in Bolivia updated every 15 minutes')
+            : (language === 'es'
+              ? 'Todo lo que necesitas saber sobre el bolivia blue exchange rate y el mercado paralelo en Bolivia'
+              : 'Everything you need to know about the bolivia blue exchange rate and parallel market in Bolivia')}
         </p>
 
         {/* Current Rate Cards */}
@@ -217,7 +218,7 @@ function BoliviaBlueRate() {
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6 mt-12">
               {language === 'es' ? 'Recursos Adicionales' : 'Additional Resources'}
             </h2>
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid md:grid-cols-3 gap-4">
               <Link
                 to="/calculator"
                 className="block p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
@@ -238,6 +239,17 @@ function BoliviaBlueRate() {
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   {language === 'es' ? 'Aprende más sobre el mercado cambiario' : 'Learn more about the exchange market'}
+                </p>
+              </Link>
+              <Link
+                to="/comparison"
+                className="block p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors"
+              >
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                  {language === 'es' ? 'Comparación' : 'Comparison'}
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {language === 'es' ? 'Compara boliviablue.com con otros sitios' : 'Compare boliviablue.com with other sites'}
                 </p>
               </Link>
             </div>

@@ -1,8 +1,8 @@
-import ThemeToggle from '../components/ThemeToggle';
-import LanguageToggle from '../components/LanguageToggle';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 import BlueRateCards from '../components/BlueRateCards';
 import BinanceBanner from '../components/BinanceBanner';
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense, useState, useEffect } from 'react';
 const BlueChart = lazy(() => import('../components/BlueChart'));
 import NewsTabs from '../components/NewsTabs';
 import About from '../components/About';
@@ -21,6 +21,24 @@ function Home() {
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
   const [showOfficial, setShowOfficial] = useState(false);
+  const [currentRate, setCurrentRate] = useState(null);
+  
+  // Load current rate for structured data
+  useEffect(() => {
+    const loadRate = async () => {
+      try {
+        const data = await fetchBlueRate();
+        if (data && data.buy && data.sell) {
+          setCurrentRate(data);
+        }
+      } catch (error) {
+        console.error('Error loading rate:', error);
+      }
+    };
+    loadRate();
+    const interval = setInterval(loadRate, 15 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
   
   // Organization schema for homepage
   const organizationSchema = {
@@ -90,6 +108,22 @@ function Home() {
           "@type": "Answer",
           "text": "Conocer el bolivia blue rate es importante porque refleja la realidad del mercado cambiario boliviano y es utilizado por millones de bolivianos para transacciones diarias. Te ayuda a tomar mejores decisiones financieras y entender el verdadero valor del dólar en Bolivia."
         }
+      },
+      {
+        "@type": "Question",
+        "name": "¿Cuánto es $100 USD en Bolivia?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Con el bolivia blue rate actual (aproximadamente 10.50 BOB por USD), $100 USD equivalen a aproximadamente 1,050 BOB. Con la tasa oficial (~9.00 BOB/USD) serían solo 900 BOB. La diferencia puede ser significativa, por eso es importante usar el bolivia blue exchange rate para obtener el mejor valor. Usa nuestra calculadora para obtener el cálculo exacto con la tasa actual."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "¿Cuánto es 1 USD a 1 Boliviano?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "El bolivia blue exchange rate actualmente fluctúa entre 10.00 y 11.50 BOB por USD, con un promedio de aproximadamente 10.50 BOB por USD. Esto significa que 1 USD equivale a aproximadamente 10.50 BOB, mientras que 1 BOB equivale a aproximadamente 0.095 USD. El bolivia blue rate se actualiza cada 15 minutos en nuestra plataforma."
+        }
       }
     ] : [
       {
@@ -131,9 +165,80 @@ function Home() {
           "@type": "Answer",
           "text": "Knowing the bolivia blue rate is important because it reflects the reality of Bolivia's exchange market and is used by millions of Bolivians for daily transactions. It helps you make better financial decisions and understand the true value of the dollar in Bolivia."
         }
+      },
+      {
+        "@type": "Question",
+        "name": "How much is $100 US in Bolivia?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "With the current bolivia blue rate (approximately 10.50 BOB per USD), $100 USD equals approximately 1,050 BOB. With the official rate (~9.00 BOB/USD) it would only be 900 BOB. The difference can be significant, which is why it's important to use the bolivia blue exchange rate to get the best value. Use our calculator to get the exact calculation with the current rate."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How much is 1 USD to 1 Boliviano?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The bolivia blue exchange rate currently fluctuates between 10.00 and 11.50 BOB per USD, with an average of approximately 10.50 BOB per USD. This means 1 USD equals approximately 10.50 BOB, while 1 BOB equals approximately 0.095 USD. The bolivia blue rate is updated every 15 minutes on our platform."
+        }
       }
     ]
   };
+
+  // FinancialProduct schema for rate cards
+  const financialProductSchema = currentRate ? {
+    "@context": "https://schema.org",
+    "@type": "FinancialProduct",
+    "name": language === 'es' ? "Bolivia Blue Rate" : "Bolivia Blue Rate",
+    "description": language === 'es' 
+      ? "Tipo de cambio del dólar blue en Bolivia en tiempo real"
+      : "Real-time blue dollar exchange rate in Bolivia",
+    "provider": {
+      "@type": "Organization",
+      "name": "Bolivia Blue con Paz"
+    },
+    "exchangeRate": {
+      "@type": "UnitPriceSpecification",
+      "price": currentRate.buy?.toFixed(2) || "0",
+      "priceCurrency": "BOB",
+      "unitText": "USD"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "5",
+      "bestRating": "5",
+      "worstRating": "1",
+      "ratingCount": "1000"
+    }
+  } : null;
+
+  // DataFeed schema for rate updates
+  const dataFeedSchema = {
+    "@context": "https://schema.org",
+    "@type": "DataFeed",
+    "name": language === 'es' ? "Bolivia Blue Rate - Actualizaciones en Tiempo Real" : "Bolivia Blue Rate - Real-Time Updates",
+    "description": language === 'es'
+      ? "Feed de datos del tipo de cambio del dólar blue en Bolivia actualizado cada 15 minutos"
+      : "Data feed of Bolivia blue dollar exchange rate updated every 15 minutes",
+    "dataFeedElement": currentRate ? [{
+      "@type": "DataFeedItem",
+      "dateModified": new Date().toISOString(),
+      "item": {
+        "@type": "FinancialProduct",
+        "name": "Bolivia Blue Rate",
+        "exchangeRate": {
+          "@type": "UnitPriceSpecification",
+          "price": currentRate.buy?.toFixed(2) || "0",
+          "priceCurrency": "BOB"
+        }
+      }
+    }] : []
+  };
+
+  // Combine all structured data
+  const allStructuredData = [organizationSchema, faqSchema];
+  if (financialProductSchema) allStructuredData.push(financialProductSchema);
+  allStructuredData.push(dataFeedSchema);
   
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
@@ -148,31 +253,10 @@ function Home() {
           ? "bolivia blue rate, bolivia blue exchange rate, dólar bolivia, tipo de cambio bolivia, boliviano dólar, blue bolivia, dólar blue bolivia, tipo cambio bolivia, cambio dólar bolivia, mercado paralelo bolivia, dólar paralelo, Rodrigo Paz, BCB, banco central bolivia, binance bolivia, usdt bob, usdt a bob, boliviano a dólar, dólar a boliviano, cotización dólar bolivia, precio dólar bolivia, tasa cambio bolivia, bolivian blue, bolivianblue, mejor que bolivianblue.net"
           : "bolivia blue rate, bolivia blue exchange rate, bolivia dollar, exchange rate bolivia, boliviano dollar, blue dollar bolivia, bolivia blue dollar, bolivia exchange rate, bolivia currency, parallel market bolivia, bolivia parallel dollar, Rodrigo Paz, BCB, central bank bolivia, binance bolivia, usdt bob, usdt to bob, boliviano to dollar, dollar to boliviano, bolivia dollar rate, bolivia dollar price, bolivia exchange rate, bolivian blue, bolivianblue, better than bolivianblue.net, bolivia blue market, bolivia dollar calculator"}
         canonical="/"
-        structuredData={[organizationSchema, faqSchema]}
+        structuredData={allStructuredData}
       />
       
-      {/* Header */}
-      <header className="bg-white dark:bg-gray-800 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
-          <div className="flex items-center justify-between gap-4">
-            <Link to="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity min-w-0 flex-1">
-              <img src="/favicon.svg" alt="Bolivia Blue con Paz - Tipo de Cambio Dólar Boliviano" className="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0" />
-              <div className="flex flex-col min-w-0">
-                <div className="text-base sm:text-xl font-bold text-gray-900 dark:text-white truncate">
-                  {t('title')}
-                </div>
-                <p className="hidden md:block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mt-0.5">
-                  {t('subtitle')}
-                </p>
-              </div>
-            </Link>
-            <div className="flex gap-2 sm:gap-3 flex-shrink-0">
-              <LanguageToggle />
-              <ThemeToggle />
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* Navigation */}
       <Navigation />
@@ -195,7 +279,6 @@ function Home() {
         <section>
           <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} />
         </section>
-        
 
         {/* Combined Sentiment + News Card */}
         <section>
@@ -419,22 +502,92 @@ function Home() {
           <About />
         </section>
 
+        {/* Comparison Section - Why Choose Us */}
+        <section className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 sm:p-8 md:p-10 shadow-xl border-2 border-green-200 dark:border-green-800">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              {language === 'es' 
+                ? '¿Por qué elegir boliviablue.com?' 
+                : 'Why choose boliviablue.com?'}
+            </h2>
+            <p className="text-gray-600 dark:text-gray-300 mb-6">
+              {language === 'es'
+                ? 'La plataforma más precisa y actualizada para el tipo de cambio del dólar blue en Bolivia'
+                : 'The most accurate and up-to-date platform for Bolivia blue dollar exchange rate'}
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md">
+                <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2">
+                  {language === 'es' ? '✅ Actualización cada 15 minutos' : '✅ Updates every 15 minutes'}
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  {language === 'es'
+                    ? 'Mientras otros sitios como bolivianblue.net actualizan cada hora o diariamente, nosotros actualizamos cada 15 minutos con datos en tiempo real de Binance P2P.'
+                    : 'While other sites like bolivianblue.net update hourly or daily, we update every 15 minutes with real-time Binance P2P data.'}
+                </p>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md">
+                <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2">
+                  {language === 'es' ? '✅ URL más simple y memorable' : '✅ Simpler, memorable URL'}
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  {language === 'es'
+                    ? 'boliviablue.com es más fácil de recordar que bolivianblue.net. Sin guiones, dominio .com más confiable.'
+                    : 'boliviablue.com is easier to remember than bolivianblue.net. No hyphens, more trusted .com domain.'}
+                </p>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md">
+                <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2">
+                  {language === 'es' ? '✅ Análisis de sentimiento con IA' : '✅ AI-powered sentiment analysis'}
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  {language === 'es'
+                    ? 'Única plataforma con análisis de sentimiento de noticias financieras para predecir tendencias del dólar blue.'
+                    : 'Only platform with AI sentiment analysis of financial news to predict blue dollar trends.'}
+                </p>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md">
+                <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2">
+                  {language === 'es' ? '✅ Herramientas avanzadas' : '✅ Advanced tools'}
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  {language === 'es'
+                    ? 'Calculadora de divisas, gráficos históricos, alertas de precio y más. Todo en un solo lugar.'
+                    : 'Currency calculator, historical charts, price alerts and more. All in one place.'}
+                </p>
+              </div>
+            </div>
+            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+              <p className="text-sm text-gray-700 dark:text-gray-300">
+                {language === 'es'
+                  ? <>💡 <strong>Mejor que bolivianblue.net:</strong> Actualizaciones más frecuentes, interfaz moderna, más herramientas y URL más fácil de recordar. <Link to="/comparison" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Ver comparación completa</Link></>
+                  : <>💡 <strong>Better than bolivianblue.net:</strong> More frequent updates, modern interface, more tools, and easier-to-remember URL. <Link to="/comparison" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">See full comparison</Link></>}
+              </p>
+            </div>
+          </div>
+        </section>
+
         {/* Content Section with Keywords - Moved to Bottom */}
         <section className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 sm:p-8 md:p-10">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
-              {language === 'es' ? '¿Qué es el Bolivia Blue Rate?' : 'What is Bolivia Blue Rate?'}
-            </h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+                {language === 'es' ? '¿Qué es el Bolivia Blue Rate?' : 'What is Bolivia Blue Rate?'}
+              </h2>
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                {language === 'es' ? 'Última actualización:' : 'Last updated:'} {new Date().toLocaleDateString(language === 'es' ? 'es-BO' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+              </span>
+            </div>
             <div className="prose prose-lg dark:prose-invert max-w-none">
               <p className="text-gray-700 dark:text-gray-300 mb-4">
                 {language === 'es' 
-                  ? <>El <strong>Bolivia blue rate</strong> es el tipo de cambio del dólar estadounidense en el mercado paralelo de Bolivia. También conocido como <strong>bolivia blue exchange rate</strong>, este valor refleja la tasa real a la que los bolivianos intercambian dólares fuera del sistema bancario oficial.</>
-                  : <>The <strong>Bolivia blue rate</strong> is the exchange rate of the US dollar in Bolivia's parallel market. Also known as the <strong>bolivia blue exchange rate</strong>, this value reflects the real rate at which Bolivians exchange dollars outside the official banking system.</>}
+                  ? <>El <strong>Bolivia blue rate</strong> es el tipo de cambio del dólar estadounidense en el mercado paralelo de Bolivia. También conocido como <strong>bolivia blue exchange rate</strong>, este valor refleja la tasa real a la que los bolivianos intercambian dólares fuera del sistema bancario oficial. A diferencia de la tasa oficial del Banco Central de Bolivia, el <strong>bolivia blue rate</strong> fluctúa constantemente según la oferta y demanda del mercado.</>
+                  : <>The <strong>Bolivia blue rate</strong> is the exchange rate of the US dollar in Bolivia's parallel market. Also known as the <strong>bolivia blue exchange rate</strong>, this value reflects the real rate at which Bolivians exchange dollars outside the official banking system. Unlike the official rate from the Central Bank of Bolivia, the <strong>Bolivia blue rate</strong> fluctuates constantly according to market supply and demand.</>}
               </p>
               <p className="text-gray-700 dark:text-gray-300 mb-4">
                 {language === 'es'
-                  ? <>Nuestra plataforma rastrea el <strong>bolivia blue rate</strong> en tiempo real utilizando datos de Binance P2P, actualizando el <strong>bolivia blue exchange rate</strong> cada 15 minutos para brindarte la información más precisa y actualizada. <Link to="/bolivia-blue-rate" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Aprende más sobre el Bolivia Blue Rate</Link> o <Link to="/calculator" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">usa nuestra calculadora</Link> para convertir divisas.</>
-                  : <>Our platform tracks the <strong>Bolivia blue rate</strong> in real-time using Binance P2P data, updating the <strong>Bolivia blue exchange rate</strong> every 15 minutes to provide you with the most accurate and up-to-date information. <Link to="/bolivia-blue-rate" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Learn more about Bolivia Blue Rate</Link> or <Link to="/calculator" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">use our calculator</Link> to convert currencies.</>}
+                  ? <>Nuestra plataforma rastrea el <strong>bolivia blue rate</strong> en tiempo real utilizando datos de Binance P2P, actualizando el <strong>bolivia blue exchange rate</strong> cada 15 minutos para brindarte la información más precisa y actualizada. Esto nos diferencia de otros sitios como bolivianblue.net que actualizan con menor frecuencia. <Link to="/bolivia-blue-rate" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Aprende más sobre el Bolivia Blue Rate</Link>, <Link to="/bolivia-blue-rate-hoy" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">consulta el bolivia blue rate hoy</Link>, <Link to="/calculator" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">usa nuestra calculadora</Link> para convertir divisas, o <Link to="/comparison" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">compara con otros sitios</Link>.</>
+                  : <>Our platform tracks the <strong>Bolivia blue rate</strong> in real-time using Binance P2P data, updating the <strong>Bolivia blue exchange rate</strong> every 15 minutes to provide you with the most accurate and up-to-date information. This differentiates us from other sites like bolivianblue.net that update less frequently. <Link to="/bolivia-blue-rate" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Learn more about Bolivia Blue Rate</Link>, <Link to="/bolivia-blue-rate-hoy" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">check the bolivia blue rate today</Link>, <Link to="/calculator" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">use our calculator</Link> to convert currencies, or <Link to="/comparison" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">compare with other sites</Link>.</>}
               </p>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
                 {language === 'es' ? '¿Por qué es importante el Bolivia Blue Rate?' : 'Why is Bolivia Blue Rate Important?'}
@@ -461,22 +614,7 @@ function Home() {
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center text-sm text-gray-600 dark:text-gray-400">
-            <p className="mb-2">
-              {t('footerUpdates')}
-            </p>
-            <p className="mb-4">
-              {t('footerText')}
-            </p>
-            <p className="mt-6 text-xs text-gray-500 dark:text-gray-500">
-              &copy; 2025 {t('title')}
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

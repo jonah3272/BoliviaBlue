@@ -36,13 +36,30 @@ export default {
         gradient: {
           '0%, 100%': { backgroundPosition: '0% 50%' },
           '50%': { backgroundPosition: '100% 50%' }
+        },
+        heartbeat: {
+          '0%, 100%': { transform: 'scale(1)', opacity: '0.4' },
+          '25%': { transform: 'scale(1.05)', opacity: '0.6' },
+          '50%': { transform: 'scale(1)', opacity: '0.4' },
+          '75%': { transform: 'scale(1.05)', opacity: '0.6' }
+        },
+        'binance-pulse': {
+          '0%, 100%': { backgroundPosition: '0% 50%', opacity: '1' },
+          '50%': { backgroundPosition: '100% 50%', opacity: '0.95' }
+        },
+        'airtm-pulse': {
+          '0%, 100%': { backgroundPosition: '0% 50%', opacity: '1' },
+          '50%': { backgroundPosition: '100% 50%', opacity: '0.95' }
         }
       },
       animation: {
         fadeIn: 'fadeIn 1s ease-out',
         shimmer: 'shimmer 1s ease-out',
         'pulse-slow': 'pulse-slow 3s ease-in-out infinite',
-        gradient: 'gradient 3s ease infinite'
+        gradient: 'gradient 3s ease infinite',
+        heartbeat: 'heartbeat 2s ease-in-out infinite',
+        'binance-pulse': 'binance-pulse 3s ease-in-out infinite',
+        'airtm-pulse': 'airtm-pulse 3s ease-in-out infinite'
       }
     },
   },

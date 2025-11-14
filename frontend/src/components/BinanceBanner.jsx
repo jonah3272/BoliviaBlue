@@ -1,6 +1,7 @@
 import { useLanguage } from '../contexts/LanguageContext';
 import { Link } from 'react-router-dom';
 import { BINANCE_REFERRAL_LINK } from '../config/referrals';
+import { BinanceButton } from './BrandButton';
 
 function BinanceBanner() {
   const languageContext = useLanguage();
@@ -68,18 +69,12 @@ function BinanceBanner() {
             >
               {language === 'es' ? 'Más info' : 'Learn more'}
             </Link>
-            <a
-              href={BINANCE_REFERRAL_LINK}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={t('goToBinanceAria')}
-              className="inline-flex items-center gap-2 px-5 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg text-sm font-semibold transition-colors shadow-sm"
-            >
+            <BinanceButton size="md">
               {language === 'es' ? 'Ir a Binance' : 'Go to Binance'}
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
-            </a>
+            </BinanceButton>
           </div>
         </div>
       </div>

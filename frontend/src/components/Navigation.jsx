@@ -6,15 +6,27 @@ function Navigation() {
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   
+  // Optimized navigation order:
+  // 1. Dashboard (main page)
+  // 2. Calculator (high utility)
+  // 3. Buy Dollars (action-oriented, monetization)
+  // 4. News (content, engagement)
+  // 5. Blog (content, SEO)
+  // 6. About (trust building)
+  // 7. FAQ (support)
+  // 8. Rodrigo Paz (contextual)
+  // Navigation optimized for Google Sitelinks
+  // Important pages that should appear in search results
   const navItems = [
     { path: '/', key: 'navDashboard', shortKey: 'navDashboardShort', icon: 'dashboard' },
     { path: '/calculator', key: 'navCalculator', icon: 'calculator' },
     { path: '/buy-dollars', key: 'navBuyDollars', icon: 'buy' },
     { path: '/news', key: 'navNews', icon: 'news' },
-    { path: '/rodrigo-paz', key: 'navRodrigoPaz', icon: 'rodrigo' },
+    { path: '/blog', key: 'navBlog', icon: 'blog' },
+    { path: '/bancos', key: 'navBancos', icon: 'bank' },
     { path: '/about', key: 'navAbout', icon: 'about' },
     { path: '/faq', key: 'navFAQ', icon: 'faq' },
-    { path: '/blog', key: 'navBlog', icon: 'blog' }
+    { path: '/rodrigo-paz', key: 'navRodrigoPaz', icon: 'rodrigo' }
   ];
 
   const getIcon = (iconType) => {
@@ -57,6 +69,11 @@ function Navigation() {
       blog: (
         <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+        </svg>
+      ),
+      bank: (
+        <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
         </svg>
       )
     };

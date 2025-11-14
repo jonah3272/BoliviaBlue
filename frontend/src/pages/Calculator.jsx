@@ -1,5 +1,4 @@
-import ThemeToggle from '../components/ThemeToggle';
-import LanguageToggle from '../components/LanguageToggle';
+import Header from '../components/Header';
 import BlueRateCards from '../components/BlueRateCards';
 import CurrencyCalculator from '../components/CurrencyCalculator';
 import BinanceBanner from '../components/BinanceBanner';
@@ -7,13 +6,51 @@ import PageMeta from '../components/PageMeta';
 import Navigation from '../components/Navigation';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { fetchBlueRate } from '../utils/api';
 
 function Calculator() {
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
   const [showOfficial, setShowOfficial] = useState(false);
+  const [currentRate, setCurrentRate] = useState(null);
+  
+  // Load current rate for structured data
+  useEffect(() => {
+    const loadRate = async () => {
+      try {
+        const data = await fetchBlueRate();
+        if (data && data.buy && data.sell) {
+          setCurrentRate(data);
+        }
+      } catch (error) {
+        console.error('Error loading rate:', error);
+      }
+    };
+    loadRate();
+    const interval = setInterval(loadRate, 15 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // CurrencyConverter schema
+  const currencyConverterSchema = currentRate ? {
+    "@context": "https://schema.org",
+    "@type": "CurrencyConverter",
+    "name": language === 'es' ? "Calculadora de Divisas USD/BOB" : "USD/BOB Currency Calculator",
+    "description": language === 'es'
+      ? "Calculadora gratuita para convertir dólares estadounidenses a bolivianos usando el tipo de cambio blue en tiempo real"
+      : "Free calculator to convert US dollars to bolivianos using real-time blue exchange rate",
+    "provider": {
+      "@type": "Organization",
+      "name": "Bolivia Blue con Paz",
+      "url": "https://boliviablue.com"
+    },
+    "fromCurrency": "USD",
+    "toCurrency": "BOB",
+    "currentExchangeRate": currentRate.buy?.toFixed(2) || "0",
+    "dateModified": new Date().toISOString()
+  } : null;
   
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
@@ -28,30 +65,10 @@ function Calculator() {
           ? "calculadora dólar bolivia, convertir usd a bob, convertir bob a usd, calculadora divisas bolivia, tipo cambio calculadora, calculadora cambio bolivia, convertir dólar a boliviano, convertir boliviano a dólar, calculadora binance p2p, mejor calculadora dólar bolivia"
           : "bolivia dollar calculator, convert usd to bob, convert bob to usd, currency calculator bolivia, exchange rate calculator, bolivia exchange calculator, convert dollar to boliviano, convert boliviano to dollar, binance p2p calculator, best bolivia dollar calculator"}
         canonical="/calculator"
+        structuredData={currencyConverterSchema ? [currencyConverterSchema] : []}
       />
       
-      {/* Header */}
-      <header className="bg-white dark:bg-gray-800 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
-          <div className="flex items-center justify-between gap-4">
-            <Link to="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity min-w-0 flex-1">
-              <img src="/favicon.svg" alt="Bolivia Blue con Paz - Tipo de Cambio Dólar Boliviano" className="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0" />
-              <div className="flex flex-col min-w-0">
-                <div className="text-base sm:text-xl font-bold text-gray-900 dark:text-white truncate">
-                  {t('title')}
-                </div>
-                <p className="hidden md:block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mt-0.5">
-                  {t('subtitle')}
-                </p>
-              </div>
-            </Link>
-            <div className="flex gap-2 sm:gap-3 flex-shrink-0">
-              <LanguageToggle />
-              <ThemeToggle />
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* Navigation */}
       <Navigation />

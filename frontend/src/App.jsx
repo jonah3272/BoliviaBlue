@@ -13,6 +13,8 @@ const News = lazy(() => import('./pages/News'));
     const BoliviaBlueRate = lazy(() => import('./pages/BoliviaBlueRate'));
     const Contact = lazy(() => import('./pages/Contact'));
     const Unsubscribe = lazy(() => import('./pages/Unsubscribe'));
+    const Comparison = lazy(() => import('./pages/Comparison'));
+    const Bancos = lazy(() => import('./pages/Bancos'));
 
 // Loading fallback component
 function LoadingFallback() {
@@ -41,7 +43,10 @@ function App() {
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<Blog />} />
               <Route path="/bolivia-blue-rate" element={<BoliviaBlueRate />} />
+              <Route path="/bolivia-blue-rate-hoy" element={<BoliviaBlueRate />} />
+              <Route path="/comparison" element={<Comparison />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/bancos" element={<Bancos />} />
               <Route path="/unsubscribe" element={<Unsubscribe />} />
         </Routes>
       </Suspense>

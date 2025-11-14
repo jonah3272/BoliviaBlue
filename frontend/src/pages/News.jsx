@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import ThemeToggle from '../components/ThemeToggle';
-import LanguageToggle from '../components/LanguageToggle';
+import Header from '../components/Header';
 import PageMeta from '../components/PageMeta';
 import Navigation from '../components/Navigation';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -72,6 +71,7 @@ function News() {
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
   const [news, setNews] = useState([]);
+  const [allNews, setAllNews] = useState([]); // Store all news for search
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -136,6 +136,7 @@ function News() {
       const category = selectedCategory !== 'all' ? selectedCategory : null;
       const data = await fetchNews(category, 30);
       setNews(data);
+      setAllNews(data); // Store for search
       setError(null);
     } catch (err) {
       console.error('Error loading news:', err);
@@ -188,28 +189,7 @@ function News() {
         structuredData={newsPageSchema}
       />
       
-      {/* Header */}
-      <header className="bg-white dark:bg-gray-800 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
-          <div className="flex items-center justify-between gap-4">
-            <Link to="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity min-w-0 flex-1">
-              <img src="/favicon.svg" alt="Bolivia Blue con Paz - Tipo de Cambio Dólar Boliviano" className="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0" />
-              <div className="flex flex-col min-w-0">
-                <div className="text-base sm:text-xl font-bold text-gray-900 dark:text-white truncate">
-                  {t('title')}
-                </div>
-                <p className="hidden md:block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mt-0.5">
-                  {t('subtitle')}
-                </p>
-              </div>
-            </Link>
-            <div className="flex gap-2 sm:gap-3 flex-shrink-0">
-              <LanguageToggle />
-              <ThemeToggle />
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* Navigation */}
       <Navigation />
@@ -234,29 +214,29 @@ function News() {
             </p>
           </div>
           
-          {/* Quick Stats */}
+          {/* Quick Stats - Improved Design */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-4 text-center shadow-md">
-              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 text-center shadow-lg border-2 border-blue-200 dark:border-blue-800">
+              <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">
                 {news.length}+
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                 {language === 'es' ? 'Noticias Hoy' : 'News Today'}
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-4 text-center shadow-md">
-              <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                🤖 IA
-              </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
-                {language === 'es' ? 'Análisis Automático' : 'Automated Analysis'}
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 text-center shadow-lg border-2 border-green-200 dark:border-green-800">
+              <svg className="w-8 h-8 mx-auto mb-2 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+              <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                {language === 'es' ? 'Análisis con IA' : 'AI Analysis'}
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-4 text-center shadow-md">
-              <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 text-center shadow-lg border-2 border-purple-200 dark:border-purple-800">
+              <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">
                 {availableCategories.length - 1}
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                 {language === 'es' ? 'Categorías' : 'Categories'}
               </div>
             </div>
@@ -266,6 +246,33 @@ function News() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-8 md:py-12 space-y-4 sm:space-y-6 md:space-y-8">
+        {/* Search Bar */}
+        <div className="px-1">
+          <div className="relative max-w-2xl mx-auto">
+            <input
+              type="text"
+              placeholder={language === 'es' ? 'Buscar noticias...' : 'Search news...'}
+              className="w-full px-4 py-3 pl-12 bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-md"
+              onChange={(e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                // Filter news based on search term
+                if (searchTerm) {
+                  const filtered = allNews.filter(article => 
+                    article.title.toLowerCase().includes(searchTerm) ||
+                    (article.summary && article.summary.toLowerCase().includes(searchTerm))
+                  );
+                  setNews(filtered);
+                } else {
+                  setNews(allNews);
+                }
+              }}
+            />
+            <svg className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+        </div>
+
         {/* Sentiment Legend - Using compact version to match dashboard */}
         <div className="px-1">
           <SentimentLegend compact={true} />

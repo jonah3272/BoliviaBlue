@@ -244,11 +244,11 @@ function Home() {
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
         title={language === 'es' 
-          ? 'Bolivia Blue Rate - Tipo de Cambio Dólar Blue en Tiempo Real | Bolivia Blue con Paz'
-          : 'Bolivia Blue Rate - Real-Time Blue Dollar Exchange Rate Bolivia | Bolivia Blue con Paz'}
+          ? 'Bolivia Blue Rate - Actualizado Cada 15 Min | Tipo de Cambio en Tiempo Real'
+          : 'Bolivia Blue Rate - Updated Every 15 Min | Real-Time Exchange Rate'}
         description={language === 'es' 
-          ? "Bolivia blue rate y bolivia blue exchange rate actualizados cada 15 minutos. Seguimiento en tiempo real del tipo de cambio del dólar blue en Bolivia bajo el presidente Rodrigo Paz. Cotizaciones desde Binance P2P, gráficos históricos y noticias financieras."
-          : "Bolivia blue rate and bolivia blue exchange rate updated every 15 minutes. Real-time tracking of the blue dollar exchange rate in Bolivia under President Rodrigo Paz. Rates from Binance P2P, historical charts and financial news."}
+          ? "Bolivia blue rate y bolivia blue exchange rate actualizados cada 15 minutos. Seguimiento en tiempo real del tipo de cambio del dólar blue en Bolivia. Gratis, sin registro. Mejor que bolivianblue.net - Actualizaciones más frecuentes."
+          : "Bolivia blue rate and bolivia blue exchange rate updated every 15 minutes. Real-time tracking of the blue dollar exchange rate in Bolivia. Free, no registration. Better than bolivianblue.net - More frequent updates."}
         keywords={language === 'es'
           ? "bolivia blue rate, bolivia blue exchange rate, dólar bolivia, tipo de cambio bolivia, boliviano dólar, blue bolivia, dólar blue bolivia, tipo cambio bolivia, cambio dólar bolivia, mercado paralelo bolivia, dólar paralelo, Rodrigo Paz, BCB, banco central bolivia, binance bolivia, usdt bob, usdt a bob, boliviano a dólar, dólar a boliviano, cotización dólar bolivia, precio dólar bolivia, tasa cambio bolivia, bolivian blue, bolivianblue, mejor que bolivianblue.net"
           : "bolivia blue rate, bolivia blue exchange rate, bolivia dollar, exchange rate bolivia, boliviano dollar, blue dollar bolivia, bolivia blue dollar, bolivia exchange rate, bolivia currency, parallel market bolivia, bolivia parallel dollar, Rodrigo Paz, BCB, central bank bolivia, binance bolivia, usdt bob, usdt to bob, boliviano to dollar, dollar to boliviano, bolivia dollar rate, bolivia dollar price, bolivia exchange rate, bolivian blue, bolivianblue, better than bolivianblue.net, bolivia blue market, bolivia dollar calculator"}

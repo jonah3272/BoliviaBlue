@@ -44,6 +44,8 @@ function App() {
               <Route path="/blog/:slug" element={<Blog />} />
               <Route path="/bolivia-blue-rate" element={<BoliviaBlueRate />} />
               <Route path="/bolivia-blue-rate-hoy" element={<BoliviaBlueRate />} />
+              <Route path="/bolivia-blue-rate-actual" element={<BoliviaBlueRate />} />
+              <Route path="/tipo-cambio-blue-bolivia" element={<BoliviaBlueRate />} />
               <Route path="/comparison" element={<Comparison />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/bancos" element={<Bancos />} />

@@ -5,7 +5,33 @@ function Breadcrumbs({ items }) {
   const languageContext = useLanguage();
   const language = languageContext?.language || 'es';
 
-  // Generate structured data for breadcrumbs
+  // Base URL for absolute URLs in structured data
+  // Always use non-www version for consistency (canonical URL)
+  const getBaseUrl = () => {
+    if (typeof window !== 'undefined') {
+      const origin = window.location.origin;
+      // Normalize to non-www version for structured data consistency
+      // Remove www. if present: https://www.boliviablue.com -> https://boliviablue.com
+      return origin.replace(/^https?:\/\/www\./, 'https://');
+    }
+    return 'https://boliviablue.com';
+  };
+
+  const baseUrl = getBaseUrl();
+
+  // Convert relative URL to absolute URL
+  const toAbsoluteUrl = (url) => {
+    if (!url) return baseUrl;
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      // Normalize to non-www version for consistency
+      return url.replace(/^https?:\/\/www\./, 'https://');
+    }
+    // Remove leading slash if present, then add it back
+    const cleanUrl = url.startsWith('/') ? url : `/${url}`;
+    return `${baseUrl}${cleanUrl}`;
+  };
+
+  // Generate structured data for breadcrumbs with absolute URLs
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -13,7 +39,7 @@ function Breadcrumbs({ items }) {
       "@type": "ListItem",
       "position": index + 1,
       "name": item.name,
-      "item": item.url
+      "item": toAbsoluteUrl(item.url)
     }))
   };
 

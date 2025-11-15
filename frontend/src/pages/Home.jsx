@@ -23,6 +23,8 @@ function Home() {
   const language = languageContext?.language || 'es';
   const [showOfficial, setShowOfficial] = useState(false);
   const [currentRate, setCurrentRate] = useState(null);
+  const [isNewsExpanded, setIsNewsExpanded] = useState(false);
+  const [isArticlesExpanded, setIsArticlesExpanded] = useState(false);
   
   // Load current rate for structured data
   useEffect(() => {
@@ -268,14 +270,14 @@ function Home() {
       <Navigation />
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8 space-y-4 sm:space-y-6 md:space-y-8">
+      <main className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-6 md:py-8 space-y-2 sm:space-y-6 md:space-y-8">
         {/* Visible H1 with Keywords */}
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-2 text-center">
+        <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2 text-center">
           {language === 'es' 
             ? 'Bolivia Blue Rate - Tipo de Cambio en Tiempo Real'
             : 'Bolivia Blue Rate - Real-Time Exchange Rate'}
         </h1>
-        <p className="text-center text-lg text-gray-600 dark:text-gray-400 mb-6">
+        <p className="text-center text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-3 sm:mb-6">
           {language === 'es'
             ? 'Seguimiento en tiempo real del bolivia blue exchange rate actualizado cada 15 minutos'
             : 'Real-time tracking of the bolivia blue exchange rate updated every 15 minutes'}
@@ -314,9 +316,9 @@ function Home() {
         </section>
 
         {/* How It Works Section */}
-        <section className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 sm:p-8 md:p-10 shadow-xl">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-3">
+        <section className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-gray-800 dark:to-gray-900 rounded-xl sm:rounded-2xl p-4 sm:p-8 md:p-10 shadow-xl">
+          <div className="text-center mb-4 sm:mb-8">
+            <h2 className="text-2xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3">
               🔍 {language === 'es' ? '¿Cómo Funciona?' : 'How Does It Work?'}
             </h2>
             <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
@@ -326,10 +328,10 @@ function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-6 md:gap-8">
             {/* Step 1 */}
             <div className="relative">
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg hover:shadow-2xl transition-all border-2 border-blue-200 dark:border-blue-800">
+              <div className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-lg hover:shadow-2xl transition-all border-2 border-blue-200 dark:border-blue-800">
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                   <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center text-xl font-bold shadow-lg">
                     1
@@ -392,8 +394,8 @@ function Home() {
           </div>
 
           {/* Additional Info */}
-          <div className="mt-8 bg-white/50 dark:bg-gray-800/50 rounded-xl p-6 backdrop-blur-sm">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+          <div className="mt-4 sm:mt-8 bg-white/50 dark:bg-gray-800/50 rounded-lg sm:rounded-xl p-3 sm:p-6 backdrop-blur-sm">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 text-center">
               <div>
                 <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">15 min</div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">
@@ -424,36 +426,82 @@ function Home() {
           </div>
         </section>
 
-        {/* News & Twitter Tabs */}
+        {/* News & Twitter Tabs - Collapsible on Mobile */}
         <section>
-          <NewsTabs />
+          <div className="md:hidden">
+            <button
+              onClick={() => setIsNewsExpanded(!isNewsExpanded)}
+              className="w-full flex items-center justify-between p-4 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors mb-2"
+            >
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+                {language === 'es' ? 'Noticias y Twitter' : 'News & Twitter'}
+              </h2>
+              <svg
+                className={`w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform ${isNewsExpanded ? 'rotate-180' : ''}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          </div>
+          <div className={`${isNewsExpanded ? 'block' : 'hidden'} md:block`}>
+            <NewsTabs />
+          </div>
         </section>
 
-        {/* Featured Blog Articles */}
-        <section className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 sm:p-8 shadow-xl">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                {language === 'es' ? 'Guías y Recursos' : 'Guides & Resources'}
-              </h2>
-              <p className="text-gray-600 dark:text-gray-300">
-                {language === 'es' 
-                  ? 'Aprende todo sobre el dólar blue, USDT y finanzas en Bolivia'
-                  : 'Learn everything about the blue dollar, USDT and finance in Bolivia'}
-              </p>
-            </div>
-            <Link
-              to="/blog"
-              className="hidden sm:inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors font-medium"
+        {/* Featured Blog Articles - Collapsible on Mobile */}
+        <section className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-800 dark:to-gray-900 rounded-xl sm:rounded-2xl p-4 sm:p-8 shadow-xl">
+          <div className="md:hidden mb-3">
+            <button
+              onClick={() => setIsArticlesExpanded(!isArticlesExpanded)}
+              className="w-full flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             >
-              {language === 'es' ? 'Ver Todos' : 'View All'}
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              <div className="text-left">
+                <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
+                  {language === 'es' ? 'Guías y Recursos' : 'Guides & Resources'}
+                </h2>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  {language === 'es' 
+                    ? 'Aprende todo sobre el dólar blue, USDT y finanzas en Bolivia'
+                    : 'Learn everything about the blue dollar, USDT and finance in Bolivia'}
+                </p>
+              </div>
+              <svg
+                className={`w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform flex-shrink-0 ml-2 ${isArticlesExpanded ? 'rotate-180' : ''}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
-            </Link>
+            </button>
           </div>
+          <div className={`${isArticlesExpanded ? 'block' : 'hidden'} md:block`}>
+            <div className="hidden md:flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                  {language === 'es' ? 'Guías y Recursos' : 'Guides & Resources'}
+                </h2>
+                <p className="text-gray-600 dark:text-gray-300">
+                  {language === 'es' 
+                    ? 'Aprende todo sobre el dólar blue, USDT y finanzas en Bolivia'
+                    : 'Learn everything about the blue dollar, USDT and finance in Bolivia'}
+                </p>
+              </div>
+              <Link
+                to="/blog"
+                className="hidden sm:inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors font-medium"
+              >
+                {language === 'es' ? 'Ver Todos' : 'View All'}
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-6">
             {(language === 'es' ? articlesEs : articlesEn)
               .filter(a => a.featured)
               .slice(0, 2)
@@ -461,7 +509,7 @@ function Home() {
                 <Link
                   key={article.id}
                   to={`/blog/${article.slug || article.id}`}
-                  className="group bg-white dark:bg-gray-800 rounded-xl p-5 shadow-lg hover:shadow-2xl transition-all border-2 border-transparent hover:border-purple-500"
+                  className="group bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl p-4 sm:p-5 shadow-lg hover:shadow-2xl transition-all border-2 border-transparent hover:border-purple-500"
                 >
                   <div className="mb-3">
                     <div className="flex items-center gap-2 mb-2">
@@ -492,15 +540,16 @@ function Home() {
               ))}
           </div>
 
-          <Link
-            to="/blog"
-            className="sm:hidden mt-4 w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors font-medium"
-          >
-            {language === 'es' ? 'Ver Todos los Artículos' : 'View All Articles'}
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </Link>
+            <Link
+              to="/blog"
+              className="sm:hidden mt-3 w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors font-medium"
+            >
+              {language === 'es' ? 'Ver Todos los Artículos' : 'View All Articles'}
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
+          </div>
         </section>
 
         {/* About */}
@@ -509,9 +558,9 @@ function Home() {
         </section>
 
         {/* Comparison Section - Why Choose Us */}
-        <section className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 sm:p-8 md:p-10 shadow-xl border-2 border-green-200 dark:border-green-800">
+        <section className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-gray-800 dark:to-gray-900 rounded-xl sm:rounded-2xl p-4 sm:p-8 md:p-10 shadow-xl border-2 border-green-200 dark:border-green-800">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            <h2 className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
               {language === 'es' 
                 ? '¿Por qué elegir boliviablue.com?' 
                 : 'Why choose boliviablue.com?'}
@@ -521,8 +570,8 @@ function Home() {
                 ? 'La plataforma más precisa y actualizada para el tipo de cambio del dólar blue en Bolivia'
                 : 'The most accurate and up-to-date platform for Bolivia blue dollar exchange rate'}
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-4 shadow-md">
                 <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2">
                   {language === 'es' ? '✅ Actualización cada 15 minutos' : '✅ Updates every 15 minutes'}
                 </h3>
@@ -574,10 +623,10 @@ function Home() {
         </section>
 
         {/* Content Section with Keywords - Moved to Bottom */}
-        <section className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 sm:p-8 md:p-10">
+        <section className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-lg p-4 sm:p-8 md:p-10">
           <div className="max-w-4xl mx-auto">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
+              <h2 className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-white">
                 {language === 'es' ? '¿Qué es el Bolivia Blue Rate?' : 'What is Bolivia Blue Rate?'}
               </h2>
               <span className="text-xs text-gray-500 dark:text-gray-400">
@@ -592,8 +641,8 @@ function Home() {
               </p>
               <p className="text-gray-700 dark:text-gray-300 mb-4">
                 {language === 'es'
-                  ? <>Nuestra plataforma rastrea el <strong>bolivia blue rate</strong> en tiempo real utilizando datos de Binance P2P, actualizando el <strong>bolivia blue exchange rate</strong> cada 15 minutos para brindarte la información más precisa y actualizada. Esto nos diferencia de otros sitios como bolivianblue.net que actualizan con menor frecuencia. <Link to="/bolivia-blue-rate" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Aprende más sobre el Bolivia Blue Rate</Link>, <Link to="/bolivia-blue-rate-hoy" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">consulta el bolivia blue rate hoy</Link>, <Link to="/calculator" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">usa nuestra calculadora</Link> para convertir divisas, o <Link to="/comparison" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">compara con otros sitios</Link>.</>
-                  : <>Our platform tracks the <strong>Bolivia blue rate</strong> in real-time using Binance P2P data, updating the <strong>Bolivia blue exchange rate</strong> every 15 minutes to provide you with the most accurate and up-to-date information. This differentiates us from other sites like bolivianblue.net that update less frequently. <Link to="/bolivia-blue-rate" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Learn more about Bolivia Blue Rate</Link>, <Link to="/bolivia-blue-rate-hoy" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">check the bolivia blue rate today</Link>, <Link to="/calculator" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">use our calculator</Link> to convert currencies, or <Link to="/comparison" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">compare with other sites</Link>.</>}
+                  ? <>Nuestra plataforma rastrea el <strong>bolivia blue rate</strong> en tiempo real utilizando datos de Binance P2P, actualizando el <strong>bolivia blue exchange rate</strong> cada 15 minutos para brindarte la información más precisa y actualizada. Esto nos diferencia de otros sitios como bolivianblue.net que actualizan con menor frecuencia. <Link to="/bolivia-blue-rate" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Aprende más sobre el Bolivia Blue Rate</Link>, <Link to="/bolivia-blue-rate-hoy" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">consulta el bolivia blue rate hoy</Link>, <Link to="/cotiza-dolar-paralelo" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">cotiza el dólar paralelo</Link>, <Link to="/calculator" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">usa nuestra calculadora</Link> para convertir divisas, o <Link to="/comparison" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">compara con otros sitios</Link>.</>
+                  : <>Our platform tracks the <strong>Bolivia blue rate</strong> in real-time using Binance P2P data, updating the <strong>Bolivia blue exchange rate</strong> every 15 minutes to provide you with the most accurate and up-to-date information. This differentiates us from other sites like bolivianblue.net that update less frequently. <Link to="/bolivia-blue-rate" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Learn more about Bolivia Blue Rate</Link>, <Link to="/bolivia-blue-rate-hoy" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">check the bolivia blue rate today</Link>, <Link to="/cotiza-dolar-paralelo" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">quote the parallel dollar</Link>, <Link to="/calculator" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">use our calculator</Link> to convert currencies, or <Link to="/comparison" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">compare with other sites</Link>.</>}
               </p>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
                 {language === 'es' ? '¿Por qué es importante el Bolivia Blue Rate?' : 'Why is Bolivia Blue Rate Important?'}

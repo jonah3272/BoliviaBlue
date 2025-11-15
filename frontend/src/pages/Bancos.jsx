@@ -257,23 +257,23 @@ function Bancos() {
 
           {/* Quick Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
-              <div className="text-sm font-medium text-blue-700 dark:text-blue-300 mb-1">
+            <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+              <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
                 {language === 'es' ? 'Total de Bancos' : 'Total Banks'}
               </div>
-              <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">{stats.total}</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total}</div>
             </div>
-            <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-lg p-4 border border-green-200 dark:border-green-800">
-              <div className="text-sm font-medium text-green-700 dark:text-green-300 mb-1">
+            <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+              <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
                 {language === 'es' ? 'Sin Restricciones' : 'No Restrictions'}
               </div>
-              <div className="text-2xl font-bold text-green-900 dark:text-green-100">{stats.noRestrictions}</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">{stats.noRestrictions}</div>
             </div>
-            <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-lg p-4 border border-orange-200 dark:border-orange-800">
-              <div className="text-sm font-medium text-orange-700 dark:text-orange-300 mb-1">
+            <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+              <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
                 {language === 'es' ? 'Con Restricciones' : 'With Restrictions'}
               </div>
-              <div className="text-2xl font-bold text-orange-900 dark:text-orange-100">{stats.withRestrictions}</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">{stats.withRestrictions}</div>
             </div>
           </div>
 
@@ -315,89 +315,89 @@ function Bancos() {
             <div className="flex flex-wrap gap-3">
               <button 
                 onClick={() => setSelectedFilter('all')}
-                className={`px-5 py-2.5 rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all transform hover:scale-105 flex items-center gap-2 ${
+                className={`px-5 py-2.5 rounded-lg text-sm font-semibold shadow-sm hover:shadow transition-all flex items-center gap-2 ${
                   selectedFilter === 'all' 
                     ? 'bg-gray-700 dark:bg-gray-600 text-white' 
-                    : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
                 {language === 'es' ? 'Todos' : 'All'}
                 <span className={`px-2 py-0.5 rounded-full text-xs ${
                   selectedFilter === 'all'
                     ? 'bg-gray-600 dark:bg-gray-500 text-white'
-                    : 'bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300'
+                    : 'bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300'
                 }`}>
                   {filterCounts.all}
                 </span>
               </button>
               <button 
                 onClick={() => setSelectedFilter('none')}
-                className={`px-5 py-2.5 rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all transform hover:scale-105 flex items-center gap-2 ${
+                className={`px-5 py-2.5 rounded-lg text-sm font-semibold shadow-sm hover:shadow transition-all flex items-center gap-2 ${
                   selectedFilter === 'none' 
-                    ? 'bg-green-500 hover:bg-green-600 text-white' 
-                    : 'bg-green-200 dark:bg-green-900/30 text-green-700 dark:text-green-300 hover:bg-green-300 dark:hover:bg-green-900/50'
+                    ? 'bg-gray-700 dark:bg-gray-600 text-white' 
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
                 <span className="text-base">{getRestrictionIcon('none')}</span>
                 {language === 'es' ? 'Sin restricciones' : 'No restrictions'}
                 <span className={`px-2 py-0.5 rounded-full text-xs ${
                   selectedFilter === 'none'
-                    ? 'bg-green-600 text-white'
-                    : 'bg-green-300 dark:bg-green-800 text-green-800 dark:text-green-200'
+                    ? 'bg-gray-600 dark:bg-gray-500 text-white'
+                    : 'bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300'
                 }`}>
                   {filterCounts.none}
                 </span>
               </button>
               <button 
                 onClick={() => setSelectedFilter('moderate')}
-                className={`px-5 py-2.5 rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all transform hover:scale-105 flex items-center gap-2 ${
+                className={`px-5 py-2.5 rounded-lg text-sm font-semibold shadow-sm hover:shadow transition-all flex items-center gap-2 ${
                   selectedFilter === 'moderate' 
-                    ? 'bg-yellow-500 hover:bg-yellow-600 text-white' 
-                    : 'bg-yellow-200 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 hover:bg-yellow-300 dark:hover:bg-yellow-900/50'
+                    ? 'bg-gray-700 dark:bg-gray-600 text-white' 
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
                 <span className="text-base">{getRestrictionIcon('moderate')}</span>
                 {language === 'es' ? 'Restricciones moderadas' : 'Moderate restrictions'}
                 <span className={`px-2 py-0.5 rounded-full text-xs ${
                   selectedFilter === 'moderate'
-                    ? 'bg-yellow-600 text-white'
-                    : 'bg-yellow-300 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-200'
+                    ? 'bg-gray-600 dark:bg-gray-500 text-white'
+                    : 'bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300'
                 }`}>
                   {filterCounts.moderate}
                 </span>
               </button>
               <button 
                 onClick={() => setSelectedFilter('significant')}
-                className={`px-5 py-2.5 rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all transform hover:scale-105 flex items-center gap-2 ${
+                className={`px-5 py-2.5 rounded-lg text-sm font-semibold shadow-sm hover:shadow transition-all flex items-center gap-2 ${
                   selectedFilter === 'significant' 
-                    ? 'bg-orange-500 hover:bg-orange-600 text-white' 
-                    : 'bg-orange-200 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 hover:bg-orange-300 dark:hover:bg-orange-900/50'
+                    ? 'bg-gray-700 dark:bg-gray-600 text-white' 
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
                 <span className="text-base">{getRestrictionIcon('significant')}</span>
                 {language === 'es' ? 'Restricciones significativas' : 'Significant restrictions'}
                 <span className={`px-2 py-0.5 rounded-full text-xs ${
                   selectedFilter === 'significant'
-                    ? 'bg-orange-600 text-white'
-                    : 'bg-orange-300 dark:bg-orange-800 text-orange-800 dark:text-orange-200'
+                    ? 'bg-gray-600 dark:bg-gray-500 text-white'
+                    : 'bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300'
                 }`}>
                   {filterCounts.significant}
                 </span>
               </button>
               <button 
                 onClick={() => setSelectedFilter('very_limited')}
-                className={`px-5 py-2.5 rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all transform hover:scale-105 flex items-center gap-2 ${
+                className={`px-5 py-2.5 rounded-lg text-sm font-semibold shadow-sm hover:shadow transition-all flex items-center gap-2 ${
                   selectedFilter === 'very_limited' 
-                    ? 'bg-red-500 hover:bg-red-600 text-white' 
-                    : 'bg-red-200 dark:bg-red-900/30 text-red-700 dark:text-red-300 hover:bg-red-300 dark:hover:bg-red-900/50'
+                    ? 'bg-gray-700 dark:bg-gray-600 text-white' 
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
                 <span className="text-base">{getRestrictionIcon('very_limited')}</span>
                 {language === 'es' ? 'Muy limitado' : 'Very limited'}
                 <span className={`px-2 py-0.5 rounded-full text-xs ${
                   selectedFilter === 'very_limited'
-                    ? 'bg-red-600 text-white'
-                    : 'bg-red-300 dark:bg-red-800 text-red-800 dark:text-red-200'
+                    ? 'bg-gray-600 dark:bg-gray-500 text-white'
+                    : 'bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300'
                 }`}>
                   {filterCounts.very_limited}
                 </span>
@@ -441,19 +441,19 @@ function Bancos() {
                     </span>
                   </div>
                   <div className="space-y-3">
-                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+                    <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-blue-700 dark:text-blue-300 uppercase tracking-wide">
+                        <span className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
                           {language === 'es' ? 'Límite mensual' : 'Monthly limit'}
                         </span>
-                        <svg className="w-5 h-5 text-blue-500 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-5 h-5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                       </div>
-                      <div className="mt-2 text-3xl font-bold text-blue-900 dark:text-blue-100">
+                      <div className="mt-2 text-3xl font-bold text-gray-900 dark:text-white">
                         {bank.limit}
                       </div>
-                      <div className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         {language === 'es' ? 'USD por mes' : 'USD per month'}
                       </div>
                     </div>
@@ -496,92 +496,92 @@ function Bancos() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Link
                 to="/buy-dollars"
-                className="group p-5 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl border-2 border-blue-200 dark:border-blue-800 hover:border-blue-400 dark:hover:border-blue-600 hover:shadow-lg transition-all"
+                className="group p-5 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-md transition-all"
               >
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <svg className="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
                   <div className="flex-1">
-                    <div className="font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    <div className="font-semibold text-gray-900 dark:text-white mb-1">
                       {language === 'es' ? 'Cómo Comprar Dólares' : 'How to Buy Dollars'}
                     </div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">
                       {language === 'es' ? 'Guía completa para comprar dólares en Bolivia' : 'Complete guide to buying dollars in Bolivia'}
                     </div>
                   </div>
-                  <svg className="w-5 h-5 text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </div>
               </Link>
               <Link
                 to="/calculator"
-                className="group p-5 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-xl border-2 border-purple-200 dark:border-purple-800 hover:border-purple-400 dark:hover:border-purple-600 hover:shadow-lg transition-all"
+                className="group p-5 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-md transition-all"
               >
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <svg className="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                     </svg>
                   </div>
                   <div className="flex-1">
-                    <div className="font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                    <div className="font-semibold text-gray-900 dark:text-white mb-1">
                       {language === 'es' ? 'Calculadora de Divisas' : 'Currency Calculator'}
                     </div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">
                       {language === 'es' ? 'Convierte USD a BOB y viceversa' : 'Convert USD to BOB and vice versa'}
                     </div>
                   </div>
-                  <svg className="w-5 h-5 text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </div>
               </Link>
               <Link
                 to="/bolivia-blue-rate"
-                className="group p-5 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-xl border-2 border-green-200 dark:border-green-800 hover:border-green-400 dark:hover:border-green-600 hover:shadow-lg transition-all"
+                className="group p-5 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-md transition-all"
               >
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <svg className="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                     </svg>
                   </div>
                   <div className="flex-1">
-                    <div className="font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">
+                    <div className="font-semibold text-gray-900 dark:text-white mb-1">
                       {language === 'es' ? 'Bolivia Blue Rate' : 'Bolivia Blue Rate'}
                     </div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">
                       {language === 'es' ? 'Información sobre el dólar blue' : 'Information about blue dollar'}
                     </div>
                   </div>
-                  <svg className="w-5 h-5 text-gray-400 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </div>
               </Link>
               <Link
                 to="/faq"
-                className="group p-5 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-xl border-2 border-orange-200 dark:border-orange-800 hover:border-orange-400 dark:hover:border-orange-600 hover:shadow-lg transition-all"
+                className="group p-5 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-md transition-all"
               >
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <svg className="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
                   <div className="flex-1">
-                    <div className="font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
+                    <div className="font-semibold text-gray-900 dark:text-white mb-1">
                       {language === 'es' ? 'Preguntas Frecuentes' : 'FAQ'}
                     </div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">
                       {language === 'es' ? 'Respuestas a preguntas comunes' : 'Answers to common questions'}
                     </div>
                   </div>
-                  <svg className="w-5 h-5 text-gray-400 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </div>

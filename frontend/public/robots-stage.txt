@@ -1,0 +1,10 @@
+# Bolivia Blue con Paz - Robots.txt for STAGE Environment
+# This file should be used for stage.boliviablue.com
+# ALL search engines are disallowed to prevent indexing
+
+User-agent: *
+Disallow: /
+
+# No sitemap for stage environment
+# Sitemap: (disabled for stage)
+

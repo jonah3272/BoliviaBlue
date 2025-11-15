@@ -16,7 +16,18 @@ export default function PageMeta({
 }) {
   const languageContext = useLanguage();
   const language = languageContext?.language || 'es';
-  const baseUrl = 'https://boliviablue.com';
+  
+  // Detect if we're on stage environment
+  const isStage = typeof window !== 'undefined' && (
+    window.location.hostname === 'stage.boliviablue.com' ||
+    window.location.hostname.includes('stage') ||
+    import.meta.env.VITE_ENV === 'stage'
+  );
+  
+  // Auto-add noindex for stage environment
+  const shouldNoindex = noindex || isStage;
+  
+  const baseUrl = isStage ? 'https://stage.boliviablue.com' : 'https://boliviablue.com';
   const fullCanonical = canonical ? `${baseUrl}${canonical}` : baseUrl;
   const fullOgImage = ogImage.startsWith('http') ? ogImage : `${baseUrl}${ogImage}`;
 
@@ -32,8 +43,8 @@ export default function PageMeta({
       {description && <meta name="description" content={description} />}
       {keywords && <meta name="keywords" content={keywords} />}
       <link rel="canonical" href={fullCanonical} />
-      {noindex && <meta name="robots" content="noindex, nofollow" />}
-      {!noindex && <meta name="robots" content="index, follow" />}
+      {shouldNoindex && <meta name="robots" content="noindex, nofollow" />}
+      {!shouldNoindex && <meta name="robots" content="index, follow" />}
 
       {/* Language and Geo */}
       <meta name="language" content={language === 'es' ? 'Spanish' : 'English'} />

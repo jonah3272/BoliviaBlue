@@ -1,5 +1,6 @@
 # Bolivia Blue con Paz - Robots.txt
-# Allow all search engines to crawl the entire site
+# This file is for production (boliviablue.com)
+# For stage environment (stage.boliviablue.com), all crawlers are disallowed
 
 User-agent: *
 Allow: /

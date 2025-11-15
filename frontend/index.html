@@ -16,7 +16,16 @@
     <meta name="description" content="Bolivia blue rate y bolivia blue exchange rate actualizados cada 15 minutos. Seguimiento en tiempo real del tipo de cambio del dólar blue en Bolivia bajo el presidente Rodrigo Paz. Cotizaciones desde Binance P2P, gráficos históricos y noticias financieras." />
     <meta name="keywords" content="bolivia blue rate, bolivia blue exchange rate, dólar bolivia, tipo de cambio bolivia, boliviano dólar, blue bolivia, dólar blue bolivia, tipo cambio bolivia, cambio dólar bolivia, mercado paralelo bolivia, dólar paralelo, Rodrigo Paz, BCB, banco central bolivia, binance bolivia, usdt bob" />
     <meta name="author" content="Bolivia Blue con Paz" />
-    <meta name="robots" content="index, follow" />
+    <!-- Robots meta will be set dynamically by PageMeta component based on environment -->
+    <meta name="robots" content="noindex, nofollow" id="robots-meta" />
+    <script>
+      // Auto-detect stage environment and set noindex
+      if (window.location.hostname === 'stage.boliviablue.com' || window.location.hostname.includes('stage')) {
+        document.getElementById('robots-meta').setAttribute('content', 'noindex, nofollow');
+      } else {
+        document.getElementById('robots-meta').setAttribute('content', 'index, follow');
+      }
+    </script>
     <link rel="canonical" href="https://boliviablue.com/" />
     
     <!-- Open Graph / Facebook -->

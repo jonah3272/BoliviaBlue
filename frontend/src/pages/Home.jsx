@@ -15,6 +15,7 @@ import RateAlertForm from '../components/RateAlertForm';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Link } from 'react-router-dom';
 import { articlesEs, articlesEn } from '../data/blogArticles';
+import { fetchBlueRate } from '../utils/api';
 
 function Home() {
   const languageContext = useLanguage();
@@ -28,8 +29,13 @@ function Home() {
     const loadRate = async () => {
       try {
         const data = await fetchBlueRate();
-        if (data && data.buy && data.sell) {
-          setCurrentRate(data);
+        if (data && data.buy_bob_per_usd && data.sell_bob_per_usd) {
+          // Transform to expected format with buy/sell properties
+          setCurrentRate({
+            ...data,
+            buy: data.buy_bob_per_usd,
+            sell: data.sell_bob_per_usd
+          });
         }
       } catch (error) {
         console.error('Error loading rate:', error);

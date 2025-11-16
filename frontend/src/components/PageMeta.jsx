@@ -28,11 +28,15 @@ export default function PageMeta({
   const shouldNoindex = noindex || isStage;
   
   const baseUrl = isStage ? 'https://stage.boliviablue.com' : 'https://boliviablue.com';
-  const fullCanonical = canonical ? `${baseUrl}${canonical}` : baseUrl;
+  
+  // Always use canonical path without query parameters for the canonical URL
+  // This ensures that ?lang=en pages canonicalize to the base URL
+  const canonicalPath = canonical || '/';
+  const fullCanonical = `${baseUrl}${canonicalPath}`;
   const fullOgImage = ogImage.startsWith('http') ? ogImage : `${baseUrl}${ogImage}`;
 
-  // Generate hreflang tags
-  const currentPath = canonical || '/';
+  // Generate hreflang tags - these point to language alternates
+  const currentPath = canonicalPath;
   const alternateEs = `${baseUrl}${currentPath}`;
   const alternateEn = `${baseUrl}${currentPath}${currentPath === '/' ? '?lang=en' : (currentPath.includes('?') ? '&lang=en' : '?lang=en')}`;
 

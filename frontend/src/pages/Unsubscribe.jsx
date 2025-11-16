@@ -52,6 +52,7 @@ function Unsubscribe() {
           ? "Cancela tu alerta de tipo de cambio"
           : "Unsubscribe from exchange rate alerts"}
         canonical="/unsubscribe"
+        noindex={true}
       />
       
       <header className="bg-white dark:bg-gray-800 shadow-sm">

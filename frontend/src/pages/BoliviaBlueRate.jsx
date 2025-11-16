@@ -111,7 +111,7 @@ function BoliviaBlueRate() {
           : (language === 'es'
             ? "bolivia blue rate, bolivia blue exchange rate, dólar blue bolivia, tipo de cambio bolivia, mercado paralelo bolivia, cotización dólar bolivia, precio dólar bolivia, tasa cambio bolivia"
             : "bolivia blue rate, bolivia blue exchange rate, blue dollar bolivia, exchange rate bolivia, parallel market bolivia, bolivia dollar rate, bolivia dollar price, bolivia exchange rate")}
-        canonical={isHoyPage ? "/bolivia-blue-rate-hoy" : isActualPage ? "/bolivia-blue-rate-actual" : isTipoCambioPage ? "/tipo-cambio-blue-bolivia" : "/bolivia-blue-rate"}
+        canonical="/bolivia-blue-rate"
         structuredData={articleSchema}
       />
 

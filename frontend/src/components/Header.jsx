@@ -15,10 +15,9 @@ function Header() {
         <div className="flex items-center justify-between gap-4">
           <Link to="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity min-w-0 flex-1">
             <img 
-              src="/favicon.svg" 
+              src="/header-og-image.jpg" 
               alt="Bolivia Blue con Paz - Tipo de Cambio Dólar Boliviano" 
-              className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex-shrink-0"
-              style={{ imageRendering: 'crisp-edges' }}
+              className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 flex-shrink-0 rounded-lg object-cover"
             />
             <div className="flex flex-col min-w-0">
               <div className="text-base sm:text-xl font-bold text-gray-900 dark:text-white truncate">

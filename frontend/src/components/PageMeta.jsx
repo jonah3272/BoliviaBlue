@@ -9,7 +9,7 @@ export default function PageMeta({
   description,
   keywords,
   canonical,
-  ogImage = 'https://boliviablue.com/og-image.webp',
+  ogImage = 'https://boliviablue.com/header-og-image.jpg',
   ogType = 'website',
   noindex = false,
   structuredData

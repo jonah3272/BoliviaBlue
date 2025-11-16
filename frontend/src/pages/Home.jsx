@@ -62,9 +62,7 @@ function Home() {
     "keywords": language === 'es'
       ? "bolivia blue rate, bolivia blue exchange rate, dólar blue bolivia, tipo de cambio bolivia"
       : "bolivia blue rate, bolivia blue exchange rate, blue dollar bolivia, exchange rate bolivia",
-    "sameAs": [
-      "https://github.com/jonah3272/BoliviaBlue"
-    ],
+    "sameAs": [],
     "contactPoint": {
       "@type": "ContactPoint",
       "contactType": "Customer Service",

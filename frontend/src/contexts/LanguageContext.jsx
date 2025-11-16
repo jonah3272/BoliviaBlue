@@ -112,7 +112,7 @@ export const translations = {
     aboutCaveats3: 'Siempre verifique las tasas antes de realizar transacciones',
     aboutCaveats4: 'El dólar blue es un mercado informal y puede estar sujeto a regulaciones locales',
     aboutContactTitle: 'Contacto y Feedback',
-    aboutContactDesc: '¿Tienes preguntas, sugerencias o encontraste un error? Estamos abiertos a feedback de la comunidad. Puedes contactarnos a través de nuestro repositorio en GitHub o enviar un mensaje.',
+    aboutContactDesc: '¿Tienes preguntas, sugerencias o encontraste un error? Estamos abiertos a feedback de la comunidad. Puedes contactarnos a través de nuestra página de contacto.',
     aboutFooter: 'Bolivia Blue con Paz - Transparencia en el mercado cambiario boliviano',
     
     // FAQ Page
@@ -439,7 +439,7 @@ export const translations = {
     aboutCaveats3: 'Always verify rates before making transactions',
     aboutCaveats4: 'The blue dollar is an informal market and may be subject to local regulations',
     aboutContactTitle: 'Contact and Feedback',
-    aboutContactDesc: 'Do you have questions, suggestions, or found an error? We are open to community feedback. You can contact us through our GitHub repository or send a message.',
+    aboutContactDesc: 'Do you have questions, suggestions, or found an error? We are open to community feedback. You can contact us through our contact page.',
     aboutFooter: 'Bolivia Blue with Paz - Transparency in the Bolivian exchange market',
     
     // FAQ Page

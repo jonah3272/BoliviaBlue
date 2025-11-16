@@ -197,14 +197,6 @@ function Contact() {
               {language === 'es' ? 'Otras Formas de Contacto' : 'Other Ways to Contact'}
             </h2>
             <div className="space-y-2 text-gray-600 dark:text-gray-400">
-              <p>
-                {language === 'es'
-                  ? 'También puedes encontrarnos en:'
-                  : 'You can also find us on:'}
-              </p>
-              <ul className="list-disc list-inside space-y-1">
-                <li>GitHub: <a href="https://github.com/jonah3272/BoliviaBlue" target="_blank" rel="noopener" className="text-blue-600 dark:text-blue-400 hover:underline">github.com/jonah3272/BoliviaBlue</a></li>
-              </ul>
             </div>
           </div>
         </div>

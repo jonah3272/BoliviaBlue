@@ -85,6 +85,24 @@ function NewsFeed() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [dailySentiment, setDailySentiment] = useState(null);
+  const [showAllNews, setShowAllNews] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Show 6 articles on mobile initially, all on desktop
+  const initialMobileCount = 6;
+  
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  
+  const displayedNews = showAllNews || !isMobile 
+    ? news 
+    : news.slice(0, initialMobileCount);
 
   useEffect(() => {
     const loadNews = async () => {
@@ -146,15 +164,15 @@ function NewsFeed() {
         )}
       </div>
       
-      <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+      <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 sm:p-6">
+        <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">
           Noticias relevantes
         </h2>
       
       {isLoading && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="bg-white dark:bg-gray-800 rounded-lg p-4 animate-pulse">
+            <div key={i} className="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-4 animate-pulse">
               <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-3"></div>
               <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-full mb-2"></div>
               <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
@@ -176,11 +194,35 @@ function NewsFeed() {
       )}
       
       {!isLoading && !error && news.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {news.map(item => (
-            <NewsCard key={item.id} item={item} />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+            {/* Render all articles for SEO, but hide some on mobile */}
+            {news.map((item, index) => (
+              <div
+                key={item.id}
+                className={!showAllNews && isMobile && index >= initialMobileCount ? 'hidden' : ''}
+              >
+                <NewsCard item={item} />
+              </div>
+            ))}
+          </div>
+          {/* Load More Button - Only show on mobile when there are more articles */}
+          {news.length > initialMobileCount && !showAllNews && isMobile && (
+            <div className="mt-4">
+              <button
+                onClick={() => setShowAllNews(true)}
+                className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+              >
+                {language === 'es' 
+                  ? `Ver ${news.length - initialMobileCount} noticias más`
+                  : `Load ${news.length - initialMobileCount} more articles`}
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
+          )}
+        </>
       )}
       </div>
     </div>

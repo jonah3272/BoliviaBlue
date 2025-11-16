@@ -11,6 +11,7 @@ const News = lazy(() => import('./pages/News'));
     const BuyDollars = lazy(() => import('./pages/BuyDollars'));
     const Blog = lazy(() => import('./pages/Blog'));
     const BoliviaBlueRate = lazy(() => import('./pages/BoliviaBlueRate'));
+    const CotizaDolarParalelo = lazy(() => import('./pages/CotizaDolarParalelo'));
     const Contact = lazy(() => import('./pages/Contact'));
     const Unsubscribe = lazy(() => import('./pages/Unsubscribe'));
     const Comparison = lazy(() => import('./pages/Comparison'));
@@ -44,6 +45,9 @@ function App() {
               <Route path="/blog/:slug" element={<Blog />} />
               <Route path="/bolivia-blue-rate" element={<BoliviaBlueRate />} />
               <Route path="/bolivia-blue-rate-hoy" element={<BoliviaBlueRate />} />
+              <Route path="/bolivia-blue-rate-actual" element={<BoliviaBlueRate />} />
+              <Route path="/tipo-cambio-blue-bolivia" element={<BoliviaBlueRate />} />
+              <Route path="/cotiza-dolar-paralelo" element={<CotizaDolarParalelo />} />
               <Route path="/comparison" element={<Comparison />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/bancos" element={<Bancos />} />

@@ -73,27 +73,60 @@ function SentimentNewsCard() {
         const downCount = dailyArticles.filter(a => a.sentiment === 'down').length;
         const neutralCount = dailyArticles.filter(a => a.sentiment === 'neutral' || !a.sentiment).length;
         
-        // Calculate sentiment score on a -50 to +50 scale (political compass style)
-        // Normalize based on weighted scores and article counts
+        // Calculate sentiment score on a -50 to +50 scale
+        // PRIMARY: Base score on weighted sentiment intensity (upScore/downScore)
+        // SECONDARY: Use article counts only for validation/confidence, not as primary driver
         const totalScore = upScore + downScore;
         const scoreDiff = upScore - downScore;
         
-        // Calculate base score from weighted difference
+        // Calculate base score from weighted sentiment intensity
+        // This reflects the ACTUAL sentiment severity, not just article counts
         let rawSentimentScore = 0;
         if (totalScore > 0) {
-          // Normalize to -50 to +50 based on score difference
+          // Normalize to -50 to +50 based on sentiment intensity difference
+          // This is the PRIMARY factor - how strong is the sentiment?
           const normalizedDiff = (scoreDiff / totalScore) * 50;
           rawSentimentScore = Math.max(-50, Math.min(50, normalizedDiff));
         }
         
-        // Also consider article count difference for more granular scoring
-        const countDiff = upCount - downCount;
+        // Article count validation: Only use counts to validate/adjust if sentiment seems extreme
+        // If sentiment is extreme (-50/+50) but based on very few articles, dampen it slightly
+        // But if sentiment is truly extreme (like "dollar going to zero"), allow it through
         const totalCount = upCount + downCount;
-        if (totalCount > 0) {
-          const countBasedScore = (countDiff / totalCount) * 50;
-          // Blend both scores (70% weighted score, 30% count-based)
-          rawSentimentScore = rawSentimentScore * 0.7 + countBasedScore * 0.3;
-          rawSentimentScore = Math.max(-50, Math.min(50, rawSentimentScore));
+        const sentimentIntensity = Math.abs(rawSentimentScore);
+        
+        // Only apply count-based adjustment if:
+        // 1. We have very few articles (< 5) AND sentiment is extreme (> 40)
+        // 2. This prevents 1-2 articles from creating extreme scores unless truly warranted
+        if (totalCount < 5 && sentimentIntensity > 40) {
+          // Dampen extreme scores from very few articles
+          const countDampening = totalCount / 5; // 1 article = 20%, 4 articles = 80%
+          rawSentimentScore = rawSentimentScore * (0.5 + countDampening * 0.5); // Scale between 50%-100%
+        }
+        
+        // Balance factor: Only cap extremes if sentiment intensity doesn't justify it
+        // If sentiment is truly extreme (like "dollar going to zero"), allow -50/+50
+        // But if it's just "4 negative articles, 0 positive" without extreme sentiment, cap it
+        // Check if the weighted scores justify the extreme position
+        const sentimentJustification = Math.abs(scoreDiff) / Math.max(totalScore, 1);
+        
+        // Only cap if:
+        // 1. No opposing articles AND
+        // 2. Sentiment intensity doesn't justify extreme score (less than 90% of max)
+        if (upCount === 0 && rawSentimentScore < -45) {
+          // Check if sentiment is truly extreme (justified)
+          if (sentimentJustification < 0.9) {
+            // Not justified - cap at -45
+            rawSentimentScore = -45;
+          }
+          // If sentimentJustification >= 0.9, allow -50 (truly extreme sentiment)
+        } else if (downCount === 0 && rawSentimentScore > 45) {
+          // Check if sentiment is truly extreme (justified)
+          if (sentimentJustification < 0.9) {
+            // Not justified - cap at +45
+            rawSentimentScore = 45;
+          }
+          // If sentimentJustification >= 0.9, allow +50 (truly extreme sentiment)
         }
         
         // Confidence-weighted scoring: Dampen scores when sample size is small

@@ -95,6 +95,46 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/bolivia-blue-rate?lang=en" />
   </url>
   
+  <!-- Bolivia-blue-rate-hoy Page -->
+  <url>
+    <loc>https://boliviablue.com/bolivia-blue-rate-hoy</loc>
+    <lastmod>2025-11-13T12:00:00+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/bolivia-blue-rate-hoy" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/bolivia-blue-rate-hoy?lang=en" />
+  </url>
+  
+  <!-- Bolivia-blue-rate-actual Page -->
+  <url>
+    <loc>https://boliviablue.com/bolivia-blue-rate-actual</loc>
+    <lastmod>2025-11-13T12:00:00+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/bolivia-blue-rate-actual" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/bolivia-blue-rate-actual?lang=en" />
+  </url>
+  
+  <!-- Tipo-cambio-blue-bolivia Page -->
+  <url>
+    <loc>https://boliviablue.com/tipo-cambio-blue-bolivia</loc>
+    <lastmod>2025-11-13T12:00:00+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/tipo-cambio-blue-bolivia" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/tipo-cambio-blue-bolivia?lang=en" />
+  </url>
+  
+  <!-- Cotiza-dolar-paralelo Page -->
+  <url>
+    <loc>https://boliviablue.com/cotiza-dolar-paralelo</loc>
+    <lastmod>2025-11-13T12:00:00+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/cotiza-dolar-paralelo" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/cotiza-dolar-paralelo?lang=en" />
+  </url>
+  
   <!-- Contact Page -->
   <url>
     <loc>https://boliviablue.com/contact</loc>

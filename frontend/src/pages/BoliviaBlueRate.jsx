@@ -17,6 +17,8 @@ function BoliviaBlueRate() {
   const language = languageContext?.language || 'es';
   const location = useLocation();
   const isHoyPage = location.pathname === '/bolivia-blue-rate-hoy';
+  const isActualPage = location.pathname === '/bolivia-blue-rate-actual';
+  const isTipoCambioPage = location.pathname === '/tipo-cambio-blue-bolivia';
   const [showOfficial, setShowOfficial] = useState(false);
   const [currentRate, setCurrentRate] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(new Date());
@@ -66,15 +68,31 @@ function BoliviaBlueRate() {
       <PageMeta
         title={isHoyPage 
           ? (language === 'es'
-            ? 'Bolivia Blue Rate Hoy - Tipo de Cambio Actual | Actualizado en Tiempo Real'
-            : 'Bolivia Blue Rate Today - Current Exchange Rate | Real-Time Updates')
+            ? 'Bolivia Blue Rate Hoy - Tipo de Cambio Actual | Actualizado Cada 15 Min'
+            : 'Bolivia Blue Rate Today - Current Exchange Rate | Updated Every 15 Min')
+          : isActualPage
+          ? (language === 'es'
+            ? 'Bolivia Blue Rate Actual - Cotización en Tiempo Real | Actualizado Cada 15 Min'
+            : 'Bolivia Blue Rate Current - Real-Time Quote | Updated Every 15 Min')
+          : isTipoCambioPage
+          ? (language === 'es'
+            ? 'Tipo de Cambio Blue Bolivia - Cotización en Tiempo Real | Actualizado Cada 15 Min'
+            : 'Blue Exchange Rate Bolivia - Real-Time Quote | Updated Every 15 Min')
           : (language === 'es'
             ? 'Bolivia Blue Rate - Tipo de Cambio Dólar Blue en Tiempo Real | Guía Completa'
             : 'Bolivia Blue Rate - Real-Time Blue Dollar Exchange Rate | Complete Guide')}
         description={isHoyPage
           ? (language === 'es'
-            ? 'Bolivia blue rate hoy actualizado cada 15 minutos. Consulta el tipo de cambio del dólar blue en Bolivia en tiempo real. Cotización actual, gráficos y análisis.'
-            : 'Bolivia blue rate today updated every 15 minutes. Check the real-time blue dollar exchange rate in Bolivia. Current quote, charts and analysis.')
+            ? 'Bolivia blue rate hoy actualizado cada 15 minutos. Consulta el tipo de cambio del dólar blue en Bolivia en tiempo real. Cotización actual, gráficos y análisis. Gratis y sin registro.'
+            : 'Bolivia blue rate today updated every 15 minutes. Check the real-time blue dollar exchange rate in Bolivia. Current quote, charts and analysis. Free and no registration required.')
+          : isActualPage
+          ? (language === 'es'
+            ? 'Bolivia blue rate actual actualizado cada 15 minutos. Consulta la cotización actual del dólar blue en Bolivia en tiempo real. Mejor que bolivianblue.net - Actualizaciones más frecuentes.'
+            : 'Bolivia blue rate current updated every 15 minutes. Check the current blue dollar quote in Bolivia in real-time. Better than bolivianblue.net - More frequent updates.')
+          : isTipoCambioPage
+          ? (language === 'es'
+            ? 'Tipo de cambio blue Bolivia actualizado cada 15 minutos. Consulta la cotización del dólar blue en Bolivia en tiempo real. Datos de Binance P2P, gráficos históricos y análisis del mercado paralelo.'
+            : 'Blue exchange rate Bolivia updated every 15 minutes. Check the blue dollar quote in Bolivia in real-time. Binance P2P data, historical charts and parallel market analysis.')
           : (language === 'es'
             ? 'Guía completa sobre el Bolivia blue rate y bolivia blue exchange rate. Información actualizada cada 15 minutos, gráficos históricos, análisis del mercado paralelo y todo lo que necesitas saber sobre el tipo de cambio en Bolivia.'
             : 'Complete guide about Bolivia blue rate and bolivia blue exchange rate. Information updated every 15 minutes, historical charts, parallel market analysis and everything you need to know about exchange rates in Bolivia.')}
@@ -82,10 +100,18 @@ function BoliviaBlueRate() {
           ? (language === 'es'
             ? "bolivia blue rate hoy, bolivia blue rate actual, tipo de cambio hoy bolivia, dólar blue hoy, cotización dólar hoy bolivia, precio dólar hoy"
             : "bolivia blue rate today, bolivia blue rate current, exchange rate today bolivia, blue dollar today, dollar quote today bolivia, dollar price today")
+          : isActualPage
+          ? (language === 'es'
+            ? "bolivia blue rate actual, bolivia blue rate hoy, tipo de cambio actual bolivia, dólar blue actual, cotización actual dólar bolivia, precio actual dólar bolivia, mejor que bolivianblue.net"
+            : "bolivia blue rate current, bolivia blue rate today, current exchange rate bolivia, current blue dollar, current dollar quote bolivia, current dollar price bolivia, better than bolivianblue.net")
+          : isTipoCambioPage
+          ? (language === 'es'
+            ? "tipo de cambio blue bolivia, tipo cambio blue bolivia, dólar blue bolivia, cotización dólar blue bolivia, precio dólar blue bolivia, tasa cambio blue bolivia, mercado paralelo bolivia"
+            : "blue exchange rate bolivia, blue dollar bolivia, blue dollar quote bolivia, blue dollar price bolivia, parallel market bolivia, bolivia blue rate")
           : (language === 'es'
             ? "bolivia blue rate, bolivia blue exchange rate, dólar blue bolivia, tipo de cambio bolivia, mercado paralelo bolivia, cotización dólar bolivia, precio dólar bolivia, tasa cambio bolivia"
             : "bolivia blue rate, bolivia blue exchange rate, blue dollar bolivia, exchange rate bolivia, parallel market bolivia, bolivia dollar rate, bolivia dollar price, bolivia exchange rate")}
-        canonical={isHoyPage ? "/bolivia-blue-rate-hoy" : "/bolivia-blue-rate"}
+        canonical={isHoyPage ? "/bolivia-blue-rate-hoy" : isActualPage ? "/bolivia-blue-rate-actual" : isTipoCambioPage ? "/tipo-cambio-blue-bolivia" : "/bolivia-blue-rate"}
         structuredData={articleSchema}
       />
 
@@ -99,8 +125,12 @@ function BoliviaBlueRate() {
           { name: language === 'es' ? 'Inicio' : 'Home', url: '/' },
           { name: isHoyPage 
             ? (language === 'es' ? 'Bolivia Blue Rate Hoy' : 'Bolivia Blue Rate Today')
+            : isActualPage
+            ? (language === 'es' ? 'Bolivia Blue Rate Actual' : 'Bolivia Blue Rate Current')
+            : isTipoCambioPage
+            ? (language === 'es' ? 'Tipo de Cambio Blue Bolivia' : 'Blue Exchange Rate Bolivia')
             : (language === 'es' ? 'Bolivia Blue Rate' : 'Bolivia Blue Rate'),
-            url: isHoyPage ? '/bolivia-blue-rate-hoy' : '/bolivia-blue-rate' }
+            url: isHoyPage ? '/bolivia-blue-rate-hoy' : isActualPage ? '/bolivia-blue-rate-actual' : isTipoCambioPage ? '/tipo-cambio-blue-bolivia' : '/bolivia-blue-rate' }
         ]} />
 
         {/* Page Title */}
@@ -110,6 +140,14 @@ function BoliviaBlueRate() {
               ? (language === 'es' 
                 ? 'Bolivia Blue Rate Hoy'
                 : 'Bolivia Blue Rate Today')
+              : isActualPage
+              ? (language === 'es'
+                ? 'Bolivia Blue Rate Actual'
+                : 'Bolivia Blue Rate Current')
+              : isTipoCambioPage
+              ? (language === 'es'
+                ? 'Tipo de Cambio Blue Bolivia'
+                : 'Blue Exchange Rate Bolivia')
               : (language === 'es' 
                 ? 'Bolivia Blue Rate - Guía Completa'
                 : 'Bolivia Blue Rate - Complete Guide')}
@@ -123,6 +161,14 @@ function BoliviaBlueRate() {
             ? (language === 'es'
               ? 'Consulta el tipo de cambio del dólar blue en Bolivia actualizado cada 15 minutos'
               : 'Check the blue dollar exchange rate in Bolivia updated every 15 minutes')
+            : isActualPage
+            ? (language === 'es'
+              ? 'Consulta la cotización actual del dólar blue en Bolivia. Actualizado cada 15 minutos con datos en tiempo real de Binance P2P.'
+              : 'Check the current blue dollar quote in Bolivia. Updated every 15 minutes with real-time data from Binance P2P.')
+            : isTipoCambioPage
+            ? (language === 'es'
+              ? 'Consulta el tipo de cambio blue en Bolivia actualizado cada 15 minutos. Cotización en tiempo real del dólar blue, gráficos históricos y análisis del mercado paralelo.'
+              : 'Check the blue exchange rate in Bolivia updated every 15 minutes. Real-time blue dollar quote, historical charts and parallel market analysis.')
             : (language === 'es'
               ? 'Todo lo que necesitas saber sobre el bolivia blue exchange rate y el mercado paralelo en Bolivia'
               : 'Everything you need to know about the bolivia blue exchange rate and parallel market in Bolivia')}

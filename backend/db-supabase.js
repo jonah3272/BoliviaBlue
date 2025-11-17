@@ -154,7 +154,7 @@ export async function getTotalRatesCount() {
  * Insert a news item
  * Uses upsert with conflict resolution on URL to prevent duplicates
  */
-export async function insertNews(id, source, url, title, summary, published_at, sentiment, category = 'general', type = 'article') {
+export async function insertNews(id, source, url, title, summary, published_at, sentiment, category = 'general', type = 'article', sentiment_strength = null) {
   // Skip writes in local mode
   if (LOCAL_MODE) {
     console.log(`[LOCAL MODE] Skipping news insert: ${title.substring(0, 50)}...`);
@@ -177,20 +177,28 @@ export async function insertNews(id, source, url, title, summary, published_at, 
     return null; // Return null to indicate duplicate was skipped
   }
 
+  // Build insert object, only include sentiment_strength if provided
+  const insertData = {
+    id,
+    source,
+    url,
+    title,
+    summary,
+    published_at,
+    sentiment,
+    category,
+    type
+  };
+  
+  // Only add sentiment_strength if it's provided (not null/undefined)
+  if (sentiment_strength !== null && sentiment_strength !== undefined) {
+    insertData.sentiment_strength = sentiment_strength;
+  }
+
   // Insert new article
   const { data, error } = await supabase
     .from('news')
-    .insert({
-      id,
-      source,
-      url,
-      title,
-      summary,
-      published_at,
-      sentiment,
-      category,
-      type
-    })
+    .insert(insertData)
     .select()
     .single();
 

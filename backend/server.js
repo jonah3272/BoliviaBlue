@@ -241,7 +241,9 @@ app.get('/api/news', async (req, res) => {
       title: row.title,
       published_at_iso: row.published_at,
       summary: row.summary,
-      sentiment: row.sentiment
+      sentiment: row.sentiment,
+      sentiment_strength: row.sentiment_strength,
+      category: row.category
     }));
     
     res.json(news);

@@ -148,7 +148,8 @@ async function refreshNews(includeTwitter = false) {
           item.published_at_iso,
           item.sentiment,
           item.category,
-          type
+          type,
+          item.sentiment_strength || null
         );
         
         // insertNews returns null if duplicate, data object if inserted

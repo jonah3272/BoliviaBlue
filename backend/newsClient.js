@@ -155,10 +155,19 @@ async function parseRSS(xml, source) {
   
   // Analyze sentiment for each item using AI (in batches to avoid rate limits)
   for (const item of rawItems) {
-    const sentiment = await classifySentiment(item.title, item.summary);
+    const sentimentResult = await classifySentiment(item.title, item.summary);
+    // Handle both old format (string) and new format (object)
+    const sentiment = typeof sentimentResult === 'string' 
+      ? sentimentResult 
+      : sentimentResult.direction;
+    const sentimentStrength = typeof sentimentResult === 'object' && sentimentResult.strength !== undefined
+      ? sentimentResult.strength
+      : null;
+    
     items.push({
       ...item,
-      sentiment
+      sentiment,
+      sentiment_strength: sentimentStrength
     });
     
     // Small delay between API calls to avoid rate limiting

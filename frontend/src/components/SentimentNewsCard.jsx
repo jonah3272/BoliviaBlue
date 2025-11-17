@@ -47,7 +47,8 @@ function SentimentNewsCard() {
           return !isNaN(articleDate.getTime()) && articleDate >= oneDayAgo;
         });
         
-        // Smart trend calculation with time-weighted scoring
+        // Smart trend calculation with strength-weighted scoring
+        // Uses sentiment_strength (0-100) from each article to properly weight impact
         let upScore = 0;
         let downScore = 0;
         let currencyUpCount = 0;
@@ -56,15 +57,24 @@ function SentimentNewsCard() {
         dailyArticles.forEach(article => {
           const publishedDate = new Date(article.published_at || article.published_at_iso);
           const hoursAgo = (now - publishedDate) / (1000 * 60 * 60);
-          const timeWeight = Math.exp(-hoursAgo / 12);
+          const timeWeight = Math.exp(-hoursAgo / 12); // Recent articles weighted more
           const categoryWeight = article.category === 'currency' ? 1.5 : 1.0;
-          const weight = timeWeight * categoryWeight;
+          
+          // Get sentiment strength (0-100) from article, default to 50 if not available (backward compatibility)
+          const sentimentStrength = article.sentiment_strength !== null && article.sentiment_strength !== undefined
+            ? Math.max(0, Math.min(100, article.sentiment_strength))
+            : 50; // Default moderate strength for articles without strength data
+          
+          // Calculate weight: time * category * strength (normalized to 0-1)
+          // This ensures articles are weighted by how impactful they are, not just counted
+          const strengthWeight = sentimentStrength / 100; // Convert 0-100 to 0-1
+          const weight = timeWeight * categoryWeight * strengthWeight;
           
           if (article.sentiment === 'up') {
-            upScore += weight;
+            upScore += weight * strengthWeight; // Multiply by strength again to emphasize impact
             if (article.category === 'currency') currencyUpCount++;
           } else if (article.sentiment === 'down') {
-            downScore += weight;
+            downScore += weight * strengthWeight;
             if (article.category === 'currency') currencyDownCount++;
           }
         });
@@ -75,72 +85,54 @@ function SentimentNewsCard() {
         
         // Calculate sentiment score on a -50 to +50 scale
         // PRIMARY: Base score on weighted sentiment intensity (upScore/downScore)
-        // SECONDARY: Use article counts only for validation/confidence, not as primary driver
         const totalScore = upScore + downScore;
         const scoreDiff = upScore - downScore;
         
         // Calculate base score from weighted sentiment intensity
-        // This reflects the ACTUAL sentiment severity, not just article counts
         let rawSentimentScore = 0;
         if (totalScore > 0) {
           // Normalize to -50 to +50 based on sentiment intensity difference
-          // This is the PRIMARY factor - how strong is the sentiment?
           const normalizedDiff = (scoreDiff / totalScore) * 50;
           rawSentimentScore = Math.max(-50, Math.min(50, normalizedDiff));
         }
         
-        // Article count validation: Only use counts to validate/adjust if sentiment seems extreme
-        // If sentiment is extreme (-50/+50) but based on very few articles, dampen it slightly
-        // But if sentiment is truly extreme (like "dollar going to zero"), allow it through
+        // CRITICAL: Cap score based on number of articles to prevent 2 articles from reaching +50
+        // Maximum possible score scales with number of articles:
+        // - 1 article: max ±20
+        // - 2 articles: max ±30
+        // - 3 articles: max ±35
+        // - 4 articles: max ±40
+        // - 5+ articles: max ±50 (full range)
         const totalCount = upCount + downCount;
-        const sentimentIntensity = Math.abs(rawSentimentScore);
+        let maxPossibleScore = 50; // Default for 5+ articles
         
-        // Only apply count-based adjustment if:
-        // 1. We have very few articles (< 5) AND sentiment is extreme (> 40)
-        // 2. This prevents 1-2 articles from creating extreme scores unless truly warranted
-        if (totalCount < 5 && sentimentIntensity > 40) {
-          // Dampen extreme scores from very few articles
-          const countDampening = totalCount / 5; // 1 article = 20%, 4 articles = 80%
-          rawSentimentScore = rawSentimentScore * (0.5 + countDampening * 0.5); // Scale between 50%-100%
+        if (totalCount === 1) {
+          maxPossibleScore = 20; // 1 article can't exceed ±20
+        } else if (totalCount === 2) {
+          maxPossibleScore = 30; // 2 articles can't exceed ±30
+        } else if (totalCount === 3) {
+          maxPossibleScore = 35; // 3 articles can't exceed ±35
+        } else if (totalCount === 4) {
+          maxPossibleScore = 40; // 4 articles can't exceed ±40
         }
         
-        // Balance factor: Only cap extremes if sentiment intensity doesn't justify it
-        // If sentiment is truly extreme (like "dollar going to zero"), allow -50/+50
-        // But if it's just "4 negative articles, 0 positive" without extreme sentiment, cap it
-        // Check if the weighted scores justify the extreme position
-        const sentimentJustification = Math.abs(scoreDiff) / Math.max(totalScore, 1);
+        // Apply the cap
+        rawSentimentScore = Math.max(-maxPossibleScore, Math.min(maxPossibleScore, rawSentimentScore));
         
-        // Only cap if:
-        // 1. No opposing articles AND
-        // 2. Sentiment intensity doesn't justify extreme score (less than 90% of max)
-        if (upCount === 0 && rawSentimentScore < -45) {
-          // Check if sentiment is truly extreme (justified)
-          if (sentimentJustification < 0.9) {
-            // Not justified - cap at -45
-            rawSentimentScore = -45;
-          }
-          // If sentimentJustification >= 0.9, allow -50 (truly extreme sentiment)
-        } else if (downCount === 0 && rawSentimentScore > 45) {
-          // Check if sentiment is truly extreme (justified)
-          if (sentimentJustification < 0.9) {
-            // Not justified - cap at +45
-            rawSentimentScore = 45;
-          }
-          // If sentimentJustification >= 0.9, allow +50 (truly extreme sentiment)
+        // Additional dampening for very few articles to ensure smooth scaling
+        // This provides extra protection against extreme scores from 1-2 articles
+        if (totalCount <= 2) {
+          // For 1-2 articles, apply additional dampening factor
+          const articleCountDampening = totalCount === 1 ? 0.6 : 0.75; // 1 article = 60%, 2 articles = 75%
+          rawSentimentScore = rawSentimentScore * articleCountDampening;
         }
         
         // Confidence-weighted scoring: Dampen scores when sample size is small
-        // This prevents extreme scores from appearing when there are few articles
         // Sample size confidence: reaches full confidence (1.0) at 30+ articles
         // Uses exponential approach for smoother scaling: 1 - e^(-n/15)
-        // Examples: 5 articles ≈ 0.28, 10 articles ≈ 0.49, 20 articles ≈ 0.74, 30+ articles ≈ 0.86+
         const sampleSizeConfidence = Math.min(1, 1 - Math.exp(-dailyArticles.length / 15));
         
         // Apply confidence weighting to the raw score based on sample size
-        // With few articles, scores are dampened significantly
-        // With many articles, scores approach their full value
-        // Example: 5 articles with raw score -30 → -30 * 0.28 ≈ -8 (much less extreme)
-        // Example: 30 articles with raw score -30 → -30 * 0.86 ≈ -26 (closer to full value)
         const sentimentScore = Math.round(rawSentimentScore * sampleSizeConfidence);
         
         // Calculate confidence percentage for display (based on sample size)

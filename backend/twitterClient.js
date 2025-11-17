@@ -116,12 +116,20 @@ export async function fetchTwitterNews() {
     for (const tweet of uniqueTweets) {
       // Twitter queries are already currency-focused, so use AI for better accuracy
       // But tweets are shorter, so they're cheaper to analyze
-      const sentiment = await analyzeSentimentAI(tweet.title, tweet.summary);
+      const sentimentResult = await analyzeSentimentAI(tweet.title, tweet.summary);
+      // Handle both old format (string) and new format (object)
+      const sentiment = typeof sentimentResult === 'string' 
+        ? sentimentResult 
+        : sentimentResult.direction;
+      const sentimentStrength = typeof sentimentResult === 'object' && sentimentResult.strength !== undefined
+        ? sentimentResult.strength
+        : null;
       const category = categorizeArticle(tweet.title, tweet.summary);
       
       processedTweets.push({
         ...tweet,
         sentiment,
+        sentiment_strength: sentimentStrength,
         category
       });
 

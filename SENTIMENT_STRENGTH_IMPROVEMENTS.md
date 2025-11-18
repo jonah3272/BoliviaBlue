@@ -86,3 +86,4 @@ WHERE sentiment_strength IS NOT NULL;
 
 Or use the migration file: `supabase_migrations/add_sentiment_strength.sql`
 
+

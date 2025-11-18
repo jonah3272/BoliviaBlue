@@ -566,18 +566,34 @@ function SentimentNewsCard() {
   const scoreColor = getScoreColor();
 
   const tooltipText = language === 'es'
-    ? `Análisis inteligente basado en ${dailySentiment.total} artículos de las últimas 24h. ` +
-      `Ponderación temporal: artículos más recientes tienen mayor peso. ` +
-      `Artículos de divisas (${dailySentiment.currencyUp + dailySentiment.currencyDown}) tienen 1.5x peso. ` +
-      `Confianza: ${trendDetails.confidence}%. ` +
-      `Puntuación: ↗ ${trendDetails.upScore} vs ↘ ${trendDetails.downScore}. ` +
-      `\n\nPositivo = Dólar sube (más Bs por USD, ej: 10 → 11). Negativo = Dólar baja (menos Bs por USD, ej: 10 → 9).`
-    : `Smart analysis based on ${dailySentiment.total} articles from last 24h. ` +
-      `Time-weighted: more recent articles have higher weight. ` +
-      `Currency articles (${dailySentiment.currencyUp + dailySentiment.currencyDown}) have 1.5x weight. ` +
-      `Confidence: ${trendDetails.confidence}%. ` +
-      `Score: ↗ ${trendDetails.upScore} vs ↘ ${trendDetails.downScore}. ` +
-      `\n\nPositive = Dollar rising (more BOB per USD, e.g., 10 → 11). Negative = Dollar falling (fewer BOB per USD, e.g., 10 → 9).`;
+    ? `Análisis avanzado basado en ${dailySentiment.total} artículos de las últimas 24h.\n\n` +
+      `📊 Metodología:\n` +
+      `• Fuerza del sentimiento (0-100): Cada artículo se analiza para determinar qué tan impactante es para el dólar. ` +
+      `Artículos con mayor impacto (crisis, devaluación, intervención BCB) tienen mayor peso.\n` +
+      `• Ponderación temporal: Artículos más recientes tienen mayor peso (decaimiento exponencial cada 12h).\n` +
+      `• Categoría: Artículos de divisas tienen 1.5x peso vs. artículos generales.\n` +
+      `• Límite por cantidad: El puntaje máximo escala con el número de artículos ` +
+      `(1 artículo: ±20, 2 artículos: ±30, 3 artículos: ±35, 4 artículos: ±40, 5+: ±50).\n\n` +
+      `📈 Métricas:\n` +
+      `• Confianza: ${trendDetails.confidence}% (basada en tamaño de muestra)\n` +
+      `• Puntuación ponderada: ↗ ${trendDetails.upScore} vs ↘ ${trendDetails.downScore}\n\n` +
+      `💡 Interpretación:\n` +
+      `• Positivo (+) = Dólar sube (más Bs por USD, ej: 10 → 11 BOB/USD)\n` +
+      `• Negativo (-) = Dólar baja (menos Bs por USD, ej: 10 → 9 BOB/USD)`
+    : `Advanced analysis based on ${dailySentiment.total} articles from last 24h.\n\n` +
+      `📊 Methodology:\n` +
+      `• Sentiment strength (0-100): Each article is analyzed to determine how impactful it is for the dollar. ` +
+      `Higher impact articles (crisis, devaluation, BCB intervention) have greater weight.\n` +
+      `• Time-weighted: More recent articles have higher weight (exponential decay every 12h).\n` +
+      `• Category: Currency articles have 1.5x weight vs. general articles.\n` +
+      `• Count-based capping: Maximum score scales with article count ` +
+      `(1 article: ±20, 2 articles: ±30, 3 articles: ±35, 4 articles: ±40, 5+: ±50).\n\n` +
+      `📈 Metrics:\n` +
+      `• Confidence: ${trendDetails.confidence}% (based on sample size)\n` +
+      `• Weighted score: ↗ ${trendDetails.upScore} vs ↘ ${trendDetails.downScore}\n\n` +
+      `💡 Interpretation:\n` +
+      `• Positive (+) = Dollar rising (more BOB per USD, e.g., 10 → 11 BOB/USD)\n` +
+      `• Negative (-) = Dollar falling (fewer BOB per USD, e.g., 10 → 9 BOB/USD)`;
 
   // Get source favicon URL helper
   const getFaviconUrl = (source, url) => {
@@ -668,14 +684,14 @@ function SentimentNewsCard() {
                 {showTooltip && (
                   <div 
                     ref={tooltipRef}
-                    className="fixed px-3 py-2 bg-gray-900 dark:bg-gray-800 text-white text-xs rounded-lg shadow-xl z-50 max-w-xs whitespace-normal"
-                    style={{ minWidth: '280px' }}
+                    className="fixed px-3 py-2 bg-gray-900 dark:bg-gray-800 text-white text-xs rounded-lg shadow-xl z-50 max-w-xs"
+                    style={{ minWidth: '280px', maxWidth: '400px' }}
                   >
                     <div className="flex items-start gap-2">
                       <svg className="w-4 h-4 flex-shrink-0 mt-0.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
-                      <span className="text-left">{tooltipText}</span>
+                      <div className="text-left whitespace-pre-line leading-relaxed">{tooltipText}</div>
                     </div>
                     <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-full">
                       <div className="border-4 border-transparent border-r-gray-900 dark:border-r-gray-800"></div>

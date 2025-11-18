@@ -106,3 +106,4 @@ After deployment, verify the fixes by:
 3. Verifying sitemap is accessible at `https://boliviablue.com/sitemap.xml`
 4. Using Google's URL Inspection tool to check canonical tags
 
+

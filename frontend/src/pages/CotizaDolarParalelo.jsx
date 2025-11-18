@@ -325,3 +325,5 @@ function CotizaDolarParalelo() {
 
 export default CotizaDolarParalelo;
 
+
+

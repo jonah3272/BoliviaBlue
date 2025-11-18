@@ -132,10 +132,104 @@ function About() {
             <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
               {t('aboutAIDesc')}
             </p>
-            <div className="bg-purple-50 dark:bg-purple-900/20 border-l-4 border-purple-500 p-4 rounded">
+            <div className="bg-purple-50 dark:bg-purple-900/20 border-l-4 border-purple-500 p-4 rounded mb-6">
               <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
                 {t('aboutAIDetails')}
               </p>
+            </div>
+
+            {/* Detailed Sentiment Methodology */}
+            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border border-indigo-200 dark:border-indigo-800 rounded-lg p-6 shadow-sm">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                <svg className="w-6 h-6 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                {language === 'es' ? 'Metodología de Análisis de Sentimiento' : 'Sentiment Analysis Methodology'}
+              </h3>
+              
+              <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+                {language === 'es' 
+                  ? 'Nuestro sistema de análisis de sentimiento utiliza un enfoque avanzado que va más allá de simplemente contar artículos positivos o negativos. Cada artículo se analiza para determinar su impacto real en el tipo de cambio del dólar.'
+                  : 'Our sentiment analysis system uses an advanced approach that goes beyond simply counting positive or negative articles. Each article is analyzed to determine its actual impact on the dollar exchange rate.'}
+              </p>
+
+              <div className="space-y-4">
+                <div className="bg-white dark:bg-gray-800/50 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                    <span className="text-indigo-600 dark:text-indigo-400">1.</span>
+                    {language === 'es' ? 'Fuerza del Sentimiento (0-100)' : 'Sentiment Strength (0-100)'}
+                  </h4>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                    {language === 'es'
+                      ? 'Cada artículo se analiza mediante IA (GPT-4o-mini) o análisis de palabras clave para determinar qué tan impactante es para el dólar. Artículos con mayor impacto (crisis económica, devaluación, intervención del BCB, cambios de política monetaria) reciben un puntaje de fuerza más alto (70-100), mientras que artículos con menor impacto reciben puntajes más bajos (20-50).'
+                      : 'Each article is analyzed using AI (GPT-4o-mini) or keyword analysis to determine how impactful it is for the dollar. Higher impact articles (economic crisis, devaluation, BCB intervention, monetary policy changes) receive a higher strength score (70-100), while lower impact articles receive lower scores (20-50).'}
+                  </p>
+                </div>
+
+                <div className="bg-white dark:bg-gray-800/50 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                    <span className="text-indigo-600 dark:text-indigo-400">2.</span>
+                    {language === 'es' ? 'Ponderación Temporal' : 'Time Weighting'}
+                  </h4>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                    {language === 'es'
+                      ? 'Los artículos más recientes tienen mayor peso en el cálculo. Utilizamos un decaimiento exponencial donde los artículos pierden peso gradualmente cada 12 horas. Esto asegura que las noticias más actuales tengan mayor influencia en el sentimiento.'
+                      : 'More recent articles have greater weight in the calculation. We use exponential decay where articles gradually lose weight every 12 hours. This ensures that the most current news has greater influence on sentiment.'}
+                  </p>
+                </div>
+
+                <div className="bg-white dark:bg-gray-800/50 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                    <span className="text-indigo-600 dark:text-indigo-400">3.</span>
+                    {language === 'es' ? 'Ponderación por Categoría' : 'Category Weighting'}
+                  </h4>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                    {language === 'es'
+                      ? 'Los artículos directamente relacionados con divisas, economía y política monetaria tienen un peso 1.5x mayor que los artículos generales. Esto prioriza información más relevante para el tipo de cambio.'
+                      : 'Articles directly related to currency, economics, and monetary policy have 1.5x greater weight than general articles. This prioritizes information more relevant to the exchange rate.'}
+                  </p>
+                </div>
+
+                <div className="bg-white dark:bg-gray-800/50 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                    <span className="text-indigo-600 dark:text-indigo-400">4.</span>
+                    {language === 'es' ? 'Límite por Cantidad de Artículos' : 'Count-Based Score Capping'}
+                  </h4>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                    {language === 'es'
+                      ? 'Para evitar puntajes extremos con pocos artículos, el puntaje máximo se escala dinámicamente según el número de artículos analizados: 1 artículo (máx. ±20), 2 artículos (máx. ±30), 3 artículos (máx. ±35), 4 artículos (máx. ±40), 5+ artículos (máx. ±50). Esto proporciona una representación más precisa y conservadora del sentimiento cuando hay datos limitados.'
+                      : 'To prevent extreme scores with few articles, the maximum score scales dynamically based on the number of articles analyzed: 1 article (max ±20), 2 articles (max ±30), 3 articles (max ±35), 4 articles (max ±40), 5+ articles (max ±50). This provides a more accurate and conservative representation of sentiment when data is limited.'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-3">
+                  {language === 'es' ? '💡 Cómo Interpretar el Puntaje' : '💡 How to Interpret the Score'}
+                </h4>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 p-3 rounded">
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
+                      {language === 'es' ? 'Puntaje Positivo (+)' : 'Positive Score (+)'}
+                    </p>
+                    <p className="text-xs text-gray-700 dark:text-gray-300">
+                      {language === 'es'
+                        ? 'Indica que el dólar está subiendo (más Bs por USD). Ejemplo: si el tipo de cambio pasa de 10 a 11 BOB/USD, el dólar subió.'
+                        : 'Indicates the dollar is rising (more BOB per USD). Example: if the exchange rate goes from 10 to 11 BOB/USD, the dollar rose.'}
+                    </p>
+                  </div>
+                  <div className="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-3 rounded">
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
+                      {language === 'es' ? 'Puntaje Negativo (-)' : 'Negative Score (-)'}
+                    </p>
+                    <p className="text-xs text-gray-700 dark:text-gray-300">
+                      {language === 'es'
+                        ? 'Indica que el dólar está bajando (menos Bs por USD). Ejemplo: si el tipo de cambio pasa de 10 a 9 BOB/USD, el dólar bajó.'
+                        : 'Indicates the dollar is falling (fewer BOB per USD). Example: if the exchange rate goes from 10 to 9 BOB/USD, the dollar fell.'}
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </section>
 

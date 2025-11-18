@@ -138,6 +138,82 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/comparison?lang=en" />
   </url>
   
+  <!-- Location-Specific Pages -->
+  <url>
+    <loc>https://boliviablue.com/dolar-blue-la-paz</loc>
+    <lastmod>2025-11-13T12:00:00+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/dolar-blue-la-paz" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/dolar-blue-la-paz?lang=en" />
+  </url>
+  
+  <url>
+    <loc>https://boliviablue.com/dolar-blue-santa-cruz</loc>
+    <lastmod>2025-11-13T12:00:00+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/dolar-blue-santa-cruz" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/dolar-blue-santa-cruz?lang=en" />
+  </url>
+  
+  <url>
+    <loc>https://boliviablue.com/dolar-blue-cochabamba</loc>
+    <lastmod>2025-11-13T12:00:00+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/dolar-blue-cochabamba" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/dolar-blue-cochabamba?lang=en" />
+  </url>
+  
+  <!-- "Hoy" / "Today" Pages -->
+  <url>
+    <loc>https://boliviablue.com/dolar-blue-hoy</loc>
+    <lastmod>2025-11-13T12:00:00+00:00</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/dolar-blue-hoy" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/dolar-blue-hoy?lang=en" />
+  </url>
+  
+  <!-- Question-Based Pages -->
+  <url>
+    <loc>https://boliviablue.com/que-es-dolar-blue</loc>
+    <lastmod>2025-11-13T12:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/que-es-dolar-blue" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/que-es-dolar-blue?lang=en" />
+  </url>
+  
+  <url>
+    <loc>https://boliviablue.com/cuanto-esta-dolar-bolivia</loc>
+    <lastmod>2025-11-13T12:00:00+00:00</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/cuanto-esta-dolar-bolivia" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/cuanto-esta-dolar-bolivia?lang=en" />
+  </url>
+  
+  <!-- Platform-Specific Pages -->
+  <url>
+    <loc>https://boliviablue.com/binance-p2p-bolivia</loc>
+    <lastmod>2025-11-13T12:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/binance-p2p-bolivia" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/binance-p2p-bolivia?lang=en" />
+  </url>
+  
+  <url>
+    <loc>https://boliviablue.com/usdt-bolivia</loc>
+    <lastmod>2025-11-13T12:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/usdt-bolivia" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/usdt-bolivia?lang=en" />
+  </url>
+  
   <!-- Blog Article: Rodrigo Paz Impacto Mercado Cambiario -->
   <url>
     <loc>https://boliviablue.com/blog/rodrigo-paz-impacto-mercado-cambiario</loc>

@@ -655,8 +655,8 @@ function Home() {
               </p>
               <p className="text-gray-700 dark:text-gray-300 mb-4">
                 {language === 'es'
-                  ? <>Nuestra plataforma rastrea el <strong>Bolivian Blue</strong> en tiempo real utilizando datos de Binance P2P, actualizando el <strong>bolivian blue rate</strong> cada 15 minutos para brindarte la información más precisa y actualizada. Esto nos diferencia de otros sitios como bolivianblue.net que actualizan con menor frecuencia. <Link to="/bolivia-blue-rate" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Aprende más sobre el Bolivian Blue</Link>, <Link to="/bolivia-blue-rate-hoy" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">consulta el bolivian blue hoy</Link>, <Link to="/cotiza-dolar-paralelo" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">cotiza el dólar paralelo</Link>, <Link to="/calculator" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">usa nuestra calculadora</Link> para convertir divisas, o <Link to="/comparison" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">compara con otros sitios</Link>.</>
-                  : <>Our platform tracks the <strong>Bolivian Blue</strong> in real-time using Binance P2P data, updating the <strong>bolivian blue rate</strong> every 15 minutes to provide you with the most accurate and up-to-date information. This differentiates us from other sites like bolivianblue.net that update less frequently. <Link to="/bolivia-blue-rate" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Learn more about Bolivian Blue</Link>, <Link to="/bolivia-blue-rate-hoy" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">check the bolivian blue today</Link>, <Link to="/cotiza-dolar-paralelo" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">quote the parallel dollar</Link>, <Link to="/calculator" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">use our calculator</Link> to convert currencies, or <Link to="/comparison" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">compare with other sites</Link>.</>}
+                  ? <>Nuestra plataforma rastrea el <strong>Bolivian Blue</strong> en tiempo real utilizando datos de Binance P2P, actualizando el <strong>bolivian blue rate</strong> cada 15 minutos para brindarte la información más precisa y actualizada. Esto nos diferencia de otros sitios como bolivianblue.net que actualizan con menor frecuencia. <Link to="/bolivia-blue-rate" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Aprende más sobre el Bolivian Blue</Link>, <Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">consulta el dólar blue hoy</Link>, <Link to="/que-es-dolar-blue" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">qué es el dólar blue</Link>, <Link to="/cuanto-esta-dolar-bolivia" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">cuánto está el dólar</Link>, <Link to="/dolar-blue-la-paz" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">dólar blue La Paz</Link>, <Link to="/binance-p2p-bolivia" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Binance P2P Bolivia</Link>, <Link to="/calculator" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">usa nuestra calculadora</Link> para convertir divisas, o <Link to="/comparison" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">compara con otros sitios</Link>.</>
+                  : <>Our platform tracks the <strong>Bolivian Blue</strong> in real-time using Binance P2P data, updating the <strong>bolivian blue rate</strong> every 15 minutes to provide you with the most accurate and up-to-date information. This differentiates us from other sites like bolivianblue.net that update less frequently. <Link to="/bolivia-blue-rate" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Learn more about Bolivian Blue</Link>, <Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">check the blue dollar today</Link>, <Link to="/que-es-dolar-blue" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">what is blue dollar</Link>, <Link to="/cuanto-esta-dolar-bolivia" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">how much is the dollar</Link>, <Link to="/dolar-blue-la-paz" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">blue dollar La Paz</Link>, <Link to="/binance-p2p-bolivia" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Binance P2P Bolivia</Link>, <Link to="/calculator" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">use our calculator</Link> to convert currencies, or <Link to="/comparison" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">compare with other sites</Link>.</>}
               </p>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
                 {language === 'es' ? '¿Por qué es importante el Bolivia Blue Rate?' : 'Why is Bolivia Blue Rate Important?'}
@@ -679,6 +679,81 @@ function Home() {
                 )}
               </ul>
             </div>
+          </div>
+        </section>
+
+        {/* Quick Links to New Pages */}
+        <section className="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 rounded-xl p-6 sm:p-8 shadow-lg">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">
+            {language === 'es' 
+              ? 'Páginas Populares'
+              : 'Popular Pages'}
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+            <Link
+              to="/dolar-blue-hoy"
+              className="p-3 bg-white dark:bg-gray-800 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors text-center"
+            >
+              <div className="font-medium text-sm text-gray-900 dark:text-white mb-1">
+                {language === 'es' ? 'Dólar Blue Hoy' : 'Blue Dollar Today'}
+              </div>
+            </Link>
+            <Link
+              to="/que-es-dolar-blue"
+              className="p-3 bg-white dark:bg-gray-800 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors text-center"
+            >
+              <div className="font-medium text-sm text-gray-900 dark:text-white mb-1">
+                {language === 'es' ? '¿Qué es?' : 'What is it?'}
+              </div>
+            </Link>
+            <Link
+              to="/cuanto-esta-dolar-bolivia"
+              className="p-3 bg-white dark:bg-gray-800 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors text-center"
+            >
+              <div className="font-medium text-sm text-gray-900 dark:text-white mb-1">
+                {language === 'es' ? '¿Cuánto Está?' : 'How Much?'}
+              </div>
+            </Link>
+            <Link
+              to="/dolar-blue-la-paz"
+              className="p-3 bg-white dark:bg-gray-800 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors text-center"
+            >
+              <div className="font-medium text-sm text-gray-900 dark:text-white mb-1">
+                {language === 'es' ? 'La Paz' : 'La Paz'}
+              </div>
+            </Link>
+            <Link
+              to="/binance-p2p-bolivia"
+              className="p-3 bg-white dark:bg-gray-800 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors text-center"
+            >
+              <div className="font-medium text-sm text-gray-900 dark:text-white mb-1">
+                {language === 'es' ? 'Binance P2P' : 'Binance P2P'}
+              </div>
+            </Link>
+            <Link
+              to="/usdt-bolivia"
+              className="p-3 bg-white dark:bg-gray-800 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors text-center"
+            >
+              <div className="font-medium text-sm text-gray-900 dark:text-white mb-1">
+                {language === 'es' ? 'USDT' : 'USDT'}
+              </div>
+            </Link>
+            <Link
+              to="/dolar-blue-santa-cruz"
+              className="p-3 bg-white dark:bg-gray-800 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors text-center"
+            >
+              <div className="font-medium text-sm text-gray-900 dark:text-white mb-1">
+                {language === 'es' ? 'Santa Cruz' : 'Santa Cruz'}
+              </div>
+            </Link>
+            <Link
+              to="/dolar-blue-cochabamba"
+              className="p-3 bg-white dark:bg-gray-800 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors text-center"
+            >
+              <div className="font-medium text-sm text-gray-900 dark:text-white mb-1">
+                {language === 'es' ? 'Cochabamba' : 'Cochabamba'}
+              </div>
+            </Link>
           </div>
         </section>
       </main>

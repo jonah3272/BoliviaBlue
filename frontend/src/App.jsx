@@ -16,6 +16,14 @@ const News = lazy(() => import('./pages/News'));
     const Unsubscribe = lazy(() => import('./pages/Unsubscribe'));
     const Comparison = lazy(() => import('./pages/Comparison'));
     const Bancos = lazy(() => import('./pages/Bancos'));
+    const DolarBlueLaPaz = lazy(() => import('./pages/DolarBlueLaPaz'));
+    const DolarBlueSantaCruz = lazy(() => import('./pages/DolarBlueSantaCruz'));
+    const DolarBlueCochabamba = lazy(() => import('./pages/DolarBlueCochabamba'));
+    const DolarBlueHoy = lazy(() => import('./pages/DolarBlueHoy'));
+    const QueEsDolarBlue = lazy(() => import('./pages/QueEsDolarBlue'));
+    const CuantoEstaDolarBolivia = lazy(() => import('./pages/CuantoEstaDolarBolivia'));
+    const BinanceP2PBolivia = lazy(() => import('./pages/BinanceP2PBolivia'));
+    const UsdtBolivia = lazy(() => import('./pages/UsdtBolivia'));
 
 // Loading fallback component
 function LoadingFallback() {
@@ -52,6 +60,14 @@ function App() {
               <Route path="/contact" element={<Contact />} />
               <Route path="/bancos" element={<Bancos />} />
               <Route path="/unsubscribe" element={<Unsubscribe />} />
+              <Route path="/dolar-blue-la-paz" element={<DolarBlueLaPaz />} />
+              <Route path="/dolar-blue-santa-cruz" element={<DolarBlueSantaCruz />} />
+              <Route path="/dolar-blue-cochabamba" element={<DolarBlueCochabamba />} />
+              <Route path="/dolar-blue-hoy" element={<DolarBlueHoy />} />
+              <Route path="/que-es-dolar-blue" element={<QueEsDolarBlue />} />
+              <Route path="/cuanto-esta-dolar-bolivia" element={<CuantoEstaDolarBolivia />} />
+              <Route path="/binance-p2p-bolivia" element={<BinanceP2PBolivia />} />
+              <Route path="/usdt-bolivia" element={<UsdtBolivia />} />
         </Routes>
       </Suspense>
     </Router>

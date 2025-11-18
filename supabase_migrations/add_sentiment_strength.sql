@@ -11,3 +11,4 @@ COMMENT ON COLUMN news.sentiment_strength IS 'Sentiment strength/intensity (0-10
 -- Create index for sentiment_strength to improve query performance
 CREATE INDEX IF NOT EXISTS idx_news_sentiment_strength ON news(sentiment_strength) WHERE sentiment_strength IS NOT NULL;
 
+

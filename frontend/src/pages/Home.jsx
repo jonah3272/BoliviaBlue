@@ -224,13 +224,6 @@ function Home() {
       "price": currentRate.buy?.toFixed(2) || "0",
       "priceCurrency": "BOB",
       "unitText": "USD"
-    },
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "5",
-      "bestRating": "5",
-      "worstRating": "1",
-      "ratingCount": "1000"
     }
   } : null;
 

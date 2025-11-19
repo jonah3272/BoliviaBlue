@@ -41,7 +41,7 @@ function QueEsDolarBlue() {
       : "What is the Blue Dollar? Complete Guide 2025 | Bolivia Blue with Paz",
     "description": language === 'es'
       ? "¿Qué es el dólar blue? Guía completa sobre el dólar blue en Bolivia. Explicación del mercado paralelo, cómo funciona, diferencia con el dólar oficial y por qué es importante. Actualizado cada 15 minutos."
-      : "What is the blue dollar? Complete guide about the blue dollar in Bolivia. Explanation of the parallel market, how it works, difference with official dollar and why it's important. Updated every 15 minutes.",
+      : "What is the blue dollar? Complete guide about the blue dollar in Bolivia. Explanation of the parallel market, how it works, difference with official dollar and why it is important. Updated every 15 minutes.",
     "author": {
       "@type": "Organization",
       "name": "Bolivia Blue con Paz"
@@ -138,7 +138,7 @@ function QueEsDolarBlue() {
           : 'What is the Blue Dollar? Complete Guide 2025 | Bolivia Blue with Paz'}
         description={language === 'es'
           ? '¿Qué es el dólar blue? Guía completa sobre el dólar blue en Bolivia. Explicación del mercado paralelo, cómo funciona, diferencia con el dólar oficial y por qué es importante. Actualizado cada 15 minutos. Gratis.'
-          : 'What is the blue dollar? Complete guide about the blue dollar in Bolivia. Explanation of the parallel market, how it works, difference with official dollar and why it's important. Updated every 15 minutes. Free.'}
+          : 'What is the blue dollar? Complete guide about the blue dollar in Bolivia. Explanation of the parallel market, how it works, difference with official dollar and why it is important. Updated every 15 minutes. Free.'}
         keywords={language === 'es'
           ? "qué es el dólar blue, qué es dólar blue bolivia, qué es el dólar blue en bolivia, cómo funciona dólar blue, dólar blue explicación, dólar paralelo bolivia, mercado paralelo bolivia, diferencia dólar blue oficial, mejor que bolivianblue.net"
           : "what is blue dollar, what is blue dollar bolivia, how does blue dollar work, blue dollar explanation, parallel dollar bolivia, parallel market bolivia, blue dollar vs official, difference blue dollar official"}
@@ -170,7 +170,7 @@ function QueEsDolarBlue() {
         <p className="text-center text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-3 sm:mb-6">
           {language === 'es'
             ? 'Guía completa sobre el dólar blue en Bolivia: qué es, cómo funciona y por qué es importante'
-            : 'Complete guide about the blue dollar in Bolivia: what it is, how it works and why it's important'}
+            : 'Complete guide about the blue dollar in Bolivia: what it is, how it works and why it is important'}
         </p>
 
         {/* Rate Cards */}

@@ -3,13 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <!-- Favicons for Google Search Results -->
-    <!-- Google requires 32x32 and 16x16 PNG files for search results -->
+    <!-- Google requires minimum 48x48 pixels, prefers 32x32 or 96x96 PNG for search results -->
+    <!-- Primary favicon - Google uses the first icon link, so 32x32 is listed first -->
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <!-- Fallback favicons -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <!-- Apple devices -->
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <!-- Web manifest -->
     <link rel="manifest" href="/site.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
@@ -19,16 +23,8 @@
     <meta name="description" content="Bolivia blue rate y bolivia blue exchange rate actualizados cada 15 minutos. Seguimiento en tiempo real del tipo de cambio del dólar blue en Bolivia bajo el presidente Rodrigo Paz. Cotizaciones desde Binance P2P, gráficos históricos y noticias financieras." />
     <meta name="keywords" content="bolivia blue rate, bolivia blue exchange rate, dólar bolivia, tipo de cambio bolivia, boliviano dólar, blue bolivia, dólar blue bolivia, tipo cambio bolivia, cambio dólar bolivia, mercado paralelo bolivia, dólar paralelo, Rodrigo Paz, BCB, banco central bolivia, binance bolivia, usdt bob" />
     <meta name="author" content="Bolivia Blue con Paz" />
-    <!-- Robots meta will be set dynamically by PageMeta component based on environment -->
-    <meta name="robots" content="noindex, nofollow" id="robots-meta" />
-    <script>
-      // Auto-detect stage environment and set noindex
-      if (window.location.hostname === 'stage.boliviablue.com' || window.location.hostname.includes('stage')) {
-        document.getElementById('robots-meta').setAttribute('content', 'noindex, nofollow');
-      } else {
-        document.getElementById('robots-meta').setAttribute('content', 'index, follow');
-      }
-    </script>
+    <!-- Robots meta is handled by PageMeta component via React Helmet -->
+    <!-- This ensures proper environment detection and prevents duplicate tags -->
     <link rel="canonical" href="https://boliviablue.com/" />
     
     <!-- Open Graph / Facebook -->

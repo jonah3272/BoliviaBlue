@@ -259,8 +259,6 @@ export const translations = {
     goToBinanceAria: 'Ir a Binance (abre en nueva ventana)',
     
     // Chart
-    buy: 'Compra',
-    sell: 'Venta',
     spread: 'Spread',
     historicalPriceChart: 'Gráfico de precios histórico',
     
@@ -586,8 +584,6 @@ export const translations = {
     goToBinanceAria: 'Go to Binance (opens in new window)',
     
     // Chart
-    buy: 'Buy',
-    sell: 'Sell',
     spread: 'Spread',
     historicalPriceChart: 'Historical Price Chart',
     

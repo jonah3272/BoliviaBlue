@@ -51,15 +51,22 @@ function BlueChart({ showOfficial = false }) {
     const loadData = async () => {
       setIsLoading(true);
       try {
+        // First, get the oldest data point to calculate total data age
+        const allDataResult = await fetchBlueHistory('ALL');
+        let totalDataAge = 0;
+        if (allDataResult.points.length > 0) {
+          const oldestPoint = new Date(allDataResult.points[0].t);
+          const now = new Date();
+          totalDataAge = Math.floor((now - oldestPoint) / (1000 * 60 * 60 * 24));
+        }
+        setDataAge(totalDataAge);
+        
+        // Then fetch data for the selected range
         const result = await fetchBlueHistory(range);
         
-        // Calculate data age
+        // Calculate stats
         if (result.points.length > 0) {
-          const firstPoint = new Date(result.points[0].t);
           const lastPoint = result.points[result.points.length - 1];
-          const now = new Date();
-          const ageInDays = Math.floor((now - firstPoint) / (1000 * 60 * 60 * 24));
-          setDataAge(ageInDays);
           
           // Calculate stats based on selected rate type
           const firstBuy = showOfficial ? result.points[0].official_buy : result.points[0].buy;
@@ -85,7 +92,24 @@ function BlueChart({ showOfficial = false }) {
               hour: '2-digit', 
               minute: '2-digit' 
             });
-          } else if (range === '1W' || range === '1M') {
+          } else if (range === '1W') {
+            // Show full dates like ALL graph (DD/MM/YYYY or MM/DD/YYYY)
+            if (language === 'es') {
+              // Spanish format: DD/MM/YYYY
+              timeLabel = date.toLocaleDateString('es-BO', { 
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+              });
+            } else {
+              // English format: MM/DD/YYYY
+              timeLabel = date.toLocaleDateString('en-US', { 
+                month: '2-digit',
+                day: '2-digit',
+                year: 'numeric'
+              });
+            }
+          } else if (range === '1M') {
             timeLabel = date.toLocaleDateString(language === 'es' ? 'es-BO' : 'en-US', { 
               month: 'short', 
               day: 'numeric' 
@@ -128,14 +152,14 @@ function BlueChart({ showOfficial = false }) {
             // Use selected rate type for chart display
             buy: showOfficial ? point.official_buy : point.buy,
             sell: showOfficial ? point.official_sell : point.sell,
-            dateKey: range === 'ALL' ? date.toDateString() : null, // For grouping labels by day
+            dateKey: (range === 'ALL' || range === '1W') ? date.toDateString() : null, // For grouping labels by day
             index
           };
         });
         
-        // For ALL range, deduplicate labels but keep all data points
+        // For ALL and 1W ranges, deduplicate labels but keep all data points
         // We'll use a custom tick formatter to show only one label per day
-        if (range === 'ALL' && chartData.length > 0) {
+        if ((range === 'ALL' || range === '1W') && chartData.length > 0) {
           // Track which dates we've shown labels for
           const shownDates = new Set();
           chartData.forEach((point) => {
@@ -355,10 +379,10 @@ function BlueChart({ showOfficial = false }) {
                       stroke="#D1D5DB"
                       tickLine={false}
                       axisLine={{ strokeWidth: 2 }}
-                      interval={range === 'ALL' ? 0 : 'preserveStartEnd'}
+                      interval={range === 'ALL' || range === '1W' ? 0 : 'preserveStartEnd'}
                       tickFormatter={(value, index) => {
-                        // For ALL range, only show label for first occurrence of each date
-                        if (range === 'ALL' && data.length > 0 && index !== undefined) {
+                        // For ALL and 1W ranges, only show label for first occurrence of each date
+                        if ((range === 'ALL' || range === '1W') && data.length > 0 && index !== undefined) {
                           const currentPoint = data[index];
                           if (!currentPoint || !currentPoint.dateKey) return '';
                           

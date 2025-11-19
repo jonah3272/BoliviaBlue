@@ -16,6 +16,20 @@ function Unsubscribe() {
   const [status, setStatus] = useState('loading'); // 'loading', 'success', 'error'
   const token = searchParams.get('token');
 
+  // Prevent AdSense from placing ads on this page (minimal content)
+  useEffect(() => {
+    // Disable auto-ads on this page
+    document.body.setAttribute('data-no-ads', 'true');
+    // Also try to prevent AdSense auto-ads
+    if (window.adsbygoogle) {
+      window.adsbygoogle.loaded = true; // Prevent auto-ads
+    }
+    
+    return () => {
+      document.body.removeAttribute('data-no-ads');
+    };
+  }, []);
+
   useEffect(() => {
     if (!token) {
       setStatus('error');

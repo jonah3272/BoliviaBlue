@@ -104,8 +104,49 @@
     </script>
     
     <!-- Google AdSense -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3497294777171749"
-     crossorigin="anonymous"></script>
+    <!-- Only load AdSense on pages with sufficient content (per AdSense policy) -->
+    <script>
+      (function() {
+        // Pages that violate AdSense policy - no ads allowed:
+        // 1. Pages without content or with low value content
+        // 2. Pages under construction
+        // 3. Pages used for alerts, navigation or other behavioral purposes
+        const path = window.location.pathname;
+        const noAdsPages = [
+          '/unsubscribe',  // Alert/behavioral page
+          '/contact'       // Low value content (just a form)
+        ];
+        
+        const shouldDisableAds = noAdsPages.some(page => path.startsWith(page));
+        
+        // Only load AdSense on pages with sufficient content
+        // Wait for DOM to be ready and ensure we're not on a restricted page
+        function loadAdSense() {
+          if (shouldDisableAds) {
+            return; // Don't load ads on restricted pages
+          }
+          
+          // Additional check: ensure page has loaded content
+          // This prevents ads from loading on empty/loading states
+          if (document.body && document.body.children.length > 0) {
+            var script = document.createElement('script');
+            script.async = true;
+            script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3497294777171749';
+            script.crossOrigin = 'anonymous';
+            script.setAttribute('data-ad-client', 'ca-pub-3497294777171749');
+            document.head.appendChild(script);
+          }
+        }
+        
+        // Load after DOM is ready
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', loadAdSense);
+        } else {
+          // DOM already loaded, but wait a bit to ensure React has rendered content
+          setTimeout(loadAdSense, 100);
+        }
+      })();
+    </script>
     
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-WRN4D234F2"></script>

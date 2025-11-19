@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import Header from '../components/Header';
 import PageMeta from '../components/PageMeta';
@@ -17,6 +17,18 @@ function Contact() {
     message: ''
   });
   const [status, setStatus] = useState('');
+
+  // Prevent AdSense from placing ads on this page (contact form = behavioral purpose)
+  useEffect(() => {
+    document.body.setAttribute('data-no-ads', 'true');
+    if (window.adsbygoogle) {
+      window.adsbygoogle.loaded = true; // Prevent auto-ads
+    }
+    
+    return () => {
+      document.body.removeAttribute('data-no-ads');
+    };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

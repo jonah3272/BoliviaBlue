@@ -8,8 +8,6 @@ import BlueRateCards from '../components/BlueRateCards';
 import BinanceBanner from '../components/BinanceBanner';
 import { Link } from 'react-router-dom';
 import { fetchBlueRate } from '../utils/api';
-import { lazy, Suspense } from 'react';
-const BlueChart = lazy(() => import('../components/BlueChart'));
 import Breadcrumbs from '../components/Breadcrumbs';
 
 function UsdtBolivia() {

@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PageMeta from '../components/PageMeta';
 import Navigation from '../components/Navigation';
+import BlueRateCards from '../components/BlueRateCards';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { Link } from 'react-router-dom';
 
@@ -11,6 +12,7 @@ function Bancos() {
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
+  const [showOfficial, setShowOfficial] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('name'); // 'name', 'restriction'
@@ -231,6 +233,11 @@ function Bancos() {
       <Navigation />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        {/* Rate Cards */}
+        <section className="mb-8">
+          <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} />
+        </section>
+
         <Breadcrumbs
           items={[
             { name: language === 'es' ? 'Inicio' : 'Home', url: '/' },

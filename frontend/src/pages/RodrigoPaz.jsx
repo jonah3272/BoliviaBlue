@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import Header from '../components/Header';
 import PageMeta from '../components/PageMeta';
 import Navigation from '../components/Navigation';
+import BlueRateCards from '../components/BlueRateCards';
 import BinanceBanner from '../components/BinanceBanner';
 import { Link } from 'react-router-dom';
 
@@ -9,6 +11,7 @@ function RodrigoPaz() {
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
+  const [showOfficial, setShowOfficial] = useState(false);
 
   // Person structured data
   const personSchema = {
@@ -48,6 +51,11 @@ function RodrigoPaz() {
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Rate Cards */}
+        <section className="mb-8">
+          <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} />
+        </section>
+
         {/* Binance Banner */}
         <div className="mb-8">
           <BinanceBanner />

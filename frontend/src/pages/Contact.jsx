@@ -3,6 +3,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import Header from '../components/Header';
 import PageMeta from '../components/PageMeta';
 import Navigation from '../components/Navigation';
+import BlueRateCards from '../components/BlueRateCards';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { Link } from 'react-router-dom';
 
@@ -10,6 +11,7 @@ function Contact() {
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
+  const [showOfficial, setShowOfficial] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -98,6 +100,11 @@ function Contact() {
       <Navigation />
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Rate Cards */}
+        <section className="mb-8">
+          <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} />
+        </section>
+
         {/* Breadcrumbs */}
         <Breadcrumbs
           items={[

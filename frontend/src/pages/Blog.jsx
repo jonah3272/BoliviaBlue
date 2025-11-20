@@ -3,6 +3,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import Header from '../components/Header';
 import Navigation from '../components/Navigation';
 import PageMeta from '../components/PageMeta';
+import BlueRateCards from '../components/BlueRateCards';
 import BinanceBanner from '../components/BinanceBanner';
 import SocialShare from '../components/SocialShare';
 import Breadcrumbs from '../components/Breadcrumbs';
@@ -16,6 +17,7 @@ function Blog() {
   const language = languageContext?.language || 'es';
   const { slug } = useParams();
   const navigate = useNavigate();
+  const [showOfficial, setShowOfficial] = useState(false);
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [articles, setArticles] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -370,6 +372,11 @@ function Blog() {
       <Navigation />
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Rate Cards */}
+        <section className="mb-8">
+          <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} />
+        </section>
+
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">

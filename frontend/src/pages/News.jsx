@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import PageMeta from '../components/PageMeta';
 import Navigation from '../components/Navigation';
+import BlueRateCards from '../components/BlueRateCards';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Link } from 'react-router-dom';
 import { fetchNews } from '../utils/api';
@@ -70,6 +71,7 @@ function News() {
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
+  const [showOfficial, setShowOfficial] = useState(false);
   const [news, setNews] = useState([]);
   const [allNews, setAllNews] = useState([]); // Store all news for search
   const [isLoading, setIsLoading] = useState(true);
@@ -193,6 +195,11 @@ function News() {
 
       {/* Navigation */}
       <Navigation />
+
+      {/* Rate Cards */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} />
+      </section>
 
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 py-16">

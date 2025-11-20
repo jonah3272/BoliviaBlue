@@ -1,13 +1,16 @@
+import { useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import PageMeta from '../components/PageMeta';
 import Navigation from '../components/Navigation';
 import Header from '../components/Header';
+import BlueRateCards from '../components/BlueRateCards';
 import { Link } from 'react-router-dom';
 
 function FAQ() {
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
+  const [showOfficial, setShowOfficial] = useState(false);
 
   // FAQ structured data
   const faqSchema = {
@@ -145,6 +148,10 @@ function FAQ() {
 
           {/* Main Content */}
           <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+            {/* Rate Cards */}
+            <section className="mb-8">
+              <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} />
+            </section>
             <article className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 sm:p-8 lg:p-12">
               {/* Hero Section */}
               <div className="mb-8 pb-6 border-b border-gray-200 dark:border-gray-700">

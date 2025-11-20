@@ -64,6 +64,7 @@ function BuyDollars() {
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
+  const [showOfficial, setShowOfficial] = useState(false);
   const [currentRate, setCurrentRate] = useState(null);
 
   useEffect(() => {
@@ -154,6 +155,11 @@ function BuyDollars() {
 
       {/* Navigation */}
       <Navigation />
+
+      {/* Rate Cards */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} />
+      </section>
 
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 py-12">

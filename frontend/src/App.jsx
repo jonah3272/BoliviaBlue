@@ -12,7 +12,6 @@ const News = lazy(() => import('./pages/News'));
     const Blog = lazy(() => import('./pages/Blog'));
     const BoliviaBlueRate = lazy(() => import('./pages/BoliviaBlueRate'));
     const CotizaDolarParalelo = lazy(() => import('./pages/CotizaDolarParalelo'));
-    const Unsubscribe = lazy(() => import('./pages/Unsubscribe'));
     const Comparison = lazy(() => import('./pages/Comparison'));
     const Bancos = lazy(() => import('./pages/Bancos'));
     const DolarBlueLaPaz = lazy(() => import('./pages/DolarBlueLaPaz'));
@@ -57,7 +56,6 @@ function App() {
               <Route path="/cotiza-dolar-paralelo" element={<CotizaDolarParalelo />} />
               <Route path="/comparison" element={<Comparison />} />
               <Route path="/bancos" element={<Bancos />} />
-              <Route path="/unsubscribe" element={<Unsubscribe />} />
               <Route path="/dolar-blue-la-paz" element={<DolarBlueLaPaz />} />
               <Route path="/dolar-blue-santa-cruz" element={<DolarBlueSantaCruz />} />
               <Route path="/dolar-blue-cochabamba" element={<DolarBlueCochabamba />} />

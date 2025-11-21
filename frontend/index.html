@@ -113,7 +113,7 @@
         // 3. Pages used for alerts, navigation or other behavioral purposes
         const path = window.location.pathname;
             const noAdsPages = [
-              '/unsubscribe'  // Alert/behavioral page
+              // No pages currently excluded from AdSense
             ];
         
         const shouldDisableAds = noAdsPages.some(page => path.startsWith(page));

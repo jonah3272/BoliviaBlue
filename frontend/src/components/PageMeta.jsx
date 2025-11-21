@@ -27,10 +27,13 @@ export default function PageMeta({
   // Auto-add noindex for stage environment
   const shouldNoindex = noindex || isStage;
   
+  // Always use non-www version for canonical URLs (www redirects to non-www via vercel.json)
+  // This ensures consistent canonicalization and prevents duplicate content issues
   const baseUrl = isStage ? 'https://stage.boliviablue.com' : 'https://boliviablue.com';
   
   // Always use canonical path without query parameters for the canonical URL
   // This ensures that ?lang=en pages canonicalize to the base URL
+  // Language variants are handled via hreflang tags, not separate canonical URLs
   const canonicalPath = canonical || '/';
   const fullCanonical = `${baseUrl}${canonicalPath}`;
   const fullOgImage = ogImage.startsWith('http') ? ogImage : `${baseUrl}${ogImage}`;

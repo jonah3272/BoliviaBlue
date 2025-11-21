@@ -16,8 +16,7 @@ function Footer() {
     { path: '/bancos', label: language === 'es' ? 'Bancos' : 'Banks' },
     { path: '/about', label: language === 'es' ? 'Acerca de' : 'About' },
     { path: '/faq', label: language === 'es' ? 'FAQ' : 'FAQ' },
-    { path: '/comparison', label: language === 'es' ? 'Comparación' : 'Comparison' },
-    { path: '/contact', label: language === 'es' ? 'Contacto' : 'Contact' }
+    { path: '/comparison', label: language === 'es' ? 'Comparación' : 'Comparison' }
   ];
 
   return (

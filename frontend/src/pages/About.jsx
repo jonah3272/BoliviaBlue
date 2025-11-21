@@ -181,18 +181,6 @@ function About() {
             </div>
           </section>
 
-          {/* Contact */}
-          <section className="pt-6 border-t border-gray-200 dark:border-gray-700">
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
-              {t('aboutContactTitle')}
-            </h2>
-            <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
-              {t('aboutContactDesc')}
-            </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              {t('aboutLastUpdate')}
-            </p>
-          </section>
         </article>
       </main>
 

@@ -81,12 +81,6 @@ const pages = [
     lastmod: currentDate
   },
   {
-    path: '/contact',
-    changefreq: 'monthly',
-    priority: '0.6',
-    lastmod: currentDate
-  },
-  {
     path: '/bancos',
     changefreq: 'monthly',
     priority: '0.8',

@@ -112,10 +112,9 @@
         // 2. Pages under construction
         // 3. Pages used for alerts, navigation or other behavioral purposes
         const path = window.location.pathname;
-        const noAdsPages = [
-          '/unsubscribe',  // Alert/behavioral page
-          '/contact'       // Low value content (just a form)
-        ];
+            const noAdsPages = [
+              '/unsubscribe'  // Alert/behavioral page
+            ];
         
         const shouldDisableAds = noAdsPages.some(page => path.startsWith(page));
         

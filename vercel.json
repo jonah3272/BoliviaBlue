@@ -2,6 +2,23 @@
   "buildCommand": "cd frontend && npm install && npm run build",
   "outputDirectory": "frontend/dist",
   "installCommand": "npm --version",
+  "redirects": [
+    {
+      "source": "http://boliviablue.com/:path*",
+      "destination": "https://boliviablue.com/:path*",
+      "permanent": true
+    },
+    {
+      "source": "http://www.boliviablue.com/:path*",
+      "destination": "https://boliviablue.com/:path*",
+      "permanent": true
+    },
+    {
+      "source": "https://www.boliviablue.com/:path*",
+      "destination": "https://boliviablue.com/:path*",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",

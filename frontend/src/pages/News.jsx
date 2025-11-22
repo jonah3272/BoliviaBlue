@@ -3,6 +3,7 @@ import Header from '../components/Header';
 import PageMeta from '../components/PageMeta';
 import Navigation from '../components/Navigation';
 import BlueRateCards from '../components/BlueRateCards';
+import Footer from '../components/Footer';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Link } from 'react-router-dom';
 import { fetchNews } from '../utils/api';
@@ -390,14 +391,7 @@ function News() {
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center text-sm text-gray-600 dark:text-gray-400">
-            <p>&copy; 2025 {t('title')}</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

@@ -40,11 +40,15 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
 
   return (
     <motion.div 
-      className={`bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-xl border-2 ${borderColor} p-4 shadow-xl hover:shadow-2xl hover-lift transition-smooth`}
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3 }}
-      whileHover={{ scale: 1.02, y: -4 }}
+      className={`bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-xl border-2 ${borderColor} p-4 shadow-xl transition-all duration-300`}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+      whileHover={{ 
+        y: -8,
+        boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+        transition: { duration: 0.2 }
+      }}
     >
       <div className="flex items-center justify-between mb-1">
         <div className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">{label}</div>

@@ -5,6 +5,7 @@ import PageMeta from '../components/PageMeta';
 import Navigation from '../components/Navigation';
 import BlueRateCards from '../components/BlueRateCards';
 import BinanceBanner from '../components/BinanceBanner';
+import Footer from '../components/Footer';
 import { Link } from 'react-router-dom';
 import { fetchBlueRate } from '../utils/api';
 import { BINANCE_REFERRAL_LINK, BINANCE_P2P_LINK } from '../config/referrals';
@@ -598,22 +599,7 @@ function BuyDollars() {
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center text-sm text-gray-600 dark:text-gray-400">
-            <p className="mb-2">
-              {t('footerUpdates')}
-            </p>
-            <p className="mb-4">
-              {t('footerText')}
-            </p>
-            <p className="mt-6 text-xs text-gray-500 dark:text-gray-500">
-              &copy; 2025 {t('title')}
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

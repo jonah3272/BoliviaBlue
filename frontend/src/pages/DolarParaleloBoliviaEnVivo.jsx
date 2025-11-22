@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
+import Footer from '../components/Footer';
 import BlueRateCards from '../components/BlueRateCards';
 import BlueChart from '../components/BlueChart';
 import PageMeta from '../components/PageMeta';
@@ -279,6 +280,8 @@ function DolarParaleloBoliviaEnVivo() {
           </div>
         </section>
       </main>
+
+      <Footer />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import Header from '../components/Header';
+import Footer from '../components/Footer';
 import PageMeta from '../components/PageMeta';
 import Navigation from '../components/Navigation';
 import BlueRateCards from '../components/BlueRateCards';
@@ -274,6 +275,8 @@ function Comparison() {
 
         <BinanceBanner />
       </main>
+
+      <Footer />
     </div>
   );
 }

@@ -121,29 +121,9 @@
     <!-- Google AdSense -->
     <!-- 
       IMPORTANT: AdSense Policy Compliance
-      We only load ads on pages with sufficient content to comply with Google's policy:
-      "We do not allow Google-served ads on screens without content or with low value content"
-      
-      The adsenseLoader.js utility ensures:
-      1. No ads on loading screens (React Suspense fallbacks)
-      2. No ads on error pages
-      3. No ads until minimum content threshold is met
-      4. Multiple validation checks before loading ads
+      AdSense loading is now handled in src/main.jsx to ensure proper module bundling
+      See frontend/src/main.jsx for implementation details
     -->
-    <script type="module">
-      import { loadAdSense } from './src/utils/adsenseLoader.js';
-      
-      // Wait for window to fully load (all resources including images)
-      window.addEventListener('load', () => {
-        console.log('[AdSense] Page fully loaded, starting content validation...');
-        
-        // Additional delay to ensure React has fully rendered and hydrated
-        // This is critical for SPAs where content loads after JavaScript
-        setTimeout(() => {
-          loadAdSense('ca-pub-3497294777171749');
-        }, 1500); // 1.5 second delay after page load to ensure React content is rendered
-      });
-    </script>
     
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-WRN4D234F2"></script>

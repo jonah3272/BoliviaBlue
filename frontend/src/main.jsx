@@ -7,6 +7,7 @@ import './styles/ui-enhancements.css';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { ToastProvider } from './contexts/ToastContext';
+import { loadAdSense } from './utils/adsenseLoader';
 
 // Register service worker for offline support and caching
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
@@ -20,6 +21,14 @@ if ('serviceWorker' in navigator && import.meta.env.PROD) {
       });
   });
 }
+
+// Load AdSense after page is fully loaded
+window.addEventListener('load', () => {
+  console.log('[AdSense] Page fully loaded, starting content validation...');
+  setTimeout(() => {
+    loadAdSense('ca-pub-3497294777171749');
+  }, 1500);
+});
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

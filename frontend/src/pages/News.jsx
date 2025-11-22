@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import Header from '../components/Header';
 import PageMeta from '../components/PageMeta';
 import Navigation from '../components/Navigation';
@@ -336,12 +337,20 @@ function News() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
-            {news.map((article) => {
+            {news.map((article, index) => {
               const cat = CATEGORIES[article.category] || CATEGORIES.all;
               return (
-                <article
+                <motion.article
                   key={article.id}
-                  className="bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all p-4 sm:p-5 md:p-6 flex flex-col"
+                  className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-xl shadow-lg border-2 border-transparent hover:border-blue-300 dark:hover:border-blue-700 transition-all p-4 sm:p-5 md:p-6 flex flex-col"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.05 }}
+                  whileHover={{ 
+                    y: -8,
+                    boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.15)",
+                    transition: { duration: 0.2 }
+                  }}
                 >
                   {/* Category Badge & Sentiment */}
                   <div className="flex items-center justify-between mb-2 sm:mb-3 gap-2">
@@ -373,18 +382,26 @@ function News() {
                   </div>
 
                   {/* Read More Link */}
-                  <a
+                  <motion.a
                     href={article.url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="mt-4 inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium"
+                    whileHover={{ x: 4 }}
+                    transition={{ duration: 0.2 }}
                   >
                     {language === 'es' ? 'Leer más' : 'Read more'}
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <motion.svg 
+                      className="w-4 h-4" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                      whileHover={{ x: 2 }}
+                    >
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </a>
-                </article>
+                    </motion.svg>
+                  </motion.a>
+                </motion.article>
               );
             })}
           </div>

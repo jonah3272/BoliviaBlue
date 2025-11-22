@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../contexts/LanguageContext';
 import PageMeta from '../components/PageMeta';
 import Navigation from '../components/Navigation';
@@ -16,6 +17,7 @@ function FAQ() {
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
   const [showOfficial, setShowOfficial] = useState(false);
+  const [openIndex, setOpenIndex] = useState(0); // Start with first FAQ open
 
   // FAQ structured data
   const faqSchema = {
@@ -224,43 +226,82 @@ function FAQ() {
               </div>
 
               {/* FAQ List */}
-              <div className="space-y-8">
-                {faqs.map((faq, index) => (
-                  <div 
-                    key={index} 
-                    id={index < 3 ? 'basics' : index < 6 ? 'rates' : index < 9 ? 'usage' : 'safety'}
-                    className="scroll-mt-20 border-b border-gray-200 dark:border-gray-700 pb-6 last:border-b-0"
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                        <span className="text-blue-600 dark:text-blue-400 font-semibold text-sm">
-                          {index + 1}
-                        </span>
-                      </div>
-                      <div className="flex-1">
-                        <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mb-3">
-                          {t(faq.q)}
-                        </h2>
-                        <div className="text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line prose prose-sm dark:prose-invert max-w-none">
-                          {t(faq.a)}
+              <div className="space-y-4">
+                {faqs.map((faq, index) => {
+                  const isOpen = openIndex === index;
+                  return (
+                    <motion.div 
+                      key={index} 
+                      id={index < 3 ? 'basics' : index < 6 ? 'rates' : index < 9 ? 'usage' : 'safety'}
+                      className="scroll-mt-20 bg-white dark:bg-gray-800 rounded-xl border-2 border-gray-200 dark:border-gray-700 overflow-hidden"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.05 }}
+                    >
+                      <motion.button
+                        onClick={() => setOpenIndex(isOpen ? -1 : index)}
+                        className="w-full flex items-start gap-3 p-6 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                        whileHover={{ backgroundColor: 'rgba(59, 130, 246, 0.05)' }}
+                      >
+                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                          <span className="text-blue-600 dark:text-blue-400 font-semibold text-sm">
+                            {index + 1}
+                          </span>
                         </div>
-                        {faq.q === 'faqQ5' && (
-                          <div className="mt-4">
-                            <Link
-                              to="/buy-dollars"
-                              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                        <div className="flex-1">
+                          <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mb-0 flex items-center justify-between">
+                            <span>{t(faq.q)}</span>
+                            <motion.svg 
+                              className="w-6 h-6 text-gray-400 flex-shrink-0 ml-4"
+                              animate={{ rotate: isOpen ? 180 : 0 }}
+                              transition={{ duration: 0.3 }}
+                              fill="none" 
+                              stroke="currentColor" 
+                              viewBox="0 0 24 24"
                             >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                              </svg>
-                              {language === 'es' ? 'Ver guía completa para comprar dólares' : 'View complete guide to buying dollars'}
-                            </Link>
-                          </div>
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </motion.svg>
+                          </h2>
+                        </div>
+                      </motion.button>
+                      
+                      <AnimatePresence>
+                        {isOpen && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.3 }}
+                          >
+                            <div className="px-6 pb-6 pl-17">
+                              <div className="text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line prose prose-sm dark:prose-invert max-w-none">
+                                {t(faq.a)}
+                              </div>
+                              {faq.q === 'faqQ5' && (
+                                <motion.div 
+                                  className="mt-4"
+                                  initial={{ opacity: 0, y: 10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  transition={{ delay: 0.2 }}
+                                >
+                                  <Link
+                                    to="/buy-dollars"
+                                    className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                                  >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    {language === 'es' ? 'Ver guía completa para comprar dólares' : 'View complete guide to buying dollars'}
+                                  </Link>
+                                </motion.div>
+                              )}
+                            </div>
+                          </motion.div>
                         )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                      </AnimatePresence>
+                    </motion.div>
+                  );
+                })}
               </div>
 
               {/* Additional Help */}

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { fetchBlueRate } from '../utils/api';
 import { useLanguage } from '../contexts/LanguageContext';
+import AnimatedNumber from './AnimatedNumber';
 
 function CurrencyCalculator() {
   const languageContext = useLanguage();
@@ -383,10 +384,14 @@ function CurrencyCalculator() {
                           </div>
                           <div className="text-right">
                             <div className="font-mono font-bold text-lg text-gray-900 dark:text-white">
-                              {data.symbol}{converted}
+                              <AnimatedNumber 
+                                value={parseFloat(converted)} 
+                                decimals={4} 
+                                prefix={data.symbol}
+                              />
                             </div>
                             <div className="text-xs text-gray-500 dark:text-gray-400">
-                              1 {code} = {rate.toFixed(4)} BOB
+                              1 {code} = <AnimatedNumber value={rate} decimals={4} /> BOB
                             </div>
                           </div>
                         </div>

@@ -1,7 +1,4 @@
 {
-  "buildCommand": "cd frontend && npm install && npm run build",
-  "outputDirectory": "frontend/dist",
-  "installCommand": "npm --version",
   "redirects": [
     {
       "source": "http://boliviablue.com/:path*",
@@ -24,6 +21,5 @@
       "source": "/(.*)",
       "destination": "/index.html"
     }
-  ],
-  "framework": null
+  ]
 }

@@ -2,6 +2,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import BlueRateCards from '../components/BlueRateCards';
 import BinanceBanner from '../components/BinanceBanner';
+import SocialShare from '../components/SocialShare';
 import { lazy, Suspense, useState, useEffect } from 'react';
 
 // Lazy load heavy components for better performance

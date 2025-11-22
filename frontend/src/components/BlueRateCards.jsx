@@ -40,14 +40,14 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
 
   return (
     <motion.div 
-      className={`glass dark:glass-dark rounded-xl border-2 ${borderColor} p-4 shadow-lg hover-lift hover-glow-${isBuy ? 'blue' : 'purple'} transition-smooth`}
+      className={`bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-xl border-2 ${borderColor} p-4 shadow-xl hover:shadow-2xl hover-lift transition-smooth`}
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.3 }}
-      whileHover={{ scale: 1.02 }}
+      whileHover={{ scale: 1.02, y: -4 }}
     >
       <div className="flex items-center justify-between mb-1">
-        <div className="text-xs font-medium text-gray-600 dark:text-gray-400">{label}</div>
+        <div className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">{label}</div>
         <div className="flex gap-1.5">
           {isStaleData && (
             <span className="px-1.5 py-0.5 text-xs bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200 rounded-full">
@@ -69,16 +69,16 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
         transition={{ duration: 0.3 }}
         key={rate}
       >
-        <div className="font-mono text-4xl font-bold gradient-text-blue dark:text-white">
+        <div className="font-mono text-4xl font-bold text-gray-900 dark:text-white">
           {formatRate(rate)}
         </div>
-        <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+        <div className="text-xs text-gray-600 dark:text-gray-400 mt-0.5 font-medium">
           {t('perUSD')}
         </div>
       </motion.div>
       
       {timestamp && (
-        <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+        <div className="text-xs text-gray-600 dark:text-gray-400 mt-2 font-medium">
           {t('updated')}: {formatDateTime(timestamp)}
         </div>
       )}

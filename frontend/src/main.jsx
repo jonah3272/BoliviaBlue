@@ -6,7 +6,7 @@ import './index.css';
 import './styles/ui-enhancements.css';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { LanguageProvider } from './contexts/LanguageContext';
-import { ToastProvider } from './contexts/ToastContext';
+// import { ToastProvider } from './contexts/ToastContext'; // Temporarily disabled
 import { loadAdSense } from './utils/adsenseLoader';
 
 // Register service worker for offline support and caching
@@ -35,9 +35,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <HelmetProvider>
       <ThemeProvider>
         <LanguageProvider>
-          <ToastProvider>
-            <App />
-          </ToastProvider>
+          <App />
         </LanguageProvider>
       </ThemeProvider>
     </HelmetProvider>

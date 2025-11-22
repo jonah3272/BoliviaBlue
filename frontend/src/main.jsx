@@ -3,8 +3,10 @@ import ReactDOM from 'react-dom/client';
 import { HelmetProvider } from 'react-helmet-async';
 import App from './App';
 import './index.css';
+import './styles/ui-enhancements.css';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { LanguageProvider } from './contexts/LanguageContext';
+import { ToastProvider } from './contexts/ToastContext';
 
 // Register service worker for offline support and caching
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
@@ -24,7 +26,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <HelmetProvider>
       <ThemeProvider>
         <LanguageProvider>
-          <App />
+          <ToastProvider>
+            <App />
+          </ToastProvider>
         </LanguageProvider>
       </ThemeProvider>
     </HelmetProvider>

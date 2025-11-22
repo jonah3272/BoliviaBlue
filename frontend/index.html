@@ -61,9 +61,21 @@
     
     <!-- Performance: Preload Critical Resources -->
     <link rel="preload" href="/og-image.webp" as="image" type="image/webp">
+    
+    <!-- Preconnect to API endpoints for faster requests -->
+    <link rel="preconnect" href="https://api.binance.com" crossorigin>
     <link rel="dns-prefetch" href="https://api.binance.com">
-    <link rel="preconnect" href="https://pagead2.googlesyndication.com">
+    
+    <!-- Preconnect to AdSense for faster ad loading -->
+    <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
+    <link rel="preconnect" href="https://www.googletagservices.com" crossorigin>
     <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+    <link rel="dns-prefetch" href="https://adservice.google.com">
+    
+    <!-- Preconnect to your backend API (if applicable) -->
+    <!-- Uncomment and update with your actual API URL -->
+    <!-- <link rel="preconnect" href="https://your-api-url.com" crossorigin> -->
+
     
     <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
@@ -147,6 +159,10 @@
   </head>
   <body>
     <div id="root"></div>
+    
+    <!-- Preload main JavaScript module for faster loading -->
+    <link rel="modulepreload" href="/src/main.jsx">
+    
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

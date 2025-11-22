@@ -3,20 +3,30 @@ import Footer from '../components/Footer';
 import BlueRateCards from '../components/BlueRateCards';
 import BinanceBanner from '../components/BinanceBanner';
 import { lazy, Suspense, useState, useEffect } from 'react';
+
+// Lazy load heavy components for better performance
 const BlueChart = lazy(() => import('../components/BlueChart'));
-import NewsTabs from '../components/NewsTabs';
+const NewsTabs = lazy(() => import('../components/NewsTabs'));
+const RotatingNewsCarousel = lazy(() => import('../components/RotatingNewsCarousel'));
+const RateAlertForm = lazy(() => import('../components/RateAlertForm'));
+const SentimentNewsCard = lazy(() => import('../components/SentimentNewsCard'));
+
 import About from '../components/About';
 import PageMeta from '../components/PageMeta';
-import RotatingNewsCarousel from '../components/RotatingNewsCarousel';
 import Navigation from '../components/Navigation';
 import DailySentimentHeader from '../components/DailySentimentHeader';
-import SentimentNewsCard from '../components/SentimentNewsCard';
-import RateAlertForm from '../components/RateAlertForm';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Link } from 'react-router-dom';
 import { articlesEs, articlesEn } from '../data/blogArticles';
 import { fetchBlueRate } from '../utils/api';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
+
+// Loading fallback component for lazy-loaded components
+const ComponentLoader = () => (
+  <div className="flex items-center justify-center py-8">
+    <div className="animate-spin rounded-full h-8 w-8 border-4 border-gray-300 border-t-blue-600"></div>
+  </div>
+);
 
 function Home() {
   // Signal to AdSense that this page has sufficient content
@@ -550,7 +560,9 @@ function Home() {
             </button>
           </div>
           <div className={`${isNewsExpanded ? 'block' : 'hidden'} md:block`}>
-            <NewsTabs />
+            <Suspense fallback={<ComponentLoader />}>
+              <NewsTabs />
+            </Suspense>
           </div>
         </section>
 

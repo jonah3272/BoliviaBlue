@@ -27,13 +27,17 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          // React and core dependencies
-          if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
-            return 'react-vendor';
-          }
-          // Chart library
+          // Recharts is HUGE - isolate it
           if (id.includes('recharts')) {
             return 'chart-vendor';
+          }
+          // React Router - separate for better caching
+          if (id.includes('react-router')) {
+            return 'router-vendor';
+          }
+          // Core React - most stable, best caching
+          if (id.includes('react') || id.includes('react-dom')) {
+            return 'react-core';
           }
           // Supabase client
           if (id.includes('@supabase')) {
@@ -43,7 +47,7 @@ export default defineConfig({
           if (id.includes('react-helmet')) {
             return 'helmet-vendor';
           }
-          // Large node_modules dependencies
+          // Other node_modules
           if (id.includes('node_modules')) {
             return 'vendor';
           }
@@ -51,13 +55,21 @@ export default defineConfig({
       }
     },
     chunkSizeWarningLimit: 1000,
-    minify: 'esbuild',
-    // Enable source maps for production debugging (optional, can be disabled)
-    sourcemap: false,
-    // Optimize chunk loading
+    minify: 'terser', // Terser is better than esbuild for production
+    terserOptions: {
+      compress: {
+        drop_console: true, // Remove console.logs in production
+        drop_debugger: true,
+        pure_funcs: ['console.log', 'console.info', 'console.debug']
+      }
+    },
+    sourcemap: false, // Disable source maps for smaller bundles
     cssCodeSplit: true,
-    // Target modern browsers for smaller bundles
     target: 'es2015',
+    // Enable tree shaking
+    treeshake: true,
+    // Optimize chunk loading
+    assetsInlineLimit: 4096, // Inline assets smaller than 4kb
   }
 });
 

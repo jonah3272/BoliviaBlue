@@ -1,14 +1,22 @@
 import Header from '../components/Header';
 import BlueRateCards from '../components/BlueRateCards';
-import CurrencyCalculator from '../components/CurrencyCalculator';
 import BinanceBanner from '../components/BinanceBanner';
 import PageMeta from '../components/PageMeta';
 import Navigation from '../components/Navigation';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { fetchBlueRate } from '../utils/api';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
+
+// Lazy load the calculator for better performance
+const CurrencyCalculator = lazy(() => import('../components/CurrencyCalculator'));
+
+const ComponentLoader = () => (
+  <div className="flex items-center justify-center py-12">
+    <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-blue-600"></div>
+  </div>
+);
 
 function Calculator() {
   // Signal to AdSense that this page has sufficient content
@@ -124,7 +132,9 @@ function Calculator() {
 
         {/* Calculator */}
         <section>
-          <CurrencyCalculator />
+          <Suspense fallback={<ComponentLoader />}>
+            <CurrencyCalculator />
+          </Suspense>
         </section>
 
         {/* Additional Content Section for AdSense Compliance */}

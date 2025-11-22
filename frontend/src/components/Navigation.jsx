@@ -90,7 +90,7 @@ function Navigation() {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-3 text-xs sm:text-sm font-medium whitespace-nowrap transition-colors ${
+                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-3 text-xs sm:text-sm font-medium whitespace-nowrap transition-smooth hover-lift-sm ${
                   isActive
                     ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
                     : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white border-b-2 border-transparent hover:border-gray-300 dark:hover:border-gray-600'

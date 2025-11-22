@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Header } from '../components/Header';
-import { RateDisplay } from '../components/RateDisplay';
-import { RateChart } from '../components/RateChart';
-import { PageMeta } from '../components/PageMeta';
+import Header from '../components/Header';
+import BlueRateCards from '../components/BlueRateCards';
+import BlueChart from '../components/BlueChart';
+import PageMeta from '../components/PageMeta';
 import { SocialShare } from '../components/SocialShare';
-import { useLanguage } from '../context/LanguageContext';
-import { getRates } from '../services/api';
+import { useLanguage } from '../contexts/LanguageContext';
+import { fetchBlueRate } from '../utils/api';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 
 /**
@@ -30,10 +30,14 @@ function DolarParaleloBoliviaEnVivo() {
 
   const loadRates = async () => {
     try {
-      const data = await getRates();
-      if (data && data.length > 0) {
+      const data = await fetchBlueRate();
+      if (data && data.buy_bob_per_usd && data.sell_bob_per_usd) {
         setPreviousRate(currentRate);
-        setCurrentRate(data[0]);
+        setCurrentRate({
+          ...data,
+          buy: data.buy_bob_per_usd,
+          sell: data.sell_bob_per_usd
+        });
         setLastUpdate(new Date());
       }
     } catch (error) {
@@ -102,7 +106,7 @@ function DolarParaleloBoliviaEnVivo() {
 
           {/* Current Rate Display */}
           {!isLoading && currentRate && (
-            <RateDisplay currentRate={currentRate} previousRate={previousRate} />
+            <BlueRateCards />
           )}
           
           {isLoading && (
@@ -140,7 +144,7 @@ function DolarParaleloBoliviaEnVivo() {
               ? 'Evolución del Dólar Paralelo Bolivia'
               : 'Bolivia Parallel Dollar Evolution'}
           </h2>
-          <RateChart />
+          <BlueChart />
         </section>
 
         {/* Why Choose Us */}

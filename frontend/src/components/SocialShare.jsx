@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLanguage } from '../context/LanguageContext';
+import { useLanguage } from '../contexts/LanguageContext';
 
 /**
  * SocialShare Component
@@ -102,3 +102,5 @@ export function SocialShare({ title, description, url }) {
     </div>
   );
 }
+
+export default SocialShare;

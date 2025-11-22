@@ -27,49 +27,34 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          // Recharts is HUGE - isolate it
-          if (id.includes('recharts')) {
-            return 'chart-vendor';
-          }
-          // React Router - separate for better caching
-          if (id.includes('react-router')) {
-            return 'router-vendor';
-          }
-          // Core React - most stable, best caching
-          if (id.includes('react') || id.includes('react-dom')) {
-            return 'react-core';
-          }
-          // Supabase client
-          if (id.includes('@supabase')) {
-            return 'supabase-vendor';
-          }
-          // React Helmet
-          if (id.includes('react-helmet')) {
-            return 'helmet-vendor';
-          }
-          // Other node_modules
           if (id.includes('node_modules')) {
+            // Core React libraries together
+            if (id.includes('react') || id.includes('react-dom')) {
+              return 'react-core';
+            }
+            // React Router
+            if (id.includes('react-router')) {
+              return 'router-vendor';
+            }
+            // Charts
+            if (id.includes('recharts')) {
+              return 'chart-vendor';
+            }
+            // Supabase
+            if (id.includes('@supabase')) {
+              return 'supabase-vendor';
+            }
+            // Everything else
             return 'vendor';
           }
         }
       }
     },
     chunkSizeWarningLimit: 1000,
-    minify: 'terser', // Terser is better than esbuild for production
-    terserOptions: {
-      compress: {
-        drop_console: true, // Remove console.logs in production
-        drop_debugger: true,
-        pure_funcs: ['console.log', 'console.info', 'console.debug']
-      }
-    },
-    sourcemap: false, // Disable source maps for smaller bundles
+    minify: 'terser',
+    sourcemap: false,
     cssCodeSplit: true,
     target: 'es2015',
-    // Enable tree shaking
-    treeshake: true,
-    // Optimize chunk loading
-    assetsInlineLimit: 4096, // Inline assets smaller than 4kb
   }
 });
 

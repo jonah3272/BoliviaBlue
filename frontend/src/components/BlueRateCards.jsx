@@ -1,5 +1,6 @@
 import { useState, useEffect, memo, useCallback, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { motion } from 'framer-motion';
 import { fetchBlueRate } from '../utils/api';
 import { formatRate, formatDateTime, isStale } from '../utils/formatters';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -20,17 +21,17 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
 
   if (isLoading) {
     return (
-      <div className={`bg-white dark:bg-gray-800 rounded-lg border-2 ${borderColor} p-4 shadow-lg animate-pulse`}>
-        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-20 mb-2"></div>
-        <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded w-28 mb-1"></div>
-        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
+      <div className={`backdrop-blur-sm bg-white/50 dark:bg-gray-800/50 rounded-xl border-2 ${borderColor} p-4 shadow-lg`}>
+        <div className="skeleton h-4 w-20 mb-2"></div>
+        <div className="skeleton h-12 w-28 mb-1"></div>
+        <div className="skeleton h-3 w-32"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className={`bg-white dark:bg-gray-800 rounded-lg border-2 ${borderColor} p-4 shadow-lg`}>
+      <div className={`bg-white dark:bg-gray-800 rounded-xl border-2 ${borderColor} p-4 shadow-lg`}>
         <div className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">{label}</div>
         <div className="text-red-500 text-xs">{t('error')}</div>
       </div>
@@ -38,7 +39,13 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
   }
 
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-lg border-2 ${borderColor} p-4 shadow-lg transition-all hover:shadow-xl`}>
+    <motion.div 
+      className={`glass dark:glass-dark rounded-xl border-2 ${borderColor} p-4 shadow-lg hover-lift hover-glow-${isBuy ? 'blue' : 'purple'} transition-smooth`}
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.3 }}
+      whileHover={{ scale: 1.02 }}
+    >
       <div className="flex items-center justify-between mb-1">
         <div className="text-xs font-medium text-gray-600 dark:text-gray-400">{label}</div>
         <div className="flex gap-1.5">
@@ -55,21 +62,27 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
         </div>
       </div>
       
-      <div className="mb-1 animate-on-update">
-        <div className="font-mono text-4xl font-bold text-gray-900 dark:text-white">
+      <motion.div 
+        className="mb-1"
+        initial={{ scale: 1 }}
+        animate={{ scale: [1, 1.05, 1] }}
+        transition={{ duration: 0.3 }}
+        key={rate}
+      >
+        <div className="font-mono text-4xl font-bold gradient-text-blue dark:text-white">
           {formatRate(rate)}
         </div>
         <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
           {t('perUSD')}
         </div>
-      </div>
+      </motion.div>
       
       {timestamp && (
         <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
           {t('updated')}: {formatDateTime(timestamp)}
         </div>
       )}
-    </div>
+    </motion.div>
   );
 });
 

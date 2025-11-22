@@ -260,6 +260,33 @@ function Home() {
     "@context": "https://schema.org",
     "@type": "WebApplication",
     "name": "Bolivia Blue con Paz",
+    "alternateName": "Bolivia Blue with Paz",
+    "url": "https://boliviablue.com",
+    "description": language === 'es'
+      ? "Plataforma de seguimiento en tiempo real del tipo de cambio del dólar blue en Bolivia"
+      : "Real-time tracking platform for the blue dollar exchange rate in Bolivia",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "featureList": language === 'es' 
+      ? [
+          "Cotización del dólar blue en tiempo real",
+          "Gráficos históricos de tipo de cambio",
+          "Calculadora de divisas USD/BOB",
+          "Noticias financieras de Bolivia",
+          "Análisis de sentimiento con IA"
+        ]
+      : [
+          "Real-time blue dollar quotes",
+          "Historical exchange rate charts",
+          "USD/BOB currency calculator",
+          "Bolivia financial news",
+          "AI-powered sentiment analysis"
+        ],
     "aggregateRating": {
       "@type": "AggregateRating",
       "ratingValue": "4.9",
@@ -267,8 +294,7 @@ function Home() {
       "worstRating": "1",
       "ratingCount": "487",
       "reviewCount": "156"
-    },
-    "url": "https://boliviablue.com"
+    }
   };
 
   // VideoObject schema for video rich results

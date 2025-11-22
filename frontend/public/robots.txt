@@ -5,6 +5,11 @@
 User-agent: *
 Allow: /
 
+# Allow Google AdSense crawler (Mediapartners-Google)
+# This crawler checks pages for ad suitability and policy compliance
+User-agent: Mediapartners-Google
+Allow: /
+
 # Sitemap location
 Sitemap: https://boliviablue.com/sitemap.xml
 

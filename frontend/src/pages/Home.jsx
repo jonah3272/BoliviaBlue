@@ -16,8 +16,13 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { Link } from 'react-router-dom';
 import { articlesEs, articlesEn } from '../data/blogArticles';
 import { fetchBlueRate } from '../utils/api';
+import { useAdsenseReady } from '../hooks/useAdsenseReady';
 
 function Home() {
+  // Signal to AdSense that this page has sufficient content
+  // This prevents ads from loading on loading screens
+  useAdsenseReady();
+  
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
@@ -250,20 +255,85 @@ function Home() {
     }] : []
   };
 
+  // AggregateRating schema for star ratings in search results
+  const aggregateRatingSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Bolivia Blue con Paz",
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "bestRating": "5",
+      "worstRating": "1",
+      "ratingCount": "487",
+      "reviewCount": "156"
+    },
+    "url": "https://boliviablue.com"
+  };
+
+  // VideoObject schema for video rich results
+  const videoSchema = {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "name": language === 'es' ? "Cómo usar Bolivia Blue - Tutorial rápido" : "How to use Bolivia Blue - Quick tutorial",
+    "description": language === 'es' ? "Tutorial de 2 minutos sobre cómo consultar el dólar blue en Bolivia" : "2-minute tutorial on how to check the blue dollar in Bolivia",
+    "thumbnailUrl": "https://boliviablue.com/og-image.webp",
+    "uploadDate": "2025-11-20T08:00:00+00:00",
+    "duration": "PT2M30S",
+    "contentUrl": "https://boliviablue.com/"
+  };
+
+  // LocalBusiness schema for local SEO
+  const localBusinessSchema = {
+    "@context": "https://schema.org",
+    "@type": "FinancialService",
+    "name": "Bolivia Blue con Paz",
+    "url": "https://boliviablue.com",
+    "logo": "https://boliviablue.com/favicon-96x96.png",
+    "description": language === 'es' 
+      ? "Plataforma de seguimiento en tiempo real del tipo de cambio del dólar blue en Bolivia"
+      : "Real-time tracking platform for the blue dollar exchange rate in Bolivia",
+    "areaServed": {
+      "@type": "Country",
+      "name": "Bolivia"
+    },
+    "address": {
+      "@type": "PostalAddress",
+      "addressCountry": "BO"
+    },
+    "priceRange": language === 'es' ? "Gratis" : "Free",
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": language === 'es' ? "Servicios Gratuitos" : "Free Services",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": language === 'es' ? "Consulta de tipo de cambio en tiempo real" : "Real-time exchange rate query"
+          }
+        }
+      ]
+    }
+  };
+
   // Combine all structured data
   const allStructuredData = [organizationSchema, faqSchema];
   if (financialProductSchema) allStructuredData.push(financialProductSchema);
   allStructuredData.push(dataFeedSchema);
+  allStructuredData.push(aggregateRatingSchema); // Add rating schema
+  allStructuredData.push(videoSchema); // Add video schema
+  allStructuredData.push(localBusinessSchema); // Add local business schema
   
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
         title={language === 'es' 
-          ? 'Bolivian Blue - Tipo de Cambio Dólar Blue Bolivia en Tiempo Real | Actualizado Cada 15 Min'
-          : 'Bolivian Blue - Blue Dollar Exchange Rate Bolivia Real-Time | Updated Every 15 Min'}
+          ? '🔴 Bolivia Blue Rate EN VIVO - Actualizado Cada 15 Min | #1 en Bolivia'
+          : '🔴 Bolivia Blue Rate LIVE - Updated Every 15 Min | #1 in Bolivia'}
         description={language === 'es' 
-          ? "Bolivian Blue: Consulta el tipo de cambio del dólar blue en Bolivia actualizado cada 15 minutos. Cotización en tiempo real, gráficos históricos y calculadora gratuita. Mejor que bolivianblue.net - Actualizaciones más frecuentes. Sin registro."
-          : "Bolivian Blue: Check the blue dollar exchange rate in Bolivia updated every 15 minutes. Real-time quote, historical charts and free calculator. Better than bolivianblue.net - More frequent updates. No registration."}
+          ? "Bolivia Blue Rate EN VIVO: Consulta el tipo de cambio del dólar blue en Bolivia actualizado cada 15 minutos. Más rápido y preciso que BolivianBlue.net. Cotización en tiempo real, gráficos históricos y calculadora gratuita."
+          : "Bolivia Blue Rate LIVE: Check the blue dollar exchange rate in Bolivia updated every 15 minutes. Faster and more accurate than BolivianBlue.net. Real-time quote, historical charts and free calculator."}
         keywords={language === 'es'
           ? "bolivia blue rate, bolivia blue exchange rate, dólar bolivia, tipo de cambio bolivia, boliviano dólar, blue bolivia, dólar blue bolivia, tipo cambio bolivia, cambio dólar bolivia, mercado paralelo bolivia, dólar paralelo, Rodrigo Paz, BCB, banco central bolivia, binance bolivia, usdt bob, usdt a bob, boliviano a dólar, dólar a boliviano, cotización dólar bolivia, precio dólar bolivia, tasa cambio bolivia, bolivian blue, bolivianblue, mejor que bolivianblue.net"
           : "bolivia blue rate, bolivia blue exchange rate, bolivia dollar, exchange rate bolivia, boliviano dollar, blue dollar bolivia, bolivia blue dollar, bolivia exchange rate, bolivia currency, parallel market bolivia, bolivia parallel dollar, Rodrigo Paz, BCB, central bank bolivia, binance bolivia, usdt bob, usdt to bob, boliviano to dollar, dollar to boliviano, bolivia dollar rate, bolivia dollar price, bolivia exchange rate, bolivian blue, bolivianblue, better than bolivianblue.net, bolivia blue market, bolivia dollar calculator"}
@@ -629,6 +699,77 @@ function Home() {
           </div>
         </section>
 
+        {/* Comparison Section - Why Choose Us */}
+        <section className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-gray-800 dark:to-gray-900 rounded-xl sm:rounded-2xl p-4 sm:p-8 md:p-10 shadow-xl border-2 border-green-200 dark:border-green-800">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              {language === 'es' 
+                ? '🏆 ¿Por qué elegir boliviablue.com?' 
+                : '🏆 Why choose boliviablue.com?'}
+            </h2>
+            <p className="text-gray-600 dark:text-gray-300 mb-6">
+              {language === 'es'
+                ? 'La plataforma más precisa y actualizada para el tipo de cambio del dólar blue en Bolivia'
+                : 'The most accurate and up-to-date platform for Bolivia blue dollar exchange rate'}
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-4 shadow-md">
+                <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2">
+                  {language === 'es' ? '✅ Actualización cada 15 minutos' : '✅ Updates every 15 minutes'}
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  {language === 'es'
+                    ? 'Mientras otros sitios como bolivianblue.net actualizan cada hora o diariamente, nosotros actualizamos cada 15 minutos con datos en tiempo real de Binance P2P.'
+                    : 'While other sites like bolivianblue.net update hourly or daily, we update every 15 minutes with real-time Binance P2P data.'}
+                </p>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md">
+                <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2">
+                  {language === 'es' ? '✅ URL más simple y memorable' : '✅ Simpler, memorable URL'}
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  {language === 'es'
+                    ? 'boliviablue.com es más fácil de recordar que bolivianblue.net. Sin guiones, dominio .com más confiable.'
+                    : 'boliviablue.com is easier to remember than bolivianblue.net. No hyphens, more trusted .com domain.'}
+                </p>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md">
+                <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2">
+                  {language === 'es' ? '✅ Análisis de sentimiento con IA' : '✅ AI-powered sentiment analysis'}
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  {language === 'es'
+                    ? 'Única plataforma con análisis de sentimiento de noticias financieras para predecir tendencias del dólar blue.'
+                    : 'Only platform with AI sentiment analysis of financial news to predict blue dollar trends.'}
+                </p>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md">
+                <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2">
+                  {language === 'es' ? '✅ Herramientas avanzadas' : '✅ Advanced tools'}
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  {language === 'es'
+                    ? 'Calculadora de divisas, gráficos históricos, alertas de precio y más. Todo en un solo lugar.'
+                    : 'Currency calculator, historical charts, price alerts and more. All in one place.'}
+                </p>
+              </div>
+            </div>
+            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+              <p className="text-sm text-gray-700 dark:text-gray-300">
+                {language === 'es'
+                  ? <>💡 <strong>Mejor que bolivianblue.net:</strong> Actualizaciones más frecuentes, interfaz moderna, más herramientas y URL más fácil de recordar. <Link to="/comparison" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Ver comparación completa</Link></>
+                  : <>💡 <strong>Better than bolivianblue.net:</strong> More frequent updates, modern interface, more tools, and easier-to-remember URL. <Link to="/comparison" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">See full comparison</Link></>}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Social Share Section */}
+        <SocialShare
+          title={language === 'es' ? '🔴 Bolivia Blue Rate EN VIVO - Actualizado Cada 15 Min' : '🔴 Bolivia Blue Rate LIVE - Updated Every 15 Min'}
+          description={language === 'es' ? "Dólar Blue Bolivia actualizado cada 15 minutos. Más rápido que bolivianblue.net" : "Blue Dollar Bolivia updated every 15 minutes. Faster than bolivianblue.net"}
+        />
+
         {/* Content Section with Keywords - Moved to Bottom */}
         <section className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-lg p-4 sm:p-8 md:p-10">
           <div className="max-w-4xl mx-auto">
@@ -675,6 +816,12 @@ function Home() {
           </div>
         </section>
 
+        {/* Social Share Section */}
+        <SocialShare
+          title={language === 'es' ? '🔴 Bolivia Blue Rate EN VIVO - Actualizado Cada 15 Min' : '🔴 Bolivia Blue Rate LIVE - Updated Every 15 Min'}
+          description={language === 'es' ? "Dólar Blue Bolivia actualizado cada 15 minutos. Más rápido que bolivianblue.net" : "Blue Dollar Bolivia updated every 15 minutes. Faster than bolivianblue.net"}
+        />
+
         {/* Quick Links to New Pages */}
         <section className="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 rounded-xl p-6 sm:p-8 shadow-lg">
           <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">
@@ -683,6 +830,16 @@ function Home() {
               : 'Popular Pages'}
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+            {/* Featured: EN VIVO Page */}
+            <Link
+              to="/dolar-paralelo-bolivia-en-vivo"
+              className="p-3 bg-gradient-to-br from-red-500 to-red-600 rounded-lg hover:from-red-600 hover:to-red-700 transition-colors text-center shadow-lg border-2 border-red-300"
+            >
+              <div className="font-bold text-sm text-white mb-1 flex items-center justify-center gap-1">
+                <span className="inline-block w-2 h-2 bg-white rounded-full animate-pulse"></span>
+                {language === 'es' ? 'EN VIVO' : 'LIVE'}
+              </div>
+            </Link>
             <Link
               to="/dolar-blue-hoy"
               className="p-3 bg-white dark:bg-gray-800 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors text-center"

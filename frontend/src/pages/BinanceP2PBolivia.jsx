@@ -9,8 +9,13 @@ import BinanceBanner from '../components/BinanceBanner';
 import { Link } from 'react-router-dom';
 import { fetchBlueRate } from '../utils/api';
 import Breadcrumbs from '../components/Breadcrumbs';
+import { useAdsenseReady } from '../hooks/useAdsenseReady';
+import { useAdsenseReady } from '../hooks/useAdsenseReady';
 
 function BinanceP2PBolivia() {
+  // Signal to AdSense that this page has sufficient content
+  useAdsenseReady();
+  
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';

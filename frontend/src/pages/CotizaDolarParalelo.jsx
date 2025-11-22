@@ -11,8 +11,12 @@ import { fetchBlueRate } from '../utils/api';
 import { lazy, Suspense } from 'react';
 const BlueChart = lazy(() => import('../components/BlueChart'));
 import Breadcrumbs from '../components/Breadcrumbs';
+import { useAdsenseReady } from '../hooks/useAdsenseReady';
 
 function CotizaDolarParalelo() {
+  // Signal to AdSense that this page has sufficient content
+  useAdsenseReady();
+  
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';

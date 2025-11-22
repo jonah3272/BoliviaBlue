@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import { fetchBlueRate } from '../utils/api';
 import { BINANCE_REFERRAL_LINK, BINANCE_P2P_LINK } from '../config/referrals';
 import { BinanceButton, AirtmButton } from '../components/BrandButton';
+import { useAdsenseReady } from '../hooks/useAdsenseReady';
 
 // Platform Card Component for Secondary Options
 function PlatformCard({ name, description, features, link, color, iconColor, language }) {
@@ -61,6 +62,9 @@ function PlatformCard({ name, description, features, link, color, iconColor, lan
 }
 
 function BuyDollars() {
+  // Signal to AdSense that this page has sufficient content
+  useAdsenseReady();
+  
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';

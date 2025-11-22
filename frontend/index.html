@@ -59,6 +59,12 @@
     <!-- display=swap ensures text is visible immediately with fallback font, then swaps when custom font loads -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     
+    <!-- Performance: Preload Critical Resources -->
+    <link rel="preload" href="/og-image.webp" as="image" type="image/webp">
+    <link rel="dns-prefetch" href="https://api.binance.com">
+    <link rel="preconnect" href="https://pagead2.googlesyndication.com">
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+    
     <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
     {
@@ -104,47 +110,30 @@
     </script>
     
     <!-- Google AdSense -->
-    <!-- Only load AdSense on pages with sufficient content (per AdSense policy) -->
-    <script>
-      (function() {
-        // Pages that violate AdSense policy - no ads allowed:
-        // 1. Pages without content or with low value content
-        // 2. Pages under construction
-        // 3. Pages used for alerts, navigation or other behavioral purposes
-        const path = window.location.pathname;
-            const noAdsPages = [
-              // No pages currently excluded from AdSense
-            ];
+    <!-- 
+      IMPORTANT: AdSense Policy Compliance
+      We only load ads on pages with sufficient content to comply with Google's policy:
+      "We do not allow Google-served ads on screens without content or with low value content"
+      
+      The adsenseLoader.js utility ensures:
+      1. No ads on loading screens (React Suspense fallbacks)
+      2. No ads on error pages
+      3. No ads until minimum content threshold is met
+      4. Multiple validation checks before loading ads
+    -->
+    <script type="module">
+      import { loadAdSense } from './src/utils/adsenseLoader.js';
+      
+      // Wait for window to fully load (all resources including images)
+      window.addEventListener('load', () => {
+        console.log('[AdSense] Page fully loaded, starting content validation...');
         
-        const shouldDisableAds = noAdsPages.some(page => path.startsWith(page));
-        
-        // Only load AdSense on pages with sufficient content
-        // Wait for DOM to be ready and ensure we're not on a restricted page
-        function loadAdSense() {
-          if (shouldDisableAds) {
-            return; // Don't load ads on restricted pages
-          }
-          
-          // Additional check: ensure page has loaded content
-          // This prevents ads from loading on empty/loading states
-          if (document.body && document.body.children.length > 0) {
-            var script = document.createElement('script');
-            script.async = true;
-            script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3497294777171749';
-            script.crossOrigin = 'anonymous';
-            script.setAttribute('data-ad-client', 'ca-pub-3497294777171749');
-            document.head.appendChild(script);
-          }
-        }
-        
-        // Load after DOM is ready
-        if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', loadAdSense);
-        } else {
-          // DOM already loaded, but wait a bit to ensure React has rendered content
-          setTimeout(loadAdSense, 100);
-        }
-      })();
+        // Additional delay to ensure React has fully rendered and hydrated
+        // This is critical for SPAs where content loads after JavaScript
+        setTimeout(() => {
+          loadAdSense('ca-pub-3497294777171749');
+        }, 1500); // 1.5 second delay after page load to ensure React content is rendered
+      });
     </script>
     
     <!-- Google Analytics -->

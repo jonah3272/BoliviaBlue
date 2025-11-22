@@ -7,8 +7,12 @@ import Navigation from '../components/Navigation';
 import BlueRateCards from '../components/BlueRateCards';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { Link } from 'react-router-dom';
+import { useAdsenseReady } from '../hooks/useAdsenseReady';
 
 function Bancos() {
+  // Signal to AdSense that this page has sufficient content
+  useAdsenseReady();
+  
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';

@@ -6,8 +6,12 @@ import Navigation from '../components/Navigation';
 import BlueRateCards from '../components/BlueRateCards';
 import BinanceBanner from '../components/BinanceBanner';
 import { Link } from 'react-router-dom';
+import { useAdsenseReady } from '../hooks/useAdsenseReady';
 
 function RodrigoPaz() {
+  // Signal to AdSense that this page has sufficient content
+  useAdsenseReady();
+  
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';

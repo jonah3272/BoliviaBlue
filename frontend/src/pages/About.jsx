@@ -5,8 +5,12 @@ import Navigation from '../components/Navigation';
 import BlueRateCards from '../components/BlueRateCards';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
+import { useAdsenseReady } from '../hooks/useAdsenseReady';
 
 function About() {
+  // Signal to AdSense that this page has sufficient content
+  useAdsenseReady();
+  
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';

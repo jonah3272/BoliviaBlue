@@ -10,6 +10,7 @@ import Breadcrumbs from '../components/Breadcrumbs';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { fetchBlogArticles, fetchBlogArticleBySlug } from '../utils/blogApi';
 import { articlesEs, articlesEn } from '../data/blogArticles'; // Fallback
+import { useAdsenseReadyWhen } from '../hooks/useAdsenseReady';
 
 function Blog() {
   const languageContext = useLanguage();
@@ -22,6 +23,14 @@ function Blog() {
   const [articles, setArticles] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // Only allow ads when articles are loaded or single article is loaded (AdSense policy compliance)
+  // For list view: wait for articles to load
+  // For article view: wait for selected article to load
+  useAdsenseReadyWhen(
+    isLoading, 
+    slug ? selectedArticle !== null : articles.length > 0
+  );
 
   // Fetch articles from Supabase (only when not viewing a single article)
   useEffect(() => {

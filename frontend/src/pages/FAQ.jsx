@@ -5,8 +5,12 @@ import Navigation from '../components/Navigation';
 import Header from '../components/Header';
 import BlueRateCards from '../components/BlueRateCards';
 import { Link } from 'react-router-dom';
+import { useAdsenseReady } from '../hooks/useAdsenseReady';
 
 function FAQ() {
+  // Signal to AdSense that this page has sufficient content
+  useAdsenseReady();
+  
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
@@ -116,6 +120,35 @@ function FAQ() {
       ]
     };
 
+  // HowTo schema for rich results
+  const howToSchema = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": language === 'es' ? "Cómo consultar el dólar blue en Bolivia" : "How to check the blue dollar in Bolivia",
+    "description": language === 'es' ? "Guía paso a paso para consultar el tipo de cambio del dólar blue en Bolivia" : "Step-by-step guide to check the blue dollar exchange rate in Bolivia",
+    "totalTime": "PT2M",
+    "step": [
+      {
+        "@type": "HowToStep",
+        "name": language === 'es' ? "Visita boliviablue.com" : "Visit boliviablue.com",
+        "text": language === 'es' ? "Accede a nuestra plataforma desde cualquier dispositivo - móvil, tablet o computadora" : "Access our platform from any device - mobile, tablet or computer",
+        "url": "https://boliviablue.com/"
+      },
+      {
+        "@type": "HowToStep",
+        "name": language === 'es' ? "Ver tasa actual" : "View current rate",
+        "text": language === 'es' ? "La tasa de compra y venta se muestra en la parte superior. Actualizado cada 15 minutos." : "Buy and sell rates are shown at the top. Updated every 15 minutes.",
+        "url": "https://boliviablue.com/"
+      },
+      {
+        "@type": "HowToStep",
+        "name": language === 'es' ? "Usar calculadora" : "Use calculator",
+        "text": language === 'es' ? "Usa nuestra calculadora para convertir USD a BOB o viceversa instantáneamente" : "Use our calculator to convert USD to BOB or vice versa instantly",
+        "url": "https://boliviablue.com/calculator"
+      }
+    ]
+  };
+
   const faqs = [
     { q: 'faqQ1', a: 'faqA1' },
     { q: 'faqQ2', a: 'faqA2' },
@@ -140,7 +173,7 @@ function FAQ() {
           ? "preguntas frecuentes dólar blue, faq tipo cambio bolivia, dudas dólar paralelo, preguntas bolivia blue, qué es dólar blue, cómo funciona dólar blue, preguntas frecuentes bolivia blue, mejor que bolivianblue.net"
           : "blue dollar faq, exchange rate questions bolivia, parallel dollar questions, bolivia blue faq, what is blue dollar, how blue dollar works, bolivia blue frequently asked questions, better than bolivianblue.net"}
         canonical="/faq"
-        structuredData={faqSchema}
+        structuredData={[faqSchema, howToSchema]}
       />
       
       <Header />

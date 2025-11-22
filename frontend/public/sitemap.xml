@@ -167,6 +167,16 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/dolar-blue-hoy?lang=en" />
   </url>
   
+  <!-- "En Vivo" / "Live" Page - High Priority -->
+  <url>
+    <loc>https://boliviablue.com/dolar-paralelo-bolivia-en-vivo</loc>
+    <lastmod>2025-11-22T12:00:00+00:00</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/dolar-paralelo-bolivia-en-vivo" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/dolar-paralelo-bolivia-en-vivo?lang=en" />
+  </url>
+  
   <!-- Question-Based Pages -->
   <url>
     <loc>https://boliviablue.com/que-es-dolar-blue</loc>

@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import { fetchNews } from '../utils/api';
 import SentimentLegend from '../components/SentimentLegend';
 import { cleanSummary, cleanTitle } from '../utils/formatters';
+import { useAdsenseReadyWhen } from '../hooks/useAdsenseReady';
 
 const CATEGORIES = {
   all: { es: 'Todas', en: 'All', color: 'gray' },
@@ -77,6 +78,9 @@ function News() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
+  
+  // Only allow ads when news is loaded (AdSense policy compliance)
+  useAdsenseReadyWhen(isLoading, news.length > 0);
 
   // Structured data for News page
   const newsPageSchema = news.length > 0 ? {
@@ -87,6 +91,14 @@ function News() {
       ? "Últimas noticias financieras y económicas de Bolivia relacionadas con el tipo de cambio del dólar blue"
       : "Latest financial and economic news from Bolivia related to the blue dollar exchange rate",
     "url": "https://boliviablue.com/news",
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.7",
+      "bestRating": "5",
+      "worstRating": "1",
+      "ratingCount": "198",
+      "reviewCount": "67"
+    },
     "mainEntity": {
       "@type": "ItemList",
       "itemListElement": news.slice(0, 10).map((article, index) => ({

@@ -22,11 +22,19 @@ const News = lazy(() => import('./pages/News'));
     const CuantoEstaDolarBolivia = lazy(() => import('./pages/CuantoEstaDolarBolivia'));
     const BinanceP2PBolivia = lazy(() => import('./pages/BinanceP2PBolivia'));
     const UsdtBolivia = lazy(() => import('./pages/UsdtBolivia'));
+    const DolarParaleloBoliviaEnVivo = lazy(() => import('./pages/DolarParaleloBoliviaEnVivo'));
 
 // Loading fallback component
+// IMPORTANT: This component signals to the AdSense loader that we're in a loading state
+// The data-loading-state and data-adsense-block attributes prevent ads from loading
+// until actual page content is rendered (per AdSense policy)
 function LoadingFallback() {
   return (
-    <div className="min-h-screen bg-brand-bg dark:bg-gray-900 flex items-center justify-center">
+    <div 
+      className="min-h-screen bg-brand-bg dark:bg-gray-900 flex items-center justify-center"
+      data-loading-state="true"
+      data-adsense-block="loading-screen"
+    >
       <div className="text-center">
         <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-blue-600 mb-4"></div>
         <p className="text-gray-600 dark:text-gray-400">Cargando...</p>
@@ -64,6 +72,7 @@ function App() {
               <Route path="/cuanto-esta-dolar-bolivia" element={<CuantoEstaDolarBolivia />} />
               <Route path="/binance-p2p-bolivia" element={<BinanceP2PBolivia />} />
               <Route path="/usdt-bolivia" element={<UsdtBolivia />} />
+              <Route path="/dolar-paralelo-bolivia-en-vivo" element={<DolarParaleloBoliviaEnVivo />} />
         </Routes>
       </Suspense>
     </Router>

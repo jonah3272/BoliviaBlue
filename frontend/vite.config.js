@@ -26,28 +26,7 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
-          if (id.includes('node_modules')) {
-            // Core React libraries together
-            if (id.includes('react') || id.includes('react-dom')) {
-              return 'react-core';
-            }
-            // React Router
-            if (id.includes('react-router')) {
-              return 'router-vendor';
-            }
-            // Charts
-            if (id.includes('recharts')) {
-              return 'chart-vendor';
-            }
-            // Supabase
-            if (id.includes('@supabase')) {
-              return 'supabase-vendor';
-            }
-            // Everything else
-            return 'vendor';
-          }
-        }
+        manualChunks: undefined, // Disable manual chunking to let Vite handle it automatically
       }
     },
     chunkSizeWarningLimit: 1000,

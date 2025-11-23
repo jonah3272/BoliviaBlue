@@ -733,4 +733,267 @@ textarea {
   }
 }
 
+/* ==========================================
+   LIGHT MODE ENHANCEMENTS
+   ========================================== */
+
+/* Improved base background for light mode - crisp white with subtle texture */
+body:not(.dark) {
+  background: #FFFFFF;
+  background-image: 
+    radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.03) 0%, transparent 50%);
+}
+
+/* Enhanced card styling for light mode */
+.light-mode-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(203, 213, 225, 0.5);
+}
+
+.light-mode-card:hover {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12), 0 6px 6px rgba(0, 0, 0, 0.08);
+  border-color: rgba(148, 163, 184, 0.8);
+}
+
+/* Enhanced text contrast for light mode */
+:not(.dark) .text-gray-900 {
+  color: #0f172a;
+}
+
+:not(.dark) .text-gray-800 {
+  color: #1e293b;
+}
+
+:not(.dark) .text-gray-700 {
+  color: #334155;
+}
+
+:not(.dark) .text-gray-600 {
+  color: #475569;
+}
+
+:not(.dark) .text-gray-500 {
+  color: #64748b;
+}
+
+/* Better gradients for light mode sections */
+.light-gradient-subtle {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+.light-gradient-blue {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border: 1px solid #bfdbfe;
+}
+
+.light-gradient-green {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border: 1px solid #bbf7d0;
+}
+
+.light-gradient-yellow {
+  background: linear-gradient(135deg, #fef9c3 0%, #fef08a 100%);
+  border: 1px solid #fde047;
+}
+
+.light-gradient-purple {
+  background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+  border: 1px solid #e9d5ff;
+}
+
+/* Enhanced shadows for depth in light mode */
+:not(.dark) .shadow-sm {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+:not(.dark) .shadow {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+:not(.dark) .shadow-md {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+:not(.dark) .shadow-lg {
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+:not(.dark) .shadow-xl {
+  box-shadow: 0 20px 25px rgba(0, 0, 0, 0.12), 0 8px 10px rgba(0, 0, 0, 0.05);
+}
+
+:not(.dark) .shadow-2xl {
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+}
+
+/* Better borders for light mode */
+:not(.dark) .border-gray-200 {
+  border-color: #e2e8f0;
+}
+
+:not(.dark) .border-gray-300 {
+  border-color: #cbd5e1;
+}
+
+:not(.dark) .border-gray-400 {
+  border-color: #94a3b8;
+}
+
+/* Enhanced background colors for light mode */
+:not(.dark) .bg-white {
+  background-color: #ffffff;
+}
+
+:not(.dark) .bg-gray-50 {
+  background-color: #f8fafc;
+}
+
+:not(.dark) .bg-gray-100 {
+  background-color: #f1f5f9;
+}
+
+:not(.dark) .bg-gray-200 {
+  background-color: #e2e8f0;
+}
+
+/* Better contrast for links in light mode */
+:not(.dark) a.text-blue-600 {
+  color: #2563eb;
+}
+
+:not(.dark) a.text-blue-600:hover {
+  color: #1d4ed8;
+}
+
+/* Improved focus states for light mode */
+:not(.dark) *:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Enhanced hover states for light mode */
+:not(.dark) .hover\:bg-gray-50:hover {
+  background-color: #f8fafc;
+}
+
+:not(.dark) .hover\:bg-gray-100:hover {
+  background-color: #f1f5f9;
+}
+
+/* Better code blocks in light mode */
+:not(.dark) pre {
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+}
+
+:not(.dark) code {
+  background-color: #f1f5f9;
+  color: #1e293b;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+}
+
+/* Better alerts/notices in light mode */
+.light-alert-info {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border-left: 4px solid #3b82f6;
+  color: #1e40af;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.light-alert-success {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border-left: 4px solid #10b981;
+  color: #065f46;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.light-alert-warning {
+  background: linear-gradient(135deg, #fef9c3 0%, #fef08a 100%);
+  border-left: 4px solid #f59e0b;
+  color: #92400e;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.light-alert-error {
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  border-left: 4px solid #ef4444;
+  color: #991b1b;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+/* Enhanced button styling in light mode */
+:not(.dark) button:not(.btn-primary):not(.btn-secondary):not(.btn-success) {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+:not(.dark) button:hover:not(.btn-primary):not(.btn-secondary):not(.btn-success) {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.12);
+}
+
+/* Better table styling in light mode */
+:not(.dark) table {
+  border-color: #e2e8f0;
+}
+
+:not(.dark) thead {
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+:not(.dark) tbody tr {
+  border-color: #f1f5f9;
+}
+
+:not(.dark) tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+/* Enhanced form inputs in light mode */
+:not(.dark) input:not([type="checkbox"]):not([type="radio"]),
+:not(.dark) select,
+:not(.dark) textarea {
+  background-color: #ffffff;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+:not(.dark) input:focus:not([type="checkbox"]):not([type="radio"]),
+:not(.dark) select:focus,
+:not(.dark) textarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Better disabled states in light mode */
+:not(.dark) :disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Enhanced modal/dialog backgrounds in light mode */
+:not(.dark) .modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+/* Better scrollbar for light mode (already styled above, but ensure visibility) */
+:not(.dark) ::-webkit-scrollbar-track {
+  background: #f8fafc;
+}
+
+:not(.dark) ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+}
+
+:not(.dark) ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
 

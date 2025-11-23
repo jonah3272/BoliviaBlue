@@ -9,15 +9,11 @@ export default {
     extend: {
       colors: {
         brand: {
-          bg: '#FFFFFF', // Crisp white instead of gray
-          'bg-secondary': '#F8FAFC', // Very light blue-tinted background
-          text: '#111827', // Darker, better contrast
-          'text-secondary': '#475569', // Muted but readable
+          bg: '#F9FAFB',
+          text: '#1F2937',
           red: '#EF4444',
-          yellow: '#F59E0B', // Warmer yellow
+          yellow: '#FBBF24',
           green: '#10B981',
-          blue: '#3B82F6', // Primary blue
-          'blue-light': '#DBEAFE', // Light blue for subtle backgrounds
         }
       },
       fontFamily: {

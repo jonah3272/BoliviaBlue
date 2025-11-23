@@ -361,19 +361,34 @@ function Home() {
   allStructuredData.push(aggregateRatingSchema); // Add rating schema
   allStructuredData.push(videoSchema); // Add video schema
   allStructuredData.push(localBusinessSchema); // Add local business schema
+
+  // Breadcrumb schema for better SEO
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": language === 'es' ? "Inicio" : "Home",
+        "item": "https://boliviablue.com/"
+      }
+    ]
+  };
+  allStructuredData.push(breadcrumbSchema);
   
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
         title={language === 'es' 
-          ? '🔴 Bolivia Blue Rate EN VIVO - Actualizado Cada 15 Min | #1 en Bolivia'
-          : '🔴 Bolivia Blue Rate LIVE - Updated Every 15 Min | #1 in Bolivia'}
+          ? '¿Cuánto Está el Dólar Blue en Bolivia Hoy? 🔴 Actualizado Cada 15 Min'
+          : 'What is the Blue Dollar Rate in Bolivia Today? 🔴 Updated Every 15 Min'}
         description={language === 'es' 
-          ? "Bolivia Blue Rate EN VIVO: Consulta el tipo de cambio del dólar blue en Bolivia actualizado cada 15 minutos. Más rápido y preciso que BolivianBlue.net. Cotización en tiempo real, gráficos históricos y calculadora gratuita."
-          : "Bolivia Blue Rate LIVE: Check the blue dollar exchange rate in Bolivia updated every 15 minutes. Faster and more accurate than BolivianBlue.net. Real-time quote, historical charts and free calculator."}
+          ? "¿Cuánto está el dólar blue en Bolivia HOY? Consulta la cotización EN VIVO actualizada cada 15 minutos. Gráficos históricos, calculadora gratuita y alertas de precio. La información más precisa y rápida del mercado paralelo boliviano."
+          : "What is the blue dollar rate in Bolivia TODAY? Check the LIVE quote updated every 15 minutes. Historical charts, free calculator and price alerts. The most accurate and fastest information on the Bolivian parallel market."}
         keywords={language === 'es'
-          ? "bolivia blue rate, bolivia blue exchange rate, dólar bolivia, tipo de cambio bolivia, boliviano dólar, blue bolivia, dólar blue bolivia, tipo cambio bolivia, cambio dólar bolivia, mercado paralelo bolivia, dólar paralelo, Rodrigo Paz, BCB, banco central bolivia, binance bolivia, usdt bob, usdt a bob, boliviano a dólar, dólar a boliviano, cotización dólar bolivia, precio dólar bolivia, tasa cambio bolivia, bolivian blue, bolivianblue, mejor que bolivianblue.net"
-          : "bolivia blue rate, bolivia blue exchange rate, bolivia dollar, exchange rate bolivia, boliviano dollar, blue dollar bolivia, bolivia blue dollar, bolivia exchange rate, bolivia currency, parallel market bolivia, bolivia parallel dollar, Rodrigo Paz, BCB, central bank bolivia, binance bolivia, usdt bob, usdt to bob, boliviano to dollar, dollar to boliviano, bolivia dollar rate, bolivia dollar price, bolivia exchange rate, bolivian blue, bolivianblue, better than bolivianblue.net, bolivia blue market, bolivia dollar calculator"}
+          ? "cuanto esta el dolar en bolivia hoy, cuanto esta el dolar blue en bolivia, precio del dolar en bolivia hoy, a cuanto esta el dolar en bolivia, cambio de dolar en bolivia hoy, cotizacion dolar bolivia hoy, dolar paralelo bolivia hoy, bolivia blue rate, bolivia blue exchange rate, dólar bolivia, tipo de cambio bolivia, boliviano dólar, blue bolivia, dólar blue bolivia, tipo cambio bolivia, cambio dólar bolivia, mercado paralelo bolivia, dólar paralelo, Rodrigo Paz, BCB, banco central bolivia, binance bolivia, usdt bob, usdt a bob, boliviano a dólar, dólar a boliviano, cotización dólar bolivia, precio dólar bolivia, tasa cambio bolivia, bolivian blue, bolivianblue, mejor que bolivianblue.net"
+          : "how much is the dollar in bolivia today, what is the blue dollar rate in bolivia, bolivia dollar price today, what is the dollar rate in bolivia, dollar exchange in bolivia today, bolivia dollar quote today, bolivia parallel dollar today, bolivia blue rate, bolivia blue exchange rate, bolivia dollar, exchange rate bolivia, boliviano dollar, blue dollar bolivia, bolivia blue dollar, bolivia exchange rate, bolivia currency, parallel market bolivia, bolivia parallel dollar, Rodrigo Paz, BCB, central bank bolivia, binance bolivia, usdt bob, usdt to bob, boliviano to dollar, dollar to boliviano, bolivia dollar rate, bolivia dollar price, bolivia exchange rate, bolivian blue, bolivianblue, better than bolivianblue.net, bolivia blue market, bolivia dollar calculator"}
         canonical="/"
         structuredData={allStructuredData}
       />
@@ -881,6 +896,74 @@ function Home() {
           </div>
         </section>
       </main>
+
+      {/* Internal Linking Section for SEO */}
+      <section className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 rounded-xl p-6 shadow-lg">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">
+          {language === 'es' ? '🔗 Herramientas y Recursos' : '🔗 Tools and Resources'}
+        </h2>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
+          <Link to="/calculator" className="bg-white dark:bg-gray-800 p-3 rounded-lg hover:shadow-md transition-all text-center">
+            <div className="text-2xl mb-1">🧮</div>
+            <div className="font-semibold text-gray-900 dark:text-white">
+              {language === 'es' ? 'Calculadora USD/BOB' : 'USD/BOB Calculator'}
+            </div>
+          </Link>
+          <Link to="/news" className="bg-white dark:bg-gray-800 p-3 rounded-lg hover:shadow-md transition-all text-center">
+            <div className="text-2xl mb-1">📰</div>
+            <div className="font-semibold text-gray-900 dark:text-white">
+              {language === 'es' ? 'Noticias Financieras' : 'Financial News'}
+            </div>
+          </Link>
+          <Link to="/faq" className="bg-white dark:bg-gray-800 p-3 rounded-lg hover:shadow-md transition-all text-center">
+            <div className="text-2xl mb-1">❓</div>
+            <div className="font-semibold text-gray-900 dark:text-white">
+              {language === 'es' ? 'Preguntas Frecuentes' : 'FAQ'}
+            </div>
+          </Link>
+          <Link to="/comparison" className="bg-white dark:bg-gray-800 p-3 rounded-lg hover:shadow-md transition-all text-center">
+            <div className="text-2xl mb-1">📊</div>
+            <div className="font-semibold text-gray-900 dark:text-white">
+              {language === 'es' ? 'vs BolivianBlue.net' : 'vs BolivianBlue.net'}
+            </div>
+          </Link>
+          <Link to="/buy-dollars" className="bg-white dark:bg-gray-800 p-3 rounded-lg hover:shadow-md transition-all text-center">
+            <div className="text-2xl mb-1">💰</div>
+            <div className="font-semibold text-gray-900 dark:text-white">
+              {language === 'es' ? 'Cómo Comprar Dólares' : 'How to Buy Dollars'}
+            </div>
+          </Link>
+          <Link to="/blog" className="bg-white dark:bg-gray-800 p-3 rounded-lg hover:shadow-md transition-all text-center">
+            <div className="text-2xl mb-1">📝</div>
+            <div className="font-semibold text-gray-900 dark:text-white">
+              {language === 'es' ? 'Blog y Guías' : 'Blog & Guides'}
+            </div>
+          </Link>
+        </div>
+        
+        {/* Last Updated Timestamp - Important SEO Freshness Signal */}
+        <div className="text-center mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+          <div className="text-xs text-gray-600 dark:text-gray-400 flex items-center justify-center gap-2">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>
+              {language === 'es' ? 'Última actualización: ' : 'Last updated: '}
+              {new Date().toLocaleString(language === 'es' ? 'es-BO' : 'en-US', { 
+                day: 'numeric', 
+                month: 'long', 
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                timeZone: 'America/La_Paz'
+              })}
+            </span>
+          </div>
+          <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+            {language === 'es' ? 'Datos actualizados cada 15 minutos' : 'Data updated every 15 minutes'}
+          </div>
+        </div>
+      </section>
 
       <Footer />
     </div>

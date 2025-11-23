@@ -6,6 +6,7 @@ import Home from './pages/Home';
 const Calculator = lazy(() => import('./pages/Calculator'));
 const News = lazy(() => import('./pages/News'));
     const About = lazy(() => import('./pages/About'));
+    const Contact = lazy(() => import('./pages/Contact'));
     const FAQ = lazy(() => import('./pages/FAQ'));
     const RodrigoPaz = lazy(() => import('./pages/RodrigoPaz'));
     const BuyDollars = lazy(() => import('./pages/BuyDollars'));
@@ -53,6 +54,7 @@ function App() {
           <Route path="/calculator" element={<Calculator />} />
           <Route path="/news" element={<News />} />
               <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
               <Route path="/faq" element={<FAQ />} />
               <Route path="/rodrigo-paz" element={<RodrigoPaz />} />
               <Route path="/buy-dollars" element={<BuyDollars />} />

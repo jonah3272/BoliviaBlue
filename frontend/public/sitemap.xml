@@ -75,6 +75,16 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/about?lang=en" />
   </url>
   
+  <!-- Contact Page -->
+  <url>
+    <loc>https://boliviablue.com/contact</loc>
+    <lastmod>2025-11-23T12:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/contact" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/contact?lang=en" />
+  </url>
+  
   <!-- Faq Page -->
   <url>
     <loc>https://boliviablue.com/faq</loc>

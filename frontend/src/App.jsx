@@ -20,6 +20,7 @@ const News = lazy(() => import('./pages/News'));
     const DolarBlueHoy = lazy(() => import('./pages/DolarBlueHoy'));
     const QueEsDolarBlue = lazy(() => import('./pages/QueEsDolarBlue'));
     const CuantoEstaDolarBolivia = lazy(() => import('./pages/CuantoEstaDolarBolivia'));
+    const CuantoEstaDolarBoliviaHoy = lazy(() => import('./pages/CuantoEstaDolarBoliviaHoy'));
     const BinanceP2PBolivia = lazy(() => import('./pages/BinanceP2PBolivia'));
     const UsdtBolivia = lazy(() => import('./pages/UsdtBolivia'));
     const DolarParaleloBoliviaEnVivo = lazy(() => import('./pages/DolarParaleloBoliviaEnVivo'));
@@ -70,6 +71,7 @@ function App() {
               <Route path="/dolar-blue-hoy" element={<DolarBlueHoy />} />
               <Route path="/que-es-dolar-blue" element={<QueEsDolarBlue />} />
               <Route path="/cuanto-esta-dolar-bolivia" element={<CuantoEstaDolarBolivia />} />
+              <Route path="/cuanto-esta-dolar-bolivia-hoy" element={<CuantoEstaDolarBoliviaHoy />} />
               <Route path="/binance-p2p-bolivia" element={<BinanceP2PBolivia />} />
               <Route path="/usdt-bolivia" element={<UsdtBolivia />} />
               <Route path="/dolar-paralelo-bolivia-en-vivo" element={<DolarParaleloBoliviaEnVivo />} />

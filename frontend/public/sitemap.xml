@@ -25,6 +25,16 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/calculator?lang=en" />
   </url>
   
+  <!-- Cuanto-esta-dolar-bolivia-hoy Page -->
+  <url>
+    <loc>https://boliviablue.com/cuanto-esta-dolar-bolivia-hoy</loc>
+    <lastmod>2025-11-23T12:00:00+00:00</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.95</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/cuanto-esta-dolar-bolivia-hoy" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/cuanto-esta-dolar-bolivia-hoy?lang=en" />
+  </url>
+  
   <!-- Buy-dollars Page -->
   <url>
     <loc>https://boliviablue.com/buy-dollars</loc>

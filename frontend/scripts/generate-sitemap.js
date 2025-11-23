@@ -27,6 +27,12 @@ const pages = [
     lastmod: currentDate
   },
   {
+    path: '/cuanto-esta-dolar-bolivia-hoy',
+    changefreq: 'hourly',
+    priority: '0.95',
+    lastmod: currentDate
+  },
+  {
     path: '/buy-dollars',
     changefreq: 'weekly',
     priority: '0.8',

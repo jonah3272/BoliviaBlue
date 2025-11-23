@@ -49,15 +49,22 @@
     <meta name="geo.placename" content="Bolivia" />
     <meta name="theme-color" content="#10B981" />
     
+    <!-- Critical Resource Hints for Performance -->
+    <link rel="preload" href="/src/main.jsx" as="script" crossorigin>
+    <link rel="preload" href="/src/index.css" as="style">
+    
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json" />
     
-    <!-- Google Fonts - Optimized Loading -->
+    <!-- Google Fonts - Optimized Loading with font-display=swap and preload for critical fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Preload the most critical font (Inter Regular 400) for faster FCP -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap">
     <!-- Load font stylesheet with display=swap for better performance -->
     <!-- display=swap ensures text is visible immediately with fallback font, then swaps when custom font loads -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"></noscript>
     
     <!-- Preconnect to API endpoints for faster requests -->
     <link rel="preconnect" href="https://api.binance.com" crossorigin>

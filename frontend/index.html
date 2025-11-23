@@ -132,13 +132,20 @@
       See frontend/src/main.jsx for implementation details
     -->
     
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WRN4D234F2"></script>
+    <!-- Google Analytics - Load asynchronously -->
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-WRN4D234F2');
+      // Defer Google Analytics to not block rendering
+      window.addEventListener('load', function() {
+        var script = document.createElement('script');
+        script.async = true;
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-WRN4D234F2';
+        document.head.appendChild(script);
+        
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-WRN4D234F2');
+      });
     </script>
   </head>
   <body>

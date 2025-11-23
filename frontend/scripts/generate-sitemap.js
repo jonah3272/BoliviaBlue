@@ -12,8 +12,9 @@ const currentDate = now.toISOString().split('T')[0] + 'T12:00:00+00:00';
 // Base URL
 const baseUrl = 'https://boliviablue.com';
 
-// Sitemap entries
+// Sitemap entries - ALL pages from App.jsx
 const pages = [
+  // Core pages - Highest priority
   {
     path: '/',
     changefreq: 'hourly',
@@ -32,12 +33,8 @@ const pages = [
     priority: '0.95',
     lastmod: currentDate
   },
-  {
-    path: '/buy-dollars',
-    changefreq: 'weekly',
-    priority: '0.8',
-    lastmod: currentDate
-  },
+  
+  // News & Info
   {
     path: '/news',
     changefreq: 'hourly',
@@ -68,12 +65,16 @@ const pages = [
     priority: '0.9',
     lastmod: currentDate
   },
+  
+  // Blog
   {
     path: '/blog',
     changefreq: 'weekly',
     priority: '0.8',
     lastmod: currentDate
   },
+  
+  // Blue rate pages
   {
     path: '/bolivia-blue-rate',
     changefreq: 'daily',
@@ -86,6 +87,92 @@ const pages = [
     priority: '0.95',
     lastmod: currentDate
   },
+  {
+    path: '/bolivia-blue-rate-actual',
+    changefreq: 'hourly',
+    priority: '0.9',
+    lastmod: currentDate
+  },
+  {
+    path: '/tipo-cambio-blue-bolivia',
+    changefreq: 'hourly',
+    priority: '0.9',
+    lastmod: currentDate
+  },
+  {
+    path: '/cotiza-dolar-paralelo',
+    changefreq: 'hourly',
+    priority: '0.85',
+    lastmod: currentDate
+  },
+  {
+    path: '/dolar-paralelo-bolivia-en-vivo',
+    changefreq: 'hourly',
+    priority: '0.95',
+    lastmod: currentDate
+  },
+  
+  // City-specific pages
+  {
+    path: '/dolar-blue-la-paz',
+    changefreq: 'daily',
+    priority: '0.85',
+    lastmod: currentDate
+  },
+  {
+    path: '/dolar-blue-santa-cruz',
+    changefreq: 'daily',
+    priority: '0.85',
+    lastmod: currentDate
+  },
+  {
+    path: '/dolar-blue-cochabamba',
+    changefreq: 'daily',
+    priority: '0.85',
+    lastmod: currentDate
+  },
+  {
+    path: '/dolar-blue-hoy',
+    changefreq: 'hourly',
+    priority: '0.95',
+    lastmod: currentDate
+  },
+  
+  // Educational/Guide pages
+  {
+    path: '/que-es-dolar-blue',
+    changefreq: 'weekly',
+    priority: '0.85',
+    lastmod: currentDate
+  },
+  {
+    path: '/cuanto-esta-dolar-bolivia',
+    changefreq: 'hourly',
+    priority: '0.9',
+    lastmod: currentDate
+  },
+  {
+    path: '/buy-dollars',
+    changefreq: 'weekly',
+    priority: '0.8',
+    lastmod: currentDate
+  },
+  
+  // Crypto pages
+  {
+    path: '/binance-p2p-bolivia',
+    changefreq: 'daily',
+    priority: '0.85',
+    lastmod: currentDate
+  },
+  {
+    path: '/usdt-bolivia',
+    changefreq: 'daily',
+    priority: '0.85',
+    lastmod: currentDate
+  },
+  
+  // Comparison & Banks
   {
     path: '/comparison',
     changefreq: 'weekly',

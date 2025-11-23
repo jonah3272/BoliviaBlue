@@ -11,10 +11,12 @@
     "preview": "vite preview",
     "test": "vitest",
     "generate-sitemap": "node scripts/generate-sitemap.js",
+    "insert-blog-articles": "node scripts/insert-blog-articles.js",
     "prebuild": "npm run generate-sitemap"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.81.1",
+    "dotenv": "^16.4.5",
     "framer-motion": "^12.23.24",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

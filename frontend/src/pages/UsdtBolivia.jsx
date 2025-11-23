@@ -9,6 +9,7 @@ import BinanceBanner from '../components/BinanceBanner';
 import { Link } from 'react-router-dom';
 import { fetchBlueRate } from '../utils/api';
 import Breadcrumbs from '../components/Breadcrumbs';
+import { useAdsenseReady } from '../hooks/useAdsenseReady';
 
 function UsdtBolivia() {
   // Signal to AdSense that this page has sufficient content

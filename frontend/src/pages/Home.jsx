@@ -805,12 +805,6 @@ function Home() {
           </div>
         </section>
 
-        {/* Social Share Section */}
-        <SocialShare
-          title={language === 'es' ? '🔴 Bolivia Blue Rate EN VIVO - Actualizado Cada 15 Min' : '🔴 Bolivia Blue Rate LIVE - Updated Every 15 Min'}
-          description={language === 'es' ? "Dólar Blue Bolivia actualizado cada 15 minutos. Más rápido que bolivianblue.net" : "Blue Dollar Bolivia updated every 15 minutes. Faster than bolivianblue.net"}
-        />
-
         {/* Quick Links to New Pages */}
         <section className="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 rounded-xl p-6 sm:p-8 shadow-lg">
           <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">

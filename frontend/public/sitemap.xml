@@ -8,97 +8,117 @@
   <!-- Homepage / Dashboard -->
   <url>
     <loc>https://boliviablue.com/</loc>
-    <lastmod>2025-11-23T12:00:00+00:00</lastmod>
+    <lastmod>2025-11-25T12:00:00+00:00</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/?lang=en" />
   </url>
   
-  <!-- Calculator Page -->
+  <!-- Calculadora Page -->
   <url>
-    <loc>https://boliviablue.com/calculator</loc>
-    <lastmod>2025-11-23T12:00:00+00:00</lastmod>
+    <loc>https://boliviablue.com/calculadora</loc>
+    <lastmod>2025-11-25T12:00:00+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/calculator" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/calculator?lang=en" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/calculadora" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/calculadora?lang=en" />
   </url>
   
   <!-- Cuanto-esta-dolar-bolivia-hoy Page -->
   <url>
     <loc>https://boliviablue.com/cuanto-esta-dolar-bolivia-hoy</loc>
-    <lastmod>2025-11-23T12:00:00+00:00</lastmod>
+    <lastmod>2025-11-25T12:00:00+00:00</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.95</priority>
     <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/cuanto-esta-dolar-bolivia-hoy" />
     <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/cuanto-esta-dolar-bolivia-hoy?lang=en" />
   </url>
   
-  <!-- News Page -->
+  <!-- Noticias Page -->
   <url>
-    <loc>https://boliviablue.com/news</loc>
-    <lastmod>2025-11-23T12:00:00+00:00</lastmod>
+    <loc>https://boliviablue.com/noticias</loc>
+    <lastmod>2025-11-25T12:00:00+00:00</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/news" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/news?lang=en" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/noticias" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/noticias?lang=en" />
   </url>
   
   <!-- Rodrigo-paz Page -->
   <url>
     <loc>https://boliviablue.com/rodrigo-paz</loc>
-    <lastmod>2025-11-23T12:00:00+00:00</lastmod>
+    <lastmod>2025-11-25T12:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/rodrigo-paz" />
     <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/rodrigo-paz?lang=en" />
   </url>
   
-  <!-- About Page -->
+  <!-- Acerca-de Page -->
   <url>
-    <loc>https://boliviablue.com/about</loc>
-    <lastmod>2025-11-23T12:00:00+00:00</lastmod>
+    <loc>https://boliviablue.com/acerca-de</loc>
+    <lastmod>2025-11-25T12:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/about" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/about?lang=en" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/acerca-de" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/acerca-de?lang=en" />
   </url>
   
-  <!-- Contact Page -->
+  <!-- Contacto Page -->
   <url>
-    <loc>https://boliviablue.com/contact</loc>
-    <lastmod>2025-11-23T12:00:00+00:00</lastmod>
+    <loc>https://boliviablue.com/contacto</loc>
+    <lastmod>2025-11-25T12:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/contact" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/contact?lang=en" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/contacto" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/contacto?lang=en" />
   </url>
   
-  <!-- Faq Page -->
+  <!-- Preguntas-frecuentes Page -->
   <url>
-    <loc>https://boliviablue.com/faq</loc>
-    <lastmod>2025-11-23T12:00:00+00:00</lastmod>
+    <loc>https://boliviablue.com/preguntas-frecuentes</loc>
+    <lastmod>2025-11-25T12:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/faq" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/faq?lang=en" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/preguntas-frecuentes" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/preguntas-frecuentes?lang=en" />
   </url>
   
   <!-- Blog Page -->
   <url>
     <loc>https://boliviablue.com/blog</loc>
-    <lastmod>2025-11-23T12:00:00+00:00</lastmod>
+    <lastmod>2025-11-25T12:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/blog" />
     <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/blog?lang=en" />
   </url>
   
+  <!-- Comparacion Page -->
+  <url>
+    <loc>https://boliviablue.com/comparacion</loc>
+    <lastmod>2025-11-25T12:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/comparacion" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/comparacion?lang=en" />
+  </url>
+  
+  <!-- Comprar-dolares Page -->
+  <url>
+    <loc>https://boliviablue.com/comprar-dolares</loc>
+    <lastmod>2025-11-25T12:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/comprar-dolares" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/comprar-dolares?lang=en" />
+  </url>
+  
   <!-- Bolivia-blue-rate Page -->
   <url>
     <loc>https://boliviablue.com/bolivia-blue-rate</loc>
-    <lastmod>2025-11-23T12:00:00+00:00</lastmod>
+    <lastmod>2025-11-25T12:00:00+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/bolivia-blue-rate" />
@@ -108,7 +128,7 @@
   <!-- Bolivia-blue-rate-hoy Page -->
   <url>
     <loc>https://boliviablue.com/bolivia-blue-rate-hoy</loc>
-    <lastmod>2025-11-23T12:00:00+00:00</lastmod>
+    <lastmod>2025-11-25T12:00:00+00:00</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.95</priority>
     <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/bolivia-blue-rate-hoy" />
@@ -118,7 +138,7 @@
   <!-- Bolivia-blue-rate-actual Page -->
   <url>
     <loc>https://boliviablue.com/bolivia-blue-rate-actual</loc>
-    <lastmod>2025-11-23T12:00:00+00:00</lastmod>
+    <lastmod>2025-11-25T12:00:00+00:00</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/bolivia-blue-rate-actual" />
@@ -128,7 +148,7 @@
   <!-- Tipo-cambio-blue-bolivia Page -->
   <url>
     <loc>https://boliviablue.com/tipo-cambio-blue-bolivia</loc>
-    <lastmod>2025-11-23T12:00:00+00:00</lastmod>
+    <lastmod>2025-11-25T12:00:00+00:00</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/tipo-cambio-blue-bolivia" />
@@ -138,7 +158,7 @@
   <!-- Cotiza-dolar-paralelo Page -->
   <url>
     <loc>https://boliviablue.com/cotiza-dolar-paralelo</loc>
-    <lastmod>2025-11-23T12:00:00+00:00</lastmod>
+    <lastmod>2025-11-25T12:00:00+00:00</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.85</priority>
     <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/cotiza-dolar-paralelo" />
@@ -148,7 +168,7 @@
   <!-- Dolar-paralelo-bolivia-en-vivo Page -->
   <url>
     <loc>https://boliviablue.com/dolar-paralelo-bolivia-en-vivo</loc>
-    <lastmod>2025-11-23T12:00:00+00:00</lastmod>
+    <lastmod>2025-11-25T12:00:00+00:00</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.95</priority>
     <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/dolar-paralelo-bolivia-en-vivo" />
@@ -158,7 +178,7 @@
   <!-- Dolar-blue-la-paz Page -->
   <url>
     <loc>https://boliviablue.com/dolar-blue-la-paz</loc>
-    <lastmod>2025-11-23T12:00:00+00:00</lastmod>
+    <lastmod>2025-11-25T12:00:00+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
     <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/dolar-blue-la-paz" />
@@ -168,7 +188,7 @@
   <!-- Dolar-blue-santa-cruz Page -->
   <url>
     <loc>https://boliviablue.com/dolar-blue-santa-cruz</loc>
-    <lastmod>2025-11-23T12:00:00+00:00</lastmod>
+    <lastmod>2025-11-25T12:00:00+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
     <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/dolar-blue-santa-cruz" />
@@ -178,7 +198,7 @@
   <!-- Dolar-blue-cochabamba Page -->
   <url>
     <loc>https://boliviablue.com/dolar-blue-cochabamba</loc>
-    <lastmod>2025-11-23T12:00:00+00:00</lastmod>
+    <lastmod>2025-11-25T12:00:00+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
     <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/dolar-blue-cochabamba" />
@@ -188,7 +208,7 @@
   <!-- Dolar-blue-hoy Page -->
   <url>
     <loc>https://boliviablue.com/dolar-blue-hoy</loc>
-    <lastmod>2025-11-23T12:00:00+00:00</lastmod>
+    <lastmod>2025-11-25T12:00:00+00:00</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.95</priority>
     <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/dolar-blue-hoy" />
@@ -198,7 +218,7 @@
   <!-- Que-es-dolar-blue Page -->
   <url>
     <loc>https://boliviablue.com/que-es-dolar-blue</loc>
-    <lastmod>2025-11-23T12:00:00+00:00</lastmod>
+    <lastmod>2025-11-25T12:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
     <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/que-es-dolar-blue" />
@@ -208,7 +228,7 @@
   <!-- Cuanto-esta-dolar-bolivia Page -->
   <url>
     <loc>https://boliviablue.com/cuanto-esta-dolar-bolivia</loc>
-    <lastmod>2025-11-23T12:00:00+00:00</lastmod>
+    <lastmod>2025-11-25T12:00:00+00:00</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/cuanto-esta-dolar-bolivia" />
@@ -218,7 +238,7 @@
   <!-- Buy-dollars Page -->
   <url>
     <loc>https://boliviablue.com/buy-dollars</loc>
-    <lastmod>2025-11-23T12:00:00+00:00</lastmod>
+    <lastmod>2025-11-25T12:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/buy-dollars" />
@@ -228,7 +248,7 @@
   <!-- Binance-p2p-bolivia Page -->
   <url>
     <loc>https://boliviablue.com/binance-p2p-bolivia</loc>
-    <lastmod>2025-11-23T12:00:00+00:00</lastmod>
+    <lastmod>2025-11-25T12:00:00+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
     <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/binance-p2p-bolivia" />
@@ -238,7 +258,7 @@
   <!-- Usdt-bolivia Page -->
   <url>
     <loc>https://boliviablue.com/usdt-bolivia</loc>
-    <lastmod>2025-11-23T12:00:00+00:00</lastmod>
+    <lastmod>2025-11-25T12:00:00+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
     <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/usdt-bolivia" />
@@ -248,7 +268,7 @@
   <!-- Comparison Page -->
   <url>
     <loc>https://boliviablue.com/comparison</loc>
-    <lastmod>2025-11-23T12:00:00+00:00</lastmod>
+    <lastmod>2025-11-25T12:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/comparison" />
@@ -258,7 +278,7 @@
   <!-- Bancos Page -->
   <url>
     <loc>https://boliviablue.com/bancos</loc>
-    <lastmod>2025-11-23T12:00:00+00:00</lastmod>
+    <lastmod>2025-11-25T12:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/bancos" />

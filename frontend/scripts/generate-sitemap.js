@@ -12,7 +12,7 @@ const currentDate = now.toISOString().split('T')[0] + 'T12:00:00+00:00';
 // Base URL
 const baseUrl = 'https://boliviablue.com';
 
-// Sitemap entries - ALL pages from App.jsx
+// Sitemap entries - ALL pages from App.jsx (Spanish URLs primary for SEO)
 const pages = [
   // Core pages - Highest priority
   {
@@ -22,7 +22,7 @@ const pages = [
     lastmod: currentDate
   },
   {
-    path: '/calculator',
+    path: '/calculadora', // Spanish primary
     changefreq: 'daily',
     priority: '0.9',
     lastmod: currentDate
@@ -34,9 +34,9 @@ const pages = [
     lastmod: currentDate
   },
   
-  // News & Info
+  // News & Info (Spanish URLs)
   {
-    path: '/news',
+    path: '/noticias', // Spanish primary
     changefreq: 'hourly',
     priority: '0.8',
     lastmod: currentDate
@@ -48,19 +48,19 @@ const pages = [
     lastmod: currentDate
   },
   {
-    path: '/about',
+    path: '/acerca-de', // Spanish primary
     changefreq: 'monthly',
     priority: '0.8',
     lastmod: currentDate
   },
   {
-    path: '/contact',
+    path: '/contacto', // Spanish primary
     changefreq: 'monthly',
     priority: '0.7',
     lastmod: currentDate
   },
   {
-    path: '/faq',
+    path: '/preguntas-frecuentes', // Spanish primary
     changefreq: 'monthly',
     priority: '0.9',
     lastmod: currentDate
@@ -69,6 +69,20 @@ const pages = [
   // Blog
   {
     path: '/blog',
+    changefreq: 'weekly',
+    priority: '0.8',
+    lastmod: currentDate
+  },
+  
+  // Comparison & Education
+  {
+    path: '/comparacion', // Spanish primary
+    changefreq: 'weekly',
+    priority: '0.8',
+    lastmod: currentDate
+  },
+  {
+    path: '/comprar-dolares', // Spanish primary (was buy-dollars)
     changefreq: 'weekly',
     priority: '0.8',
     lastmod: currentDate

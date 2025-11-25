@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
 import Home from './pages/Home';
+import Redirect from './components/Redirect';
 
 // Lazy load routes for code splitting
 const Calculator = lazy(() => import('./pages/Calculator'));
@@ -51,32 +52,45 @@ function App() {
       <Suspense fallback={<LoadingFallback />}>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/calculator" element={<Calculator />} />
-          <Route path="/news" element={<News />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/faq" element={<FAQ />} />
-              <Route path="/rodrigo-paz" element={<RodrigoPaz />} />
-              <Route path="/buy-dollars" element={<BuyDollars />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/blog/:slug" element={<Blog />} />
-              <Route path="/bolivia-blue-rate" element={<BoliviaBlueRate />} />
-              <Route path="/bolivia-blue-rate-hoy" element={<BoliviaBlueRate />} />
-              <Route path="/bolivia-blue-rate-actual" element={<BoliviaBlueRate />} />
-              <Route path="/tipo-cambio-blue-bolivia" element={<BoliviaBlueRate />} />
-              <Route path="/cotiza-dolar-paralelo" element={<CotizaDolarParalelo />} />
-              <Route path="/comparison" element={<Comparison />} />
-              <Route path="/bancos" element={<Bancos />} />
-              <Route path="/dolar-blue-la-paz" element={<DolarBlueLaPaz />} />
-              <Route path="/dolar-blue-santa-cruz" element={<DolarBlueSantaCruz />} />
-              <Route path="/dolar-blue-cochabamba" element={<DolarBlueCochabamba />} />
-              <Route path="/dolar-blue-hoy" element={<DolarBlueHoy />} />
-              <Route path="/que-es-dolar-blue" element={<QueEsDolarBlue />} />
-              <Route path="/cuanto-esta-dolar-bolivia" element={<CuantoEstaDolarBolivia />} />
-              <Route path="/cuanto-esta-dolar-bolivia-hoy" element={<CuantoEstaDolarBoliviaHoy />} />
-              <Route path="/binance-p2p-bolivia" element={<BinanceP2PBolivia />} />
-              <Route path="/usdt-bolivia" element={<UsdtBolivia />} />
-              <Route path="/dolar-paralelo-bolivia-en-vivo" element={<DolarParaleloBoliviaEnVivo />} />
+          
+          {/* Spanish URL Aliases (Primary for SEO) */}
+          <Route path="/calculadora" element={<Calculator />} />
+          <Route path="/noticias" element={<News />} />
+          <Route path="/acerca-de" element={<About />} />
+          <Route path="/contacto" element={<Contact />} />
+          <Route path="/preguntas-frecuentes" element={<FAQ />} />
+          <Route path="/comparacion" element={<Comparison />} />
+          <Route path="/comprar-dolares" element={<BuyDollars />} />
+          
+          {/* English URLs - Redirect to Spanish for SEO */}
+          <Route path="/calculator" element={<Redirect to="/calculadora" />} />
+          <Route path="/news" element={<Redirect to="/noticias" />} />
+          <Route path="/about" element={<Redirect to="/acerca-de" />} />
+          <Route path="/contact" element={<Redirect to="/contacto" />} />
+          <Route path="/faq" element={<Redirect to="/preguntas-frecuentes" />} />
+          <Route path="/comparison" element={<Redirect to="/comparacion" />} />
+          <Route path="/buy-dollars" element={<Redirect to="/comprar-dolares" />} />
+          
+          {/* Other pages (already in Spanish) */}
+          <Route path="/rodrigo-paz" element={<RodrigoPaz />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:slug" element={<Blog />} />
+          <Route path="/bolivia-blue-rate" element={<BoliviaBlueRate />} />
+          <Route path="/bolivia-blue-rate-hoy" element={<BoliviaBlueRate />} />
+          <Route path="/bolivia-blue-rate-actual" element={<BoliviaBlueRate />} />
+          <Route path="/tipo-cambio-blue-bolivia" element={<BoliviaBlueRate />} />
+          <Route path="/cotiza-dolar-paralelo" element={<CotizaDolarParalelo />} />
+          <Route path="/bancos" element={<Bancos />} />
+          <Route path="/dolar-blue-la-paz" element={<DolarBlueLaPaz />} />
+          <Route path="/dolar-blue-santa-cruz" element={<DolarBlueSantaCruz />} />
+          <Route path="/dolar-blue-cochabamba" element={<DolarBlueCochabamba />} />
+          <Route path="/dolar-blue-hoy" element={<DolarBlueHoy />} />
+          <Route path="/que-es-dolar-blue" element={<QueEsDolarBlue />} />
+          <Route path="/cuanto-esta-dolar-bolivia" element={<CuantoEstaDolarBolivia />} />
+          <Route path="/cuanto-esta-dolar-bolivia-hoy" element={<CuantoEstaDolarBoliviaHoy />} />
+          <Route path="/binance-p2p-bolivia" element={<BinanceP2PBolivia />} />
+          <Route path="/usdt-bolivia" element={<UsdtBolivia />} />
+          <Route path="/dolar-paralelo-bolivia-en-vivo" element={<DolarParaleloBoliviaEnVivo />} />
         </Routes>
       </Suspense>
     </Router>

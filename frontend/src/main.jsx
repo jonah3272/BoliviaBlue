@@ -9,6 +9,32 @@ import { LanguageProvider } from './contexts/LanguageContext';
 import { ToastProvider } from './contexts/ToastContext';
 import { loadAdSense } from './utils/adsenseLoader';
 
+// Suppress annoying development warnings
+if (import.meta.env.DEV) {
+  const originalWarn = console.warn;
+  const originalError = console.error;
+  
+  console.warn = (...args) => {
+    const msg = args[0];
+    // Filter out preload warnings - these are harmless Vite optimization warnings
+    if (msg && typeof msg === 'string' && msg.includes('preloaded using link preload')) {
+      return;
+    }
+    originalWarn.apply(console, args);
+  };
+  
+  console.error = (...args) => {
+    const msg = args[0];
+    // Filter out framer-motion/router async conflicts - harmless in production
+    if (msg && typeof msg === 'string' && 
+        (msg.includes('message channel closed') || 
+         msg.includes('listener indicated an asynchronous response'))) {
+      return;
+    }
+    originalError.apply(console, args);
+  };
+}
+
 // Register service worker for offline support and caching
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   window.addEventListener('load', () => {

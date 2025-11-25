@@ -334,15 +334,15 @@ function QueEsDolarBlue() {
                 <ul className="list-disc list-inside text-sm text-gray-700 dark:text-gray-300 space-y-2">
                   {language === 'es' ? (
                     <>
-                      <li><Link to="/calculator" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Usar nuestra calculadora</Link> para convertir divisas</li>
-                      <li><Link to="/buy-dollars" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Aprender cómo comprar dólares</Link> de forma segura</li>
+                      <li><Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Usar nuestra calculadora</Link> para convertir divisas</li>
+                      <li><Link to="/comprar-dolares" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Aprender cómo comprar dólares</Link> de forma segura</li>
                       <li><Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Consultar el dólar blue hoy</Link> actualizado cada 15 minutos</li>
                       <li><Link to="/bolivia-blue-rate" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Ver gráficos históricos</Link> del dólar blue</li>
                     </>
                   ) : (
                     <>
-                      <li><Link to="/calculator" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Use our calculator</Link> to convert currencies</li>
-                      <li><Link to="/buy-dollars" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Learn how to buy dollars</Link> safely</li>
+                      <li><Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Use our calculator</Link> to convert currencies</li>
+                      <li><Link to="/comprar-dolares" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Learn how to buy dollars</Link> safely</li>
                       <li><Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Check the blue dollar today</Link> updated every 15 minutes</li>
                       <li><Link to="/bolivia-blue-rate" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">View historical charts</Link> of the blue dollar</li>
                     </>
@@ -382,7 +382,7 @@ function QueEsDolarBlue() {
               </div>
             </Link>
             <Link
-              to="/buy-dollars"
+              to="/comprar-dolares"
               className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
             >
               <div className="font-medium text-gray-900 dark:text-white mb-1">

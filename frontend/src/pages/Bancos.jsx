@@ -506,7 +506,7 @@ function Bancos() {
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Link
-                to="/buy-dollars"
+                to="/comprar-dolares"
                 className="group p-5 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-md transition-all"
               >
                 <div className="flex items-start gap-3">
@@ -529,7 +529,7 @@ function Bancos() {
                 </div>
               </Link>
               <Link
-                to="/calculator"
+                to="/calculadora"
                 className="group p-5 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-md transition-all"
               >
                 <div className="flex items-start gap-3">
@@ -575,7 +575,7 @@ function Bancos() {
                 </div>
               </Link>
               <Link
-                to="/faq"
+                to="/preguntas-frecuentes"
                 className="group p-5 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-md transition-all"
               >
                 <div className="flex items-start gap-3">

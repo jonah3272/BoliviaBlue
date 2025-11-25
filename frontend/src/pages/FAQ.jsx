@@ -285,7 +285,7 @@ function FAQ() {
                                   transition={{ delay: 0.2 }}
                                 >
                                   <Link
-                                    to="/buy-dollars"
+                                    to="/comprar-dolares"
                                     className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
                                   >
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -315,7 +315,7 @@ function FAQ() {
                   </p>
                   <div className="flex flex-wrap gap-3 sm:gap-4">
                     <Link
-                      to="/about"
+                      to="/acerca-de"
                       className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -342,7 +342,7 @@ function FAQ() {
                   {language === 'es' ? 'Enlaces Rápidos' : 'Quick Links'}
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <Link to="/calculator" className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                  <Link to="/calculadora" className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
                     <div className="font-medium text-gray-900 dark:text-white mb-1">
                       {language === 'es' ? 'Calculadora' : 'Calculator'}
                     </div>
@@ -358,7 +358,7 @@ function FAQ() {
                       {language === 'es' ? 'Guía completa sobre el dólar blue' : 'Complete guide about blue dollar'}
                     </div>
                   </Link>
-                  <Link to="/buy-dollars" className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                  <Link to="/comprar-dolares" className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
                     <div className="font-medium text-gray-900 dark:text-white mb-1">
                       {language === 'es' ? 'Comprar Dólares' : 'Buy Dollars'}
                     </div>

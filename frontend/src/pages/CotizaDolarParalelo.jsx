@@ -271,8 +271,8 @@ function CotizaDolarParalelo() {
                 </h4>
                 <p className="text-sm text-gray-700 dark:text-gray-300">
                   {language === 'es'
-                    ? <>La <strong>cotización del dólar paralelo</strong> se actualiza cada 15 minutos. Esta <strong>cotización</strong> es solo informativa y puede variar según la ubicación y el método de pago. Siempre verifica la <strong>cotización</strong> antes de realizar transacciones. <Link to="/calculator" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Usa nuestra calculadora</Link> para convertir divisas o <Link to="/about" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">aprende más sobre nuestra metodología</Link>.</>
-                    : <>The <strong>parallel dollar quote</strong> is updated every 15 minutes. This <strong>quote</strong> is for informational purposes only and may vary by location and payment method. Always verify the <strong>quote</strong> before making transactions. <Link to="/calculator" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Use our calculator</Link> to convert currencies or <Link to="/about" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">learn more about our methodology</Link>.</>}
+                    ? <>La <strong>cotización del dólar paralelo</strong> se actualiza cada 15 minutos. Esta <strong>cotización</strong> es solo informativa y puede variar según la ubicación y el método de pago. Siempre verifica la <strong>cotización</strong> antes de realizar transacciones. <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Usa nuestra calculadora</Link> para convertir divisas o <Link to="/acerca-de" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">aprende más sobre nuestra metodología</Link>.</>
+                    : <>The <strong>parallel dollar quote</strong> is updated every 15 minutes. This <strong>quote</strong> is for informational purposes only and may vary by location and payment method. Always verify the <strong>quote</strong> before making transactions. <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Use our calculator</Link> to convert currencies or <Link to="/acerca-de" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">learn more about our methodology</Link>.</>}
                 </p>
               </div>
             </div>
@@ -297,7 +297,7 @@ function CotizaDolarParalelo() {
               </div>
             </Link>
             <Link
-              to="/calculator"
+              to="/calculadora"
               className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
             >
               <div className="font-medium text-gray-900 dark:text-white mb-1">
@@ -308,7 +308,7 @@ function CotizaDolarParalelo() {
               </div>
             </Link>
             <Link
-              to="/buy-dollars"
+              to="/comprar-dolares"
               className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
             >
               <div className="font-medium text-gray-900 dark:text-white mb-1">

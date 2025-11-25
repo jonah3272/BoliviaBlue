@@ -414,7 +414,7 @@ function RodrigoPaz() {
                 {language === 'es' ? 'Ver Dashboard' : 'View Dashboard'}
               </Link>
               <Link
-                to="/news"
+                to="/noticias"
                 className="inline-flex items-center gap-2 px-5 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold shadow-md hover:shadow-lg"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

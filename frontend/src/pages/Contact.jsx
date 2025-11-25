@@ -129,7 +129,7 @@ function Contact() {
             </p>
             <div className="text-center">
               <Link 
-                to="/faq" 
+                to="/preguntas-frecuentes" 
                 className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -248,7 +248,7 @@ function Contact() {
           </h2>
           
           <div className="grid sm:grid-cols-3 gap-4">
-            <Link to="/about" className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:shadow-md transition-all text-center">
+            <Link to="/acerca-de" className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:shadow-md transition-all text-center">
               <div className="text-3xl mb-2">ℹ️</div>
               <h3 className="font-bold text-gray-900 dark:text-white mb-1">
                 {language === 'es' ? 'Sobre Nosotros' : 'About Us'}
@@ -258,7 +258,7 @@ function Contact() {
               </p>
             </Link>
 
-            <Link to="/faq" className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:shadow-md transition-all text-center">
+            <Link to="/preguntas-frecuentes" className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:shadow-md transition-all text-center">
               <div className="text-3xl mb-2">❓</div>
               <h3 className="font-bold text-gray-900 dark:text-white mb-1">
                 {language === 'es' ? 'Preguntas Frecuentes' : 'FAQ'}
@@ -268,7 +268,7 @@ function Contact() {
               </p>
             </Link>
 
-            <Link to="/buy-dollars" className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:shadow-md transition-all text-center">
+            <Link to="/comprar-dolares" className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:shadow-md transition-all text-center">
               <div className="text-3xl mb-2">💰</div>
               <h3 className="font-bold text-gray-900 dark:text-white mb-1">
                 {language === 'es' ? 'Guía de Compra' : 'Buying Guide'}

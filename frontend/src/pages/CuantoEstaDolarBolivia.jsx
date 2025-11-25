@@ -291,8 +291,8 @@ function CuantoEstaDolarBolivia() {
                 </h4>
                 <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
                   {language === 'es'
-                    ? <>¿Necesitas convertir otra cantidad? <Link to="/calculator" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Usa nuestra calculadora</Link> para convertir cualquier cantidad de dólares a bolivianos o viceversa usando el tipo de cambio actual.</>
-                    : <>Need to convert another amount? <Link to="/calculator" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Use our calculator</Link> to convert any amount of dollars to bolivianos or vice versa using the current exchange rate.</>}
+                    ? <>¿Necesitas convertir otra cantidad? <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Usa nuestra calculadora</Link> para convertir cualquier cantidad de dólares a bolivianos o viceversa usando el tipo de cambio actual.</>
+                    : <>Need to convert another amount? <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Use our calculator</Link> to convert any amount of dollars to bolivianos or vice versa using the current exchange rate.</>}
                 </p>
               </div>
             </div>
@@ -306,7 +306,7 @@ function CuantoEstaDolarBolivia() {
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
             <Link
-              to="/calculator"
+              to="/calculadora"
               className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
             >
               <div className="font-medium text-gray-900 dark:text-white mb-1">

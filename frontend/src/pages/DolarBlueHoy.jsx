@@ -268,8 +268,8 @@ function DolarBlueHoy() {
                 </h4>
                 <p className="text-sm text-gray-700 dark:text-gray-300">
                   {language === 'es'
-                    ? <>La cotización del <strong>dólar blue hoy</strong> se actualiza cada 15 minutos. Esta cotización es solo informativa y puede variar según la ubicación y el método de pago. Siempre verifica la cotización antes de realizar transacciones. <Link to="/calculator" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Usa nuestra calculadora</Link> para convertir divisas o <Link to="/buy-dollars" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">aprende cómo comprar dólares</Link>.</>
-                    : <>The <strong>blue dollar today</strong> quote is updated every 15 minutes. This quote is for informational purposes only and may vary by location and payment method. Always verify the quote before making transactions. <Link to="/calculator" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Use our calculator</Link> to convert currencies or <Link to="/buy-dollars" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">learn how to buy dollars</Link>.</>}
+                    ? <>La cotización del <strong>dólar blue hoy</strong> se actualiza cada 15 minutos. Esta cotización es solo informativa y puede variar según la ubicación y el método de pago. Siempre verifica la cotización antes de realizar transacciones. <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Usa nuestra calculadora</Link> para convertir divisas o <Link to="/comprar-dolares" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">aprende cómo comprar dólares</Link>.</>
+                    : <>The <strong>blue dollar today</strong> quote is updated every 15 minutes. This quote is for informational purposes only and may vary by location and payment method. Always verify the quote before making transactions. <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Use our calculator</Link> to convert currencies or <Link to="/comprar-dolares" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">learn how to buy dollars</Link>.</>}
                 </p>
               </div>
             </div>
@@ -294,7 +294,7 @@ function DolarBlueHoy() {
               </div>
             </Link>
             <Link
-              to="/calculator"
+              to="/calculadora"
               className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
             >
               <div className="font-medium text-gray-900 dark:text-white mb-1">

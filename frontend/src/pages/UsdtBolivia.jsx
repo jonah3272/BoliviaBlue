@@ -300,14 +300,14 @@ function UsdtBolivia() {
                   {language === 'es' ? (
                     <>
                       <li><Link to="/binance-p2p-bolivia" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Guía completa: Binance P2P en Bolivia</Link></li>
-                      <li><Link to="/calculator" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Calculadora de divisas</Link> para convertir USDT a BOB</li>
-                      <li><Link to="/buy-dollars" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Cómo comprar dólares</Link> usando USDT</li>
+                      <li><Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Calculadora de divisas</Link> para convertir USDT a BOB</li>
+                      <li><Link to="/comprar-dolares" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Cómo comprar dólares</Link> usando USDT</li>
                     </>
                   ) : (
                     <>
                       <li><Link to="/binance-p2p-bolivia" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Complete guide: Binance P2P in Bolivia</Link></li>
-                      <li><Link to="/calculator" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Currency calculator</Link> to convert USDT to BOB</li>
-                      <li><Link to="/buy-dollars" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">How to buy dollars</Link> using USDT</li>
+                      <li><Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Currency calculator</Link> to convert USDT to BOB</li>
+                      <li><Link to="/comprar-dolares" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">How to buy dollars</Link> using USDT</li>
                     </>
                   )}
                 </ul>
@@ -334,7 +334,7 @@ function UsdtBolivia() {
               </div>
             </Link>
             <Link
-              to="/calculator"
+              to="/calculadora"
               className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
             >
               <div className="font-medium text-gray-900 dark:text-white mb-1">
@@ -345,7 +345,7 @@ function UsdtBolivia() {
               </div>
             </Link>
             <Link
-              to="/buy-dollars"
+              to="/comprar-dolares"
               className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
             >
               <div className="font-medium text-gray-900 dark:text-white mb-1">

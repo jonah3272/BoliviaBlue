@@ -194,8 +194,8 @@ function Calculator() {
                 </h4>
                 <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
                   {language === 'es'
-                    ? <>Esta calculadora es solo para fines informativos. El tipo de cambio puede variar según la plataforma, ubicación y método de pago. Siempre verifica la cotización actual antes de realizar transacciones. <Link to="/about" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Aprende más sobre nuestra metodología</Link>.</>
-                    : <>This calculator is for informational purposes only. The exchange rate may vary by platform, location, and payment method. Always verify the current quote before making transactions. <Link to="/about" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Learn more about our methodology</Link>.</>}
+                    ? <>Esta calculadora es solo para fines informativos. El tipo de cambio puede variar según la plataforma, ubicación y método de pago. Siempre verifica la cotización actual antes de realizar transacciones. <Link to="/acerca-de" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Aprende más sobre nuestra metodología</Link>.</>
+                    : <>This calculator is for informational purposes only. The exchange rate may vary by platform, location, and payment method. Always verify the current quote before making transactions. <Link to="/acerca-de" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Learn more about our methodology</Link>.</>}
                 </p>
               </div>
             </div>

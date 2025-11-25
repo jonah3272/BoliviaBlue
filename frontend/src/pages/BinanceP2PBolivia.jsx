@@ -340,16 +340,16 @@ function BinanceP2PBolivia() {
                 <ul className="list-disc list-inside text-sm text-gray-700 dark:text-gray-300 space-y-2">
                   {language === 'es' ? (
                     <>
-                      <li><Link to="/buy-dollars" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Guía completa: Cómo comprar dólares en Bolivia</Link></li>
+                      <li><Link to="/comprar-dolares" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Guía completa: Cómo comprar dólares en Bolivia</Link></li>
                       <li><Link to="/usdt-bolivia" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Todo sobre USDT en Bolivia</Link></li>
-                      <li><Link to="/calculator" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Calculadora de divisas</Link></li>
+                      <li><Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Calculadora de divisas</Link></li>
                       <li><Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Dólar blue hoy</Link></li>
                     </>
                   ) : (
                     <>
-                      <li><Link to="/buy-dollars" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Complete guide: How to buy dollars in Bolivia</Link></li>
+                      <li><Link to="/comprar-dolares" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Complete guide: How to buy dollars in Bolivia</Link></li>
                       <li><Link to="/usdt-bolivia" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Everything about USDT in Bolivia</Link></li>
-                      <li><Link to="/calculator" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Currency calculator</Link></li>
+                      <li><Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Currency calculator</Link></li>
                       <li><Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Blue dollar today</Link></li>
                     </>
                   )}
@@ -377,7 +377,7 @@ function BinanceP2PBolivia() {
               </div>
             </Link>
             <Link
-              to="/buy-dollars"
+              to="/comprar-dolares"
               className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
             >
               <div className="font-medium text-gray-900 dark:text-white mb-1">
@@ -388,7 +388,7 @@ function BinanceP2PBolivia() {
               </div>
             </Link>
             <Link
-              to="/calculator"
+              to="/calculadora"
               className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
             >
               <div className="font-medium text-gray-900 dark:text-white mb-1">

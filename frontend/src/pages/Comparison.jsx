@@ -265,7 +265,7 @@ function Comparison() {
               {language === 'es' ? 'Ver Tasa Actual' : 'View Current Rate'}
             </Link>
             <Link
-              to="/calculator"
+              to="/calculadora"
               className="px-6 py-3 bg-blue-700 text-white rounded-lg font-semibold hover:bg-blue-800 transition-colors"
             >
               {language === 'es' ? 'Usar Calculadora' : 'Use Calculator'}

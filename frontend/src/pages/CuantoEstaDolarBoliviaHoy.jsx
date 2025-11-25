@@ -198,7 +198,7 @@ function CuantoEstaDolarBoliviaHoy() {
             🛠️ Herramientas Útiles
           </h2>
           <div className="grid sm:grid-cols-3 gap-4">
-            <Link to="/calculator" className="bg-white dark:bg-gray-800 rounded-lg p-6 text-center hover:shadow-lg transition-all">
+            <Link to="/calculadora" className="bg-white dark:bg-gray-800 rounded-lg p-6 text-center hover:shadow-lg transition-all">
               <div className="text-4xl mb-2">🧮</div>
               <h3 className="font-bold text-gray-900 dark:text-white mb-2">Calculadora</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">Convierte USD a BOB al instante</p>
@@ -208,7 +208,7 @@ function CuantoEstaDolarBoliviaHoy() {
               <h3 className="font-bold text-gray-900 dark:text-white mb-2">Gráficos</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">Ver histórico del dólar</p>
             </Link>
-            <Link to="/news" className="bg-white dark:bg-gray-800 rounded-lg p-6 text-center hover:shadow-lg transition-all">
+            <Link to="/noticias" className="bg-white dark:bg-gray-800 rounded-lg p-6 text-center hover:shadow-lg transition-all">
               <div className="text-4xl mb-2">📰</div>
               <h3 className="font-bold text-gray-900 dark:text-white mb-2">Noticias</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">Últimas noticias económicas</p>

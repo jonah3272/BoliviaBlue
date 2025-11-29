@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bolivia Blue - Test Page</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: white;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    
+    h1 {
+      font-size: 2em;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    
+    .status {
+      text-align: center;
+      margin: 20px 0;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      font-size: 1.2em;
+    }
+    
+    .status.success {
+      background: rgba(16, 185, 129, 0.3);
+      border: 2px solid #10B981;
+    }
+    
+    .status.error {
+      background: rgba(239, 68, 68, 0.3);
+      border: 2px solid #EF4444;
+    }
+    
+    .test-section {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      margin: 15px 0;
+      border-radius: 10px;
+    }
+    
+    .test-section h2 {
+      font-size: 1.3em;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .test-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      margin: 8px 0;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 5px;
+      font-size: 0.9em;
+    }
+    
+    .badge {
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.85em;
+      font-weight: 600;
+    }
+    
+    .badge.ok {
+      background: #10B981;
+      color: white;
+    }
+    
+    .badge.fail {
+      background: #EF4444;
+      color: white;
+    }
+    
+    .badge.loading {
+      background: #F59E0B;
+      color: white;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .code-block {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 15px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 10px 0;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85em;
+      line-height: 1.6;
+    }
+    
+    button {
+      width: 100%;
+      padding: 15px;
+      margin: 10px 0;
+      background: #10B981;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    button:hover {
+      background: #059669;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 Bolivia Blue - Diagnóstico</h1>
+    <p style="text-align: center; opacity: 0.9; margin-bottom: 20px;">
+      Página de prueba para verificar que todo funciona correctamente
+    </p>
+    
+    <div class="status" id="overall-status">
+      <div class="spinner"></div> Ejecutando pruebas...
+    </div>
+    
+    <div class="test-section">
+      <h2>📱 Información del Dispositivo</h2>
+      <div class="test-item">
+        <span>User Agent:</span>
+        <span class="badge ok" id="ua-badge">Detectando...</span>
+      </div>
+      <div class="code-block" id="user-agent"></div>
+      
+      <div class="test-item">
+        <span>Resolución de Pantalla:</span>
+        <span class="badge ok" id="screen-badge"></span>
+      </div>
+      
+      <div class="test-item">
+        <span>Viewport:</span>
+        <span class="badge ok" id="viewport-badge"></span>
+      </div>
+      
+      <div class="test-item">
+        <span>Conexión:</span>
+        <span class="badge ok" id="connection-badge"></span>
+      </div>
+    </div>
+    
+    <div class="test-section">
+      <h2>🌐 Pruebas de Red</h2>
+      <div class="test-item">
+        <span>Backend API (Railway):</span>
+        <span class="badge loading" id="backend-badge"><div class="spinner"></div></span>
+      </div>
+      <div class="code-block" id="backend-result">Probando conexión...</div>
+      
+      <div class="test-item">
+        <span>Tasa Blue Actual:</span>
+        <span class="badge loading" id="rate-badge"><div class="spinner"></div></span>
+      </div>
+      <div class="code-block" id="rate-result">Obteniendo datos...</div>
+    </div>
+    
+    <div class="test-section">
+      <h2>✅ Pruebas del Navegador</h2>
+      <div class="test-item">
+        <span>JavaScript:</span>
+        <span class="badge ok">✓ Funcionando</span>
+      </div>
+      <div class="test-item">
+        <span>LocalStorage:</span>
+        <span class="badge" id="storage-badge"></span>
+      </div>
+      <div class="test-item">
+        <span>Fetch API:</span>
+        <span class="badge" id="fetch-badge"></span>
+      </div>
+      <div class="test-item">
+        <span>Service Worker:</span>
+        <span class="badge" id="sw-badge"></span>
+      </div>
+    </div>
+    
+    <button onclick="runTests()">🔄 Ejecutar Pruebas Nuevamente</button>
+    <button onclick="window.location.href='/'">← Volver a la Aplicación Principal</button>
+    
+    <div style="margin-top: 30px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 10px; font-size: 0.85em; line-height: 1.6;">
+      <strong>ℹ️ Nota:</strong><br>
+      Si esta página funciona pero la aplicación principal muestra pantalla blanca, el problema está en el código React, no en el servidor.
+      Si ambas muestran error, el problema está en el backend o la conexión de red.
+    </div>
+  </div>
+  
+  <script>
+    const API_URL = 'https://boliviablue-production.up.railway.app';
+    
+    function updateBadge(id, status, text) {
+      const badge = document.getElementById(id);
+      if (!badge) return;
+      badge.className = `badge ${status}`;
+      badge.innerHTML = text;
+    }
+    
+    function testDeviceInfo() {
+      // User Agent
+      document.getElementById('user-agent').textContent = navigator.userAgent;
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      updateBadge('ua-badge', 'ok', isMobile ? '📱 Mobile' : '💻 Desktop');
+      
+      // Screen
+      document.getElementById('screen-badge').textContent = 
+        `${window.screen.width} × ${window.screen.height}`;
+      
+      // Viewport
+      document.getElementById('viewport-badge').textContent = 
+        `${window.innerWidth} × ${window.innerHeight}`;
+      
+      // Connection
+      const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      if (connection) {
+        const type = connection.effectiveType || connection.type || 'unknown';
+        document.getElementById('connection-badge').textContent = type.toUpperCase();
+      } else {
+        document.getElementById('connection-badge').textContent = 'Unknown';
+      }
+    }
+    
+    function testBrowserFeatures() {
+      // LocalStorage
+      try {
+        localStorage.setItem('test', '1');
+        localStorage.removeItem('test');
+        updateBadge('storage-badge', 'ok', '✓ Disponible');
+      } catch (e) {
+        updateBadge('storage-badge', 'fail', '✗ No disponible');
+      }
+      
+      // Fetch API
+      if (window.fetch) {
+        updateBadge('fetch-badge', 'ok', '✓ Disponible');
+      } else {
+        updateBadge('fetch-badge', 'fail', '✗ No disponible');
+      }
+      
+      // Service Worker
+      if ('serviceWorker' in navigator) {
+        updateBadge('sw-badge', 'ok', '✓ Soportado');
+      } else {
+        updateBadge('sw-badge', 'fail', '✗ No soportado');
+      }
+    }
+    
+    async function testBackend() {
+      try {
+        const startTime = Date.now();
+        const response = await fetch(`${API_URL}/api/health`, {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' }
+        });
+        const duration = Date.now() - startTime;
+        
+        if (response.ok) {
+          const data = await response.json();
+          updateBadge('backend-badge', 'ok', `✓ OK (${duration}ms)`);
+          document.getElementById('backend-result').textContent = 
+            JSON.stringify(data, null, 2);
+          return true;
+        } else {
+          updateBadge('backend-badge', 'fail', `✗ Error ${response.status}`);
+          document.getElementById('backend-result').textContent = 
+            `Error HTTP ${response.status}: ${response.statusText}`;
+          return false;
+        }
+      } catch (error) {
+        updateBadge('backend-badge', 'fail', '✗ Sin conexión');
+        document.getElementById('backend-result').textContent = 
+          `Error: ${error.message}\n\nEl backend no está respondiendo. Verifica:\n1. Railway está activo\n2. Variables de entorno configuradas\n3. No hay errores en Railway logs`;
+        return false;
+      }
+    }
+    
+    async function testBlueRate() {
+      try {
+        const response = await fetch(`${API_URL}/api/blue-rate`);
+        if (response.ok) {
+          const data = await response.json();
+          updateBadge('rate-badge', 'ok', `${data.mid || data.sell} BOB`);
+          document.getElementById('rate-result').textContent = 
+            JSON.stringify(data, null, 2);
+          return true;
+        } else {
+          updateBadge('rate-badge', 'fail', `✗ Error ${response.status}`);
+          document.getElementById('rate-result').textContent = 
+            `No se pudo obtener la tasa blue`;
+          return false;
+        }
+      } catch (error) {
+        updateBadge('rate-badge', 'fail', '✗ Error');
+        document.getElementById('rate-result').textContent = 
+          `Error: ${error.message}`;
+        return false;
+      }
+    }
+    
+    async function runTests() {
+      document.getElementById('overall-status').className = 'status';
+      document.getElementById('overall-status').innerHTML = 
+        '<div class="spinner"></div> Ejecutando pruebas...';
+      
+      testDeviceInfo();
+      testBrowserFeatures();
+      
+      const backendOk = await testBackend();
+      const rateOk = await testBlueRate();
+      
+      if (backendOk && rateOk) {
+        document.getElementById('overall-status').className = 'status success';
+        document.getElementById('overall-status').innerHTML = 
+          '✅ <strong>Todo funciona correctamente</strong><br><small>El problema puede estar en la aplicación React</small>';
+      } else {
+        document.getElementById('overall-status').className = 'status error';
+        document.getElementById('overall-status').innerHTML = 
+          '❌ <strong>Problemas detectados</strong><br><small>Revisa los detalles arriba</small>';
+      }
+    }
+    
+    // Run tests on page load
+    runTests();
+    
+    // Update viewport on resize
+    window.addEventListener('resize', () => {
+      document.getElementById('viewport-badge').textContent = 
+        `${window.innerWidth} × ${window.innerHeight}`;
+    });
+  </script>
+</body>
+</html>
+

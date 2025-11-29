@@ -1,0 +1,178 @@
+```
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║               🚨 MOBILE WHITE SCREEN - QUICK REFERENCE CARD 🚨               ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ 1️⃣  QUICK DIAGNOSIS (30 seconds)                                             │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+   Test these URLs from ANY browser:
+   
+   ✓ https://boliviablue.com
+   ✓ https://boliviablue-production.up.railway.app/api/health
+   
+   Results:
+   ┌─────────────────────────────────────┬─────────────────────────────────────┐
+   │ BOTH DON'T WORK                     │ → Deployment Issue (Go to Step 2)  │
+   │ Main works desktop, not mobile      │ → Mobile Issue (Go to Step 3)      │
+   │ Both work everywhere               │ → Cache Issue (Go to Step 4)       │
+   └─────────────────────────────────────┴─────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ 2️⃣  FIX DEPLOYMENT (If site is completely down)                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+   A. CHECK VERCEL (Frontend)
+   
+      → Visit: https://vercel.com/dashboard
+      → Find: "Bolivia Blue" project
+      → Status:
+         ❌ Red X = Failed build → Click to view logs
+         ⚠️  Warning = Partial success → Check logs
+         ✅ Green ✓ = OK → Skip to Railway
+      
+   B. CHECK RAILWAY (Backend)
+   
+      → Visit: https://railway.app/dashboard
+      → Find: "Bolivia Blue" service
+      → Status:
+         🔴 Crashed = Service down → View logs
+         🟡 Starting = Restarting → Wait 2 min
+         🟢 Running = OK → Problem is elsewhere
+   
+   C. COMMON FIXES
+   
+      Vercel Issues:
+      • Missing env: VITE_API_URL=https://boliviablue-production.up.railway.app
+      • Build timeout → Click "Redeploy"
+      • Memory error → Simplify build
+      
+      Railway Issues:
+      • Missing: SUPABASE_URL, SUPABASE_ANON_KEY
+      • Port error → Set PORT=3000
+      • Crashed → Click "Restart"
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ 3️⃣  FIX MOBILE ISSUE (If desktop works, mobile doesn't)                      │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+   A. CLEAR CACHE
+   
+      iPhone:
+      Settings → Safari → Clear History and Website Data
+      
+      Android:
+      Chrome → Settings → Privacy → Clear browsing data
+   
+   B. TEST IN PRIVATE MODE
+   
+      iPhone: Safari tabs icon → Private
+      Android: Chrome ⋮ → New incognito tab
+      
+      Visit: https://boliviablue.com
+   
+   C. DEPLOY ERROR FIXES
+   
+      cd "C:\Users\jonah\OneDrive\Documents\GitHub\Bolivia Blue Con Paz"
+      git add .
+      git commit -m "Add mobile error handling"
+      git push origin main
+      
+      Wait 3-5 minutes for Vercel to rebuild
+   
+   D. TEST DIAGNOSTIC PAGE
+   
+      Visit from phone: https://boliviablue.com/test.html
+      
+      Shows:
+      ✅ Green checks = Working
+      ❌ Red X = Problem (read error message)
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ 4️⃣  FIX CACHE ISSUE (If everything works but you see old version)            │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+   A. NUCLEAR OPTION (Clear everything)
+   
+      iPhone:
+      1. Settings → Safari → Clear History and Website Data
+      2. Settings → Safari → Advanced → Website Data → Remove All
+      
+      Android:
+      Chrome → Settings → Privacy → Clear browsing data
+      Select ALL → Clear data
+   
+   B. FORCE REFRESH
+   
+      Desktop: Ctrl+Shift+R (Win) / Cmd+Shift+R (Mac)
+      Mobile: Clear cache → Close browser → Reopen
+   
+   C. TEST
+   
+      Visit: https://boliviablue.com
+      Should load fresh version
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ 🛠️  DIAGNOSTIC TOOLS                                                          │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+   Local Backend Test (from your computer):
+   → Run: node check-backend.js
+   
+   Mobile Web Test (from your phone):
+   → Visit: https://boliviablue.com/test.html
+   
+   Error Boundaries (automatic):
+   → Deployed in frontend/src/main.jsx
+   → Shows friendly errors instead of white screen
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ 📋 CHECKLIST                                                                  │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+   Before marking as FIXED:
+   
+   ☐ Vercel deployment shows ✅ green checkmark
+   ☐ Railway service shows 🟢 green (running)
+   ☐ Backend health responds: /api/health
+   ☐ Test page works: /test.html
+   ☐ Main site loads on desktop
+   ☐ Main site loads on mobile
+   ☐ Main site loads in mobile incognito
+   ☐ Exchange rates display
+   ☐ Charts render
+   ☐ No console errors
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ 🆘 STILL STUCK?                                                               │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+   Provide this info:
+   
+   1. Vercel status: ✅ / ❌ / ⚠️  (+ error message if failed)
+   2. Railway status: 🟢 / 🔴 / 🟡 (+ last 20 lines of logs if crashed)
+   3. Backend test: Run `node check-backend.js` and copy output
+   4. Mobile test: Visit /test.html and screenshot or copy results
+   5. What you see: White screen? Loading spinner? Error message?
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ 📚 DETAILED GUIDES                                                            │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+   START_HERE_WHITE_SCREEN_FIX.md ........... Quick start guide (this info)
+   WHITE_SCREEN_CHECKLIST.md ................ Systematic step-by-step checklist
+   MOBILE_WHITE_SCREEN_FIX.md ............... Technical troubleshooting guide
+   WHITE_SCREEN_FIX_SUMMARY.md .............. Executive summary
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║  💡 TIP: Start with Step 1 (Quick Diagnosis) then follow the path!          ║
+║                                                                              ║
+║  ⏱️  Estimated fix time: 5-30 minutes depending on root cause               ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+```
+

@@ -388,14 +388,37 @@ function BlueChart({ showOfficial = false }) {
                       stroke="#D1D5DB"
                       tickLine={false}
                       axisLine={{ strokeWidth: 2 }}
-                      interval={range === 'ALL' || range === '1W' ? 0 : 'preserveStartEnd'}
+                      interval={range === 'ALL' ? Math.max(0, Math.floor(data.length / 8)) : (range === '1W' ? 0 : 'preserveStartEnd')}
                       tickFormatter={(value, index) => {
-                        // For ALL and 1W ranges, only show label for first occurrence of each date
-                        if ((range === 'ALL' || range === '1W') && data.length > 0 && index !== undefined) {
+                        // For ALL range, show labels to ensure full date range is visible
+                        if (range === 'ALL' && data.length > 0 && index !== undefined) {
                           const currentPoint = data[index];
                           if (!currentPoint || !currentPoint.dateKey) return '';
                           
-                          // Check if this is the first occurrence of this date
+                          // Always show first and last points
+                          if (index === 0 || index === data.length - 1) {
+                            return value;
+                          }
+                          
+                          // Show label for first occurrence of each date
+                          const firstOccurrenceIndex = data.findIndex(p => p.dateKey === currentPoint.dateKey);
+                          if (firstOccurrenceIndex === index) {
+                            return value;
+                          }
+                          
+                          // Also show evenly spaced labels across the range (every ~8th point)
+                          const labelInterval = Math.max(1, Math.floor(data.length / 8));
+                          if (index % labelInterval === 0) {
+                            return value;
+                          }
+                          
+                          return ''; // Don't show label for duplicate dates
+                        }
+                        // For 1W range, only show label for first occurrence of each date
+                        if (range === '1W' && data.length > 0 && index !== undefined) {
+                          const currentPoint = data[index];
+                          if (!currentPoint || !currentPoint.dateKey) return '';
+                          
                           const firstOccurrenceIndex = data.findIndex(p => p.dateKey === currentPoint.dateKey);
                           if (firstOccurrenceIndex === index) {
                             return value;

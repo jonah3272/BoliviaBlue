@@ -118,9 +118,26 @@ export async function fetchBlueHistory(range = '1W') {
   
   // Downsample for ALL range if we have too many points (>200)
   // This improves chart performance while maintaining data accuracy
+  // Always include first and last points to preserve full date range
   if (range === 'ALL' && points.length > 200) {
-    const step = Math.ceil(points.length / 200);
-    points = points.filter((_, index) => index % step === 0);
+    const targetPoints = 200;
+    const step = Math.ceil(points.length / targetPoints);
+    const downsampled = [];
+    
+    // Always include first point
+    downsampled.push(points[0]);
+    
+    // Sample middle points
+    for (let i = step; i < points.length - step; i += step) {
+      downsampled.push(points[i]);
+    }
+    
+    // Always include last point (if different from first)
+    if (points.length > 1 && points[points.length - 1] !== points[0]) {
+      downsampled.push(points[points.length - 1]);
+    }
+    
+    points = downsampled;
     logger.log(`Downsampled ALL range from ${data.length} to ${points.length} points`);
   }
   

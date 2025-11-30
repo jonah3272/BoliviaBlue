@@ -607,7 +607,7 @@ function SentimentNewsCard() {
   };
 
   return (
-    <div className="bg-white dark:bg-[#121416] rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden h-[220px] flex flex-col">
+    <div className="bg-white dark:bg-[#121416] rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-visible min-h-[220px] flex flex-col">
       {/* Top Bar - Sentiment Summary */}
       <div className="px-3 sm:px-4 py-3 sm:py-3.5 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30 flex-shrink-0">
         <div className="flex flex-col gap-3">
@@ -703,9 +703,9 @@ function SentimentNewsCard() {
           </div>
           
           {/* Main Content Row: Score + Gauge + Counts */}
-          <div className="flex items-center gap-2 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-4 overflow-visible">
             {/* Score Display with Context - ENHANCED AND PROMINENT */}
-            <div className={`flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-3 sm:py-4 rounded-xl border-2 flex-shrink-0 shadow-lg ${
+            <div className={`flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-3 sm:py-4 rounded-xl border-2 flex-shrink-0 shadow-lg overflow-visible ${
               isPositive 
                 ? 'bg-gradient-to-br from-green-900/20 to-green-800/10 border-green-600 dark:bg-green-900/30 dark:border-green-500' 
                 : isNegative 

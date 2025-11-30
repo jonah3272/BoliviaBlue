@@ -116,24 +116,20 @@ export async function fetchBlueHistory(range = '1W') {
   
   let points = data || [];
   
-  // Downsample for ALL range if we have too many points (>200)
-  // This improves chart performance while maintaining data accuracy
-  // Always include first and last points to preserve full date range
-  if (range === 'ALL' && points.length > 200) {
-    const targetPoints = 200;
+  // For ALL range, show all data points for datasets under 3000 points
+  // Modern browsers can handle this many points without performance issues
+  // Only downsample if we have more than 3000 points
+  if (range === 'ALL' && points.length > 3000) {
+    const targetPoints = 1000; // Downsample to 1000 points max
     const step = Math.floor(points.length / targetPoints);
     const downsampled = [];
     
     // Always include first point
     downsampled.push(points[0]);
     
-    // Sample points evenly across the entire range, including near the end
-    // Use Math.floor to ensure we get points closer to the end
-    for (let i = step; i < points.length; i += step) {
-      // Skip if it's the last point (we'll add it separately)
-      if (i < points.length - 1) {
-        downsampled.push(points[i]);
-      }
+    // Sample points evenly across the entire range
+    for (let i = step; i < points.length - 1; i += step) {
+      downsampled.push(points[i]);
     }
     
     // Always include last point to ensure full date range is visible
@@ -148,6 +144,10 @@ export async function fetchBlueHistory(range = '1W') {
     
     points = downsampled;
     logger.log(`Downsampled ALL range from ${data.length} to ${points.length} points`);
+    logger.log(`Date range: ${points[0]?.t} to ${points[points.length - 1]?.t}`);
+  } else if (range === 'ALL') {
+    // For datasets under 3000 points, use ALL points - no downsampling
+    logger.log(`ALL range: Using all ${points.length} points (no downsampling)`);
     logger.log(`Date range: ${points[0]?.t} to ${points[points.length - 1]?.t}`);
   }
   

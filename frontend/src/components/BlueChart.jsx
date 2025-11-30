@@ -14,6 +14,7 @@ function BlueChart({ showOfficial = false }) {
   const [error, setError] = useState(null);
   const [dataAge, setDataAge] = useState(0);
   const [stats, setStats] = useState({ latestBuy: 0, latestSell: 0, change: 0 });
+  const [uniqueDateIndices, setUniqueDateIndices] = useState([]); // For ALL range X-axis ticks
   
   // Define TIME_RANGES using useMemo to ensure t() is available
   const TIME_RANGES = useMemo(() => {
@@ -168,15 +169,35 @@ function BlueChart({ showOfficial = false }) {
           });
         }
         
+        // For ALL range, calculate indices of first occurrence of each unique date
+        let dateIndices = [];
+        if (range === 'ALL' && chartData.length > 0) {
+          const dateSet = new Set();
+          chartData.forEach((point, idx) => {
+            if (point.dateKey && !dateSet.has(point.dateKey)) {
+              dateSet.add(point.dateKey);
+              dateIndices.push(idx);
+            }
+          });
+          setUniqueDateIndices(dateIndices);
+        } else {
+          setUniqueDateIndices([]);
+        }
+        
         // Debug log for ALL range after chartData is created
         if (range === 'ALL') {
           console.log(`[BlueChart] ALL range: ${result.points.length} raw points, ${chartData.length} chart points`);
+          console.log(`[BlueChart] Unique dates: ${dateIndices.length}`);
           if (chartData.length > 0) {
             const firstDate = new Date(result.points[0].t);
             const lastDate = new Date(result.points[result.points.length - 1].t);
             console.log('Raw data range:', firstDate.toLocaleDateString(), 'to', lastDate.toLocaleDateString());
             console.log('Chart data range:', chartData[0].time, 'to', chartData[chartData.length - 1].time);
             console.log('Date span:', Math.floor((lastDate - firstDate) / (1000 * 60 * 60 * 24)) + ' days');
+            if (dateIndices.length > 0) {
+              console.log('First date index:', dateIndices[0], 'label:', chartData[dateIndices[0]].time);
+              console.log('Last date index:', dateIndices[dateIndices.length - 1], 'label:', chartData[dateIndices[dateIndices.length - 1]].time);
+            }
           }
         }
         
@@ -356,7 +377,7 @@ function BlueChart({ showOfficial = false }) {
             <ResponsiveContainer width="100%" height="100%">
             <AreaChart 
               data={data} 
-              margin={{ top: 10, right: 20, left: -10, bottom: 20 }}
+              margin={{ top: 10, right: 20, left: -10, bottom: range === 'ALL' ? 60 : 20 }}
             >
               <defs>
                 <linearGradient id="colorBuy" x1="0" y1="0" x2="0" y2="1">
@@ -387,18 +408,28 @@ function BlueChart({ showOfficial = false }) {
               />
                     <XAxis 
                       dataKey="time" 
-                      tick={{ fill: '#6B7280', fontSize: 11, fontFamily: 'Inter' }}
+                      tick={{ fill: '#6B7280', fontSize: 10, fontFamily: 'Inter' }}
                       stroke="#D1D5DB"
                       tickLine={false}
                       axisLine={{ strokeWidth: 2 }}
-                      interval={range === 'ALL' || range === '1W' ? 0 : 'preserveStartEnd'}
+                      interval={range === 'ALL' ? 0 : (range === '1W' ? 0 : 'preserveStartEnd')}
+                      ticks={range === 'ALL' && uniqueDateIndices.length > 0 && data.length > 0 
+                        ? uniqueDateIndices.map(idx => data[idx]?.time).filter(Boolean) 
+                        : undefined}
                       tickFormatter={(value, index) => {
-                        // For ALL and 1W ranges, only show label for first occurrence of each date
-                        if ((range === 'ALL' || range === '1W') && data.length > 0 && index !== undefined) {
+                        // For ALL range, only show labels for unique date indices
+                        if (range === 'ALL' && data.length > 0 && index !== undefined) {
+                          // Check if this index is in our unique date indices
+                          if (uniqueDateIndices.includes(index)) {
+                            return value;
+                          }
+                          return ''; // Don't show label for duplicate dates
+                        }
+                        // For 1W range, only show label for first occurrence of each date
+                        if (range === '1W' && data.length > 0 && index !== undefined) {
                           const currentPoint = data[index];
                           if (!currentPoint || !currentPoint.dateKey) return '';
                           
-                          // Show label for first occurrence of each date
                           const firstOccurrenceIndex = data.findIndex(p => p.dateKey === currentPoint.dateKey);
                           if (firstOccurrenceIndex === index) {
                             return value;
@@ -407,6 +438,9 @@ function BlueChart({ showOfficial = false }) {
                         }
                         return value;
                       }}
+                      angle={range === 'ALL' ? -45 : 0}
+                      textAnchor={range === 'ALL' ? 'end' : 'middle'}
+                      height={range === 'ALL' ? 80 : 30}
                     />
               <YAxis 
                 tick={{ fill: '#6B7280', fontSize: 11, fontFamily: 'Space Mono' }}

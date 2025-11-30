@@ -805,87 +805,27 @@ function Home() {
           </div>
         </section>
 
-        {/* Quick Links to New Pages */}
-        <section className="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 rounded-xl p-6 sm:p-8 shadow-lg">
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">
-            {language === 'es' 
-              ? 'Páginas Populares'
-              : 'Popular Pages'}
-          </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
-            {/* Featured: EN VIVO Page */}
+        {/* Quick Access Links - Simplified */}
+        <section className="border-t border-gray-200 dark:border-gray-700 pt-8 mt-8">
+          <div className="flex flex-wrap gap-3 justify-center text-sm">
             <Link
               to="/dolar-paralelo-bolivia-en-vivo"
-              className="p-3 bg-gradient-to-br from-red-500 to-red-600 rounded-lg hover:from-red-600 hover:to-red-700 transition-colors text-center shadow-lg border-2 border-red-300"
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors font-medium"
             >
-              <div className="font-bold text-sm text-white mb-1 flex items-center justify-center gap-1">
-                <span className="inline-block w-2 h-2 bg-white rounded-full animate-pulse"></span>
-                {language === 'es' ? 'EN VIVO' : 'LIVE'}
-              </div>
+              <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+              {language === 'es' ? 'En Vivo' : 'Live'}
             </Link>
-            <Link
-              to="/dolar-blue-hoy"
-              className="p-3 bg-white dark:bg-gray-800 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors text-center"
-            >
-              <div className="font-medium text-sm text-gray-900 dark:text-white mb-1">
-                {language === 'es' ? 'Dólar Blue Hoy' : 'Blue Dollar Today'}
-              </div>
+            <Link to="/calculadora" className="px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-white rounded-lg transition-colors">
+              {language === 'es' ? 'Calculadora' : 'Calculator'}
             </Link>
-            <Link
-              to="/que-es-dolar-blue"
-              className="p-3 bg-white dark:bg-gray-800 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors text-center"
-            >
-              <div className="font-medium text-sm text-gray-900 dark:text-white mb-1">
-                {language === 'es' ? '¿Qué es?' : 'What is it?'}
-              </div>
+            <Link to="/noticias" className="px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-white rounded-lg transition-colors">
+              {language === 'es' ? 'Noticias' : 'News'}
             </Link>
-            <Link
-              to="/cuanto-esta-dolar-bolivia"
-              className="p-3 bg-white dark:bg-gray-800 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors text-center"
-            >
-              <div className="font-medium text-sm text-gray-900 dark:text-white mb-1">
-                {language === 'es' ? '¿Cuánto Está?' : 'How Much?'}
-              </div>
+            <Link to="/comprar-dolares" className="px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-white rounded-lg transition-colors">
+              {language === 'es' ? 'Comprar Dólares' : 'Buy Dollars'}
             </Link>
-            <Link
-              to="/dolar-blue-la-paz"
-              className="p-3 bg-white dark:bg-gray-800 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors text-center"
-            >
-              <div className="font-medium text-sm text-gray-900 dark:text-white mb-1">
-                {language === 'es' ? 'La Paz' : 'La Paz'}
-              </div>
-            </Link>
-            <Link
-              to="/binance-p2p-bolivia"
-              className="p-3 bg-white dark:bg-gray-800 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors text-center"
-            >
-              <div className="font-medium text-sm text-gray-900 dark:text-white mb-1">
-                {language === 'es' ? 'Binance P2P' : 'Binance P2P'}
-              </div>
-            </Link>
-            <Link
-              to="/usdt-bolivia"
-              className="p-3 bg-white dark:bg-gray-800 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors text-center"
-            >
-              <div className="font-medium text-sm text-gray-900 dark:text-white mb-1">
-                {language === 'es' ? 'USDT' : 'USDT'}
-              </div>
-            </Link>
-            <Link
-              to="/dolar-blue-santa-cruz"
-              className="p-3 bg-white dark:bg-gray-800 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors text-center"
-            >
-              <div className="font-medium text-sm text-gray-900 dark:text-white mb-1">
-                {language === 'es' ? 'Santa Cruz' : 'Santa Cruz'}
-              </div>
-            </Link>
-            <Link
-              to="/dolar-blue-cochabamba"
-              className="p-3 bg-white dark:bg-gray-800 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors text-center"
-            >
-              <div className="font-medium text-sm text-gray-900 dark:text-white mb-1">
-                {language === 'es' ? 'Cochabamba' : 'Cochabamba'}
-              </div>
+            <Link to="/blog" className="px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-white rounded-lg transition-colors">
+              Blog
             </Link>
           </div>
         </section>

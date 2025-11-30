@@ -103,27 +103,71 @@ export async function fetchBlueHistory(range = '1W') {
       startDate = new Date(0); // Beginning of time
   }
   
-  // For ALL range, we need to fetch all rows - Supabase default limit is 1000
-  // Use a large limit or fetch in batches if needed
-  let query = supabase
-    .from('rates')
-    .select('t, buy, sell, mid, official_buy, official_sell, official_mid')
-    .gte('t', startDate.toISOString())
-    .order('t', { ascending: true });
+  // For ALL range, fetch all data using cursor-based pagination to avoid any limits
+  let points = [];
   
-  // Remove any default limit for ALL range to get all data
   if (range === 'ALL') {
-    query = query.limit(10000); // Set explicit high limit for ALL range
+    // Fetch all data in batches using cursor-based pagination (more reliable than offset)
+    const batchSize = 1000; // Supabase recommended batch size
+    let lastTimestamp = startDate.toISOString();
+    let hasMore = true;
+    let batchCount = 0;
+    
+    logger.log(`[fetchBlueHistory] Starting cursor-based pagination for ALL range...`);
+    
+    while (hasMore) {
+      const { data: batch, error } = await supabase
+        .from('rates')
+        .select('t, buy, sell, mid, official_buy, official_sell, official_mid')
+        .gte('t', lastTimestamp)
+        .order('t', { ascending: true })
+        .limit(batchSize);
+      
+      if (error) {
+        logger.error('Error fetching history batch from Supabase:', error);
+        throw new Error(`Failed to fetch history: ${error.message}`);
+      }
+      
+      if (!batch || batch.length === 0) {
+        hasMore = false;
+        break;
+      }
+      
+      // Add batch to points (skip first point if it's the same as lastTimestamp to avoid duplicates)
+      const pointsToAdd = batchCount === 0 
+        ? batch 
+        : batch.slice(1); // Skip first point on subsequent batches (it's the cursor)
+      
+      points = points.concat(pointsToAdd);
+      batchCount++;
+      
+      logger.log(`[fetchBlueHistory] Batch ${batchCount}: ${batch.length} points (${pointsToAdd.length} new, total: ${points.length})`);
+      
+      // Check if we got fewer than batchSize - means we're done
+      if (batch.length < batchSize) {
+        hasMore = false;
+      } else {
+        // Update cursor to the last timestamp from this batch
+        lastTimestamp = batch[batch.length - 1].t;
+      }
+    }
+    
+    logger.log(`[fetchBlueHistory] Pagination complete: ${points.length} total points in ${batchCount} batches`);
+  } else {
+    // For other ranges, use normal query with appropriate limit
+    const { data, error } = await supabase
+      .from('rates')
+      .select('t, buy, sell, mid, official_buy, official_sell, official_mid')
+      .gte('t', startDate.toISOString())
+      .order('t', { ascending: true });
+    
+    if (error) {
+      logger.error('Error fetching history from Supabase:', error);
+      throw new Error(`Failed to fetch history: ${error.message}`);
+    }
+    
+    points = data || [];
   }
-  
-  const { data, error } = await query;
-  
-  if (error) {
-    logger.error('Error fetching history from Supabase:', error);
-    throw new Error(`Failed to fetch history: ${error.message}`);
-  }
-  
-  let points = data || [];
   
   // Log what we actually got and verify we have recent data
   if (range === 'ALL' && points.length > 0) {

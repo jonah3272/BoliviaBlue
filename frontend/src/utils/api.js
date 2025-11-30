@@ -198,66 +198,51 @@ export async function fetchBlueHistory(range = '1W') {
   }
   
   // For ALL range, intelligently downsample to show representative markers
-  // Goal: Show overall trend with at least one point per day
+  // Goal: Show more data points for better granularity while maintaining performance
   if (range === 'ALL' && points.length > 0) {
     const originalPointCount = points.length; // Store original count for logging
+    const targetPoints = 300; // Show ~300 points for better detail (was ~20)
     const downsampled = [];
     
-    // Group points by day to ensure we get at least one per day
-    const pointsByDay = new Map();
-    
-    points.forEach((point) => {
-      const date = new Date(point.t);
-      const dayKey = date.toISOString().split('T')[0]; // YYYY-MM-DD format
+    // If we have fewer points than target, use all points
+    if (points.length <= targetPoints) {
+      points = points; // No downsampling needed
+      logger.log(`[Downsampling] ALL range: ${originalPointCount} points (no downsampling needed)`);
+    } else {
+      // Calculate step size for even sampling across the entire range
+      const step = Math.max(1, Math.floor(points.length / targetPoints));
       
-      if (!pointsByDay.has(dayKey)) {
-        pointsByDay.set(dayKey, []);
-      }
-      pointsByDay.get(dayKey).push(point);
-    });
-    
-    // For each day, pick a representative point (prefer middle of day or most recent)
-    const sortedDays = Array.from(pointsByDay.keys()).sort();
-    
-    sortedDays.forEach((dayKey, dayIndex) => {
-      const dayPoints = pointsByDay.get(dayKey);
+      // Always include first point
+      downsampled.push(points[0]);
       
-      if (dayPoints.length === 1) {
-        // Only one point for this day, use it
-        downsampled.push(dayPoints[0]);
-      } else {
-        // Multiple points for this day - pick the middle one for better trend representation
-        const middleIndex = Math.floor(dayPoints.length / 2);
-        downsampled.push(dayPoints[middleIndex]);
-      }
-    });
-    
-    // Always ensure first and last points are included (most recent data)
-    if (downsampled.length > 0) {
-      const firstOriginal = points[0];
-      const lastOriginal = points[points.length - 1];
-      
-      // Replace first if needed
-      const firstDownsampled = downsampled[0];
-      const firstOriginalDay = new Date(firstOriginal.t).toISOString().split('T')[0];
-      const firstDownsampledDay = new Date(firstDownsampled.t).toISOString().split('T')[0];
-      if (firstOriginalDay === firstDownsampledDay && firstOriginal.t !== firstDownsampled.t) {
-        downsampled[0] = firstOriginal;
+      // Sample points evenly across the range
+      for (let i = step; i < points.length - step; i += step) {
+        downsampled.push(points[i]);
       }
       
-      // Replace last if needed (most important - ensure we have latest data)
-      const lastDownsampled = downsampled[downsampled.length - 1];
-      const lastOriginalDay = new Date(lastOriginal.t).toISOString().split('T')[0];
-      const lastDownsampledDay = new Date(lastDownsampled.t).toISOString().split('T')[0];
-      if (lastOriginalDay === lastDownsampledDay && lastOriginal.t !== lastDownsampled.t) {
-        downsampled[downsampled.length - 1] = lastOriginal;
+      // Always include last point (most recent data)
+      const lastPoint = points[points.length - 1];
+      const lastDate = new Date(lastPoint.t);
+      
+      // Remove last sampled point if it's too close to the actual last point
+      if (downsampled.length > 1) {
+        const existingLast = downsampled[downsampled.length - 1];
+        const existingLastDate = new Date(existingLast.t);
+        const hoursDiff = (lastDate - existingLastDate) / (1000 * 60 * 60);
+        
+        // If existing last point is less than 2 hours from actual last, replace it
+        if (hoursDiff < 2) {
+          downsampled.pop();
+        }
       }
+      
+      // Always add the actual last point
+      downsampled.push(lastPoint);
+      
+      points = downsampled;
+      logger.log(`[Downsampling] ALL range: ${originalPointCount} points → ${points.length} markers`);
+      logger.log(`[Downsampling] Date range: ${new Date(points[0].t).toLocaleDateString()} to ${new Date(points[points.length - 1].t).toLocaleDateString()}`);
     }
-    
-    points = downsampled;
-    logger.log(`[Downsampling] ALL range: ${originalPointCount} points → ${points.length} markers (one per day)`);
-    logger.log(`[Downsampling] Date range: ${new Date(points[0].t).toLocaleDateString()} to ${new Date(points[points.length - 1].t).toLocaleDateString()}`);
-    logger.log(`[Downsampling] Unique days: ${sortedDays.length}, Markers: ${points.length}`);
   }
   
   return {

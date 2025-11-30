@@ -891,71 +891,33 @@ function Home() {
         </section>
       </main>
 
-      {/* Internal Linking Section for SEO */}
-      <section className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 rounded-xl p-6 shadow-lg">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">
-          {language === 'es' ? '🔗 Herramientas y Recursos' : '🔗 Tools and Resources'}
-        </h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
-          <Link to="/calculadora" className="bg-white dark:bg-gray-800 p-3 rounded-lg hover:shadow-md transition-all text-center">
-            <div className="text-2xl mb-1">🧮</div>
-            <div className="font-semibold text-gray-900 dark:text-white">
-              {language === 'es' ? 'Calculadora USD/BOB' : 'USD/BOB Calculator'}
-            </div>
+      {/* Simple, Clean Footer Links Bar */}
+      <section className="border-t border-gray-200 dark:border-gray-700 pt-6 pb-4">
+        <div className="flex flex-wrap justify-center gap-4 text-sm">
+          <Link to="/calculadora" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">
+            {language === 'es' ? 'Calculadora' : 'Calculator'}
           </Link>
-          <Link to="/noticias" className="bg-white dark:bg-gray-800 p-3 rounded-lg hover:shadow-md transition-all text-center">
-            <div className="text-2xl mb-1">📰</div>
-            <div className="font-semibold text-gray-900 dark:text-white">
-              {language === 'es' ? 'Noticias Financieras' : 'Financial News'}
-            </div>
+          <span className="text-gray-300 dark:text-gray-600">•</span>
+          <Link to="/noticias" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">
+            {language === 'es' ? 'Noticias' : 'News'}
           </Link>
-          <Link to="/preguntas-frecuentes" className="bg-white dark:bg-gray-800 p-3 rounded-lg hover:shadow-md transition-all text-center">
-            <div className="text-2xl mb-1">❓</div>
-            <div className="font-semibold text-gray-900 dark:text-white">
-              {language === 'es' ? 'Preguntas Frecuentes' : 'FAQ'}
-            </div>
+          <span className="text-gray-300 dark:text-gray-600">•</span>
+          <Link to="/blog" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">
+            Blog
           </Link>
-          <Link to="/comparison" className="bg-white dark:bg-gray-800 p-3 rounded-lg hover:shadow-md transition-all text-center">
-            <div className="text-2xl mb-1">📊</div>
-            <div className="font-semibold text-gray-900 dark:text-white">
-              {language === 'es' ? 'vs BolivianBlue.net' : 'vs BolivianBlue.net'}
-            </div>
+          <span className="text-gray-300 dark:text-gray-600">•</span>
+          <Link to="/comprar-dolares" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">
+            {language === 'es' ? 'Comprar Dólares' : 'Buy Dollars'}
           </Link>
-          <Link to="/comprar-dolares" className="bg-white dark:bg-gray-800 p-3 rounded-lg hover:shadow-md transition-all text-center">
-            <div className="text-2xl mb-1">💰</div>
-            <div className="font-semibold text-gray-900 dark:text-white">
-              {language === 'es' ? 'Cómo Comprar Dólares' : 'How to Buy Dollars'}
-            </div>
-          </Link>
-          <Link to="/blog" className="bg-white dark:bg-gray-800 p-3 rounded-lg hover:shadow-md transition-all text-center">
-            <div className="text-2xl mb-1">📝</div>
-            <div className="font-semibold text-gray-900 dark:text-white">
-              {language === 'es' ? 'Blog y Guías' : 'Blog & Guides'}
-            </div>
+          <span className="text-gray-300 dark:text-gray-600">•</span>
+          <Link to="/preguntas-frecuentes" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">
+            FAQ
           </Link>
         </div>
         
-        {/* Last Updated Timestamp - Important SEO Freshness Signal */}
-        <div className="text-center mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-          <div className="text-xs text-gray-600 dark:text-gray-400 flex items-center justify-center gap-2">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span>
-              {language === 'es' ? 'Última actualización: ' : 'Last updated: '}
-              {new Date().toLocaleString(language === 'es' ? 'es-BO' : 'en-US', { 
-                day: 'numeric', 
-                month: 'long', 
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                timeZone: 'America/La_Paz'
-              })}
-            </span>
-          </div>
-          <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-            {language === 'es' ? 'Datos actualizados cada 15 minutos' : 'Data updated every 15 minutes'}
-          </div>
+        {/* Last Updated - Minimal */}
+        <div className="text-center mt-4 text-xs text-gray-500 dark:text-gray-500">
+          {language === 'es' ? 'Actualizaciones cada 15 minutos' : 'Updates every 15 minutes'}
         </div>
       </section>
 

@@ -6,25 +6,22 @@ function Footer() {
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
 
-  // Important pages for Google Sitelinks
-  const importantLinks = [
-    { path: '/calculator', label: language === 'es' ? 'Calculadora' : 'Calculator' },
-    { path: '/buy-dollars', label: language === 'es' ? 'Comprar Dólares' : 'Buy Dollars' },
-    { path: '/bolivia-blue-rate', label: language === 'es' ? 'Bolivia Blue Rate' : 'Bolivia Blue Rate' },
-    { path: '/news', label: language === 'es' ? 'Noticias' : 'News' },
-    { path: '/blog', label: language === 'es' ? 'Blog' : 'Blog' },
+  // Essential footer links only
+  const footerLinks = [
+    { path: '/calculadora', label: language === 'es' ? 'Calculadora' : 'Calculator' },
+    { path: '/noticias', label: language === 'es' ? 'Noticias' : 'News' },
+    { path: '/blog', label: 'Blog' },
     { path: '/bancos', label: language === 'es' ? 'Bancos' : 'Banks' },
-    { path: '/about', label: language === 'es' ? 'Acerca de' : 'About' },
-    { path: '/faq', label: language === 'es' ? 'FAQ' : 'FAQ' },
-    { path: '/comparison', label: language === 'es' ? 'Comparación' : 'Comparison' }
+    { path: '/acerca-de', label: language === 'es' ? 'Acerca de' : 'About' },
+    { path: '/preguntas-frecuentes', label: 'FAQ' }
   ];
 
   return (
-    <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-16">
+    <footer className="bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 mt-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Footer Links for Google Sitelinks */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mb-6">
-          {importantLinks.map((link) => (
+        {/* Simple centered links */}
+        <div className="flex flex-wrap justify-center gap-6 mb-6">
+          {footerLinks.map((link) => (
             <Link
               key={link.path}
               to={link.path}
@@ -35,18 +32,10 @@ function Footer() {
           ))}
         </div>
         
-        <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-          <div className="text-center text-sm text-gray-600 dark:text-gray-400">
-            <p className="mb-2">
-              {t('footerUpdates')}
-            </p>
-            <p className="mb-4">
-              {t('footerText')}
-            </p>
-            <p className="mt-6 text-xs text-gray-500 dark:text-gray-500">
-              &copy; 2025 {t('title')}
-            </p>
-          </div>
+        {/* Copyright */}
+        <div className="text-center text-xs text-gray-500 dark:text-gray-500">
+          <p>&copy; 2025 Bolivia Blue Rate con Paz</p>
+          <p className="mt-2">{language === 'es' ? 'Hecho con datos abiertos para transparencia.' : 'Made with open data for transparency.'}</p>
         </div>
       </div>
     </footer>

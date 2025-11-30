@@ -9,7 +9,7 @@
  * Usage: node check-backend.js
  */
 
-const https = require('https');
+import https from 'https';
 
 const BACKEND_URL = 'https://boliviablue-production.up.railway.app';
 const TIMEOUT = 10000; // 10 seconds

@@ -703,36 +703,36 @@ function SentimentNewsCard() {
           </div>
           
           {/* Main Content Row: Score + Gauge + Counts */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            {/* Score Display with Context */}
-            <div className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg border flex-shrink-0 ${
+          <div className="flex items-center gap-2 sm:gap-4">
+            {/* Score Display with Context - ENHANCED AND PROMINENT */}
+            <div className={`flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-3 sm:py-4 rounded-xl border-2 flex-shrink-0 shadow-lg ${
               isPositive 
-                ? 'bg-green-900/20 border-green-800 dark:bg-green-900/30' 
+                ? 'bg-gradient-to-br from-green-900/20 to-green-800/10 border-green-600 dark:bg-green-900/30 dark:border-green-500' 
                 : isNegative 
-                ? 'bg-red-900/20 border-red-800 dark:bg-red-900/30'
-                : 'bg-gray-100 border-gray-300 dark:bg-gray-800 dark:border-gray-700'
+                ? 'bg-gradient-to-br from-red-900/20 to-red-800/10 border-red-600 dark:bg-red-900/30 dark:border-red-500'
+                : 'bg-gradient-to-br from-gray-100 to-gray-50 border-gray-400 dark:bg-gray-800 dark:border-gray-600'
             }`}>
-              <div className="flex flex-col items-center">
-                <span className={`text-xs font-medium ${
+              <div className="flex flex-col items-center justify-center">
+                <span className={`text-[10px] sm:text-xs font-bold uppercase tracking-wide mb-1 ${
                   isPositive 
-                    ? 'text-green-600 dark:text-green-400' 
+                    ? 'text-green-700 dark:text-green-300' 
                     : isNegative 
-                    ? 'text-red-600 dark:text-red-400'
-                    : 'text-gray-600 dark:text-gray-400'
+                    ? 'text-red-700 dark:text-red-300'
+                    : 'text-gray-700 dark:text-gray-300'
                 }`}>
-                  {language === 'es' ? 'Puntaje' : 'Score'}
+                  {language === 'es' ? 'IA Score' : 'AI Score'}
                 </span>
-                <div className="flex items-baseline gap-0.5">
-                  <span className={`text-lg sm:text-xl font-bold tabular-nums ${
+                <div className="flex items-baseline gap-1">
+                  <span className={`text-3xl sm:text-4xl md:text-5xl font-black tabular-nums leading-none ${
                     isPositive 
                       ? 'text-green-600 dark:text-green-400' 
                       : isNegative 
                       ? 'text-red-600 dark:text-red-400'
-                      : 'text-gray-600 dark:text-gray-400'
+                      : 'text-gray-700 dark:text-gray-300'
                   }`}>
                     {sentimentScore > 0 ? '+' : ''}{sentimentScore}
                   </span>
-                  <span className="text-xs text-gray-500 dark:text-gray-500">/50</span>
+                  <span className="text-sm sm:text-base text-gray-500 dark:text-gray-400 font-semibold">/50</span>
                 </div>
               </div>
             </div>

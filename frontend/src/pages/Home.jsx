@@ -399,18 +399,25 @@ function Home() {
       <Navigation />
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-6 md:py-8 space-y-2 sm:space-y-6 md:space-y-8">
-        {/* Visible H1 with Keywords */}
-        <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2 text-center">
-          {language === 'es' 
-            ? 'Bolivian Blue - Tipo de Cambio Dólar Blue Bolivia en Tiempo Real'
-            : 'Bolivian Blue - Blue Dollar Exchange Rate Bolivia Real-Time'}
-        </h1>
-        <p className="text-center text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-3 sm:mb-6">
-          {language === 'es'
-            ? 'Consulta el bolivian blue rate actualizado cada 15 minutos. Cotización en tiempo real del dólar blue en Bolivia con gráficos históricos y calculadora gratuita.'
-            : 'Check the bolivian blue rate updated every 15 minutes. Real-time blue dollar quote in Bolivia with historical charts and free calculator.'}
-        </p>
+      <main className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-8 md:py-12 space-y-6 sm:space-y-8 md:space-y-12">
+        {/* Visible H1 with Keywords - Simplified and cleaner */}
+        <div className="text-center space-y-3">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-gray-900 dark:text-white leading-tight">
+            {language === 'es' 
+              ? 'Dólar Blue en Bolivia'
+              : 'Blue Dollar in Bolivia'}
+          </h1>
+          <p className="text-lg sm:text-xl text-blue-600 dark:text-blue-400 font-medium">
+            {language === 'es'
+              ? '⚡ Actualizado cada 15 minutos'
+              : '⚡ Updated every 15 minutes'}
+          </p>
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+            {language === 'es'
+              ? 'Cotización en tiempo real del tipo de cambio del dólar blue con análisis de sentimiento con IA, gráficos históricos y calculadora gratuita.'
+              : 'Real-time blue dollar exchange rate with AI sentiment analysis, historical charts and free calculator.'}
+          </p>
+        </div>
         
         {/* Blue Rate Cards - At the Top */}
         <section>

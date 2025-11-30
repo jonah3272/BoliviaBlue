@@ -40,13 +40,24 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
 
   return (
     <motion.div 
-      className={`bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-xl border-2 ${borderColor} p-4 shadow-xl transition-all duration-300`}
+      className={`bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-xl border-2 ${borderColor} p-4 shadow-2xl transition-all duration-300 ${
+        isBuy 
+          ? 'hover:shadow-blue-500/20 dark:hover:shadow-blue-500/30' 
+          : 'hover:shadow-pink-500/20 dark:hover:shadow-pink-500/30'
+      }`}
+      style={{
+        boxShadow: isBuy 
+          ? '0 10px 40px -10px rgba(59, 130, 246, 0.3)' 
+          : '0 10px 40px -10px rgba(236, 72, 153, 0.3)'
+      }}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
       whileHover={{ 
         y: -8,
-        boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+        boxShadow: isBuy
+          ? "0 25px 50px -12px rgba(59, 130, 246, 0.4)"
+          : "0 25px 50px -12px rgba(236, 72, 153, 0.4)",
         transition: { duration: 0.2 }
       }}
     >
@@ -73,10 +84,10 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
         transition={{ duration: 0.3 }}
         key={rate}
       >
-        <div className="font-mono text-4xl font-bold text-gray-900 dark:text-white">
+        <div className="font-mono text-5xl sm:text-6xl md:text-7xl font-black text-gray-900 dark:text-white leading-none">
           {formatRate(rate)}
         </div>
-        <div className="text-xs text-gray-600 dark:text-gray-400 mt-0.5 font-medium">
+        <div className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1 font-semibold">
           {t('perUSD')}
         </div>
       </motion.div>

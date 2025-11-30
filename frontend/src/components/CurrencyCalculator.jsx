@@ -82,12 +82,23 @@ function CurrencyCalculator() {
 
   const getRate = () => {
     if (!rateData) return 0;
-    const baseRateBOBperUSD = useOfficial 
-      ? (rateData.official_buy + rateData.official_sell) / 2
-      : (rateData.buy_bob_per_usd + rateData.sell_bob_per_usd) / 2;
+    
+    // Use the actual buy/sell rate based on conversion direction
+    // When converting FROM BOB to USD, use the SELL rate (you're selling BOB)
+    // When converting FROM USD to BOB, use the BUY rate (you're buying BOB)
+    let baseRateBOBperUSD;
+    
+    if (useOfficial) {
+      baseRateBOBperUSD = convertFromBOB 
+        ? rateData.official_sell  // Selling BOB = use sell rate
+        : rateData.official_buy;  // Buying BOB = use buy rate
+    } else {
+      baseRateBOBperUSD = convertFromBOB
+        ? rateData.sell_bob_per_usd  // Selling BOB = use sell rate  
+        : rateData.buy_bob_per_usd;  // Buying BOB = use buy rate
+    }
     
     // Convert BOB per USD to BOB per selected currency
-    // For example: if 1 USD = 10 BOB and 1 USD = 0.92 EUR, then 1 EUR = 10/0.92 BOB
     const currencyToUSD = exchangeRates[selectedCurrency];
     return baseRateBOBperUSD / currencyToUSD;
   };

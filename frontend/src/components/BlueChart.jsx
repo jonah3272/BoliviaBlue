@@ -191,12 +191,15 @@ function BlueChart({ showOfficial = false }) {
           if (chartData.length > 0) {
             const firstDate = new Date(result.points[0].t);
             const lastDate = new Date(result.points[result.points.length - 1].t);
-            console.log('Raw data range:', firstDate.toLocaleDateString(), 'to', lastDate.toLocaleDateString());
-            console.log('Chart data range:', chartData[0].time, 'to', chartData[chartData.length - 1].time);
-            console.log('Date span:', Math.floor((lastDate - firstDate) / (1000 * 60 * 60 * 24)) + ' days');
+            console.log('✅ Raw data range:', firstDate.toLocaleDateString(), 'to', lastDate.toLocaleDateString());
+            console.log('✅ Chart data range:', chartData[0].time, 'to', chartData[chartData.length - 1].time);
+            console.log('✅ Date span:', Math.floor((lastDate - firstDate) / (1000 * 60 * 60 * 24)) + ' days');
+            console.log('✅ First 3 data points:', chartData.slice(0, 3).map(d => ({ time: d.time, dateKey: d.dateKey })));
+            console.log('✅ Last 3 data points:', chartData.slice(-3).map(d => ({ time: d.time, dateKey: d.dateKey })));
             if (dateIndices.length > 0) {
-              console.log('First date index:', dateIndices[0], 'label:', chartData[dateIndices[0]].time);
-              console.log('Last date index:', dateIndices[dateIndices.length - 1], 'label:', chartData[dateIndices[dateIndices.length - 1]].time);
+              console.log('✅ First date index:', dateIndices[0], 'label:', chartData[dateIndices[0]].time);
+              console.log('✅ Last date index:', dateIndices[dateIndices.length - 1], 'label:', chartData[dateIndices[dateIndices.length - 1]].time);
+              console.log('✅ All unique date labels:', dateIndices.slice(0, 5).map(idx => chartData[idx].time), '...', dateIndices.slice(-5).map(idx => chartData[idx].time));
             }
           }
         }
@@ -376,6 +379,7 @@ function BlueChart({ showOfficial = false }) {
           <div className="h-[240px] sm:h-[320px] md:h-[420px]">
             <ResponsiveContainer width="100%" height="100%">
             <AreaChart 
+              key={`chart-${range}-${data.length}`}
               data={data} 
               margin={{ top: 10, right: 20, left: -10, bottom: range === 'ALL' ? 60 : 20 }}
             >
@@ -412,10 +416,7 @@ function BlueChart({ showOfficial = false }) {
                       stroke="#D1D5DB"
                       tickLine={false}
                       axisLine={{ strokeWidth: 2 }}
-                      interval={range === 'ALL' ? 0 : (range === '1W' ? 0 : 'preserveStartEnd')}
-                      ticks={range === 'ALL' && uniqueDateIndices.length > 0 && data.length > 0 
-                        ? uniqueDateIndices.map(idx => data[idx]?.time).filter(Boolean) 
-                        : undefined}
+                      interval={range === 'ALL' ? Math.max(0, Math.floor(data.length / (uniqueDateIndices.length || 20))) : (range === '1W' ? 0 : 'preserveStartEnd')}
                       tickFormatter={(value, index) => {
                         // For ALL range, only show labels for unique date indices
                         if (range === 'ALL' && data.length > 0 && index !== undefined) {
@@ -441,6 +442,7 @@ function BlueChart({ showOfficial = false }) {
                       angle={range === 'ALL' ? -45 : 0}
                       textAnchor={range === 'ALL' ? 'end' : 'middle'}
                       height={range === 'ALL' ? 80 : 30}
+                      domain={['dataMin', 'dataMax']}
                     />
               <YAxis 
                 tick={{ fill: '#6B7280', fontSize: 11, fontFamily: 'Space Mono' }}

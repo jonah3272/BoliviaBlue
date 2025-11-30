@@ -14,12 +14,21 @@ function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
         <div className="flex items-center justify-between gap-4">
           <Link to="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity min-w-0 flex-1">
-            <img 
-              src="/header-og-image.jpg" 
-              alt="Bolivia Blue con Paz - Logo del sitio web de tipo de cambio del dólar boliviano" 
-              className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 flex-shrink-0 rounded-lg object-cover"
-              loading="eager"
-            />
+            <picture>
+              <source 
+                srcSet="/header-og-image-320w.webp 320w, /header-og-image-640w.webp 640w, /header-og-image-1280w.webp 1280w"
+                type="image/webp"
+                sizes="(max-width: 640px) 40px, (max-width: 768px) 48px, 56px"
+              />
+              <img 
+                src="/header-og-image.jpg" 
+                alt="Bolivia Blue con Paz - Logo del sitio web de tipo de cambio del dólar boliviano" 
+                className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 flex-shrink-0 rounded-lg object-cover"
+                loading="eager"
+                width="56"
+                height="56"
+              />
+            </picture>
             <div className="flex flex-col min-w-0">
               <div className="text-base sm:text-xl font-bold text-gray-900 dark:text-white truncate">
                 {t('title')}

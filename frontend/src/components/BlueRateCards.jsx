@@ -60,6 +60,8 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
           : "0 25px 50px -12px rgba(236, 72, 153, 0.4)",
         transition: { duration: 0.2 }
       }}
+      role="region"
+      aria-label={`${label} rate: ${formatRate(rate)} bolivianos per US dollar`}
     >
       <div className="flex items-center justify-between mb-1">
         <div className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">{label}</div>

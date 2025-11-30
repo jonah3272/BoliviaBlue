@@ -64,6 +64,15 @@ function BlueChart({ showOfficial = false }) {
         // Then fetch data for the selected range
         const result = await fetchBlueHistory(range);
         
+        // Debug log for ALL range
+        if (range === 'ALL' && import.meta.env.DEV) {
+          console.log(`[BlueChart] ALL range fetched: ${result.points.length} points`);
+          if (result.points.length > 0) {
+            console.log('First point:', result.points[0].t);
+            console.log('Last point:', result.points[result.points.length - 1].t);
+          }
+        }
+        
         // Calculate stats
         if (result.points.length > 0) {
           const lastPoint = result.points[result.points.length - 1];

@@ -114,9 +114,19 @@ export async function fetchBlueHistory(range = '1W') {
     throw new Error(`Failed to fetch history: ${error.message}`);
   }
   
+  let points = data || [];
+  
+  // Downsample for ALL range if we have too many points (>200)
+  // This improves chart performance while maintaining data accuracy
+  if (range === 'ALL' && points.length > 200) {
+    const step = Math.ceil(points.length / 200);
+    points = points.filter((_, index) => index % step === 0);
+    logger.log(`Downsampled ALL range from ${data.length} to ${points.length} points`);
+  }
+  
   return {
     range,
-    points: data || []
+    points
   };
 }
 

@@ -200,6 +200,7 @@ export async function fetchBlueHistory(range = '1W') {
   // For ALL range, intelligently downsample to show representative markers
   // Goal: Show overall trend with ~50-100 key points, not every single data point
   if (range === 'ALL' && points.length > 0) {
+    const originalPointCount = points.length; // Store original count for logging
     const targetPoints = 80; // Show ~80 representative markers for good trend visibility
     const downsampled = [];
     
@@ -235,7 +236,7 @@ export async function fetchBlueHistory(range = '1W') {
       downsampled.push(lastPoint);
       
       points = downsampled;
-      logger.log(`[Downsampling] ALL range: ${data.length} points → ${points.length} representative markers`);
+      logger.log(`[Downsampling] ALL range: ${originalPointCount} points → ${points.length} representative markers`);
       logger.log(`[Downsampling] Date range: ${new Date(points[0].t).toLocaleDateString()} to ${new Date(points[points.length - 1].t).toLocaleDateString()}`);
     }
   }

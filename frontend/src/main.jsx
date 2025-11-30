@@ -52,16 +52,7 @@ if (import.meta.env.DEV) {
 }
 
 // Service worker registration removed - not implemented yet
-// TODO: Implement proper service worker for offline support in future versionwindow.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then((registration) => {
-        console.log('Service Worker registered:', registration.scope);
-      })
-      .catch((error) => {
-        console.log('Service Worker registration failed:', error);
-      });
-  });
-}
+// TODO: Implement proper service worker for offline support in future version
 
 // Load AdSense after page is fully loaded
 window.addEventListener('load', () => {

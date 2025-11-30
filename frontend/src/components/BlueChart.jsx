@@ -65,11 +65,14 @@ function BlueChart({ showOfficial = false }) {
         const result = await fetchBlueHistory(range);
         
         // Debug log for ALL range
-        if (range === 'ALL' && import.meta.env.DEV) {
+        if (range === 'ALL') {
           console.log(`[BlueChart] ALL range fetched: ${result.points.length} points`);
           if (result.points.length > 0) {
-            console.log('First point:', result.points[0].t);
-            console.log('Last point:', result.points[result.points.length - 1].t);
+            const firstDate = new Date(result.points[0].t);
+            const lastDate = new Date(result.points[result.points.length - 1].t);
+            console.log('First point:', firstDate.toLocaleDateString(), result.points[0].buy);
+            console.log('Last point:', lastDate.toLocaleDateString(), result.points[result.points.length - 1].buy);
+            console.log('Date range:', Math.floor((lastDate - firstDate) / (1000 * 60 * 60 * 24)) + ' days');
           }
         }
         
@@ -388,37 +391,14 @@ function BlueChart({ showOfficial = false }) {
                       stroke="#D1D5DB"
                       tickLine={false}
                       axisLine={{ strokeWidth: 2 }}
-                      interval={range === 'ALL' ? Math.max(0, Math.floor(data.length / 8)) : (range === '1W' ? 0 : 'preserveStartEnd')}
+                      interval={range === 'ALL' || range === '1W' ? 0 : 'preserveStartEnd'}
                       tickFormatter={(value, index) => {
-                        // For ALL range, show labels to ensure full date range is visible
-                        if (range === 'ALL' && data.length > 0 && index !== undefined) {
+                        // For ALL and 1W ranges, only show label for first occurrence of each date
+                        if ((range === 'ALL' || range === '1W') && data.length > 0 && index !== undefined) {
                           const currentPoint = data[index];
                           if (!currentPoint || !currentPoint.dateKey) return '';
-                          
-                          // Always show first and last points
-                          if (index === 0 || index === data.length - 1) {
-                            return value;
-                          }
                           
                           // Show label for first occurrence of each date
-                          const firstOccurrenceIndex = data.findIndex(p => p.dateKey === currentPoint.dateKey);
-                          if (firstOccurrenceIndex === index) {
-                            return value;
-                          }
-                          
-                          // Also show evenly spaced labels across the range (every ~8th point)
-                          const labelInterval = Math.max(1, Math.floor(data.length / 8));
-                          if (index % labelInterval === 0) {
-                            return value;
-                          }
-                          
-                          return ''; // Don't show label for duplicate dates
-                        }
-                        // For 1W range, only show label for first occurrence of each date
-                        if (range === '1W' && data.length > 0 && index !== undefined) {
-                          const currentPoint = data[index];
-                          if (!currentPoint || !currentPoint.dateKey) return '';
-                          
                           const firstOccurrenceIndex = data.findIndex(p => p.dateKey === currentPoint.dateKey);
                           if (firstOccurrenceIndex === index) {
                             return value;

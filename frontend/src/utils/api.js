@@ -103,11 +103,20 @@ export async function fetchBlueHistory(range = '1W') {
       startDate = new Date(0); // Beginning of time
   }
   
-  const { data, error } = await supabase
+  // For ALL range, we need to fetch all rows - Supabase default limit is 1000
+  // Use a large limit or fetch in batches if needed
+  let query = supabase
     .from('rates')
     .select('t, buy, sell, mid, official_buy, official_sell, official_mid')
     .gte('t', startDate.toISOString())
     .order('t', { ascending: true });
+  
+  // Remove any default limit for ALL range to get all data
+  if (range === 'ALL') {
+    query = query.limit(10000); // Set explicit high limit for ALL range
+  }
+  
+  const { data, error } = await query;
   
   if (error) {
     logger.error('Error fetching history from Supabase:', error);
@@ -115,6 +124,34 @@ export async function fetchBlueHistory(range = '1W') {
   }
   
   let points = data || [];
+  
+  // Log what we actually got and verify we have recent data
+  if (range === 'ALL' && points.length > 0) {
+    const firstDate = new Date(points[0].t);
+    const lastDate = new Date(points[points.length - 1].t);
+    const now = new Date();
+    const daysSinceLast = (now - lastDate) / (1000 * 60 * 60 * 24);
+    
+    logger.log(`[fetchBlueHistory] ALL range fetched: ${points.length} points`);
+    logger.log(`[fetchBlueHistory] Date range: ${firstDate.toISOString()} to ${lastDate.toISOString()}`);
+    logger.log(`[fetchBlueHistory] Days since last data point: ${daysSinceLast.toFixed(1)}`);
+    
+    // Warn if we're missing recent data (more than 2 days old)
+    if (daysSinceLast > 2) {
+      logger.warn(`[fetchBlueHistory] WARNING: Last data point is ${daysSinceLast.toFixed(1)} days old. Data might be incomplete!`);
+    }
+    
+    // Verify we have data through today or yesterday
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const lastDataDay = new Date(lastDate);
+    lastDataDay.setHours(0, 0, 0, 0);
+    const daysDiff = Math.floor((today - lastDataDay) / (1000 * 60 * 60 * 24));
+    
+    if (daysDiff > 1) {
+      logger.warn(`[fetchBlueHistory] WARNING: Missing ${daysDiff} days of recent data. Expected data through today, but last point is from ${lastDate.toLocaleDateString()}`);
+    }
+  }
   
   // For ALL range, show all data points for datasets under 3000 points
   // Modern browsers can handle this many points without performance issues
@@ -132,14 +169,24 @@ export async function fetchBlueHistory(range = '1W') {
       downsampled.push(points[i]);
     }
     
-    // Always include last point to ensure full date range is visible
+    // CRITICAL: Always include last point to ensure full date range is visible
+    // This ensures we show data through Nov 30, not just Nov 17
     if (points.length > 1) {
       const lastPoint = points[points.length - 1];
-      // Only add if it's not already in the array
-      if (downsampled.length === 0 || 
-          downsampled[downsampled.length - 1].t !== lastPoint.t) {
-        downsampled.push(lastPoint);
+      const lastDate = new Date(lastPoint.t);
+      // Remove any existing last point that might be close
+      if (downsampled.length > 0) {
+        const existingLast = downsampled[downsampled.length - 1];
+        const existingLastDate = new Date(existingLast.t);
+        // If the existing last point is more than 1 day before the actual last point, replace it
+        const daysDiff = (lastDate - existingLastDate) / (1000 * 60 * 60 * 24);
+        if (daysDiff > 1) {
+          downsampled.pop(); // Remove the old last point
+        }
       }
+      // Always add the actual last point
+      downsampled.push(lastPoint);
+      logger.log(`[Downsampling] Ensured last point included: ${lastDate.toISOString()}`);
     }
     
     points = downsampled;

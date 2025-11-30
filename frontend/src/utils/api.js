@@ -197,49 +197,47 @@ export async function fetchBlueHistory(range = '1W') {
     }
   }
   
-  // For ALL range, show all data points for datasets under 3000 points
-  // Modern browsers can handle this many points without performance issues
-  // Only downsample if we have more than 3000 points
-  if (range === 'ALL' && points.length > 3000) {
-    const targetPoints = 1000; // Downsample to 1000 points max
-    const step = Math.floor(points.length / targetPoints);
+  // For ALL range, intelligently downsample to show representative markers
+  // Goal: Show overall trend with ~50-100 key points, not every single data point
+  if (range === 'ALL' && points.length > 0) {
+    const targetPoints = 80; // Show ~80 representative markers for good trend visibility
     const downsampled = [];
     
-    // Always include first point
+    // Always include first point (start of data)
     downsampled.push(points[0]);
     
-    // Sample points evenly across the entire range
-    for (let i = step; i < points.length - 1; i += step) {
-      downsampled.push(points[i]);
-    }
-    
-    // CRITICAL: Always include last point to ensure full date range is visible
-    // This ensures we show data through Nov 30, not just Nov 17
     if (points.length > 1) {
+      // Calculate step size for even sampling
+      const step = Math.max(1, Math.floor(points.length / targetPoints));
+      
+      // Sample points evenly across the range to show trend
+      for (let i = step; i < points.length - step; i += step) {
+        downsampled.push(points[i]);
+      }
+      
+      // Always include last point (most recent data)
       const lastPoint = points[points.length - 1];
       const lastDate = new Date(lastPoint.t);
-      // Remove any existing last point that might be close
-      if (downsampled.length > 0) {
+      
+      // Remove last sampled point if it's too close to the actual last point
+      if (downsampled.length > 1) {
         const existingLast = downsampled[downsampled.length - 1];
         const existingLastDate = new Date(existingLast.t);
-        // If the existing last point is more than 1 day before the actual last point, replace it
         const daysDiff = (lastDate - existingLastDate) / (1000 * 60 * 60 * 24);
-        if (daysDiff > 1) {
-          downsampled.pop(); // Remove the old last point
+        
+        // If existing last point is less than 0.5 days from actual last, replace it
+        if (daysDiff < 0.5) {
+          downsampled.pop();
         }
       }
+      
       // Always add the actual last point
       downsampled.push(lastPoint);
-      logger.log(`[Downsampling] Ensured last point included: ${lastDate.toISOString()}`);
+      
+      points = downsampled;
+      logger.log(`[Downsampling] ALL range: ${data.length} points → ${points.length} representative markers`);
+      logger.log(`[Downsampling] Date range: ${new Date(points[0].t).toLocaleDateString()} to ${new Date(points[points.length - 1].t).toLocaleDateString()}`);
     }
-    
-    points = downsampled;
-    logger.log(`Downsampled ALL range from ${data.length} to ${points.length} points`);
-    logger.log(`Date range: ${points[0]?.t} to ${points[points.length - 1]?.t}`);
-  } else if (range === 'ALL') {
-    // For datasets under 3000 points, use ALL points - no downsampling
-    logger.log(`ALL range: Using all ${points.length} points (no downsampling)`);
-    logger.log(`Date range: ${points[0]?.t} to ${points[points.length - 1]?.t}`);
   }
   
   return {

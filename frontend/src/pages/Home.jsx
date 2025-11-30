@@ -811,37 +811,131 @@ function Home() {
             </div>
           </div>
         </section>
-      </main>
 
-      {/* Simple, Clean Footer Links Bar */}
-      <section className="border-t border-gray-200 dark:border-gray-700 pt-6 pb-4">
-        <div className="flex flex-wrap justify-center gap-4 text-sm">
-          <Link to="/calculadora" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">
-            {language === 'es' ? 'Calculadora' : 'Calculator'}
-          </Link>
-          <span className="text-gray-300 dark:text-gray-600">•</span>
-          <Link to="/noticias" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">
-            {language === 'es' ? 'Noticias' : 'News'}
-          </Link>
-          <span className="text-gray-300 dark:text-gray-600">•</span>
-          <Link to="/blog" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">
-            Blog
-          </Link>
-          <span className="text-gray-300 dark:text-gray-600">•</span>
-          <Link to="/comprar-dolares" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">
-            {language === 'es' ? 'Comprar Dólares' : 'Buy Dollars'}
-          </Link>
-          <span className="text-gray-300 dark:text-gray-600">•</span>
-          <Link to="/preguntas-frecuentes" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">
-            FAQ
-          </Link>
-        </div>
-        
-        {/* Last Updated - Minimal */}
-        <div className="text-center mt-4 text-xs text-gray-500 dark:text-gray-500">
-          {language === 'es' ? 'Actualizaciones cada 15 minutos' : 'Updates every 15 minutes'}
-        </div>
-      </section>
+        {/* Modern Quick Access Links - Clean Design */}
+        <section className="mt-12">
+          <div className="text-center mb-6">
+            <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              {language === 'es' ? 'Acceso Rápido' : 'Quick Access'}
+            </h2>
+          </div>
+          
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            {/* EN VIVO - Featured with pulse */}
+            <Link
+              to="/dolar-paralelo-bolivia-en-vivo"
+              className="group relative bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-xl p-4 transition-all duration-200 hover:shadow-lg hover:scale-105"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="flex items-center gap-2 text-sm font-bold">
+                  <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+                  {language === 'es' ? 'EN VIVO' : 'LIVE'}
+                </span>
+              </div>
+              <div className="text-xs opacity-90">
+                {language === 'es' ? 'Actualizaciones en tiempo real' : 'Real-time updates'}
+              </div>
+            </Link>
+
+            {/* Regular Links */}
+            <Link
+              to="/dolar-blue-hoy"
+              className="group bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 rounded-xl p-4 transition-all duration-200 hover:shadow-md hover:scale-105 border border-gray-200 dark:border-gray-700"
+            >
+              <div className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
+                {language === 'es' ? 'Hoy' : 'Today'}
+              </div>
+              <div className="text-xs text-gray-600 dark:text-gray-400">
+                {language === 'es' ? 'Cotización actual' : 'Current rate'}
+              </div>
+            </Link>
+
+            <Link
+              to="/dolar-blue-la-paz"
+              className="group bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 rounded-xl p-4 transition-all duration-200 hover:shadow-md hover:scale-105 border border-gray-200 dark:border-gray-700"
+            >
+              <div className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
+                La Paz
+              </div>
+              <div className="text-xs text-gray-600 dark:text-gray-400">
+                {language === 'es' ? 'Precios locales' : 'Local prices'}
+              </div>
+            </Link>
+
+            <Link
+              to="/dolar-blue-santa-cruz"
+              className="group bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 rounded-xl p-4 transition-all duration-200 hover:shadow-md hover:scale-105 border border-gray-200 dark:border-gray-700"
+            >
+              <div className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
+                Santa Cruz
+              </div>
+              <div className="text-xs text-gray-600 dark:text-gray-400">
+                {language === 'es' ? 'Precios locales' : 'Local prices'}
+              </div>
+            </Link>
+
+            <Link
+              to="/dolar-blue-cochabamba"
+              className="group bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 rounded-xl p-4 transition-all duration-200 hover:shadow-md hover:scale-105 border border-gray-200 dark:border-gray-700"
+            >
+              <div className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
+                Cochabamba
+              </div>
+              <div className="text-xs text-gray-600 dark:text-gray-400">
+                {language === 'es' ? 'Precios locales' : 'Local prices'}
+              </div>
+            </Link>
+
+            <Link
+              to="/binance-p2p-bolivia"
+              className="group bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 rounded-xl p-4 transition-all duration-200 hover:shadow-md hover:scale-105 border border-gray-200 dark:border-gray-700"
+            >
+              <div className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
+                Binance P2P
+              </div>
+              <div className="text-xs text-gray-600 dark:text-gray-400">
+                {language === 'es' ? 'Compra/venta' : 'Buy/sell'}
+              </div>
+            </Link>
+
+            <Link
+              to="/usdt-bolivia"
+              className="group bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 rounded-xl p-4 transition-all duration-200 hover:shadow-md hover:scale-105 border border-gray-200 dark:border-gray-700"
+            >
+              <div className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
+                USDT
+              </div>
+              <div className="text-xs text-gray-600 dark:text-gray-400">
+                {language === 'es' ? 'Cripto estable' : 'Stablecoin'}
+              </div>
+            </Link>
+
+            <Link
+              to="/que-es-dolar-blue"
+              className="group bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 rounded-xl p-4 transition-all duration-200 hover:shadow-md hover:scale-105 border border-gray-200 dark:border-gray-700"
+            >
+              <div className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
+                {language === 'es' ? '¿Qué es?' : 'What is it?'}
+              </div>
+              <div className="text-xs text-gray-600 dark:text-gray-400">
+                {language === 'es' ? 'Aprende más' : 'Learn more'}
+              </div>
+            </Link>
+
+            <Link
+              to="/cuanto-esta-dolar-bolivia"
+              className="group bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 rounded-xl p-4 transition-all duration-200 hover:shadow-md hover:scale-105 border border-gray-200 dark:border-gray-700"
+            >
+              <div className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
+                {language === 'es' ? '¿Cuánto está?' : 'How much?'}
+              </div>
+              <div className="text-xs text-gray-600 dark:text-gray-400">
+                {language === 'es' ? 'Consulta rápida' : 'Quick check'}
+              </div>
+            </Link>
+          </div>
+        </section>
+      </main>
 
       <Footer />
     </div>

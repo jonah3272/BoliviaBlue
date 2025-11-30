@@ -64,18 +64,6 @@ function BlueChart({ showOfficial = false }) {
         // Then fetch data for the selected range
         const result = await fetchBlueHistory(range);
         
-        // Debug log for ALL range
-        if (range === 'ALL') {
-          console.log(`[BlueChart] ALL range fetched: ${result.points.length} points`);
-          if (result.points.length > 0) {
-            const firstDate = new Date(result.points[0].t);
-            const lastDate = new Date(result.points[result.points.length - 1].t);
-            console.log('First point:', firstDate.toLocaleDateString(), result.points[0].buy);
-            console.log('Last point:', lastDate.toLocaleDateString(), result.points[result.points.length - 1].buy);
-            console.log('Date range:', Math.floor((lastDate - firstDate) / (1000 * 60 * 60 * 24)) + ' days');
-          }
-        }
-        
         // Calculate stats
         if (result.points.length > 0) {
           const lastPoint = result.points[result.points.length - 1];
@@ -178,6 +166,18 @@ function BlueChart({ showOfficial = false }) {
             // Mark this date as having a label
             shownDates.add(point.dateKey);
           });
+        }
+        
+        // Debug log for ALL range after chartData is created
+        if (range === 'ALL') {
+          console.log(`[BlueChart] ALL range: ${result.points.length} raw points, ${chartData.length} chart points`);
+          if (chartData.length > 0) {
+            const firstDate = new Date(result.points[0].t);
+            const lastDate = new Date(result.points[result.points.length - 1].t);
+            console.log('Raw data range:', firstDate.toLocaleDateString(), 'to', lastDate.toLocaleDateString());
+            console.log('Chart data range:', chartData[0].time, 'to', chartData[chartData.length - 1].time);
+            console.log('Date span:', Math.floor((lastDate - firstDate) / (1000 * 60 * 60 * 24)) + ' days');
+          }
         }
         
         setData(chartData);
@@ -356,7 +356,7 @@ function BlueChart({ showOfficial = false }) {
             <ResponsiveContainer width="100%" height="100%">
             <AreaChart 
               data={data} 
-              margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
+              margin={{ top: 10, right: 20, left: -10, bottom: 20 }}
             >
               <defs>
                 <linearGradient id="colorBuy" x1="0" y1="0" x2="0" y2="1">

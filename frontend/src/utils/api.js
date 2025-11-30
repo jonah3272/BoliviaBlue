@@ -121,24 +121,34 @@ export async function fetchBlueHistory(range = '1W') {
   // Always include first and last points to preserve full date range
   if (range === 'ALL' && points.length > 200) {
     const targetPoints = 200;
-    const step = Math.ceil(points.length / targetPoints);
+    const step = Math.floor(points.length / targetPoints);
     const downsampled = [];
     
     // Always include first point
     downsampled.push(points[0]);
     
-    // Sample middle points
-    for (let i = step; i < points.length - step; i += step) {
-      downsampled.push(points[i]);
+    // Sample points evenly across the entire range, including near the end
+    // Use Math.floor to ensure we get points closer to the end
+    for (let i = step; i < points.length; i += step) {
+      // Skip if it's the last point (we'll add it separately)
+      if (i < points.length - 1) {
+        downsampled.push(points[i]);
+      }
     }
     
-    // Always include last point (if different from first)
-    if (points.length > 1 && points[points.length - 1] !== points[0]) {
-      downsampled.push(points[points.length - 1]);
+    // Always include last point to ensure full date range is visible
+    if (points.length > 1) {
+      const lastPoint = points[points.length - 1];
+      // Only add if it's not already in the array
+      if (downsampled.length === 0 || 
+          downsampled[downsampled.length - 1].t !== lastPoint.t) {
+        downsampled.push(lastPoint);
+      }
     }
     
     points = downsampled;
     logger.log(`Downsampled ALL range from ${data.length} to ${points.length} points`);
+    logger.log(`Date range: ${points[0]?.t} to ${points[points.length - 1]?.t}`);
   }
   
   return {

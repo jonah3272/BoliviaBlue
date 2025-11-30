@@ -51,9 +51,8 @@ if (import.meta.env.DEV) {
   };
 }
 
-// Register service worker for offline support and caching
-if ('serviceWorker' in navigator && import.meta.env.PROD) {
-  window.addEventListener('load', () => {
+// Service worker registration removed - not implemented yet
+// TODO: Implement proper service worker for offline support in future versionwindow.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
       .then((registration) => {
         console.log('Service Worker registered:', registration.scope);

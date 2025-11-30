@@ -75,10 +75,17 @@ function App() {
           <Route path="/rodrigo-paz" element={<RodrigoPaz />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<Blog />} />
+          
+          {/* Canonical: /bolivia-blue-rate (redirect duplicates) */}
           <Route path="/bolivia-blue-rate" element={<BoliviaBlueRate />} />
-          <Route path="/bolivia-blue-rate-hoy" element={<BoliviaBlueRate />} />
-          <Route path="/bolivia-blue-rate-actual" element={<BoliviaBlueRate />} />
-          <Route path="/tipo-cambio-blue-bolivia" element={<BoliviaBlueRate />} />
+          <Route path="/bolivia-blue-rate-hoy" element={<Redirect to="/bolivia-blue-rate" />} />
+          <Route path="/bolivia-blue-rate-actual" element={<Redirect to="/bolivia-blue-rate" />} />
+          <Route path="/tipo-cambio-blue-bolivia" element={<Redirect to="/bolivia-blue-rate" />} />
+          
+          {/* Canonical: /cuanto-esta-dolar-bolivia (redirect duplicate) */}
+          <Route path="/cuanto-esta-dolar-bolivia" element={<CuantoEstaDolarBolivia />} />
+          <Route path="/cuanto-esta-dolar-bolivia-hoy" element={<Redirect to="/cuanto-esta-dolar-bolivia" />} />
+          
           <Route path="/cotiza-dolar-paralelo" element={<CotizaDolarParalelo />} />
           <Route path="/bancos" element={<Bancos />} />
           <Route path="/dolar-blue-la-paz" element={<DolarBlueLaPaz />} />
@@ -86,8 +93,6 @@ function App() {
           <Route path="/dolar-blue-cochabamba" element={<DolarBlueCochabamba />} />
           <Route path="/dolar-blue-hoy" element={<DolarBlueHoy />} />
           <Route path="/que-es-dolar-blue" element={<QueEsDolarBlue />} />
-          <Route path="/cuanto-esta-dolar-bolivia" element={<CuantoEstaDolarBolivia />} />
-          <Route path="/cuanto-esta-dolar-bolivia-hoy" element={<CuantoEstaDolarBoliviaHoy />} />
           <Route path="/binance-p2p-bolivia" element={<BinanceP2PBolivia />} />
           <Route path="/usdt-bolivia" element={<UsdtBolivia />} />
           <Route path="/dolar-paralelo-bolivia-en-vivo" element={<DolarParaleloBoliviaEnVivo />} />

@@ -1,59 +1,80 @@
 import { supabase } from './supabase';
+import logger from './logger';
 
 /**
- * Fetch current blue market rate directly from Supabase
+ * Retry wrapper for API calls
+ * @param {Function} fn - Async function to retry
+ * @param {number} retries - Number of retry attempts
+ * @param {number} delay - Delay between retries in ms
+ */
+async function retryWithDelay(fn, retries = 3, delay = 1000) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (i === retries - 1) throw error;
+      logger.warn(`Retry attempt ${i + 1}/${retries} failed:`, error.message);
+      await new Promise(resolve => setTimeout(resolve, delay * (i + 1))); // Exponential backoff
+    }
+  }
+}
+
+/**
+ * Fetch current blue market rate directly from Supabase with retry logic
  */
 export async function fetchBlueRate() {
-  // Get the latest rate
-  const { data, error } = await supabase
-    .from('rates')
-    .select('*')
-    .order('t', { ascending: false })
-    .limit(1)
-    .single();
-  
-  if (error) {
-    console.error('Error fetching rate from Supabase:', error);
-    throw new Error(`Failed to fetch rate: ${error.message}`);
-  }
-  
-  if (!data) {
-    throw new Error('No rate data available');
-  }
-  
-  // Get yesterday's rate for daily change calculation
-  const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-  const { data: yesterdayData, error: yesterdayError } = await supabase
-    .from('rates')
-    .select('buy, sell')
-    .lte('t', oneDayAgo)
-    .order('t', { ascending: false })
-    .limit(1)
-    .maybeSingle(); // Use maybeSingle() instead of single() to handle no results gracefully
-  
-  let buyChange = null;
-  let sellChange = null;
-  
-  if (yesterdayData) {
-    buyChange = ((data.buy - yesterdayData.buy) / yesterdayData.buy * 100).toFixed(2);
-    sellChange = ((data.sell - yesterdayData.sell) / yesterdayData.sell * 100).toFixed(2);
-  }
-  
-  // Format response to match expected structure
-  return {
-    source: 'binance-p2p',
-    buy_bob_per_usd: data.buy,
-    sell_bob_per_usd: data.sell,
-    mid_bob_per_usd: data.mid,
-    official_buy: data.official_buy,
-    official_sell: data.official_sell,
-    official_mid: data.official_mid,
-    updated_at_iso: data.t,
-    buy_change_24h: buyChange,
-    sell_change_24h: sellChange,
-    sample_buy: [],
-    sample_sell: []
-  };
+  return retryWithDelay(async () => {
+    // Get the latest rate
+    const { data, error } = await supabase
+      .from('rates')
+      .select('*')
+      .order('t', { ascending: false })
+      .limit(1)
+      .single();
+    
+    if (error) {
+      logger.error('Error fetching rate from Supabase:', error);
+      throw new Error(`Failed to fetch rate: ${error.message}`);
+    }
+    
+    if (!data) {
+      throw new Error('No rate data available');
+    }
+    
+    // Get yesterday's rate for daily change calculation
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    const { data: yesterdayData } = await supabase
+      .from('rates')
+      .select('buy, sell')
+      .lte('t', oneDayAgo)
+      .order('t', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    
+    let buyChange = null;
+    let sellChange = null;
+    
+    if (yesterdayData) {
+      buyChange = ((data.buy - yesterdayData.buy) / yesterdayData.buy * 100).toFixed(2);
+      sellChange = ((data.sell - yesterdayData.sell) / yesterdayData.sell * 100).toFixed(2);
+    }
+    
+    // Format response to match expected structure
+    return {
+      source: 'binance-p2p',
+      buy_bob_per_usd: data.buy,
+      sell_bob_per_usd: data.sell,
+      mid_bob_per_usd: data.mid,
+      official_buy: data.official_buy,
+      official_sell: data.official_sell,
+      official_mid: data.official_mid,
+      updated_at_iso: data.t,
+      buy_change_24h: buyChange,
+      sell_change_24h: sellChange,
+      sample_buy: [],
+      sample_sell: []
+    };
+  });
 }
 
 /**
@@ -89,7 +110,7 @@ export async function fetchBlueHistory(range = '1W') {
     .order('t', { ascending: true });
   
   if (error) {
-    console.error('Error fetching history from Supabase:', error);
+    logger.error('Error fetching history from Supabase:', error);
     throw new Error(`Failed to fetch history: ${error.message}`);
   }
   
@@ -119,7 +140,7 @@ export async function fetchNews(category = null, limit = 10) {
   const { data, error } = await query;
   
   if (error) {
-    console.error('Error fetching news from Supabase:', error);
+    logger.error('Error fetching news from Supabase:', error);
     throw new Error(`Failed to fetch news: ${error.message}`);
   }
   
@@ -150,7 +171,7 @@ export async function fetchTweets(limit = 20) {
     .limit(limit);
   
   if (error) {
-    console.error('Error fetching tweets from Supabase:', error);
+    logger.error('Error fetching tweets from Supabase:', error);
     throw new Error(`Failed to fetch tweets: ${error.message}`);
   }
   
@@ -177,7 +198,7 @@ export async function fetchHealth() {
     .select('*', { count: 'exact', head: true });
   
   if (error) {
-    console.error('Error fetching health from Supabase:', error);
+    logger.error('Error fetching health from Supabase:', error);
     return {
       ok: false,
       error: error.message

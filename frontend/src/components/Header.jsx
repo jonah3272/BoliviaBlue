@@ -16,8 +16,9 @@ function Header() {
           <Link to="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity min-w-0 flex-1">
             <img 
               src="/header-og-image.jpg" 
-              alt="Bolivia Blue con Paz - Tipo de Cambio Dólar Boliviano" 
+              alt="Bolivia Blue con Paz - Logo del sitio web de tipo de cambio del dólar boliviano" 
               className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 flex-shrink-0 rounded-lg object-cover"
+              loading="eager"
             />
             <div className="flex flex-col min-w-0">
               <div className="text-base sm:text-xl font-bold text-gray-900 dark:text-white truncate">
@@ -36,6 +37,7 @@ function Header() {
               href={BINANCE_REFERRAL_LINK}
               target="_blank"
               rel="noopener noreferrer"
+              aria-label={language === 'es' ? 'Comprar dólares con Binance' : 'Buy dollars with Binance'}
               className="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-lg border-2 border-yellow-500/70 dark:border-yellow-400/50 text-yellow-700 dark:text-yellow-300 hover:bg-yellow-50 dark:hover:bg-yellow-900/10 hover:border-yellow-600 dark:hover:border-yellow-400 transition-all duration-200 text-sm font-medium whitespace-nowrap"
             >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -51,6 +53,7 @@ function Header() {
               href={AIRTM_REFERRAL_LINK}
               target="_blank"
               rel="noopener noreferrer"
+              aria-label={language === 'es' ? 'Comprar bolivianos con Airtm' : 'Buy bolivianos with Airtm'}
               className="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-lg border-2 border-cyan-500/70 dark:border-cyan-400/50 text-cyan-700 dark:text-cyan-300 hover:bg-cyan-50 dark:hover:bg-cyan-900/10 hover:border-cyan-600 dark:hover:border-cyan-400 transition-all duration-200 text-sm font-medium whitespace-nowrap"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">

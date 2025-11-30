@@ -3,6 +3,7 @@ import Footer from '../components/Footer';
 import BlueRateCards from '../components/BlueRateCards';
 import BinanceBanner from '../components/BinanceBanner';
 import SocialShare from '../components/SocialShare';
+import LazyErrorBoundary from '../components/LazyErrorBoundary';
 import { lazy, Suspense, useState, useEffect } from 'react';
 
 // Lazy load heavy components for better performance
@@ -426,19 +427,25 @@ function Home() {
 
         {/* Combined Sentiment + News Card */}
         <section>
-          <SentimentNewsCard />
+          <LazyErrorBoundary>
+            <Suspense fallback={<ComponentLoader />}>
+              <SentimentNewsCard />
+            </Suspense>
+          </LazyErrorBoundary>
         </section>
 
         {/* Chart */}
         <section>
-          <Suspense fallback={
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 animate-pulse">
-              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-4"></div>
-              <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded"></div>
-            </div>
-          }>
-            <BlueChart showOfficial={showOfficial} />
-          </Suspense>
+          <LazyErrorBoundary>
+            <Suspense fallback={
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 animate-pulse">
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-4"></div>
+                <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded"></div>
+              </div>
+            }>
+              <BlueChart showOfficial={showOfficial} />
+            </Suspense>
+          </LazyErrorBoundary>
         </section>
 
         {/* Rate Alerts Section - Hidden for now */}
@@ -583,9 +590,11 @@ function Home() {
             </button>
           </div>
           <div className={`${isNewsExpanded ? 'block' : 'hidden'} md:block`}>
-            <Suspense fallback={<ComponentLoader />}>
-              <NewsTabs />
-            </Suspense>
+            <LazyErrorBoundary>
+              <Suspense fallback={<ComponentLoader />}>
+                <NewsTabs />
+              </Suspense>
+            </LazyErrorBoundary>
           </div>
         </section>
 

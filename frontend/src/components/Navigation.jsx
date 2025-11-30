@@ -6,26 +6,17 @@ function Navigation() {
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   
-  // Optimized navigation order:
-  // 1. Dashboard (main page)
-  // 2. Calculator (high utility)
-  // 3. Buy Dollars (action-oriented, monetization)
-  // 4. News (content, engagement)
-  // 5. Blog (content, SEO)
-  // 6. About (trust building)
-  // 7. FAQ (support)
-  // 8. Rodrigo Paz (contextual)
-  // Navigation optimized for Google Sitelinks
+  // Navigation optimized for Google Sitelinks - Using Spanish URLs (no redirects!)
   // Important pages that should appear in search results
   const navItems = [
     { path: '/', key: 'navDashboard', shortKey: 'navDashboardShort', icon: 'dashboard' },
-    { path: '/calculator', key: 'navCalculator', icon: 'calculator' },
-    { path: '/buy-dollars', key: 'navBuyDollars', icon: 'buy' },
-    { path: '/news', key: 'navNews', icon: 'news' },
+    { path: '/calculadora', key: 'navCalculator', icon: 'calculator' },
+    { path: '/comprar-dolares', key: 'navBuyDollars', icon: 'buy' },
+    { path: '/noticias', key: 'navNews', icon: 'news' },
     { path: '/blog', key: 'navBlog', icon: 'blog' },
     { path: '/bancos', key: 'navBancos', icon: 'bank' },
-    { path: '/about', key: 'navAbout', icon: 'about' },
-    { path: '/faq', key: 'navFAQ', icon: 'faq' },
+    { path: '/acerca-de', key: 'navAbout', icon: 'about' },
+    { path: '/preguntas-frecuentes', key: 'navFAQ', icon: 'faq' },
     { path: '/rodrigo-paz', key: 'navRodrigoPaz', icon: 'rodrigo' }
   ];
 

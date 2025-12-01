@@ -21,8 +21,9 @@ async function retryWithDelay(fn, retries = 3, delay = 1000) {
 
 /**
  * Fetch current blue market rate directly from Supabase with retry logic
+ * @param {string} currency - Currency code: 'USD', 'BRL', or 'EUR' (default: 'USD')
  */
-export async function fetchBlueRate() {
+export async function fetchBlueRate(currency = 'USD') {
   return retryWithDelay(async () => {
     // Get the latest rate
     const { data, error } = await supabase
@@ -41,11 +42,44 @@ export async function fetchBlueRate() {
       throw new Error('No rate data available');
     }
     
+    // Determine which rate fields to use based on currency
+    let buyRate, sellRate, midRate, buyField, sellField, midField;
+    
+    if (currency === 'USD') {
+      buyRate = data.buy;
+      sellRate = data.sell;
+      midRate = data.mid;
+      buyField = 'buy';
+      sellField = 'sell';
+      midField = 'mid';
+    } else if (currency === 'BRL') {
+      buyRate = data.buy_bob_per_brl;
+      sellRate = data.sell_bob_per_brl;
+      midRate = data.mid_bob_per_brl;
+      buyField = 'buy_bob_per_brl';
+      sellField = 'sell_bob_per_brl';
+      midField = 'mid_bob_per_brl';
+    } else if (currency === 'EUR') {
+      buyRate = data.buy_bob_per_eur;
+      sellRate = data.sell_bob_per_eur;
+      midRate = data.mid_bob_per_eur;
+      buyField = 'buy_bob_per_eur';
+      sellField = 'sell_bob_per_eur';
+      midField = 'mid_bob_per_eur';
+    } else {
+      throw new Error(`Unsupported currency: ${currency}`);
+    }
+    
+    // Check if rates are available for this currency
+    if (buyRate === null || sellRate === null) {
+      throw new Error(`Rate data not available for ${currency}. The backend may not have fetched this currency yet.`);
+    }
+    
     // Get yesterday's rate for daily change calculation
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
     const { data: yesterdayData } = await supabase
       .from('rates')
-      .select('buy, sell')
+      .select(`${buyField}, ${sellField}`)
       .lte('t', oneDayAgo)
       .order('t', { ascending: false })
       .limit(1)
@@ -54,34 +88,57 @@ export async function fetchBlueRate() {
     let buyChange = null;
     let sellChange = null;
     
-    if (yesterdayData) {
-      buyChange = ((data.buy - yesterdayData.buy) / yesterdayData.buy * 100).toFixed(2);
-      sellChange = ((data.sell - yesterdayData.sell) / yesterdayData.sell * 100).toFixed(2);
+    if (yesterdayData && yesterdayData[buyField] && yesterdayData[sellField]) {
+      const yesterdayBuy = yesterdayData[buyField];
+      const yesterdaySell = yesterdayData[sellField];
+      buyChange = ((buyRate - yesterdayBuy) / yesterdayBuy * 100).toFixed(2);
+      sellChange = ((sellRate - yesterdaySell) / yesterdaySell * 100).toFixed(2);
     }
     
-    // Format response to match expected structure
-    return {
+    // Format response to match expected structure (always use buy_bob_per_* naming for consistency)
+    const response = {
       source: 'binance-p2p',
-      buy_bob_per_usd: data.buy,
-      sell_bob_per_usd: data.sell,
-      mid_bob_per_usd: data.mid,
-      official_buy: data.official_buy,
-      official_sell: data.official_sell,
-      official_mid: data.official_mid,
       updated_at_iso: data.t,
       buy_change_24h: buyChange,
       sell_change_24h: sellChange,
       sample_buy: [],
-      sample_sell: []
+      sample_sell: [],
+      currency: currency
     };
+    
+    // Add currency-specific fields
+    if (currency === 'USD') {
+      response.buy_bob_per_usd = buyRate;
+      response.sell_bob_per_usd = sellRate;
+      response.mid_bob_per_usd = midRate;
+      response.official_buy = data.official_buy;
+      response.official_sell = data.official_sell;
+      response.official_mid = data.official_mid;
+    } else if (currency === 'BRL') {
+      response.buy_bob_per_brl = buyRate;
+      response.sell_bob_per_brl = sellRate;
+      response.mid_bob_per_brl = midRate;
+    } else if (currency === 'EUR') {
+      response.buy_bob_per_eur = buyRate;
+      response.sell_bob_per_eur = sellRate;
+      response.mid_bob_per_eur = midRate;
+    }
+    
+    // Add generic fields for component compatibility
+    response.buy = buyRate;
+    response.sell = sellRate;
+    response.mid = midRate;
+    
+    return response;
   });
 }
 
 /**
  * Fetch historical blue market rates directly from Supabase
  * @param {string} range - Time range: 1D, 1W, 1M, 1Y, ALL
+ * @param {string} currency - Currency code: 'USD', 'BRL', or 'EUR' (default: 'USD')
  */
-export async function fetchBlueHistory(range = '1W') {
+export async function fetchBlueHistory(range = '1W', currency = 'USD') {
   let startDate;
   const now = new Date();
   
@@ -103,9 +160,17 @@ export async function fetchBlueHistory(range = '1W') {
       startDate = new Date(0); // Beginning of time
   }
   
+  // Determine which fields to select based on currency
+  let selectFields = 't, buy, sell, mid, official_buy, official_sell, official_mid';
+  if (currency === 'BRL') {
+    selectFields = 't, buy_bob_per_brl, sell_bob_per_brl, mid_bob_per_brl';
+  } else if (currency === 'EUR') {
+    selectFields = 't, buy_bob_per_eur, sell_bob_per_eur, mid_bob_per_eur';
+  }
+  
   const { data, error } = await supabase
     .from('rates')
-    .select('t, buy, sell, mid, official_buy, official_sell, official_mid')
+    .select(selectFields)
     .gte('t', startDate.toISOString())
     .order('t', { ascending: true });
   
@@ -114,7 +179,35 @@ export async function fetchBlueHistory(range = '1W') {
     throw new Error(`Failed to fetch history: ${error.message}`);
   }
   
-  let points = data || [];
+  let points = (data || []).map(point => {
+    // Map currency-specific fields to generic buy/sell/mid for chart compatibility
+    if (currency === 'USD') {
+      return {
+        t: point.t,
+        buy: point.buy,
+        sell: point.sell,
+        mid: point.mid,
+        official_buy: point.official_buy,
+        official_sell: point.official_sell,
+        official_mid: point.official_mid
+      };
+    } else if (currency === 'BRL') {
+      return {
+        t: point.t,
+        buy: point.buy_bob_per_brl,
+        sell: point.sell_bob_per_brl,
+        mid: point.mid_bob_per_brl
+      };
+    } else if (currency === 'EUR') {
+      return {
+        t: point.t,
+        buy: point.buy_bob_per_eur,
+        sell: point.sell_bob_per_eur,
+        mid: point.mid_bob_per_eur
+      };
+    }
+    return point;
+  }).filter(point => point.buy !== null && point.sell !== null); // Filter out null rates
   
   // Downsample for ALL range if we have too many points (>200)
   // This improves chart performance while maintaining data accuracy
@@ -126,6 +219,7 @@ export async function fetchBlueHistory(range = '1W') {
   
   return {
     range,
+    currency,
     points
   };
 }

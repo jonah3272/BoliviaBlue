@@ -1,11 +1,15 @@
 /**
- * Format a number to 2 decimal places, but show more precision if needed to distinguish values
+ * Format a number to appropriate decimal places based on currency
+ * @param {number} value - The rate value to format
+ * @param {string} currency - Currency code (USD, BRL, EUR)
+ * @returns {string} Formatted rate string
  */
-export function formatRate(value) {
-  if (value === null || value === undefined) return '0.00';
+export function formatRate(value, currency = 'USD') {
+  if (value === null || value === undefined) return currency === 'BRL' ? '0.000' : '0.00';
   const num = Number(value);
-  // Use 2 decimal places, but ensure we show meaningful differences
-  return num.toFixed(2);
+  // BRL rates are smaller, so show 3 decimal places (thousandths) for better precision
+  // USD and EUR show 2 decimal places (hundredths)
+  return currency === 'BRL' ? num.toFixed(3) : num.toFixed(2);
 }
 
 /**

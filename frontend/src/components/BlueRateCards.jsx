@@ -67,7 +67,7 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
         transition: { duration: 0.2 }
       }}
       role="region"
-      aria-label={`${label} rate: ${formatRate(rate)} bolivianos per ${currency}`}
+      aria-label={`${label} rate: ${formatRate(rate, currency)} bolivianos per ${currency}`}
     >
       <div className="flex items-center justify-between mb-1">
         <div className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">{label}</div>
@@ -93,7 +93,7 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
         key={rate}
       >
         <div className="font-mono text-5xl sm:text-6xl md:text-7xl font-black text-gray-900 dark:text-white leading-none">
-          {formatRate(rate)}
+          {formatRate(rate, currency)}
         </div>
         <div className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1 font-semibold">
           {language === 'es' ? `Bs. por ${currency}` : `Bs. per ${currency}`}

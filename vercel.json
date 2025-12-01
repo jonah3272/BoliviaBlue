@@ -4,7 +4,7 @@
   "installCommand": "npm --version",
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/((?!assets|.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|webp|woff|woff2|ttf|eot|json|txt|xml)).*)",
       "destination": "/index.html"
     }
   ],

@@ -1,9 +1,9 @@
 // Service Worker for Bolivia Blue con Paz
 // Provides offline support and caching for better performance
 
-const CACHE_NAME = 'bolivia-blue-v1';
-const STATIC_CACHE_NAME = 'bolivia-blue-static-v1';
-const API_CACHE_NAME = 'bolivia-blue-api-v1';
+const CACHE_NAME = 'bolivia-blue-v3';
+const STATIC_CACHE_NAME = 'bolivia-blue-static-v3';
+const API_CACHE_NAME = 'bolivia-blue-api-v3';
 
 // Assets to cache immediately
 const STATIC_ASSETS = [

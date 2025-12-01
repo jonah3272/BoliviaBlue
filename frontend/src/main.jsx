@@ -52,8 +52,20 @@ if (import.meta.env.DEV) {
   };
 }
 
-// Service worker registration removed - not implemented yet
-// TODO: Implement proper service worker for offline support in future version
+// Unregister any existing service workers to prevent caching issues
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then((registrations) => {
+    for (const registration of registrations) {
+      registration.unregister().then((success) => {
+        if (success) {
+          console.log('[SW] Service worker unregistered successfully');
+          // Force reload to clear cache
+          window.location.reload();
+        }
+      });
+    }
+  });
+}
 
 // Load AdSense after page is fully loaded
 window.addEventListener('load', () => {

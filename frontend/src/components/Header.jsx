@@ -32,7 +32,8 @@ function Header() {
             </picture>
             <div className="flex flex-col min-w-0">
               <div className="text-base sm:text-xl font-bold text-gray-900 dark:text-white truncate">
-                {t('title')}
+                <span className="sm:hidden">{t('titleShort')}</span>
+                <span className="hidden sm:inline">{t('title')}</span>
               </div>
               <p className="hidden md:block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mt-0.5">
                 {t('subtitle')}

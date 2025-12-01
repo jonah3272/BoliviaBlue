@@ -6,6 +6,7 @@ export const translations = {
   es: {
     // Header
     title: 'Bolivia Blue Rate con Paz',
+    titleShort: 'Bolivia Blue',
     subtitle: 'Siguiendo el pulso del Boliviano bajo el Presidente Paz',
     
     // Rate Cards
@@ -331,6 +332,7 @@ export const translations = {
   en: {
     // Header
     title: 'Bolivia Blue Rate with Paz',
+    titleShort: 'Bolivia Blue',
     subtitle: 'Tracking the Boliviano\'s pulse under President Paz',
     
     // Rate Cards

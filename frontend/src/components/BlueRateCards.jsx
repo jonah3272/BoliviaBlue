@@ -6,7 +6,7 @@ import { formatRate, formatDateTime, isStale } from '../utils/formatters';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 
-const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, isLoading, error, dailyChange, isOfficial }) {
+const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, isLoading, error, dailyChange, isOfficial, currency, language }) {
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const isBuy = type === 'buy';
@@ -215,6 +215,8 @@ function BlueRateCards({ showOfficial = false, setShowOfficial }) {
               isLoading={isLoading}
               error={error}
               dailyChange={buyChange}
+              currency={currency}
+              language={language}
             />
             <RateCard
               type="sell"
@@ -224,6 +226,8 @@ function BlueRateCards({ showOfficial = false, setShowOfficial }) {
               isLoading={isLoading}
               error={error}
               dailyChange={sellChange}
+              currency={currency}
+              language={language}
             />
           </div>
         </div>
@@ -239,6 +243,8 @@ function BlueRateCards({ showOfficial = false, setShowOfficial }) {
               isLoading={isLoading}
               error={error}
               isOfficial={true}
+              currency={currency}
+              language={language}
             />
             <RateCard
               type="sell"
@@ -248,6 +254,8 @@ function BlueRateCards({ showOfficial = false, setShowOfficial }) {
               isLoading={isLoading}
               error={error}
               isOfficial={true}
+              currency={currency}
+              language={language}
             />
           </div>
         </div>

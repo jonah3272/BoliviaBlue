@@ -109,19 +109,25 @@ export async function fetchBlueHistory(range = '1W') {
   if (range === 'ALL') {
     // Fetch all data in batches using cursor-based pagination (more reliable than offset)
     const batchSize = 1000; // Supabase recommended batch size
-    let lastTimestamp = startDate.toISOString();
+    let lastTimestamp = null; // Start with null to get all records
     let hasMore = true;
     let batchCount = 0;
     
     logger.log(`[fetchBlueHistory] Starting cursor-based pagination for ALL range...`);
     
     while (hasMore) {
-      const { data: batch, error } = await supabase
+      let query = supabase
         .from('rates')
         .select('t, buy, sell, mid, official_buy, official_sell, official_mid')
-        .gte('t', lastTimestamp)
         .order('t', { ascending: true })
         .limit(batchSize);
+      
+      // After first batch, use greater-than to avoid re-fetching the last record
+      if (lastTimestamp) {
+        query = query.gt('t', lastTimestamp);
+      }
+      
+      const { data: batch, error } = await query;
       
       if (error) {
         logger.error('Error fetching history batch from Supabase:', error);
@@ -133,22 +139,22 @@ export async function fetchBlueHistory(range = '1W') {
         break;
       }
       
-      // Add batch to points (skip first point if it's the same as lastTimestamp to avoid duplicates)
-      const pointsToAdd = batchCount === 0 
-        ? batch 
-        : batch.slice(1); // Skip first point on subsequent batches (it's the cursor)
-      
-      points = points.concat(pointsToAdd);
+      // Add all points from this batch (no need to skip since we use .gt())
+      points = points.concat(batch);
       batchCount++;
       
-      logger.log(`[fetchBlueHistory] Batch ${batchCount}: ${batch.length} points (${pointsToAdd.length} new, total: ${points.length})`);
+      const firstDate = new Date(batch[0].t);
+      const lastDate = new Date(batch[batch.length - 1].t);
+      logger.log(`[fetchBlueHistory] Batch ${batchCount}: ${batch.length} points (${firstDate.toISOString()} to ${lastDate.toISOString()}, total: ${points.length})`);
       
       // Check if we got fewer than batchSize - means we're done
       if (batch.length < batchSize) {
         hasMore = false;
+        logger.log(`[fetchBlueHistory] Last batch (${batch.length} < ${batchSize}), pagination complete`);
       } else {
-        // Update cursor to the last timestamp from this batch
+        // Update cursor to the last timestamp from this batch (use .gt() next time)
         lastTimestamp = batch[batch.length - 1].t;
+        logger.log(`[fetchBlueHistory] Continuing pagination from timestamp: ${lastTimestamp}`);
       }
     }
     

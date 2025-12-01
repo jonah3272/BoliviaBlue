@@ -408,12 +408,12 @@ function Home() {
               ? 'Dólar Blue en Bolivia'
               : 'Blue Dollar in Bolivia'}
           </h1>
-          <p className="text-lg sm:text-xl text-blue-600 dark:text-blue-400 font-medium">
+          <p className="hidden sm:block text-lg sm:text-xl text-blue-600 dark:text-blue-400 font-medium">
             {language === 'es'
               ? '⚡ Actualizado cada 15 minutos'
               : '⚡ Updated every 15 minutes'}
           </p>
-          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+          <p className="hidden sm:block text-sm sm:text-base text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
             {language === 'es'
               ? 'Cotización en tiempo real del tipo de cambio del dólar blue con análisis de sentimiento con IA, gráficos históricos y calculadora gratuita.'
               : 'Real-time blue dollar exchange rate with AI sentiment analysis, historical charts and free calculator.'}

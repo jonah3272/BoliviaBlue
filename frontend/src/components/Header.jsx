@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
+import CurrencyToggle from './CurrencyToggle';
 import { BINANCE_REFERRAL_LINK, AIRTM_REFERRAL_LINK } from '../config/referrals';
 
 function Header() {
@@ -73,6 +74,7 @@ function Header() {
               </span>
             </a>
             
+            <CurrencyToggle />
             <LanguageToggle />
             <ThemeToggle />
           </div>

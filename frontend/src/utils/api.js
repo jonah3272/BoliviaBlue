@@ -21,8 +21,9 @@ async function retryWithDelay(fn, retries = 3, delay = 1000) {
 
 /**
  * Fetch current blue market rate directly from Supabase with retry logic
+ * @param {string} currency - Currency code: 'USD', 'BRL', or 'EUR' (default: 'USD')
  */
-export async function fetchBlueRate() {
+export async function fetchBlueRate(currency = 'USD') {
   return retryWithDelay(async () => {
     // Get the latest rate
     const { data, error } = await supabase
@@ -41,11 +42,44 @@ export async function fetchBlueRate() {
       throw new Error('No rate data available');
     }
     
+    // Determine which rate fields to use based on currency
+    let buyRate, sellRate, midRate, buyField, sellField, midField;
+    
+    if (currency === 'USD') {
+      buyRate = data.buy;
+      sellRate = data.sell;
+      midRate = data.mid;
+      buyField = 'buy';
+      sellField = 'sell';
+      midField = 'mid';
+    } else if (currency === 'BRL') {
+      buyRate = data.buy_bob_per_brl;
+      sellRate = data.sell_bob_per_brl;
+      midRate = data.mid_bob_per_brl;
+      buyField = 'buy_bob_per_brl';
+      sellField = 'sell_bob_per_brl';
+      midField = 'mid_bob_per_brl';
+    } else if (currency === 'EUR') {
+      buyRate = data.buy_bob_per_eur;
+      sellRate = data.sell_bob_per_eur;
+      midRate = data.mid_bob_per_eur;
+      buyField = 'buy_bob_per_eur';
+      sellField = 'sell_bob_per_eur';
+      midField = 'mid_bob_per_eur';
+    } else {
+      throw new Error(`Unsupported currency: ${currency}`);
+    }
+    
+    // Check if rates are available for this currency
+    if (buyRate === null || sellRate === null) {
+      throw new Error(`Rate data not available for ${currency}. The backend may not have fetched this currency yet.`);
+    }
+    
     // Get yesterday's rate for daily change calculation
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
     const { data: yesterdayData } = await supabase
       .from('rates')
-      .select('buy, sell')
+      .select(`${buyField}, ${sellField}`)
       .lte('t', oneDayAgo)
       .order('t', { ascending: false })
       .limit(1)
@@ -54,34 +88,57 @@ export async function fetchBlueRate() {
     let buyChange = null;
     let sellChange = null;
     
-    if (yesterdayData) {
-      buyChange = ((data.buy - yesterdayData.buy) / yesterdayData.buy * 100).toFixed(2);
-      sellChange = ((data.sell - yesterdayData.sell) / yesterdayData.sell * 100).toFixed(2);
+    if (yesterdayData && yesterdayData[buyField] && yesterdayData[sellField]) {
+      const yesterdayBuy = yesterdayData[buyField];
+      const yesterdaySell = yesterdayData[sellField];
+      buyChange = ((buyRate - yesterdayBuy) / yesterdayBuy * 100).toFixed(2);
+      sellChange = ((sellRate - yesterdaySell) / yesterdaySell * 100).toFixed(2);
     }
     
-    // Format response to match expected structure
-    return {
+    // Format response to match expected structure (always use buy_bob_per_* naming for consistency)
+    const response = {
       source: 'binance-p2p',
-      buy_bob_per_usd: data.buy,
-      sell_bob_per_usd: data.sell,
-      mid_bob_per_usd: data.mid,
-      official_buy: data.official_buy,
-      official_sell: data.official_sell,
-      official_mid: data.official_mid,
       updated_at_iso: data.t,
       buy_change_24h: buyChange,
       sell_change_24h: sellChange,
       sample_buy: [],
-      sample_sell: []
+      sample_sell: [],
+      currency: currency
     };
+    
+    // Add currency-specific fields
+    if (currency === 'USD') {
+      response.buy_bob_per_usd = buyRate;
+      response.sell_bob_per_usd = sellRate;
+      response.mid_bob_per_usd = midRate;
+      response.official_buy = data.official_buy;
+      response.official_sell = data.official_sell;
+      response.official_mid = data.official_mid;
+    } else if (currency === 'BRL') {
+      response.buy_bob_per_brl = buyRate;
+      response.sell_bob_per_brl = sellRate;
+      response.mid_bob_per_brl = midRate;
+    } else if (currency === 'EUR') {
+      response.buy_bob_per_eur = buyRate;
+      response.sell_bob_per_eur = sellRate;
+      response.mid_bob_per_eur = midRate;
+    }
+    
+    // Add generic fields for component compatibility
+    response.buy = buyRate;
+    response.sell = sellRate;
+    response.mid = midRate;
+    
+    return response;
   });
 }
 
 /**
  * Fetch historical blue market rates directly from Supabase
  * @param {string} range - Time range: 1D, 1W, 1M, 1Y, ALL
+ * @param {string} currency - Currency code: 'USD', 'BRL', or 'EUR' (default: 'USD')
  */
-export async function fetchBlueHistory(range = '1W') {
+export async function fetchBlueHistory(range = '1W', currency = 'USD') {
   let startDate;
   const now = new Date();
   
@@ -103,7 +160,14 @@ export async function fetchBlueHistory(range = '1W') {
       startDate = new Date(0); // Beginning of time
   }
   
-  // For ALL range, fetch all data using cursor-based pagination to avoid any limits
+  // Determine which fields to select based on currency
+  let selectFields = 't, buy, sell, mid, official_buy, official_sell, official_mid';
+  if (currency === 'BRL') {
+    selectFields = 't, buy_bob_per_brl, sell_bob_per_brl, mid_bob_per_brl';
+  } else if (currency === 'EUR') {
+    selectFields = 't, buy_bob_per_eur, sell_bob_per_eur, mid_bob_per_eur';
+  }
+  
   let points = [];
   
   if (range === 'ALL') {
@@ -113,12 +177,12 @@ export async function fetchBlueHistory(range = '1W') {
     let hasMore = true;
     let batchCount = 0;
     
-    logger.log(`[fetchBlueHistory] Starting cursor-based pagination for ALL range...`);
+    logger.log(`[fetchBlueHistory] Starting cursor-based pagination for ALL range (currency: ${currency})...`);
     
     while (hasMore) {
       let query = supabase
         .from('rates')
-        .select('t, buy, sell, mid, official_buy, official_sell, official_mid')
+        .select(selectFields)
         .order('t', { ascending: true })
         .limit(batchSize);
       
@@ -159,11 +223,39 @@ export async function fetchBlueHistory(range = '1W') {
     }
     
     logger.log(`[fetchBlueHistory] Pagination complete: ${points.length} total points in ${batchCount} batches`);
+    
+    // Log what we actually got and verify we have recent data
+    if (points.length > 0) {
+      const firstDate = new Date(points[0].t);
+      const lastDate = new Date(points[points.length - 1].t);
+      const now = new Date();
+      const daysSinceLast = (now - lastDate) / (1000 * 60 * 60 * 24);
+      
+      logger.log(`[fetchBlueHistory] ALL range fetched: ${points.length} points`);
+      logger.log(`[fetchBlueHistory] Date range: ${firstDate.toISOString()} to ${lastDate.toISOString()}`);
+      logger.log(`[fetchBlueHistory] Days since last data point: ${daysSinceLast.toFixed(1)}`);
+      
+      // Warn if we're missing recent data (more than 2 days old)
+      if (daysSinceLast > 2) {
+        logger.warn(`[fetchBlueHistory] WARNING: Last data point is ${daysSinceLast.toFixed(1)} days old. Data might be incomplete!`);
+      }
+      
+      // Verify we have data through today or yesterday
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const lastDataDay = new Date(lastDate);
+      lastDataDay.setHours(0, 0, 0, 0);
+      const daysDiff = Math.floor((today - lastDataDay) / (1000 * 60 * 60 * 24));
+      
+      if (daysDiff > 1) {
+        logger.warn(`[fetchBlueHistory] WARNING: Missing ${daysDiff} days of recent data. Expected data through today, but last point is from ${lastDate.toLocaleDateString()}`);
+      }
+    }
   } else {
     // For other ranges, use normal query with appropriate limit
     const { data, error } = await supabase
       .from('rates')
-      .select('t, buy, sell, mid, official_buy, official_sell, official_mid')
+      .select(selectFields)
       .gte('t', startDate.toISOString())
       .order('t', { ascending: true });
     
@@ -175,33 +267,35 @@ export async function fetchBlueHistory(range = '1W') {
     points = data || [];
   }
   
-  // Log what we actually got and verify we have recent data
-  if (range === 'ALL' && points.length > 0) {
-    const firstDate = new Date(points[0].t);
-    const lastDate = new Date(points[points.length - 1].t);
-    const now = new Date();
-    const daysSinceLast = (now - lastDate) / (1000 * 60 * 60 * 24);
-    
-    logger.log(`[fetchBlueHistory] ALL range fetched: ${points.length} points`);
-    logger.log(`[fetchBlueHistory] Date range: ${firstDate.toISOString()} to ${lastDate.toISOString()}`);
-    logger.log(`[fetchBlueHistory] Days since last data point: ${daysSinceLast.toFixed(1)}`);
-    
-    // Warn if we're missing recent data (more than 2 days old)
-    if (daysSinceLast > 2) {
-      logger.warn(`[fetchBlueHistory] WARNING: Last data point is ${daysSinceLast.toFixed(1)} days old. Data might be incomplete!`);
+  // Map currency-specific fields to generic buy/sell/mid for chart compatibility
+  points = points.map(point => {
+    if (currency === 'USD') {
+      return {
+        t: point.t,
+        buy: point.buy,
+        sell: point.sell,
+        mid: point.mid,
+        official_buy: point.official_buy,
+        official_sell: point.official_sell,
+        official_mid: point.official_mid
+      };
+    } else if (currency === 'BRL') {
+      return {
+        t: point.t,
+        buy: point.buy_bob_per_brl,
+        sell: point.sell_bob_per_brl,
+        mid: point.mid_bob_per_brl
+      };
+    } else if (currency === 'EUR') {
+      return {
+        t: point.t,
+        buy: point.buy_bob_per_eur,
+        sell: point.sell_bob_per_eur,
+        mid: point.mid_bob_per_eur
+      };
     }
-    
-    // Verify we have data through today or yesterday
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const lastDataDay = new Date(lastDate);
-    lastDataDay.setHours(0, 0, 0, 0);
-    const daysDiff = Math.floor((today - lastDataDay) / (1000 * 60 * 60 * 24));
-    
-    if (daysDiff > 1) {
-      logger.warn(`[fetchBlueHistory] WARNING: Missing ${daysDiff} days of recent data. Expected data through today, but last point is from ${lastDate.toLocaleDateString()}`);
-    }
-  }
+    return point;
+  }).filter(point => point.buy !== null && point.sell !== null); // Filter out null rates
   
   // For ALL range, intelligently downsample to show representative markers
   // Goal: Show more data points for better granularity while maintaining performance
@@ -253,6 +347,7 @@ export async function fetchBlueHistory(range = '1W') {
   
   return {
     range,
+    currency,
     points
   };
 }

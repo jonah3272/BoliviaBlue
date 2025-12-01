@@ -269,3 +269,5 @@ These 3 changes alone will make a 70% improvement!
 
 **Want me to implement any of these?** Let me know which ones you'd like and I'll code them up! 🚀
 
+
+

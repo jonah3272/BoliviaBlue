@@ -1,4 +1,4 @@
-import { getCurrentBlueRate } from './p2pClient.js';
+import { getAllCurrentBlueRates } from './p2pClient.js';
 import { getOfficialRate, getStaticOfficialRate } from './officialRateClient.js';
 import { fetchNews } from './newsClient.js'; // Already has Bolivia filtering
 import { fetchTwitterNews } from './twitterClient.js'; // Twitter/X integration
@@ -26,7 +26,7 @@ async function refreshBlueRate() {
     
     // Fetch both rates in parallel
     const [blueRateData, officialRateData] = await Promise.all([
-      getCurrentBlueRate(),
+      getAllCurrentBlueRates(),
       getOfficialRate().catch(err => {
         console.warn('Official rate fetch failed, using static:', err.message);
         return getStaticOfficialRate();
@@ -37,7 +37,7 @@ async function refreshBlueRate() {
     const blueMid = median([blueRateData.buy_bob_per_usd, blueRateData.sell_bob_per_usd]);
     const officialMid = median([officialRateData.official_buy, officialRateData.official_sell]);
     
-    // Store in Supabase
+    // Store in Supabase with all currencies
     await insertRate(
       blueRateData.updated_at_iso,
       blueRateData.buy_bob_per_usd,
@@ -45,7 +45,13 @@ async function refreshBlueRate() {
       blueMid,
       officialRateData.official_buy,
       officialRateData.official_sell,
-      officialMid
+      officialMid,
+      blueRateData.buy_bob_per_brl || null,
+      blueRateData.sell_bob_per_brl || null,
+      blueRateData.mid_bob_per_brl || null,
+      blueRateData.buy_bob_per_eur || null,
+      blueRateData.sell_bob_per_eur || null,
+      blueRateData.mid_bob_per_eur || null
     );
     
     // Update cache with both rates

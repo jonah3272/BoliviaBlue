@@ -16,13 +16,14 @@ function sleep(ms) {
 /**
  * Fetch P2P offers from Binance with retry logic
  * @param {string} tradeType - "BUY" or "SELL"
+ * @param {string} fiat - Fiat currency code (BOB, BRL, EUR, etc.)
  * @param {number} rows - Number of rows to fetch
  * @returns {Promise<number[]>} Array of prices
  */
-async function fetchP2POffers(tradeType, rows = 20) {
+async function fetchP2POffers(tradeType, fiat = 'BOB', rows = 20) {
   const payload = {
     asset: 'USDT',
-    fiat: 'BOB',
+    fiat: fiat,
     tradeType,
     rows,
     page: 1,
@@ -81,15 +82,16 @@ async function fetchP2POffers(tradeType, rows = 20) {
 }
 
 /**
- * Get current blue market rates from Binance P2P
+ * Get current blue market rates from Binance P2P for a specific fiat currency
+ * @param {string} fiat - Fiat currency code (BOB, BRL, EUR)
  * @returns {Promise<Object>} Buy and sell rates with metadata
  */
-export async function getCurrentBlueRate() {
+async function getCurrentBlueRateForFiat(fiat = 'BOB') {
   try {
     // Fetch buy and sell offers in parallel
     const [buyPrices, sellPrices] = await Promise.all([
-      fetchP2POffers('BUY'),
-      fetchP2POffers('SELL')
+      fetchP2POffers('BUY', fiat),
+      fetchP2POffers('SELL', fiat)
     ]);
 
     // Calculate medians
@@ -97,20 +99,102 @@ export async function getCurrentBlueRate() {
     const sellMedian = median(sellPrices);
 
     if (buyMedian === null || sellMedian === null) {
-      throw new Error('Unable to calculate median - insufficient data');
+      throw new Error(`Unable to calculate median for ${fiat} - insufficient data`);
     }
 
     return {
-      source: 'binance-p2p',
-      buy_bob_per_usd: buyMedian,
-      sell_bob_per_usd: sellMedian,
-      updated_at_iso: new Date().toISOString(),
+      buy: buyMedian,
+      sell: sellMedian,
       sample_buy: buyPrices.slice(0, 5),
       sample_sell: sellPrices.slice(0, 5)
     };
 
   } catch (error) {
+    console.error(`Error fetching blue rate for ${fiat}:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Get current blue market rates from Binance P2P (USD/BOB - default)
+ * @returns {Promise<Object>} Buy and sell rates with metadata
+ */
+export async function getCurrentBlueRate() {
+  try {
+    const usdRate = await getCurrentBlueRateForFiat('BOB');
+    
+    return {
+      source: 'binance-p2p',
+      buy_bob_per_usd: usdRate.buy,
+      sell_bob_per_usd: usdRate.sell,
+      updated_at_iso: new Date().toISOString(),
+      sample_buy: usdRate.sample_buy,
+      sample_sell: usdRate.sample_sell
+    };
+
+  } catch (error) {
     console.error('Error fetching blue rate:', error);
+    throw error;
+  }
+}
+
+/**
+ * Get current blue market rates for all supported currencies (USD, BRL, EUR)
+ * @returns {Promise<Object>} Rates for all currencies
+ */
+export async function getAllCurrentBlueRates() {
+  try {
+    // Fetch all currencies in parallel
+    const [bobRate, brlRate, eurRate] = await Promise.all([
+      getCurrentBlueRateForFiat('BOB').catch(err => {
+        console.warn('Failed to fetch BOB rate:', err.message);
+        return null;
+      }),
+      getCurrentBlueRateForFiat('BRL').catch(err => {
+        console.warn('Failed to fetch BRL rate:', err.message);
+        return null;
+      }),
+      getCurrentBlueRateForFiat('EUR').catch(err => {
+        console.warn('Failed to fetch EUR rate:', err.message);
+        return null;
+      })
+    ]);
+
+    if (!bobRate) {
+      throw new Error('Failed to fetch BOB rate (required for all calculations)');
+    }
+
+    const result = {
+      source: 'binance-p2p',
+      // USD rates (BOB per USDT, which is approximately BOB per USD)
+      buy_bob_per_usd: bobRate.buy,
+      sell_bob_per_usd: bobRate.sell,
+      updated_at_iso: new Date().toISOString(),
+      sample_buy: bobRate.sample_buy,
+      sample_sell: bobRate.sample_sell
+    };
+
+    // Calculate BRL rates: BOB/BRL = (USDT/BOB) / (USDT/BRL)
+    if (brlRate) {
+      result.buy_bob_per_brl = bobRate.buy / brlRate.buy;
+      result.sell_bob_per_brl = bobRate.sell / brlRate.sell;
+      result.mid_bob_per_brl = (result.buy_bob_per_brl + result.sell_bob_per_brl) / 2;
+    }
+
+    // Calculate EUR rates: BOB/EUR = (USDT/BOB) / (USDT/EUR)
+    if (eurRate) {
+      result.buy_bob_per_eur = bobRate.buy / eurRate.buy;
+      result.sell_bob_per_eur = bobRate.sell / eurRate.sell;
+      result.mid_bob_per_eur = (result.buy_bob_per_eur + result.sell_bob_per_eur) / 2;
+    }
+
+    // Calculate mid rate for USD
+    result.mid_bob_per_usd = (result.buy_bob_per_usd + result.sell_bob_per_usd) / 2;
+
+    return result;
+
+  } catch (error) {
+    console.error('Error fetching all blue rates:', error);
     throw error;
   }
 }

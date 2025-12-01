@@ -2,11 +2,13 @@ import { useState, useEffect, useMemo } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { fetchBlueHistory } from '../utils/api';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useCurrency } from '../contexts/CurrencyContext';
 
 function BlueChart({ showOfficial = false }) {
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
+  const { currency } = useCurrency();
   
   const [range, setRange] = useState('1D');
   const [data, setData] = useState([]);
@@ -53,7 +55,7 @@ function BlueChart({ showOfficial = false }) {
       setIsLoading(true);
       try {
         // First, get the oldest data point to calculate total data age
-        const allDataResult = await fetchBlueHistory('ALL');
+        const allDataResult = await fetchBlueHistory('ALL', currency);
         let totalDataAge = 0;
         if (allDataResult.points.length > 0) {
           const oldestPoint = new Date(allDataResult.points[0].t);
@@ -63,7 +65,7 @@ function BlueChart({ showOfficial = false }) {
         setDataAge(totalDataAge);
         
         // Then fetch data for the selected range
-        const result = await fetchBlueHistory(range);
+        const result = await fetchBlueHistory(range, currency);
         
         // Calculate stats
         if (result.points.length > 0) {
@@ -215,7 +217,7 @@ function BlueChart({ showOfficial = false }) {
     };
 
     loadData();
-  }, [range, language, showOfficial]);
+  }, [range, language, showOfficial, currency]);
 
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length > 0) {

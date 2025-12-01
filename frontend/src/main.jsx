@@ -6,6 +6,7 @@ import './index.css';
 import './styles/ui-enhancements.css';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { LanguageProvider } from './contexts/LanguageContext';
+import { CurrencyProvider } from './contexts/CurrencyContext';
 import { ToastProvider } from './contexts/ToastContext';
 import { loadAdSense } from './utils/adsenseLoader';
 
@@ -157,9 +158,11 @@ if (!rootElement) {
         <HelmetProvider>
           <ThemeProvider>
             <LanguageProvider>
-              <ToastProvider>
-                <App />
-              </ToastProvider>
+              <CurrencyProvider>
+                <ToastProvider>
+                  <App />
+                </ToastProvider>
+              </CurrencyProvider>
             </LanguageProvider>
           </ThemeProvider>
         </HelmetProvider>

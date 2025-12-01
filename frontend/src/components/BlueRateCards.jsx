@@ -4,8 +4,9 @@ import { motion } from 'framer-motion';
 import { fetchBlueRate } from '../utils/api';
 import { formatRate, formatDateTime, isStale } from '../utils/formatters';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useCurrency } from '../contexts/CurrencyContext';
 
-const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, isLoading, error, dailyChange, isOfficial }) {
+const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, isLoading, error, dailyChange, isOfficial, currency, language }) {
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const isBuy = type === 'buy';
@@ -61,7 +62,7 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
         transition: { duration: 0.2 }
       }}
       role="region"
-      aria-label={`${label} rate: ${formatRate(rate)} bolivianos per US dollar`}
+      aria-label={`${label} rate: ${formatRate(rate)} bolivianos per ${currency}`}
     >
       <div className="flex items-center justify-between mb-1">
         <div className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">{label}</div>
@@ -90,7 +91,7 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
           {formatRate(rate)}
         </div>
         <div className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1 font-semibold">
-          {t('perUSD')}
+          {language === 'es' ? `Bs. por ${currency}` : `Bs. per ${currency}`}
         </div>
       </motion.div>
       
@@ -107,6 +108,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial }) {
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
+  const { currency } = useCurrency();
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -118,7 +120,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial }) {
 
   const loadData = useCallback(async () => {
     try {
-      const result = await fetchBlueRate();
+      const result = await fetchBlueRate(currency);
       setData(result);
       setError(null);
     } catch (err) {
@@ -127,7 +129,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial }) {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [currency]);
 
   useEffect(() => {
     loadData();
@@ -207,21 +209,25 @@ function BlueRateCards({ showOfficial = false, setShowOfficial }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
             <RateCard
               type="buy"
-              rate={data?.buy_bob_per_usd}
+              rate={data?.buy || (currency === 'USD' ? data?.buy_bob_per_usd : currency === 'BRL' ? data?.buy_bob_per_brl : data?.buy_bob_per_eur)}
               timestamp={data?.updated_at_iso}
               isStaleData={isDataStale}
               isLoading={isLoading}
               error={error}
               dailyChange={buyChange}
+              currency={currency}
+              language={language}
             />
             <RateCard
               type="sell"
-              rate={data?.sell_bob_per_usd}
+              rate={data?.sell || (currency === 'USD' ? data?.sell_bob_per_usd : currency === 'BRL' ? data?.sell_bob_per_brl : data?.sell_bob_per_eur)}
               timestamp={data?.updated_at_iso}
               isStaleData={isDataStale}
               isLoading={isLoading}
               error={error}
               dailyChange={sellChange}
+              currency={currency}
+              language={language}
             />
           </div>
         </div>
@@ -237,6 +243,8 @@ function BlueRateCards({ showOfficial = false, setShowOfficial }) {
               isLoading={isLoading}
               error={error}
               isOfficial={true}
+              currency={currency}
+              language={language}
             />
             <RateCard
               type="sell"
@@ -246,6 +254,8 @@ function BlueRateCards({ showOfficial = false, setShowOfficial }) {
               isLoading={isLoading}
               error={error}
               isOfficial={true}
+              currency={currency}
+              language={language}
             />
           </div>
         </div>

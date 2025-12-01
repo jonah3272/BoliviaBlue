@@ -32,12 +32,23 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         cacheNames
           .filter((name) => {
+            // Delete ALL old caches (force fresh fetch)
             return name !== CACHE_NAME && 
                    name !== STATIC_CACHE_NAME && 
                    name !== API_CACHE_NAME;
           })
-          .map((name) => caches.delete(name))
+          .map((name) => {
+            console.log('[SW] Deleting old cache:', name);
+            return caches.delete(name);
+          })
       );
+    }).then(() => {
+      // Force all clients to reload
+      return self.clients.matchAll().then((clients) => {
+        clients.forEach((client) => {
+          client.postMessage({ type: 'SW_UPDATED', action: 'reload' });
+        });
+      });
     })
   );
   // Take control of all pages immediately

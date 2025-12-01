@@ -71,7 +71,11 @@ export async function fetchBlueRate(currency = 'USD') {
     }
     
     // Check if rates are available for this currency
-    if (buyRate === null || sellRate === null) {
+    if (buyRate === null || sellRate === null || buyRate === undefined || sellRate === undefined) {
+      // For BRL, provide a more helpful error message
+      if (currency === 'BRL') {
+        throw new Error(`BRL rate data is not available. This may be because Binance P2P doesn't have sufficient BRL/USDT trading pairs at the moment. Please try USD or EUR instead.`);
+      }
       throw new Error(`Rate data not available for ${currency}. The backend may not have fetched this currency yet.`);
     }
     

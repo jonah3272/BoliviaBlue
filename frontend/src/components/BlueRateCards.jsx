@@ -34,7 +34,12 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
     return (
       <div className={`bg-white dark:bg-gray-800 rounded-xl border-2 ${borderColor} p-4 shadow-lg`}>
         <div className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">{label}</div>
-        <div className="text-red-500 text-xs">{t('error')}</div>
+        <div className="text-red-500 text-xs">{error}</div>
+        {currency === 'BRL' && (
+          <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+            {language === 'es' ? 'BRL puede no estar disponible en Binance P2P en este momento.' : 'BRL may not be available on Binance P2P at this time.'}
+          </div>
+        )}
       </div>
     );
   }

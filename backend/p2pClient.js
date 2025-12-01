@@ -179,6 +179,14 @@ export async function getAllCurrentBlueRates() {
       result.buy_bob_per_brl = bobRate.buy / brlRate.buy;
       result.sell_bob_per_brl = bobRate.sell / brlRate.sell;
       result.mid_bob_per_brl = (result.buy_bob_per_brl + result.sell_bob_per_brl) / 2;
+    } else {
+      // Fallback: Calculate BRL from USD rates if Binance P2P doesn't have BRL pairs
+      // Using approximate conversion: 1 USD ≈ 5.0 BRL
+      const USD_TO_BRL = 5.0;
+      console.warn('BRL rate not available from Binance P2P, using USD-based calculation');
+      result.buy_bob_per_brl = bobRate.buy / USD_TO_BRL;
+      result.sell_bob_per_brl = bobRate.sell / USD_TO_BRL;
+      result.mid_bob_per_brl = (result.buy_bob_per_brl + result.sell_bob_per_brl) / 2;
     }
 
     // Calculate EUR rates: BOB/EUR = (USDT/BOB) / (USDT/EUR)

@@ -1,4 +1,4 @@
-import { useState, useEffect, memo, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, memo, useCallback, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { fetchBlueRate } from '../utils/api';
@@ -118,27 +118,72 @@ function BlueRateCards({ showOfficial = false, setShowOfficial }) {
   const effectiveShowOfficial = setShowOfficial !== undefined ? showOfficial : internalShowOfficial;
   const effectiveSetShowOfficial = setShowOfficial !== undefined ? setShowOfficial : setInternalShowOfficial;
 
-  const loadData = useCallback(async () => {
-    try {
-      const result = await fetchBlueRate(currency);
-      setData(result);
-      setError(null);
-    } catch (err) {
-      console.error('Error loading rate:', err);
-      setError(err.message);
-    } finally {
-      setIsLoading(false);
+  // Use ref to track the current request and prevent race conditions
+  const abortControllerRef = React.useRef(null);
+  const currentCurrencyRef = React.useRef(currency);
+
+  const loadData = useCallback(async (targetCurrency) => {
+    // Cancel any in-flight request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
     }
-  }, [currency]);
+
+    // Create new AbortController for this request
+    const abortController = new AbortController();
+    abortControllerRef.current = abortController;
+    currentCurrencyRef.current = targetCurrency;
+
+    // Reset loading state when currency changes
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const result = await fetchBlueRate(targetCurrency);
+      
+      // Only update state if this is still the current request
+      if (!abortController.signal.aborted && currentCurrencyRef.current === targetCurrency) {
+        setData(result);
+        setError(null);
+      }
+    } catch (err) {
+      // Ignore abort errors
+      if (err.name === 'AbortError' || abortController.signal.aborted) {
+        return;
+      }
+      
+      // Only set error if this is still the current request
+      if (currentCurrencyRef.current === targetCurrency) {
+        console.error('Error loading rate:', err);
+        setError(err.message || t('error'));
+      }
+    } finally {
+      // Only update loading state if this is still the current request
+      if (!abortController.signal.aborted && currentCurrencyRef.current === targetCurrency) {
+        setIsLoading(false);
+      }
+    }
+  }, [t]);
 
   useEffect(() => {
-    loadData();
+    // Debounce rapid currency changes
+    const timeoutId = setTimeout(() => {
+      loadData(currency);
+    }, 100); // 100ms debounce
     
     // Refresh every 60 seconds
-    const interval = setInterval(loadData, 60000);
+    const interval = setInterval(() => {
+      loadData(currency);
+    }, 60000);
     
-    return () => clearInterval(interval);
-  }, [loadData]);
+    return () => {
+      clearTimeout(timeoutId);
+      clearInterval(interval);
+      // Cancel any in-flight request on unmount
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, [currency, loadData]);
 
   const isDataStale = useMemo(() => 
     data?.updated_at_iso ? (isStale(data.updated_at_iso) || data.is_stale) : false,

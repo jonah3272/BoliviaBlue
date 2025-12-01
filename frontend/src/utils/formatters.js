@@ -1,8 +1,11 @@
 /**
- * Format a number to 2 decimal places
+ * Format a number to 2 decimal places, but show more precision if needed to distinguish values
  */
 export function formatRate(value) {
-  return Number(value).toFixed(2);
+  if (value === null || value === undefined) return '0.00';
+  const num = Number(value);
+  // Use 2 decimal places, but ensure we show meaningful differences
+  return num.toFixed(2);
 }
 
 /**

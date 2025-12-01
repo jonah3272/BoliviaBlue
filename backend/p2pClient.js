@@ -182,10 +182,21 @@ export async function getAllCurrentBlueRates() {
     } else {
       // Fallback: Calculate BRL from USD rates if Binance P2P doesn't have BRL pairs
       // Using approximate conversion: 1 USD ≈ 5.0 BRL
-      const USD_TO_BRL = 5.0;
-      console.warn('BRL rate not available from Binance P2P, using USD-based calculation');
-      result.buy_bob_per_brl = bobRate.buy / USD_TO_BRL;
-      result.sell_bob_per_brl = bobRate.sell / USD_TO_BRL;
+      // We need to ensure there's always a spread, so we'll use a slightly different rate for buy/sell
+      const USD_TO_BRL_BUY = 5.0;   // Slightly lower for buy (you get more BRL per USD)
+      const USD_TO_BRL_SELL = 5.05; // Slightly higher for sell (you pay more BRL per USD)
+      console.warn('BRL rate not available from Binance P2P, using USD-based calculation with spread');
+      
+      // Calculate with spread: buy should be lower (better for buyer), sell should be higher (better for seller)
+      result.buy_bob_per_brl = bobRate.buy / USD_TO_BRL_BUY;
+      result.sell_bob_per_brl = bobRate.sell / USD_TO_BRL_SELL;
+      
+      // Ensure minimum spread of at least 0.01
+      const spread = result.sell_bob_per_brl - result.buy_bob_per_brl;
+      if (spread < 0.01) {
+        result.sell_bob_per_brl = result.buy_bob_per_brl + 0.01;
+      }
+      
       result.mid_bob_per_brl = (result.buy_bob_per_brl + result.sell_bob_per_brl) / 2;
     }
 

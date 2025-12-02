@@ -186,6 +186,20 @@ const pages = [
     lastmod: currentDate
   },
   
+  // Currency conversion pages
+  {
+    path: '/euro-a-boliviano',
+    changefreq: 'hourly',
+    priority: '0.9',
+    lastmod: currentDate
+  },
+  {
+    path: '/real-a-boliviano',
+    changefreq: 'hourly',
+    priority: '0.9',
+    lastmod: currentDate
+  },
+  
   // Comparison & Banks
   {
     path: '/comparison',

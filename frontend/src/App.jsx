@@ -26,6 +26,8 @@ const News = lazy(() => import('./pages/News'));
     const BinanceP2PBolivia = lazy(() => import('./pages/BinanceP2PBolivia'));
     const UsdtBolivia = lazy(() => import('./pages/UsdtBolivia'));
     const DolarParaleloBoliviaEnVivo = lazy(() => import('./pages/DolarParaleloBoliviaEnVivo'));
+    const EuroToBoliviano = lazy(() => import('./pages/EuroToBoliviano'));
+    const RealToBoliviano = lazy(() => import('./pages/RealToBoliviano'));
 
 // Loading fallback component
 // IMPORTANT: This component signals to the AdSense loader that we're in a loading state
@@ -96,6 +98,10 @@ function App() {
           <Route path="/binance-p2p-bolivia" element={<BinanceP2PBolivia />} />
           <Route path="/usdt-bolivia" element={<UsdtBolivia />} />
           <Route path="/dolar-paralelo-bolivia-en-vivo" element={<DolarParaleloBoliviaEnVivo />} />
+          
+          {/* Currency conversion pages */}
+          <Route path="/euro-a-boliviano" element={<EuroToBoliviano />} />
+          <Route path="/real-a-boliviano" element={<RealToBoliviano />} />
         </Routes>
       </Suspense>
     </Router>

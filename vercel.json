@@ -2,22 +2,6 @@
   "buildCommand": "cd frontend && npm install && npm run build",
   "outputDirectory": "frontend/dist",
   "installCommand": "npm --version",
-  "cleanUrls": true,
-  "trailingSlash": false,
-  "redirects": [
-    {
-      "source": "/(.*)",
-      "has": [
-        {
-          "type": "host",
-          "value": "www.boliviablue.com"
-        }
-      ],
-      "destination": "https://boliviablue.com/$1",
-      "permanent": true,
-      "statusCode": 301
-    }
-  ],
   "rewrites": [
     {
       "source": "/(.*)",
@@ -39,15 +23,6 @@
         {
           "key": "Expires",
           "value": "0"
-        }
-      ]
-    },
-    {
-      "source": "/(favicon.*|apple-touch-icon.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=0, must-revalidate"
         }
       ]
     }

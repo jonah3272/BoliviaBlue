@@ -93,14 +93,6 @@ function News() {
       ? "Últimas noticias financieras y económicas de Bolivia relacionadas con el tipo de cambio del dólar blue"
       : "Latest financial and economic news from Bolivia related to the blue dollar exchange rate",
     "url": "https://boliviablue.com/news",
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.7",
-      "bestRating": "5",
-      "worstRating": "1",
-      "ratingCount": "198",
-      "reviewCount": "67"
-    },
     "mainEntity": {
       "@type": "ItemList",
       "itemListElement": news.slice(0, 10).map((article, index) => ({

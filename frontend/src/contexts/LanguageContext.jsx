@@ -36,6 +36,8 @@ export const translations = {
     fewDataPointsDesc: 'punto | puntos. El gráfico mejorará a medida que se acumulen más datos cada 15 minutos.',
     chartBuy: 'Compra',
     chartSell: 'Venta',
+    chartTypeArea: 'Área',
+    chartTypeCandlestick: 'Velas Japonesas',
     
     // News
     newsTitle: 'Noticias Económicas',
@@ -588,6 +590,8 @@ export const translations = {
     // Chart
     spread: 'Spread',
     historicalPriceChart: 'Historical Price Chart',
+    chartTypeArea: 'Area',
+    chartTypeCandlestick: 'Candlestick',
     
     // Breadcrumbs
     breadcrumbHome: 'Home',

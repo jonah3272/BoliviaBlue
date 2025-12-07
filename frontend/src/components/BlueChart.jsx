@@ -1,8 +1,11 @@
 import { useState, useEffect, useMemo } from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { fetchBlueHistory } from '../utils/api';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useCurrency } from '../contexts/CurrencyContext';
+import HistoricalCandlestickChart from './HistoricalCandlestickChart';
+import HistoricalAreaChart from './HistoricalAreaChart';
+import { transformToOHLC } from '../utils/ohlcTransformer';
+import { transformToAreaChartData } from '../utils/areaChartTransformer';
 
 function BlueChart({ showOfficial = false }) {
   const languageContext = useLanguage();
@@ -12,11 +15,13 @@ function BlueChart({ showOfficial = false }) {
   
   const [range, setRange] = useState('1D');
   const [data, setData] = useState([]);
+  const [rawData, setRawData] = useState([]); // Store raw API data for candlestick transformation
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [dataAge, setDataAge] = useState(0);
   const [stats, setStats] = useState({ latestBuy: 0, latestSell: 0, change: 0 });
   const [uniqueDateIndices, setUniqueDateIndices] = useState([]); // For ALL range X-axis ticks
+  const [chartType, setChartType] = useState('area'); // 'area' or 'candlestick'
   
   // Define TIME_RANGES using useMemo to ensure t() is available
   const TIME_RANGES = useMemo(() => {
@@ -66,6 +71,9 @@ function BlueChart({ showOfficial = false }) {
         
         // Then fetch data for the selected range
         const result = await fetchBlueHistory(range, currency);
+        
+        // Store raw data for candlestick transformation
+        setRawData(result.points);
         
         // Calculate stats
         if (result.points.length > 0) {
@@ -219,6 +227,54 @@ function BlueChart({ showOfficial = false }) {
     loadData();
   }, [range, language, showOfficial, currency]);
 
+  // Transform data for candlestick chart (OHLC)
+  // Convert raw rate data to OHLC format grouped by time buckets
+  const candlestickData = useMemo(() => {
+    if (!rawData || rawData.length === 0) return [];
+    
+    // Determine time bucket based on range
+    let bucket = 'hour';
+    if (range === '1D') {
+      bucket = 'hour'; // Show hour-by-hour for 1 day (minute would be too granular)
+    } else if (range === '1W') {
+      bucket = 'hour'; // Show hour-by-hour for 1 week
+    } else if (range === '1M') {
+      bucket = 'day'; // Show day-by-day for 1 month
+    } else if (range === '1Y') {
+      bucket = 'day'; // Show day-by-day for 1 year
+    } else {
+      bucket = 'day'; // Show day-by-day for ALL
+    }
+    
+    // Convert raw API data to rate data format for transformer
+    const rateData = rawData.map((point) => ({
+      t: point.t, // Already ISO string from API
+      buy: showOfficial ? (point.official_buy || point.buy || 0) : (point.buy || 0),
+      sell: showOfficial ? (point.official_sell || point.sell || 0) : (point.sell || 0),
+      mid: point.mid || ((point.buy || 0) + (point.sell || 0)) / 2, // Calculate mid if not available
+    })).filter(point => point.buy > 0 && point.sell > 0); // Filter out invalid data
+    
+    // Transform to OHLC
+    return transformToOHLC(rateData, bucket, true); // Use mid price for better representation
+  }, [rawData, range, showOfficial]);
+
+  // Transform data for area chart (Buy and Sell series)
+  const areaChartData = useMemo(() => {
+    if (!rawData || rawData.length === 0) return { buyData: [], sellData: [] };
+    
+    // Convert raw API data to rate data format for transformer
+    const rateData = rawData.map((point) => ({
+      t: point.t, // Already ISO string from API
+      buy: point.buy || 0,
+      sell: point.sell || 0,
+      official_buy: point.official_buy,
+      official_sell: point.official_sell,
+    }));
+    
+    // Transform to area chart format
+    return transformToAreaChartData(rateData, range, showOfficial);
+  }, [rawData, range, showOfficial]);
+
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length > 0) {
       const data = payload[0].payload;
@@ -226,50 +282,83 @@ function BlueChart({ showOfficial = false }) {
       const sellValue = data.sell; // Use the selected rate type
       const spread = buyValue && sellValue ? ((buyValue - sellValue) / sellValue * 100).toFixed(2) : 0;
       
+      // For candlestick, show OHLC
+      const showOHLC = chartType === 'candlestick' && data.open !== undefined;
+      
       return (
         <div className="bg-white dark:bg-gray-800 p-4 border-2 border-gray-200 dark:border-gray-600 rounded-xl shadow-2xl backdrop-blur-sm">
           <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-3">{data.fullTime}</p>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between gap-6">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {language === 'es' ? 'Compra' : 'Buy'}
+          {showOHLC ? (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between gap-6">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Open</span>
+                <span className="text-lg font-bold font-mono text-gray-700 dark:text-gray-300">
+                  {data.open ? data.open.toFixed(2) : 'N/A'} Bs
                 </span>
               </div>
-              <span className="text-lg font-bold font-mono text-green-600 dark:text-green-400">
-                {buyValue ? buyValue.toFixed(2) : 'N/A'} Bs
-              </span>
-            </div>
-            <div className="flex items-center justify-between gap-6">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {t('chartSell')}
+              <div className="flex items-center justify-between gap-6">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">High</span>
+                <span className="text-lg font-bold font-mono text-green-600 dark:text-green-400">
+                  {data.high ? data.high.toFixed(2) : 'N/A'} Bs
                 </span>
               </div>
-              <span className="text-lg font-bold font-mono text-red-600 dark:text-red-400">
-                {sellValue ? sellValue.toFixed(2) : 'N/A'} Bs
-              </span>
+              <div className="flex items-center justify-between gap-6">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Low</span>
+                <span className="text-lg font-bold font-mono text-red-600 dark:text-red-400">
+                  {data.low ? data.low.toFixed(2) : 'N/A'} Bs
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-6">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Close</span>
+                <span className="text-lg font-bold font-mono text-gray-700 dark:text-gray-300">
+                  {data.close ? data.close.toFixed(2) : 'N/A'} Bs
+                </span>
+              </div>
             </div>
-            {buyValue && sellValue && (
-              <div className="pt-2 mt-2 border-t border-gray-200 dark:border-gray-700">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                    {t('spread')}
-                  </span>
-                  <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    {spread}%
+          ) : (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between gap-6">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {language === 'es' ? 'Compra' : 'Buy'}
                   </span>
                 </div>
+                <span className="text-lg font-bold font-mono text-green-600 dark:text-green-400">
+                  {buyValue ? buyValue.toFixed(2) : 'N/A'} Bs
+                </span>
               </div>
-            )}
-          </div>
+              <div className="flex items-center justify-between gap-6">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {t('chartSell')}
+                  </span>
+                </div>
+                <span className="text-lg font-bold font-mono text-red-600 dark:text-red-400">
+                  {sellValue ? sellValue.toFixed(2) : 'N/A'} Bs
+                </span>
+              </div>
+              {buyValue && sellValue && (
+                <div className="pt-2 mt-2 border-t border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      {t('spread')}
+                    </span>
+                    <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      {spread}%
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       );
     }
     return null;
   };
+
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-4 sm:p-5 md:p-6 border border-gray-200 dark:border-gray-700">
@@ -301,7 +390,31 @@ function BlueChart({ showOfficial = false }) {
           )}
         </div>
         
-        <div className="flex flex-wrap gap-1.5 sm:gap-2 sm:flex-shrink-0">
+        <div className="flex flex-wrap gap-1.5 sm:gap-2 sm:flex-shrink-0 items-center">
+          {/* Chart Type Toggle */}
+          <div className="flex gap-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1 mr-2">
+            <button
+              onClick={() => setChartType('area')}
+              className={`px-3 py-1.5 rounded-md text-xs sm:text-sm font-semibold transition-all ${
+                chartType === 'area'
+                  ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+              }`}
+            >
+              {t('chartTypeArea')}
+            </button>
+            <button
+              onClick={() => setChartType('candlestick')}
+              className={`px-3 py-1.5 rounded-md text-xs sm:text-sm font-semibold transition-all ${
+                chartType === 'candlestick'
+                  ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+              }`}
+            >
+              {t('chartTypeCandlestick')}
+            </button>
+          </div>
+          
           {TIME_RANGES.map(({ value, label, minDays }) => {
             const isDisabled = minDays > 0 && dataAge < minDays;
             return (
@@ -379,106 +492,28 @@ function BlueChart({ showOfficial = false }) {
           </div>
           
           <div className="h-[240px] sm:h-[320px] md:h-[420px]">
-            <ResponsiveContainer width="100%" height="100%">
-            <AreaChart 
-              key={`chart-${range}-${data.length}`}
-              data={data} 
-              margin={{ top: 10, right: 20, left: -10, bottom: range === 'ALL' ? 60 : 20 }}
-            >
-              <defs>
-                <linearGradient id="colorBuy" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10B981" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#10B981" stopOpacity={0.05} />
-                </linearGradient>
-                <linearGradient id="colorSell" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#EF4444" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#EF4444" stopOpacity={0.05} />
-                </linearGradient>
-                <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
-                  <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
-                  <feOffset dx="0" dy="2" result="offsetblur" />
-                  <feComponentTransfer>
-                    <feFuncA type="linear" slope="0.2" />
-                  </feComponentTransfer>
-                  <feMerge>
-                    <feMergeNode />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-              </defs>
-              <CartesianGrid 
-                strokeDasharray="3 3" 
-                stroke="#E5E7EB" 
-                className="dark:stroke-gray-700" 
-                vertical={false}
+            {chartType === 'area' ? (
+              <HistoricalAreaChart
+                buyData={areaChartData.buyData}
+                sellData={areaChartData.sellData}
+                height={typeof window !== 'undefined' ? 
+                  (window.innerWidth >= 768 ? 420 : window.innerWidth >= 640 ? 320 : 240) : 
+                  320}
+                timeframe={range}
+                isLoading={isLoading}
+                className="w-full"
               />
-                    <XAxis 
-                      dataKey="time" 
-                      tick={{ fill: '#6B7280', fontSize: 10, fontFamily: 'Inter' }}
-                      stroke="#D1D5DB"
-                      tickLine={false}
-                      axisLine={{ strokeWidth: 2 }}
-                      interval={range === 'ALL' ? Math.max(0, Math.floor(data.length / (uniqueDateIndices.length || 20))) : (range === '1W' ? 0 : 'preserveStartEnd')}
-                      tickFormatter={(value, index) => {
-                        // For ALL range, only show labels for unique date indices
-                        if (range === 'ALL' && data.length > 0 && index !== undefined) {
-                          // Check if this index is in our unique date indices
-                          if (uniqueDateIndices.includes(index)) {
-                            return value;
-                          }
-                          return ''; // Don't show label for duplicate dates
-                        }
-                        // For 1W range, only show label for first occurrence of each date
-                        if (range === '1W' && data.length > 0 && index !== undefined) {
-                          const currentPoint = data[index];
-                          if (!currentPoint || !currentPoint.dateKey) return '';
-                          
-                          const firstOccurrenceIndex = data.findIndex(p => p.dateKey === currentPoint.dateKey);
-                          if (firstOccurrenceIndex === index) {
-                            return value;
-                          }
-                          return ''; // Don't show label for duplicate dates
-                        }
-                        return value;
-                      }}
-                      angle={range === 'ALL' ? -45 : 0}
-                      textAnchor={range === 'ALL' ? 'end' : 'middle'}
-                      height={range === 'ALL' ? 80 : 30}
-                      domain={['dataMin', 'dataMax']}
-                    />
-              <YAxis 
-                tick={{ fill: '#6B7280', fontSize: 11, fontFamily: 'Space Mono' }}
-                stroke="#D1D5DB"
-                tickLine={false}
-                axisLine={{ strokeWidth: 2 }}
-                domain={['auto', 'auto']}
-                tickFormatter={(value) => value.toFixed(2)}
+            ) : (
+              <HistoricalCandlestickChart
+                data={candlestickData}
+                height={typeof window !== 'undefined' ? 
+                  (window.innerWidth >= 768 ? 420 : window.innerWidth >= 640 ? 320 : 240) : 
+                  320}
+                timeframe={range}
+                isLoading={isLoading}
+                className="w-full"
               />
-              <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#9CA3AF', strokeWidth: 1 }} />
-              <Area 
-                type="monotone" 
-                dataKey="buy" 
-                stroke="#10B981" 
-                strokeWidth={3}
-                fill="url(#colorBuy)"
-                dot={false}
-                activeDot={{ r: 6, strokeWidth: 2, stroke: '#fff', fill: '#10B981' }}
-                animationDuration={1500}
-                animationEasing="ease-in-out"
-              />
-              <Area 
-                type="monotone" 
-                dataKey="sell" 
-                stroke="#EF4444" 
-                strokeWidth={3}
-                fill="url(#colorSell)"
-                dot={false}
-                activeDot={{ r: 6, strokeWidth: 2, stroke: '#fff', fill: '#EF4444' }}
-                animationDuration={1500}
-                animationEasing="ease-in-out"
-              />
-            </AreaChart>
-          </ResponsiveContainer>
+            )}
           </div>
         </div>
       )}

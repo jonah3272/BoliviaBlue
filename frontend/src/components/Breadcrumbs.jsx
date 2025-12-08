@@ -32,15 +32,27 @@ function Breadcrumbs({ items }) {
   };
 
   // Generate structured data for breadcrumbs with absolute URLs
+  // Support both 'name'/'url' and 'label'/'path' property formats
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    "itemListElement": items.map((item, index) => ({
-      "@type": "ListItem",
-      "position": index + 1,
-      "name": item.name,
-      "item": toAbsoluteUrl(item.url)
-    }))
+    "itemListElement": items.map((item, index) => {
+      // Support both property name formats: 'name' or 'label', 'url' or 'path'
+      const itemName = item.name || item.label || '';
+      const itemUrl = item.url || item.path || '';
+      
+      // Ensure name is not empty - this is required by Schema.org
+      if (!itemName) {
+        console.warn(`Breadcrumb item at position ${index + 1} is missing a name/label`);
+      }
+      
+      return {
+        "@type": "ListItem",
+        "position": index + 1,
+        "name": itemName,
+        "item": toAbsoluteUrl(itemUrl)
+      };
+    }).filter(item => item.name) // Filter out items without names
   };
 
   return (
@@ -50,23 +62,31 @@ function Breadcrumbs({ items }) {
       </script>
       <nav className="mb-6" aria-label="Breadcrumb">
         <ol className="flex items-center space-x-2 text-sm">
-          {items.map((item, index) => (
-            <li key={index} className="flex items-center">
-              {index > 0 && <span className="text-gray-400 dark:text-gray-600 mx-2">/</span>}
-              {index === items.length - 1 ? (
-                <span className="text-gray-900 dark:text-white font-medium">
-                  {item.name}
-                </span>
-              ) : (
-                <Link
-                  to={item.url}
-                  className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
-                >
-                  {item.name}
-                </Link>
-              )}
-            </li>
-          ))}
+          {items.map((item, index) => {
+            // Support both property name formats: 'name' or 'label', 'url' or 'path'
+            const itemName = item.name || item.label || '';
+            const itemUrl = item.url || item.path || '';
+            
+            if (!itemName) return null; // Skip items without names
+            
+            return (
+              <li key={index} className="flex items-center">
+                {index > 0 && <span className="text-gray-400 dark:text-gray-600 mx-2">/</span>}
+                {index === items.length - 1 ? (
+                  <span className="text-gray-900 dark:text-white font-medium">
+                    {itemName}
+                  </span>
+                ) : (
+                  <Link
+                    to={itemUrl}
+                    className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                  >
+                    {itemName}
+                  </Link>
+                )}
+              </li>
+            );
+          })}
         </ol>
       </nav>
     </>

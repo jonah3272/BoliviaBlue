@@ -11,11 +11,58 @@ const MIN_MEANINGFUL_ELEMENTS = 3; // Minimum number of content elements
 const MAX_CHECKS = 10; // Maximum number of content checks
 const CHECK_INTERVAL = 500; // Check every 500ms
 
+// Routes that should NEVER show ads (redirect pages, thin content, etc.)
+const EXCLUDED_ROUTES = [
+  // Redirect pages (zero content, just redirects)
+  '/calculator',
+  '/news',
+  '/about',
+  '/contact',
+  '/faq',
+  '/comparison',
+  '/buy-dollars',
+  '/bolivia-blue-rate-hoy',
+  '/bolivia-blue-rate-actual',
+  '/tipo-cambio-blue-bolivia',
+  '/cuanto-esta-dolar-bolivia-hoy',
+  // Add any other redirect or thin-content pages here
+];
+
+/**
+ * Checks if the current route should be excluded from AdSense
+ * @returns {boolean} True if route should be excluded
+ */
+function isRouteExcluded() {
+  const currentPath = window.location.pathname;
+  
+  // Check exact matches
+  if (EXCLUDED_ROUTES.includes(currentPath)) {
+    console.log('[AdSense] Route excluded:', currentPath);
+    return true;
+  }
+  
+  // Check if path starts with any excluded route pattern
+  for (const excludedRoute of EXCLUDED_ROUTES) {
+    if (currentPath.startsWith(excludedRoute)) {
+      console.log('[AdSense] Route pattern excluded:', currentPath);
+      return true;
+    }
+  }
+  
+  return false;
+}
+
 /**
  * Checks if the page has minimum content to display ads
  * @returns {boolean} True if page has sufficient content for AdSense
  */
 export function hasMinimumContent() {
+  // Check 0: Route-based exclusions (check first, fastest)
+  if (isRouteExcluded()) {
+    console.log('[AdSense] Route is in exclusion list, blocking ads');
+    return false;
+  }
+  
   // Check 1: Detect loading screens/spinners
   const loadingElements = document.querySelectorAll('[class*="animate-spin"], [data-loading-state="true"], [data-adsense-block]');
   if (loadingElements.length > 0) {

@@ -9,6 +9,7 @@ const News = lazy(() => import('./pages/News'));
     const About = lazy(() => import('./pages/About'));
     const Contact = lazy(() => import('./pages/Contact'));
     const FAQ = lazy(() => import('./pages/FAQ'));
+    const Privacy = lazy(() => import('./pages/Privacy'));
     const RodrigoPaz = lazy(() => import('./pages/RodrigoPaz'));
     const BuyDollars = lazy(() => import('./pages/BuyDollars'));
     const Blog = lazy(() => import('./pages/Blog'));
@@ -28,6 +29,11 @@ const News = lazy(() => import('./pages/News'));
     const DolarParaleloBoliviaEnVivo = lazy(() => import('./pages/DolarParaleloBoliviaEnVivo'));
     const EuroToBoliviano = lazy(() => import('./pages/EuroToBoliviano'));
     const RealToBoliviano = lazy(() => import('./pages/RealToBoliviano'));
+    const BolivianBlue = lazy(() => import('./pages/BolivianBlue'));
+    const BlueDolarBolivia = lazy(() => import('./pages/BlueDolarBolivia'));
+    const BlueDollarBolivia = lazy(() => import('./pages/BlueDollarBolivia'));
+    const BlueRateBolivia = lazy(() => import('./pages/BlueRateBolivia'));
+    const CambioBlueBolivia = lazy(() => import('./pages/CambioBlueBolivia'));
 
 // Loading fallback component
 // IMPORTANT: This component signals to the AdSense loader that we're in a loading state
@@ -61,6 +67,7 @@ function App() {
           <Route path="/acerca-de" element={<About />} />
           <Route path="/contacto" element={<Contact />} />
           <Route path="/preguntas-frecuentes" element={<FAQ />} />
+          <Route path="/politica-de-privacidad" element={<Privacy />} />
           <Route path="/comparacion" element={<Comparison />} />
           <Route path="/comprar-dolares" element={<BuyDollars />} />
           
@@ -98,6 +105,11 @@ function App() {
           <Route path="/binance-p2p-bolivia" element={<BinanceP2PBolivia />} />
           <Route path="/usdt-bolivia" element={<UsdtBolivia />} />
           <Route path="/dolar-paralelo-bolivia-en-vivo" element={<DolarParaleloBoliviaEnVivo />} />
+          <Route path="/bolivian-blue" element={<BolivianBlue />} />
+          <Route path="/blue-dolar-bolivia" element={<BlueDolarBolivia />} />
+          <Route path="/blue-dollar-bolivia" element={<BlueDollarBolivia />} />
+          <Route path="/blue-rate-bolivia" element={<BlueRateBolivia />} />
+          <Route path="/cambio-blue-bolivia" element={<CambioBlueBolivia />} />
           
           {/* Currency conversion pages */}
           <Route path="/euro-a-boliviano" element={<EuroToBoliviano />} />

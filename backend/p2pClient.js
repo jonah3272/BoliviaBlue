@@ -151,7 +151,12 @@ export async function getAllCurrentBlueRates() {
         return null;
       }),
       getCurrentBlueRateForFiat('BRL').catch(err => {
-        console.warn('Failed to fetch BRL rate:', err.message);
+        // Silently handle BRL rate failures - we have a fallback calculation
+        if (err.message && err.message.includes('insufficient data')) {
+          console.log('BRL rate not available from Binance P2P, will use USD-based fallback');
+        } else {
+          console.warn('Failed to fetch BRL rate:', err.message);
+        }
         return null;
       }),
       getCurrentBlueRateForFiat('EUR').catch(err => {

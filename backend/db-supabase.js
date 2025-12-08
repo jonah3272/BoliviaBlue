@@ -282,17 +282,28 @@ export async function getActiveAlerts() {
     return [];
   }
 
-  const { data, error } = await supabase
-    .from('rate_alerts')
-    .select('*')
-    .eq('is_active', true)
-    .is('triggered_at', null); // Only get alerts that haven't been triggered yet
+  try {
+    const { data, error } = await supabase
+      .from('rate_alerts')
+      .select('*')
+      .eq('is_active', true)
+      .is('triggered_at', null); // Only get alerts that haven't been triggered yet
 
-  if (error) {
-    throw new Error(`Failed to get active alerts: ${error.message}`);
+    if (error) {
+      // If table doesn't exist, return empty array instead of throwing
+      if (error.message && error.message.includes('could not find the table')) {
+        console.warn('⚠️  rate_alerts table does not exist. Run backend/supabase-rate-alerts.sql in Supabase SQL Editor to create it.');
+        return [];
+      }
+      throw new Error(`Failed to get active alerts: ${error.message}`);
+    }
+
+    return data || [];
+  } catch (error) {
+    // Gracefully handle any errors (e.g., table doesn't exist)
+    console.error('Error fetching active alerts:', error.message);
+    return [];
   }
-
-  return data || [];
 }
 
 /**

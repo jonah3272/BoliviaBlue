@@ -71,8 +71,16 @@ export async function checkAlerts() {
       return;
     }
 
-    // Get all active alerts
-    const alerts = await getActiveAlerts();
+    // Get all active alerts (gracefully handles missing table)
+    let alerts;
+    try {
+      alerts = await getActiveAlerts();
+    } catch (error) {
+      // If alerts table doesn't exist, just skip alert checking
+      console.warn('⚠️  Alert checking skipped:', error.message);
+      return;
+    }
+    
     if (alerts.length === 0) {
       return; // No alerts to check
     }

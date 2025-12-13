@@ -33,6 +33,19 @@ CREATE POLICY "Public read access for blog articles"
   FOR SELECT
   USING (true);
 
+-- Policy: Allow public to insert blog articles (for backend automation)
+CREATE POLICY "Public can insert blog articles"
+  ON blog_articles
+  FOR INSERT
+  WITH CHECK (true);
+
+-- Policy: Allow public to update blog articles (for backend automation)
+CREATE POLICY "Public can update blog articles"
+  ON blog_articles
+  FOR UPDATE
+  USING (true)
+  WITH CHECK (true);
+
 -- Function to update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_blog_articles_updated_at()
 RETURNS TRIGGER AS $$

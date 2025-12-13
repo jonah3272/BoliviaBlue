@@ -142,11 +142,10 @@ EmailJS is free (200 emails/month) and easy to set up.
 ```html
 <h2>🔔 Tu Alerta de Tipo de Cambio</h2>
 
-<p>El tipo de cambio <strong>{{rate_type}}</strong> ha {{direction}} a <strong>{{current_rate}} BOB</strong>.</p>
+<p>El tipo de cambio <strong>{{rate_type}}</strong> {{direction}} a <strong>{{current_rate}} BOB</strong>.</p>
 
 <p><strong>Tu umbral:</strong> {{threshold}} BOB</p>
 <p><strong>Tasa actual:</strong> {{current_rate}} BOB</p>
-<p><strong>Fecha:</strong> {{date}}</p>
 
 <p>Visita <a href="{{site_url}}">{{site_url}}</a> para ver más detalles.</p>
 
@@ -156,12 +155,14 @@ EmailJS is free (200 emails/month) and easy to set up.
 </p>
 ```
 
+**Note:** The `{{direction}}` variable will be "subió" (went up) or "bajó" (went down).
+
 **Template Variables:**
 - `{{to_email}}` - User's email (auto-filled)
 - `{{rate_type}}` - "Compra" or "Venta"
 - `{{current_rate}}` - Current rate (e.g., "10.50")
 - `{{threshold}}` - Alert threshold (e.g., "10.00")
-- `{{direction}}` - "subió por encima de" or "bajó por debajo de"
+- `{{direction}}` - "subió" (went up) or "bajó" (went down)
 - `{{unsubscribe_url}}` - Link to unsubscribe
 - `{{site_url}}` - Your site URL
 - `{{date}}` - Current date

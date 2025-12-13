@@ -34,6 +34,7 @@ const News = lazy(() => import('./pages/News'));
     const BlueDollarBolivia = lazy(() => import('./pages/BlueDollarBolivia'));
     const BlueRateBolivia = lazy(() => import('./pages/BlueRateBolivia'));
     const CambioBlueBolivia = lazy(() => import('./pages/CambioBlueBolivia'));
+    const Unsubscribe = lazy(() => import('./pages/Unsubscribe'));
 
 // Loading fallback component
 // IMPORTANT: This component signals to the AdSense loader that we're in a loading state
@@ -114,6 +115,9 @@ function App() {
           {/* Currency conversion pages */}
           <Route path="/euro-a-boliviano" element={<EuroToBoliviano />} />
           <Route path="/real-a-boliviano" element={<RealToBoliviano />} />
+          
+          {/* Unsubscribe page */}
+          <Route path="/unsubscribe" element={<Unsubscribe />} />
         </Routes>
       </Suspense>
     </Router>

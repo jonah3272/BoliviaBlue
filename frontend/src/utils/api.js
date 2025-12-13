@@ -148,16 +148,17 @@ export async function fetchBlueHistory(range = '1W', currency = 'USD') {
   
   switch (range) {
     case '1D':
-      startDate = new Date(now - 24 * 60 * 60 * 1000);
+      startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
       break;
     case '1W':
-      startDate = new Date(now - 7 * 24 * 60 * 60 * 1000);
+      startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
       break;
     case '1M':
-      startDate = new Date(now - 30 * 24 * 60 * 60 * 1000);
+      // Calculate 30 days ago more precisely
+      startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
       break;
     case '1Y':
-      startDate = new Date(now - 365 * 24 * 60 * 60 * 1000);
+      startDate = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
       break;
     case 'ALL':
     default:
@@ -256,19 +257,89 @@ export async function fetchBlueHistory(range = '1W', currency = 'USD') {
       }
     }
   } else {
-    // For other ranges, use normal query with appropriate limit
-    const { data, error } = await supabase
-      .from('rates')
-      .select(selectFields)
-      .gte('t', startDate.toISOString())
-      .order('t', { ascending: true });
+    // For ranges that might have many data points (1M, 1Y), use pagination
+    // Supabase default limit is 1000 rows, but 30 days of 15-min intervals = ~2880 points
+    const needsPagination = range === '1M' || range === '1Y';
+    const startDateISO = startDate.toISOString();
+    logger.log(`[fetchBlueHistory] Fetching ${range} range: from ${startDateISO} to now${needsPagination ? ' (with pagination)' : ''}`);
     
-    if (error) {
-      logger.error('Error fetching history from Supabase:', error);
-      throw new Error(`Failed to fetch history: ${error.message}`);
+    if (needsPagination) {
+      // Use cursor-based pagination for 1M and 1Y ranges
+      const batchSize = 1000; // Supabase recommended batch size
+      let lastTimestamp = null;
+      let hasMore = true;
+      let batchCount = 0;
+      
+      while (hasMore) {
+        let query = supabase
+          .from('rates')
+          .select(selectFields)
+          .gte('t', startDateISO)
+          .order('t', { ascending: true })
+          .limit(batchSize);
+        
+        // After first batch, use greater-than to avoid re-fetching the last record
+        if (lastTimestamp) {
+          query = query.gt('t', lastTimestamp);
+        }
+        
+        const { data: batch, error } = await query;
+        
+        if (error) {
+          logger.error('Error fetching history batch from Supabase:', error);
+          throw new Error(`Failed to fetch history: ${error.message}`);
+        }
+        
+        if (!batch || batch.length === 0) {
+          hasMore = false;
+          break;
+        }
+        
+        // Add all points from this batch
+        points = points.concat(batch);
+        batchCount++;
+        
+        // Check if we got fewer than batchSize - means we're done
+        if (batch.length < batchSize) {
+          hasMore = false;
+          logger.log(`[fetchBlueHistory] ${range} range: Last batch (${batch.length} < ${batchSize}), pagination complete`);
+        } else {
+          // Update cursor to the last timestamp from this batch
+          lastTimestamp = batch[batch.length - 1].t;
+        }
+      }
+      
+      logger.log(`[fetchBlueHistory] ${range} range pagination complete: ${points.length} total points in ${batchCount} batches`);
+    } else {
+      // For 1D and 1W, use simple query (should be well under 1000 rows)
+      const { data, error } = await supabase
+        .from('rates')
+        .select(selectFields)
+        .gte('t', startDateISO)
+        .order('t', { ascending: true });
+      
+      if (error) {
+        logger.error('Error fetching history from Supabase:', error);
+        throw new Error(`Failed to fetch history: ${error.message}`);
+      }
+      
+      points = data || [];
     }
     
-    points = data || [];
+    // Log what we actually got
+    if (points.length > 0) {
+      const firstDate = new Date(points[0].t);
+      const lastDate = new Date(points[points.length - 1].t);
+      const daysSpan = Math.floor((lastDate - firstDate) / (1000 * 60 * 60 * 24));
+      logger.log(`[fetchBlueHistory] ${range} range: ${points.length} points, ${daysSpan} days span (${firstDate.toISOString()} to ${lastDate.toISOString()})`);
+      
+      // Warn if we got less data than expected for 1M
+      if (range === '1M' && daysSpan < 25) {
+        logger.warn(`[fetchBlueHistory] WARNING: 1M range only has ${daysSpan} days of data (expected ~30 days). Database may not have enough historical data yet.`);
+      }
+    } else {
+      logger.warn(`[fetchBlueHistory] ${range} range: No data found for date range starting from ${startDateISO}`);
+    }
   }
   
   // Map currency-specific fields to generic buy/sell/mid for chart compatibility

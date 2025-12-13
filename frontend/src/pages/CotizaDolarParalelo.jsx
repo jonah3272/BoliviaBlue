@@ -265,11 +265,149 @@ function CotizaDolarParalelo() {
                   : <>Our platform calculates the <strong>parallel dollar quote</strong> using real-time data from Binance P2P for the USDT/BOB pair. We collect public buy and sell offers, calculate the median of these offers to obtain a representative <strong>quote</strong> of the parallel market. This methodology allows us to provide an accurate <strong>quote</strong> that reflects the real market conditions.</>}
               </p>
 
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
+                {language === 'es' 
+                  ? 'Factores que Afectan la Cotización del Dólar Paralelo'
+                  : 'Factors Affecting the Parallel Dollar Quote'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+                {language === 'es'
+                  ? 'Varios factores influyen en la cotización del dólar paralelo en Bolivia:'
+                  : 'Several factors influence the parallel dollar quote in Bolivia:'}
+              </p>
+              <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 mb-4">
+                {language === 'es' ? (
+                  <>
+                    <li><strong>Oferta y demanda:</strong> Cuando hay más demanda que oferta, la cotización sube</li>
+                    <li><strong>Restricciones cambiarias:</strong> Limitaciones en el acceso al dólar oficial aumentan la demanda en el mercado paralelo</li>
+                    <li><strong>Noticias económicas:</strong> Eventos importantes pueden causar fluctuaciones rápidas</li>
+                    <li><strong>Políticas gubernamentales:</strong> Decisiones del gobierno y el Banco Central afectan directamente el mercado</li>
+                    <li><strong>Inflación:</strong> La inflación puede aumentar la demanda de dólares como protección de valor</li>
+                    <li><strong>Confianza económica:</strong> La falta de confianza en la moneda local aumenta la demanda de dólares</li>
+                    <li><strong>Factores internacionales:</strong> Condiciones económicas globales y precios de commodities</li>
+                  </>
+                ) : (
+                  <>
+                    <li><strong>Supply and demand:</strong> When there is more demand than supply, the quote rises</li>
+                    <li><strong>Exchange restrictions:</strong> Limitations in access to the official dollar increase demand in the parallel market</li>
+                    <li><strong>Economic news:</strong> Important events can cause rapid fluctuations</li>
+                    <li><strong>Government policies:</strong> Government and Central Bank decisions directly affect the market</li>
+                    <li><strong>Inflation:</strong> Inflation can increase demand for dollars as a store of value</li>
+                    <li><strong>Economic confidence:</strong> Lack of confidence in the local currency increases dollar demand</li>
+                    <li><strong>International factors:</strong> Global economic conditions and commodity prices</li>
+                  </>
+                )}
+              </ul>
+
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
+                {language === 'es' 
+                  ? 'Diferencia entre Dólar Paralelo y Dólar Oficial'
+                  : 'Difference between Parallel Dollar and Official Dollar'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+                {language === 'es'
+                  ? 'Es crucial entender las diferencias entre el dólar paralelo y el dólar oficial:'
+                  : 'It\'s crucial to understand the differences between the parallel dollar and the official dollar:'}
+              </p>
+              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-4">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-gray-300 dark:border-gray-600">
+                      <th className="text-left py-2 text-gray-900 dark:text-white font-semibold">
+                        {language === 'es' ? 'Aspecto' : 'Aspect'}
+                      </th>
+                      <th className="text-left py-2 text-gray-900 dark:text-white font-semibold">
+                        {language === 'es' ? 'Dólar Paralelo' : 'Parallel Dollar'}
+                      </th>
+                      <th className="text-left py-2 text-gray-900 dark:text-white font-semibold">
+                        {language === 'es' ? 'Dólar Oficial' : 'Official Dollar'}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-gray-700 dark:text-gray-300">
+                    <tr className="border-b border-gray-200 dark:border-gray-700">
+                      <td className="py-2">
+                        {language === 'es' ? 'Precio' : 'Price'}
+                      </td>
+                      <td className="py-2">
+                        {language === 'es' ? 'Determinado por oferta y demanda' : 'Determined by supply and demand'}
+                      </td>
+                      <td className="py-2">
+                        {language === 'es' ? 'Fijo o controlado por BCB' : 'Fixed or controlled by BCB'}
+                      </td>
+                    </tr>
+                    <tr className="border-b border-gray-200 dark:border-gray-700">
+                      <td className="py-2">
+                        {language === 'es' ? 'Disponibilidad' : 'Availability'}
+                      </td>
+                      <td className="py-2">
+                        {language === 'es' ? 'Mercado paralelo, sin restricciones' : 'Parallel market, no restrictions'}
+                      </td>
+                      <td className="py-2">
+                        {language === 'es' ? 'Bancos oficiales, con restricciones' : 'Official banks, with restrictions'}
+                      </td>
+                    </tr>
+                    <tr className="border-b border-gray-200 dark:border-gray-700">
+                      <td className="py-2">
+                        {language === 'es' ? 'Actualización' : 'Update Frequency'}
+                      </td>
+                      <td className="py-2">
+                        {language === 'es' ? 'Cada 15 minutos' : 'Every 15 minutes'}
+                      </td>
+                      <td className="py-2">
+                        {language === 'es' ? 'Muy rara vez' : 'Very rarely'}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="py-2">
+                        {language === 'es' ? 'Accesibilidad' : 'Accessibility'}
+                      </td>
+                      <td className="py-2">
+                        {language === 'es' ? 'Alta, sin límites formales' : 'High, no formal limits'}
+                      </td>
+                      <td className="py-2">
+                        {language === 'es' ? 'Limitada, con restricciones' : 'Limited, with restrictions'}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
+                {language === 'es' 
+                  ? 'Cómo Usar la Cotización del Dólar Paralelo'
+                  : 'How to Use the Parallel Dollar Quote'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+                {language === 'es'
+                  ? 'La cotización del dólar paralelo es útil para varios propósitos:'
+                  : 'The parallel dollar quote is useful for several purposes:'}
+              </p>
+              <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 mb-4">
+                {language === 'es' ? (
+                  <>
+                    <li><strong>Planificación financiera:</strong> Usa la cotización para planificar tus transacciones y presupuestos</li>
+                    <li><strong>Comparación:</strong> Compara la cotización del dólar paralelo con la oficial para entender la brecha cambiaria</li>
+                    <li><strong>Decisiones de cambio:</strong> Decide cuándo es el mejor momento para cambiar dólares</li>
+                    <li><strong>Negociación:</strong> Usa la cotización como referencia al negociar con operadores</li>
+                    <li><strong>Análisis de tendencias:</strong> Observa las tendencias históricas para anticipar movimientos futuros</li>
+                  </>
+                ) : (
+                  <>
+                    <li><strong>Financial planning:</strong> Use the quote to plan your transactions and budgets</li>
+                    <li><strong>Comparison:</strong> Compare the parallel dollar quote with the official one to understand the exchange gap</li>
+                    <li><strong>Exchange decisions:</strong> Decide when is the best time to exchange dollars</li>
+                    <li><strong>Negotiation:</strong> Use the quote as a reference when negotiating with operators</li>
+                    <li><strong>Trend analysis:</strong> Observe historical trends to anticipate future movements</li>
+                  </>
+                )}
+              </ul>
+
               <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 sm:p-6 mt-6 border border-blue-200 dark:border-blue-800">
                 <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
                   {language === 'es' ? '💡 Información Importante' : '💡 Important Information'}
                 </h4>
-                <p className="text-sm text-gray-700 dark:text-gray-300">
+                <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
                   {language === 'es'
                     ? <>La <strong>cotización del dólar paralelo</strong> se actualiza cada 15 minutos. Esta <strong>cotización</strong> es solo informativa y puede variar según la ubicación y el método de pago. Siempre verifica la <strong>cotización</strong> antes de realizar transacciones. <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Usa nuestra calculadora</Link> para convertir divisas o <Link to="/acerca-de" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">aprende más sobre nuestra metodología</Link>.</>
                     : <>The <strong>parallel dollar quote</strong> is updated every 15 minutes. This <strong>quote</strong> is for informational purposes only and may vary by location and payment method. Always verify the <strong>quote</strong> before making transactions. <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Use our calculator</Link> to convert currencies or <Link to="/acerca-de" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">learn more about our methodology</Link>.</>}

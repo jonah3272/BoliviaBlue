@@ -188,6 +188,94 @@ function Calculator() {
                   : <>The <strong>official dollar</strong> is the rate set by the Central Bank of Bolivia and may have restrictions for purchase. The <strong>blue dollar</strong> is the parallel market rate, which can vary significantly and is generally higher than the official rate. Our calculator uses the blue dollar because it better reflects the real price of the dollar in the Bolivian market.</>}
               </p>
 
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
+                {language === 'es' 
+                  ? 'Ejemplos Prácticos de Conversión'
+                  : 'Practical Conversion Examples'}
+              </h3>
+              <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 mb-4">
+                <p className="text-gray-700 dark:text-gray-300 mb-3">
+                  {language === 'es' 
+                    ? 'Aquí tienes algunos ejemplos de cómo usar la calculadora:'
+                    : 'Here are some examples of how to use the calculator:'}
+                </p>
+                <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2">
+                  {language === 'es' ? (
+                    <>
+                      <li><strong>Remesas:</strong> Si recibes $500 USD de remesa, multiplica por la tasa de compra (${currentRate?.buy?.toFixed(2) || 'X.XX'} BOB) = aproximadamente {(currentRate?.buy ? currentRate.buy * 500 : 0).toFixed(2)} BOB</li>
+                      <li><strong>Viajes:</strong> Si planeas gastar 5,000 BOB en tu viaje, divide por la tasa de venta (${currentRate?.sell?.toFixed(2) || 'X.XX'} BOB) = aproximadamente {(currentRate?.sell ? 5000 / currentRate.sell : 0).toFixed(2)} USD</li>
+                      <li><strong>Inversiones:</strong> Para calcular cuántos dólares puedes comprar con 10,000 BOB, usa la tasa de compra para obtener el equivalente en USD</li>
+                    </>
+                  ) : (
+                    <>
+                      <li><strong>Remittances:</strong> If you receive $500 USD in remittance, multiply by the buy rate (${currentRate?.buy?.toFixed(2) || 'X.XX'} BOB) = approximately {(currentRate?.buy ? currentRate.buy * 500 : 0).toFixed(2)} BOB</li>
+                      <li><strong>Travel:</strong> If you plan to spend 5,000 BOB on your trip, divide by the sell rate (${currentRate?.sell?.toFixed(2) || 'X.XX'} BOB) = approximately {(currentRate?.sell ? 5000 / currentRate.sell : 0).toFixed(2)} USD</li>
+                      <li><strong>Investments:</strong> To calculate how many dollars you can buy with 10,000 BOB, use the buy rate to get the USD equivalent</li>
+                    </>
+                  )}
+                </ul>
+              </div>
+
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
+                {language === 'es' 
+                  ? 'Factores que Afectan el Tipo de Cambio'
+                  : 'Factors Affecting the Exchange Rate'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-4">
+                {language === 'es'
+                  ? 'El tipo de cambio del dólar blue puede variar debido a varios factores:'
+                  : 'The blue dollar exchange rate can vary due to several factors:'}
+              </p>
+              <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 mb-4">
+                {language === 'es' ? (
+                  <>
+                    <li><strong>Oferta y demanda:</strong> Cuando hay más demanda de dólares que oferta, el precio sube</li>
+                    <li><strong>Políticas económicas:</strong> Decisiones del gobierno y el Banco Central pueden afectar el mercado</li>
+                    <li><strong>Noticias económicas:</strong> Eventos importantes pueden causar fluctuaciones rápidas</li>
+                    <li><strong>Condiciones internacionales:</strong> Factores globales como precios de commodities o políticas de otros países</li>
+                    <li><strong>Estacionalidad:</strong> Ciertas épocas del año pueden tener mayor demanda de dólares</li>
+                  </>
+                ) : (
+                  <>
+                    <li><strong>Supply and demand:</strong> When there is more dollar demand than supply, the price rises</li>
+                    <li><strong>Economic policies:</strong> Government and Central Bank decisions can affect the market</li>
+                    <li><strong>Economic news:</strong> Important events can cause rapid fluctuations</li>
+                    <li><strong>International conditions:</strong> Global factors such as commodity prices or policies from other countries</li>
+                    <li><strong>Seasonality:</strong> Certain times of year may have higher dollar demand</li>
+                  </>
+                )}
+              </ul>
+
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
+                {language === 'es' 
+                  ? 'Consejos para Obtener el Mejor Tipo de Cambio'
+                  : 'Tips to Get the Best Exchange Rate'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-4">
+                {language === 'es'
+                  ? 'Para obtener el mejor tipo de cambio al realizar tus transacciones:'
+                  : 'To get the best exchange rate when making your transactions:'}
+              </p>
+              <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 mb-4">
+                {language === 'es' ? (
+                  <>
+                    <li><strong>Compara múltiples plataformas:</strong> Diferentes plataformas pueden ofrecer tasas ligeramente diferentes</li>
+                    <li><strong>Monitorea las tendencias:</strong> Usa nuestros gráficos históricos para identificar patrones</li>
+                    <li><strong>Configura alertas:</strong> Recibe notificaciones cuando la tasa alcance tu objetivo</li>
+                    <li><strong>Considera el momento:</strong> Las tasas pueden variar durante el día, especialmente en días de alta volatilidad</li>
+                    <li><strong>Verifica antes de transaccionar:</strong> Siempre confirma la tasa actual justo antes de realizar la operación</li>
+                  </>
+                ) : (
+                  <>
+                    <li><strong>Compare multiple platforms:</strong> Different platforms may offer slightly different rates</li>
+                    <li><strong>Monitor trends:</strong> Use our historical charts to identify patterns</li>
+                    <li><strong>Set up alerts:</strong> Receive notifications when the rate reaches your target</li>
+                    <li><strong>Consider timing:</strong> Rates can vary throughout the day, especially on high volatility days</li>
+                    <li><strong>Verify before transacting:</strong> Always confirm the current rate just before making the transaction</li>
+                  </>
+                )}
+              </ul>
+
               <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 sm:p-6 mt-6 border border-blue-200 dark:border-blue-800">
                 <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
                   {language === 'es' ? '💡 Información Importante' : '💡 Important Information'}

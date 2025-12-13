@@ -398,6 +398,124 @@ function News() {
             })}
           </div>
         )}
+
+        {/* Additional Content Section for AdSense Compliance */}
+        <section className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 sm:p-8 md:p-10 mt-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="prose prose-lg dark:prose-invert max-w-none">
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                {language === 'es' 
+                  ? 'Importancia de las Noticias Económicas para el Tipo de Cambio'
+                  : 'Importance of Economic News for Exchange Rates'}
+              </h2>
+              
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                {language === 'es' 
+                  ? 'Las noticias económicas y financieras juegan un papel crucial en la determinación del tipo de cambio del dólar blue en Bolivia. Los eventos políticos, decisiones económicas del gobierno, políticas del Banco Central, y noticias internacionales pueden causar fluctuaciones significativas en el precio del dólar en el mercado paralelo.'
+                  : 'Economic and financial news plays a crucial role in determining the blue dollar exchange rate in Bolivia. Political events, government economic decisions, Central Bank policies, and international news can cause significant fluctuations in the dollar price in the parallel market.'}
+              </p>
+
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
+                {language === 'es' 
+                  ? 'Cómo Interpretar el Sentimiento de las Noticias'
+                  : 'How to Interpret News Sentiment'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                {language === 'es' 
+                  ? 'Nuestra plataforma utiliza inteligencia artificial para analizar el sentimiento de las noticias y determinar si tienen un impacto positivo (↗), negativo (↘), o neutral (○) en el tipo de cambio. Este análisis ayuda a los usuarios a entender cómo las noticias pueden afectar el precio del dólar blue.'
+                  : 'Our platform uses artificial intelligence to analyze news sentiment and determine if they have a positive (↗), negative (↘), or neutral (○) impact on the exchange rate. This analysis helps users understand how news can affect the blue dollar price.'}
+              </p>
+              <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 mb-4">
+                {language === 'es' ? (
+                  <>
+                    <li><strong>Sentimiento Positivo (↗):</strong> Noticias que pueden hacer subir el dólar blue, como restricciones cambiarias, inflación, o incertidumbre política</li>
+                    <li><strong>Sentimiento Negativo (↘):</strong> Noticias que pueden hacer bajar el dólar blue, como estabilidad económica, políticas favorables, o mayor disponibilidad de dólares</li>
+                    <li><strong>Sentimiento Neutral (○):</strong> Noticias que no tienen un impacto claro en el tipo de cambio</li>
+                  </>
+                ) : (
+                  <>
+                    <li><strong>Positive Sentiment (↗):</strong> News that may cause the blue dollar to rise, such as exchange restrictions, inflation, or political uncertainty</li>
+                    <li><strong>Negative Sentiment (↘):</strong> News that may cause the blue dollar to fall, such as economic stability, favorable policies, or greater dollar availability</li>
+                    <li><strong>Neutral Sentiment (○):</strong> News that has no clear impact on the exchange rate</li>
+                  </>
+                )}
+              </ul>
+
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
+                {language === 'es' 
+                  ? 'Categorías de Noticias'
+                  : 'News Categories'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                {language === 'es' 
+                  ? 'Organizamos las noticias en diferentes categorías para facilitar la navegación:'
+                  : 'We organize news into different categories to facilitate navigation:'}
+              </p>
+              <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 mb-4">
+                {language === 'es' ? (
+                  <>
+                    <li><strong>Divisas:</strong> Noticias específicas sobre el tipo de cambio y el mercado de divisas</li>
+                    <li><strong>Economía:</strong> Noticias sobre la economía boliviana y su impacto en el mercado cambiario</li>
+                    <li><strong>Banca:</strong> Noticias sobre el sistema bancario y políticas del Banco Central</li>
+                    <li><strong>Política:</strong> Decisiones políticas que pueden afectar la economía y el tipo de cambio</li>
+                    <li><strong>Internacional:</strong> Noticias globales que pueden influir en el mercado boliviano</li>
+                    <li><strong>Mercados:</strong> Análisis de mercados financieros y tendencias económicas</li>
+                  </>
+                ) : (
+                  <>
+                    <li><strong>Currency:</strong> Specific news about exchange rates and the foreign exchange market</li>
+                    <li><strong>Economy:</strong> News about the Bolivian economy and its impact on the exchange market</li>
+                    <li><strong>Banking:</strong> News about the banking system and Central Bank policies</li>
+                    <li><strong>Politics:</strong> Political decisions that may affect the economy and exchange rate</li>
+                    <li><strong>International:</strong> Global news that may influence the Bolivian market</li>
+                    <li><strong>Markets:</strong> Financial market analysis and economic trends</li>
+                  </>
+                )}
+              </ul>
+
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
+                {language === 'es' 
+                  ? 'Cómo Usar las Noticias para Tomar Decisiones'
+                  : 'How to Use News to Make Decisions'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                {language === 'es' 
+                  ? 'Las noticias económicas pueden ser una herramienta valiosa para tomar decisiones informadas sobre cuándo comprar o vender dólares:'
+                  : 'Economic news can be a valuable tool for making informed decisions about when to buy or sell dollars:'}
+              </p>
+              <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 mb-4">
+                {language === 'es' ? (
+                  <>
+                    <li><strong>Monitorea regularmente:</strong> Revisa las noticias diariamente para estar al tanto de eventos que puedan afectar el mercado</li>
+                    <li><strong>Analiza el sentimiento:</strong> Presta atención al sentimiento de las noticias para anticipar movimientos del mercado</li>
+                    <li><strong>Combina con datos:</strong> Usa las noticias junto con nuestros gráficos históricos para tener una visión completa</li>
+                    <li><strong>No reacciones exageradamente:</strong> Las noticias pueden causar volatilidad temporal, pero es importante considerar tendencias a largo plazo</li>
+                    <li><strong>Consulta múltiples fuentes:</strong> Siempre verifica la información de múltiples fuentes confiables</li>
+                  </>
+                ) : (
+                  <>
+                    <li><strong>Monitor regularly:</strong> Review news daily to stay aware of events that may affect the market</li>
+                    <li><strong>Analyze sentiment:</strong> Pay attention to news sentiment to anticipate market movements</li>
+                    <li><strong>Combine with data:</strong> Use news along with our historical charts for a complete view</li>
+                    <li><strong>Don't overreact:</strong> News can cause temporary volatility, but it's important to consider long-term trends</li>
+                    <li><strong>Consult multiple sources:</strong> Always verify information from multiple reliable sources</li>
+                  </>
+                )}
+              </ul>
+
+              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 sm:p-6 mt-6 border border-blue-200 dark:border-blue-800">
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+                  {language === 'es' ? '📰 Sobre Nuestro Feed de Noticias' : '📰 About Our News Feed'}
+                </h4>
+                <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
+                  {language === 'es'
+                    ? <>Nuestro feed de noticias se actualiza automáticamente cada 5 minutos, agregando noticias de múltiples fuentes confiables de Bolivia. Utilizamos inteligencia artificial para analizar el sentimiento y categorizar las noticias, ayudándote a entender rápidamente cómo pueden afectar el mercado cambiario. Todas las noticias incluyen enlaces a las fuentes originales para que puedas leer los artículos completos.</>
+                    : <>Our news feed updates automatically every 5 minutes, aggregating news from multiple reliable sources in Bolivia. We use artificial intelligence to analyze sentiment and categorize news, helping you quickly understand how they may affect the exchange market. All news includes links to original sources so you can read the full articles.</>}
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
 
       <Footer />

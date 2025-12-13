@@ -280,6 +280,205 @@ function Contact() {
           </div>
         </section>
 
+        {/* Comprehensive Contact Information Section */}
+        <section className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg mb-12">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+            {language === 'es' ? '📞 Información de Contacto Detallada' : '📞 Detailed Contact Information'}
+          </h2>
+          
+          <div className="prose prose-lg dark:prose-invert max-w-none">
+            <p className="text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">
+              {language === 'es'
+                ? 'En Bolivia Blue con Paz, valoramos la comunicación con nuestros usuarios. Estamos comprometidos a responder todas tus consultas de manera rápida y profesional. A continuación encontrarás información detallada sobre cómo contactarnos y qué esperar cuando lo hagas.'
+                : 'At Bolivia Blue with Paz, we value communication with our users. We are committed to responding to all your inquiries quickly and professionally. Below you will find detailed information on how to contact us and what to expect when you do.'}
+            </p>
+
+            <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4">
+              {language === 'es' ? 'Horarios de Atención' : 'Support Hours'}
+            </h3>
+            <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+              {language === 'es'
+                ? 'Nuestro equipo revisa y responde a todos los correos electrónicos durante días hábiles (lunes a viernes). Aunque no tenemos un horario de oficina físico, nos esforzamos por responder todas las consultas en menos de 24 horas durante días laborables. Para consultas urgentes relacionadas con errores técnicos críticos, hacemos nuestro mejor esfuerzo para responder lo antes posible.'
+                : 'Our team reviews and responds to all emails during business days (Monday to Friday). Although we do not have a physical office schedule, we strive to respond to all inquiries within 24 hours during business days. For urgent inquiries related to critical technical errors, we do our best to respond as soon as possible.'}
+            </p>
+
+            <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4">
+              {language === 'es' ? 'Tipos de Consultas que Atendemos' : 'Types of Inquiries We Handle'}
+            </h3>
+            
+            <div className="space-y-6 mb-6">
+              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6 border-l-4 border-blue-500">
+                <h4 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                  {language === 'es' ? '1. Preguntas sobre el Servicio' : '1. Service Questions'}
+                </h4>
+                <p className="text-gray-700 dark:text-gray-300 mb-3 leading-relaxed">
+                  {language === 'es'
+                    ? 'Respondemos preguntas sobre cómo funciona nuestra plataforma, cómo interpretamos los datos, nuestras fuentes de información, y nuestra metodología. Si tienes dudas sobre cómo leer los gráficos, entender las tasas, o usar nuestras herramientas, estamos aquí para ayudarte.'
+                    : 'We answer questions about how our platform works, how we interpret data, our information sources, and our methodology. If you have questions about how to read the charts, understand the rates, or use our tools, we are here to help.'}
+                </p>
+                <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2">
+                  {language === 'es' ? (
+                    <>
+                      <li>¿Cómo se calcula el dólar blue en su plataforma?</li>
+                      <li>¿De dónde provienen los datos que muestran?</li>
+                      <li>¿Con qué frecuencia se actualizan las tasas?</li>
+                      <li>¿Cómo interpreto los gráficos históricos?</li>
+                      <li>¿Qué significa el análisis de sentimiento?</li>
+                    </>
+                  ) : (
+                    <>
+                      <li>How is the blue dollar calculated on your platform?</li>
+                      <li>Where does the data you show come from?</li>
+                      <li>How often are the rates updated?</li>
+                      <li>How do I interpret the historical charts?</li>
+                      <li>What does sentiment analysis mean?</li>
+                    </>
+                  )}
+                </ul>
+              </div>
+
+              <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-6 border-l-4 border-red-500">
+                <h4 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                  {language === 'es' ? '2. Reporte de Errores Técnicos' : '2. Technical Error Reports'}
+                </h4>
+                <p className="text-gray-700 dark:text-gray-300 mb-3 leading-relaxed">
+                  {language === 'es'
+                    ? 'Si encuentras algún error en el sitio, datos incorrectos, problemas con las calculadoras, o cualquier otro problema técnico, por favor repórtalo. Incluye detalles como qué página estabas visitando, qué acción estabas realizando, y cualquier mensaje de error que hayas visto. Esto nos ayuda a mejorar la plataforma para todos.'
+                    : 'If you find any errors on the site, incorrect data, problems with calculators, or any other technical issues, please report them. Include details such as what page you were visiting, what action you were performing, and any error messages you saw. This helps us improve the platform for everyone.'}
+                </p>
+                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                  {language === 'es'
+                    ? 'Tipos de errores que nos interesan: datos de tasas incorrectos, gráficos que no cargan, calculadoras que no funcionan correctamente, problemas de visualización en móviles, enlaces rotos, o cualquier comportamiento inesperado del sitio.'
+                    : 'Types of errors we are interested in: incorrect rate data, charts that do not load, calculators that do not work correctly, display problems on mobile, broken links, or any unexpected site behavior.'}
+                </p>
+              </div>
+
+              <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-6 border-l-4 border-purple-500">
+                <h4 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                  {language === 'es' ? '3. Sugerencias de Mejora' : '3. Improvement Suggestions'}
+                </h4>
+                <p className="text-gray-700 dark:text-gray-300 mb-3 leading-relaxed">
+                  {language === 'es'
+                    ? 'Valoramos mucho tus ideas y sugerencias. Si tienes ideas para nuevas funcionalidades, mejoras en el diseño, contenido adicional que te gustaría ver, o formas de hacer la plataforma más útil, nos encantaría escucharlas. Todas las sugerencias son consideradas seriamente por nuestro equipo.'
+                    : 'We greatly value your ideas and suggestions. If you have ideas for new features, design improvements, additional content you would like to see, or ways to make the platform more useful, we would love to hear them. All suggestions are seriously considered by our team.'}
+                </p>
+                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                  {language === 'es'
+                    ? 'Ejemplos de sugerencias que hemos implementado gracias a usuarios: alertas de precio, calculadora de divisas, análisis de sentimiento con IA, y mejoras en la visualización móvil.'
+                    : 'Examples of suggestions we have implemented thanks to users: price alerts, currency calculator, AI sentiment analysis, and mobile display improvements.'}
+                </p>
+              </div>
+
+              <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-6 border-l-4 border-green-500">
+                <h4 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                  {language === 'es' ? '4. Colaboraciones y Prensa' : '4. Partnerships and Press'}
+                </h4>
+                <p className="text-gray-700 dark:text-gray-300 mb-3 leading-relaxed">
+                  {language === 'es'
+                    ? 'Si eres periodista, blogger, o representante de un medio de comunicación y deseas mencionar o citar nuestra plataforma, estamos abiertos a colaboraciones. También consideramos oportunidades de asociación con otras plataformas financieras, integraciones API para desarrolladores, o proyectos educativos relacionados con el mercado cambiario boliviano.'
+                    : 'If you are a journalist, blogger, or representative of a media outlet and wish to mention or quote our platform, we are open to collaborations. We also consider partnership opportunities with other financial platforms, API integrations for developers, or educational projects related to the Bolivian exchange market.'}
+                </p>
+                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                  {language === 'es'
+                    ? 'Para consultas de prensa, por favor incluye información sobre tu medio, el propósito de la mención, y cómo planeas usar la información. Para colaboraciones técnicas, describe el proyecto y cómo nuestra plataforma podría integrarse.'
+                    : 'For press inquiries, please include information about your outlet, the purpose of the mention, and how you plan to use the information. For technical collaborations, describe the project and how our platform could integrate.'}
+                </p>
+              </div>
+            </div>
+
+            <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4">
+              {language === 'es' ? 'Preguntas Frecuentes sobre Contacto' : 'Frequently Asked Questions about Contact'}
+            </h3>
+            
+            <div className="space-y-4 mb-6">
+              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+                  {language === 'es' ? '¿Cuánto tiempo tarda la respuesta?' : 'How long does a response take?'}
+                </h4>
+                <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+                  {language === 'es'
+                    ? 'Nos esforzamos por responder todos los correos en menos de 24 horas durante días hábiles. Para consultas urgentes o errores críticos, intentamos responder lo antes posible, a menudo en menos de 12 horas.'
+                    : 'We strive to respond to all emails within 24 hours during business days. For urgent inquiries or critical errors, we try to respond as soon as possible, often within 12 hours.'}
+                </p>
+              </div>
+
+              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+                  {language === 'es' ? '¿Ofrecen soporte telefónico?' : 'Do you offer phone support?'}
+                </h4>
+                <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+                  {language === 'es'
+                    ? 'Actualmente, nuestro soporte se realiza principalmente por correo electrónico. Esto nos permite atender mejor a todos nuestros usuarios y mantener un registro de todas las consultas. Para consultas muy urgentes, podemos considerar comunicación adicional según el caso.'
+                    : 'Currently, our support is primarily via email. This allows us to better serve all our users and maintain a record of all inquiries. For very urgent inquiries, we may consider additional communication on a case-by-case basis.'}
+                </p>
+              </div>
+
+              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+                  {language === 'es' ? '¿Puedo solicitar una funcionalidad específica?' : 'Can I request a specific feature?'}
+                </h4>
+                <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+                  {language === 'es'
+                    ? '¡Absolutamente! Valoramos las sugerencias de nuestros usuarios. Mientras más detalles proporciones sobre la funcionalidad que te gustaría ver, mejor podremos evaluar su viabilidad e implementación. Incluye información sobre cómo usarías la funcionalidad y por qué sería útil.'
+                    : 'Absolutely! We value suggestions from our users. The more details you provide about the feature you would like to see, the better we can evaluate its feasibility and implementation. Include information about how you would use the feature and why it would be useful.'}
+                </p>
+              </div>
+
+              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+                  {language === 'es' ? '¿Cómo reporto un error de datos?' : 'How do I report a data error?'}
+                </h4>
+                <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+                  {language === 'es'
+                    ? 'Si crees que hay un error en los datos mostrados (por ejemplo, una tasa de cambio incorrecta), por favor incluye: la fecha y hora cuando viste el error, qué valor esperabas ver, qué valor se mostró, y cualquier otra información relevante. Esto nos ayuda a investigar y corregir el problema rápidamente.'
+                    : 'If you believe there is an error in the data shown (for example, an incorrect exchange rate), please include: the date and time when you saw the error, what value you expected to see, what value was shown, and any other relevant information. This helps us investigate and correct the problem quickly.'}
+                </p>
+              </div>
+            </div>
+
+            <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4">
+              {language === 'es' ? 'Nuestro Compromiso con los Usuarios' : 'Our Commitment to Users'}
+            </h3>
+            <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+              {language === 'es'
+                ? 'En Bolivia Blue con Paz, creemos que la comunicación abierta y transparente es fundamental para construir confianza. Nos comprometemos a:'
+                : 'At Bolivia Blue with Paz, we believe that open and transparent communication is fundamental to building trust. We commit to:'}
+            </p>
+            <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 mb-6">
+              {language === 'es' ? (
+                <>
+                  <li>Responder todas las consultas de manera profesional y oportuna</li>
+                  <li>Ser transparentes sobre nuestras fuentes de datos y metodología</li>
+                  <li>Considerar seriamente todas las sugerencias de mejora</li>
+                  <li>Corregir errores rápidamente cuando se reportan</li>
+                  <li>Mantener la privacidad de la información de contacto de nuestros usuarios</li>
+                  <li>Continuar mejorando la plataforma basándonos en el feedback de los usuarios</li>
+                </>
+              ) : (
+                <>
+                  <li>Responding to all inquiries professionally and promptly</li>
+                  <li>Being transparent about our data sources and methodology</li>
+                  <li>Seriously considering all improvement suggestions</li>
+                  <li>Quickly correcting errors when reported</li>
+                  <li>Maintaining the privacy of our users' contact information</li>
+                  <li>Continuing to improve the platform based on user feedback</li>
+                </>
+              )}
+            </ul>
+
+            <div className="bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-6 mt-8 border border-indigo-200 dark:border-indigo-800">
+              <h4 className="font-semibold text-gray-900 dark:text-white mb-3">
+                {language === 'es' ? '💡 Consejo Útil' : '💡 Helpful Tip'}
+              </h4>
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                {language === 'es'
+                  ? <>Antes de contactarnos, te recomendamos revisar nuestra <Link to="/preguntas-frecuentes" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">página de preguntas frecuentes</Link>, donde respondemos muchas de las consultas más comunes. También puedes consultar nuestra <Link to="/acerca-de" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">página sobre nosotros</Link> para entender mejor cómo funciona nuestra plataforma y de dónde provienen nuestros datos.</>
+                  : <>Before contacting us, we recommend checking our <Link to="/preguntas-frecuentes" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">frequently asked questions page</Link>, where we answer many of the most common questions. You can also check our <Link to="/acerca-de" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">about page</Link> to better understand how our platform works and where our data comes from.</>}
+              </p>
+            </div>
+          </div>
+        </section>
+
         {/* Last Updated */}
         <div className="text-center text-xs text-gray-500 dark:text-gray-400">
           <div className="flex items-center justify-center gap-2">

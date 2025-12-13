@@ -402,13 +402,84 @@ function Home() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-8 md:py-12 space-y-6 sm:space-y-8 md:space-y-12">
         {/* Visible H1 with Keywords - Simplified and cleaner */}
-        <div className="text-center space-y-3">
+        <div className="text-center space-y-3 mb-8">
           <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-gray-900 dark:text-white leading-tight">
             {language === 'es' 
               ? 'Dólar Blue en Bolivia'
               : 'Blue Dollar in Bolivia'}
           </h1>
         </div>
+
+        {/* Introduction Section - Substantial Content for AdSense */}
+        <section className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 sm:p-8 md:p-10 mb-8">
+          <div className="prose prose-lg dark:prose-invert max-w-none">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
+              {language === 'es' 
+                ? '¿Qué es el Dólar Blue en Bolivia?'
+                : 'What is the Blue Dollar in Bolivia?'}
+            </h2>
+            <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+              {language === 'es' 
+                ? 'El dólar blue, también conocido como dólar paralelo o dólar informal, es el tipo de cambio del dólar estadounidense que se negocia fuera del sistema bancario oficial en Bolivia. A diferencia del tipo de cambio oficial establecido por el Banco Central de Bolivia (BCB), el dólar blue refleja la tasa real a la que los bolivianos intercambian dólares en el mercado paralelo, principalmente a través de plataformas como Binance P2P y casas de cambio informales.'
+                : 'The blue dollar, also known as the parallel dollar or informal dollar, is the exchange rate of the US dollar traded outside the official banking system in Bolivia. Unlike the official exchange rate set by the Central Bank of Bolivia (BCB), the blue dollar reflects the real rate at which Bolivians exchange dollars in the parallel market, primarily through platforms like Binance P2P and informal exchange houses.'}
+            </p>
+            <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+              {language === 'es' 
+                ? 'Este mercado paralelo existe debido a las restricciones cambiarias y la demanda de dólares que supera la oferta oficial. El dólar blue generalmente cotiza a un precio más alto que el dólar oficial, reflejando la escasez de divisas y el riesgo asociado con las transacciones fuera del sistema bancario. En Bolivia, bajo la administración del presidente Rodrigo Paz, el mercado paralelo ha ganado importancia como indicador de la confianza económica y la disponibilidad real de divisas.'
+                : 'This parallel market exists due to exchange restrictions and dollar demand that exceeds official supply. The blue dollar generally trades at a higher price than the official dollar, reflecting currency scarcity and the risk associated with transactions outside the banking system. In Bolivia, under President Rodrigo Paz\'s administration, the parallel market has gained importance as an indicator of economic confidence and real currency availability.'}
+            </p>
+            <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
+              {language === 'es' 
+                ? '¿Por Qué es Importante Conocer el Dólar Blue?'
+                : 'Why is it Important to Know the Blue Dollar?'}
+            </h3>
+            <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+              {language === 'es' 
+                ? 'Conocer el tipo de cambio del dólar blue es esencial para cualquier persona que necesite comprar o vender dólares en Bolivia. Ya sea para remesas, inversiones, viajes, o transacciones comerciales, el dólar blue representa el precio real al que se pueden realizar estas operaciones. Nuestra plataforma proporciona actualizaciones en tiempo real cada 15 minutos, utilizando datos de Binance P2P, la plataforma más confiable para transacciones de USDT/BOB en el mercado paralelo.'
+                : 'Knowing the blue dollar exchange rate is essential for anyone who needs to buy or sell dollars in Bolivia. Whether for remittances, investments, travel, or commercial transactions, the blue dollar represents the real price at which these operations can be performed. Our platform provides real-time updates every 15 minutes, using data from Binance P2P, the most reliable platform for USDT/BOB transactions in the parallel market.'}
+            </p>
+            <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+              {language === 'es' 
+                ? 'Además, el dólar blue sirve como un indicador económico importante. Cuando la diferencia entre el dólar blue y el dólar oficial (conocida como "brecha cambiaria") es grande, generalmente indica presión sobre la moneda local, restricciones de acceso a divisas, o falta de confianza en las políticas económicas. Monitorear esta brecha ayuda a entender mejor la situación económica del país.'
+                : 'Additionally, the blue dollar serves as an important economic indicator. When the difference between the blue dollar and the official dollar (known as the "exchange gap") is large, it generally indicates pressure on the local currency, restrictions on foreign exchange access, or lack of confidence in economic policies. Monitoring this gap helps better understand the country\'s economic situation.'}
+            </p>
+            <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
+              {language === 'es' 
+                ? 'Cómo Utilizar Esta Plataforma'
+                : 'How to Use This Platform'}
+            </h3>
+            <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+              {language === 'es' 
+                ? 'Bolivia Blue con Paz es la plataforma más confiable para monitorear el tipo de cambio del dólar blue en tiempo real. Ofrecemos:'
+                : 'Bolivia Blue with Paz is the most reliable platform for monitoring the blue dollar exchange rate in real-time. We offer:'}
+            </p>
+            <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 mb-4">
+              <li>{language === 'es' 
+                ? 'Actualizaciones cada 15 minutos con datos de Binance P2P'
+                : 'Updates every 15 minutes with data from Binance P2P'}</li>
+              <li>{language === 'es' 
+                ? 'Gráficos históricos para analizar tendencias'
+                : 'Historical charts to analyze trends'}</li>
+              <li>{language === 'es' 
+                ? 'Análisis de sentimiento con IA basado en noticias económicas'
+                : 'AI-powered sentiment analysis based on economic news'}</li>
+              <li>{language === 'es' 
+                ? 'Calculadora de divisas para conversiones rápidas'
+                : 'Currency calculator for quick conversions'}</li>
+              <li>{language === 'es' 
+                ? 'Alertas de precio para no perder oportunidades'
+                : 'Price alerts so you don\'t miss opportunities'}</li>
+              <li>{language === 'es' 
+                ? 'Noticias financieras relevantes de Bolivia'
+                : 'Relevant financial news from Bolivia'}</li>
+            </ul>
+            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+              {language === 'es' 
+                ? 'Todo nuestro servicio es completamente gratuito y sin registro. Nuestro objetivo es proporcionar transparencia y acceso a información precisa sobre el mercado cambiario boliviano, ayudando a los usuarios a tomar decisiones informadas sobre sus transacciones en dólares.'
+                : 'All our service is completely free and requires no registration. Our goal is to provide transparency and access to accurate information about the Bolivian exchange market, helping users make informed decisions about their dollar transactions.'}
+            </p>
+          </div>
+        </section>
         
         {/* Blue Rate Cards - At the Top */}
         <section>
@@ -438,10 +509,14 @@ function Home() {
           </LazyErrorBoundary>
         </section>
 
-        {/* Rate Alerts Section - Hidden for now */}
-        {/* <section>
-          <RateAlertForm />
-        </section> */}
+        {/* Rate Alerts Section */}
+        <section>
+          <LazyErrorBoundary>
+            <Suspense fallback={<ComponentLoader />}>
+              <RateAlertForm />
+            </Suspense>
+          </LazyErrorBoundary>
+        </section>
 
         {/* Binance Banner - Under Chart */}
         <section>

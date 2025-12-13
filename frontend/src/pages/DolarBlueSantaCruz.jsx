@@ -196,6 +196,124 @@ function DolarBlueSantaCruz() {
                 )}
               </ul>
 
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
+                {language === 'es' 
+                  ? 'Características del Mercado en Santa Cruz'
+                  : 'Market Characteristics in Santa Cruz'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+                {language === 'es'
+                  ? 'Santa Cruz de la Sierra, como el centro económico más importante de Bolivia, tiene un mercado cambiario muy activo. La ciudad es conocida por su economía dinámica, comercio internacional, y agricultura, lo que crea una demanda constante y significativa de dólares. El mercado del dólar blue en Santa Cruz suele tener mayor volumen de transacciones que otras ciudades, lo que puede resultar en tasas ligeramente diferentes.'
+                  : 'Santa Cruz de la Sierra, as Bolivia\'s most important economic center, has a very active exchange market. The city is known for its dynamic economy, international trade, and agriculture, which creates constant and significant demand for dollars. The blue dollar market in Santa Cruz usually has higher transaction volume than other cities, which can result in slightly different rates.'}
+              </p>
+
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
+                {language === 'es' 
+                  ? 'Zonas Principales para Cambiar Dólares en Santa Cruz'
+                  : 'Main Areas to Exchange Dollars in Santa Cruz'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+                {language === 'es'
+                  ? 'En Santa Cruz, las principales zonas donde puedes encontrar casas de cambio y operadores del mercado paralelo incluyen:'
+                  : 'In Santa Cruz, the main areas where you can find exchange houses and parallel market operators include:'}
+              </p>
+              <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 mb-4">
+                {language === 'es' ? (
+                  <>
+                    <li><strong>Centro de Santa Cruz:</strong> Alrededor de la Plaza 24 de Septiembre y el mercado central, donde se concentran muchas casas de cambio</li>
+                    <li><strong>Avenida Monseñor Rivero:</strong> Una de las principales avenidas comerciales con varios puntos de intercambio</li>
+                    <li><strong>Zona Equipetrol:</strong> Área comercial y residencial con operadores de cambio disponibles</li>
+                    <li><strong>Mercado Los Pozos:</strong> Zona comercial con actividad cambiaria</li>
+                    <li><strong>Plataformas Digitales:</strong> Binance P2P y otras plataformas online son muy populares en Santa Cruz debido a la alta actividad comercial</li>
+                  </>
+                ) : (
+                  <>
+                    <li><strong>Downtown Santa Cruz:</strong> Around Plaza 24 de Septiembre and the central market, where many exchange houses are concentrated</li>
+                    <li><strong>Monseñor Rivero Avenue:</strong> One of the main commercial avenues with several exchange points</li>
+                    <li><strong>Equipetrol Zone:</strong> Commercial and residential area with available exchange operators</li>
+                    <li><strong>Los Pozos Market:</strong> Commercial area with exchange activity</li>
+                    <li><strong>Digital Platforms:</strong> Binance P2P and other online platforms are very popular in Santa Cruz due to high commercial activity</li>
+                  </>
+                )}
+              </ul>
+
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
+                {language === 'es' 
+                  ? 'Factores que Afectan el Dólar Blue en Santa Cruz'
+                  : 'Factors Affecting the Blue Dollar in Santa Cruz'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+                {language === 'es'
+                  ? 'Varios factores influyen en el precio del dólar blue en Santa Cruz:'
+                  : 'Several factors influence the blue dollar price in Santa Cruz:'}
+              </p>
+              <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 mb-4">
+                {language === 'es' ? (
+                  <>
+                    <li><strong>Comercio internacional:</strong> Santa Cruz es el principal puerto seco de Bolivia, con mucho comercio de importación y exportación</li>
+                    <li><strong>Agricultura y agroindustria:</strong> Muchas empresas agrícolas necesitan dólares para insumos y exportaciones</li>
+                    <li><strong>Crecimiento económico:</strong> La ciudad tiene una de las economías de más rápido crecimiento en Bolivia</li>
+                    <li><strong>Inversión extranjera:</strong> Santa Cruz atrae inversión extranjera que requiere dólares</li>
+                    <li><strong>Remesas:</strong> Muchas familias en Santa Cruz reciben remesas en dólares</li>
+                    <li><strong>Estacionalidad agrícola:</strong> Ciertas épocas del año tienen mayor demanda debido a ciclos agrícolas</li>
+                  </>
+                ) : (
+                  <>
+                    <li><strong>International trade:</strong> Santa Cruz is Bolivia\'s main dry port, with much import and export trade</li>
+                    <li><strong>Agriculture and agribusiness:</strong> Many agricultural companies need dollars for inputs and exports</li>
+                    <li><strong>Economic growth:</strong> The city has one of the fastest growing economies in Bolivia</li>
+                    <li><strong>Foreign investment:</strong> Santa Cruz attracts foreign investment that requires dollars</li>
+                    <li><strong>Remittances:</strong> Many families in Santa Cruz receive remittances in dollars</li>
+                    <li><strong>Agricultural seasonality:</strong> Certain times of year have higher demand due to agricultural cycles</li>
+                  </>
+                )}
+              </ul>
+
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
+                {language === 'es' 
+                  ? 'Consejos para Cambiar Dólares en Santa Cruz'
+                  : 'Tips for Exchanging Dollars in Santa Cruz'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+                {language === 'es'
+                  ? 'Si planeas cambiar dólares en Santa Cruz, considera estos consejos:'
+                  : 'If you plan to exchange dollars in Santa Cruz, consider these tips:'}
+              </p>
+              <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 mb-4">
+                {language === 'es' ? (
+                  <>
+                    <li><strong>Consulta la cotización actual:</strong> Usa nuestra plataforma para verificar la tasa antes de cambiar</li>
+                    <li><strong>Compara precios:</strong> El mercado en Santa Cruz es competitivo, así que compara varias opciones</li>
+                    <li><strong>Considera el volumen:</strong> Si cambias grandes cantidades, puedes negociar mejores tasas</li>
+                    <li><strong>Usa plataformas digitales:</strong> Binance P2P es muy popular en Santa Cruz y puede ofrecer mejores tasas</li>
+                    <li><strong>Ten cuidado con estafas:</strong> Verifica la autenticidad de los billetes y la reputación del operador</li>
+                    <li><strong>Evita cambiar en la calle:</strong> Prefiere lugares establecidos o plataformas digitales verificadas</li>
+                    <li><strong>Usa nuestra calculadora:</strong> Calcula cuánto recibirás antes de cambiar</li>
+                  </>
+                ) : (
+                  <>
+                    <li><strong>Check current quote:</strong> Use our platform to verify the rate before exchanging</li>
+                    <li><strong>Compare prices:</strong> The market in Santa Cruz is competitive, so compare several options</li>
+                    <li><strong>Consider volume:</strong> If you exchange large amounts, you can negotiate better rates</li>
+                    <li><strong>Use digital platforms:</strong> Binance P2P is very popular in Santa Cruz and may offer better rates</li>
+                    <li><strong>Be careful with scams:</strong> Verify the authenticity of bills and the operator\'s reputation</li>
+                    <li><strong>Avoid exchanging on the street:</strong> Prefer established places or verified digital platforms</li>
+                    <li><strong>Use our calculator:</strong> Calculate how much you will receive before exchanging</li>
+                  </>
+                )}
+              </ul>
+
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
+                {language === 'es' 
+                  ? 'Historia del Dólar Blue en Santa Cruz'
+                  : 'History of the Blue Dollar in Santa Cruz'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+                {language === 'es'
+                  ? 'Santa Cruz ha sido históricamente el motor económico de Bolivia, y su mercado cambiario refleja esta importancia. La ciudad ha desarrollado un mercado paralelo robusto debido a su alta actividad comercial y necesidad constante de dólares para el comercio internacional. En los últimos años, plataformas digitales como Binance P2P han ganado mucha popularidad en Santa Cruz, transformando cómo los cruceños acceden al mercado del dólar blue.'
+                  : 'Santa Cruz has historically been Bolivia\'s economic engine, and its exchange market reflects this importance. The city has developed a robust parallel market due to its high commercial activity and constant need for dollars for international trade. In recent years, digital platforms like Binance P2P have gained much popularity in Santa Cruz, transforming how Cruceños access the blue dollar market.'}
+              </p>
+
               <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 sm:p-6 mt-6 border border-blue-200 dark:border-blue-800">
                 <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
                   {language === 'es' ? '💡 Información Importante' : '💡 Important Information'}

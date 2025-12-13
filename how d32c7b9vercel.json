@@ -1,0 +1,20 @@
+[33m80a0f48[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/stage[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mstage[m[33m)[m Fix: Update Vercel installCommand to properly install dependencies - Fixes Vercel deployment failure
+[33md32c7b9[m Fix homepage redirect issue and favicon cache-busting - Update vercel.json with proper www redirect and trailing slash config - Increment favicon cache-busting version to v=3 - Add homepage redirect fix documentation - Add URLs to index guide
+[33m2c62785[m Fix: Force cache refresh - update service worker version and add no-cache headers
+[33mef6f4c3[m Fix: Restore exact working vercel.json configuration (simplified rewrites)
+[33mb1feace[m Fix: Restore working Vercel configuration from previous successful build
+[33mb6f7009[m Fix: Use npm --prefix instead of cd for Vercel build commands
+[33m1d81e38[m Fix: Remove --ignore-scripts to allow frontend prebuild (sitemap generation)
+[33m9300402[m Fix: Use --ignore-scripts flag to prevent postinstall hook during Vercel build
+[33md77ff1f[m Fix: Use root build script and explicit installCommand for Vercel deployment
+[33m7c98ace[m Restore buildCommand and outputDirectory to vercel.json for deployment
+[33m41e6b9f[m Remove buildCommand and outputDirectory from vercel.json - configure in dashboard instead
+[33m9da5d95[m Fix: Remove invalid rootDirectory property from vercel.json
+[33m9db07cf[m Fix: Update outputDirectory to be relative to rootDirectory
+[33mbe44fd4[m Fix: Set rootDirectory in vercel.json for proper build context
+[33m323a914[m Remove redundant installCommand from vercel.json (install is handled in buildCommand)
+[33m1278941[m Fix: Improve Vercel rewrite rules to properly serve static assets
+[33m2b5aa6b[m Fix: Exclude static assets from SPA rewrite to prevent MIME type errors
+[33m6b628ce[m perf: Critical performance optimizations for PageSpeed
+[33mfbc4d51[m fix: Restore EXACT vercel.json from last successful build (commit a1fac18)
+[33m5ccfa32[m fix: Remove ALL build properties from vercel.json for true zero-config

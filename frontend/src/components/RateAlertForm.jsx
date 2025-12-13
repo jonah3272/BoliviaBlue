@@ -113,7 +113,7 @@ function RateAlertForm() {
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             {language === 'es' ? 'Tipo de Tasa' : 'Rate Type'}
           </label>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-3 gap-2">
             <button
               type="button"
               onClick={() => {
@@ -122,7 +122,7 @@ function RateAlertForm() {
                   setThreshold(currentRate.buy.toFixed(2));
                 }
               }}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              className={`px-3 py-2 rounded-lg font-medium transition-colors text-sm ${
                 alertType === 'buy'
                   ? 'bg-green-600 text-white'
                   : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600'
@@ -138,13 +138,31 @@ function RateAlertForm() {
                   setThreshold(currentRate.sell.toFixed(2));
                 }
               }}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              className={`px-3 py-2 rounded-lg font-medium transition-colors text-sm ${
                 alertType === 'sell'
                   ? 'bg-red-600 text-white'
                   : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600'
               }`}
             >
               {language === 'es' ? 'Venta' : 'Sell'}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setAlertType('both');
+                if (currentRate?.buy && currentRate?.sell && !threshold) {
+                  // Use average for "both"
+                  const avg = (currentRate.buy + currentRate.sell) / 2;
+                  setThreshold(avg.toFixed(2));
+                }
+              }}
+              className={`px-3 py-2 rounded-lg font-medium transition-colors text-sm ${
+                alertType === 'both'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600'
+              }`}
+            >
+              {language === 'es' ? 'Ambos' : 'Both'}
             </button>
           </div>
         </div>

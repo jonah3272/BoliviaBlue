@@ -196,6 +196,124 @@ function DolarBlueCochabamba() {
                 )}
               </ul>
 
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
+                {language === 'es' 
+                  ? 'Características del Mercado en Cochabamba'
+                  : 'Market Characteristics in Cochabamba'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+                {language === 'es'
+                  ? 'Cochabamba, conocida como la "Ciudad de la Eterna Primavera", tiene un mercado cambiario activo aunque más pequeño que La Paz o Santa Cruz. La ciudad es un importante centro comercial y agrícola, con una economía diversificada que incluye manufactura, servicios, y agricultura. El mercado del dólar blue en Cochabamba es más localizado y puede tener variaciones menores comparado con las ciudades más grandes.'
+                  : 'Cochabamba, known as the "City of Eternal Spring", has an active exchange market although smaller than La Paz or Santa Cruz. The city is an important commercial and agricultural center, with a diversified economy that includes manufacturing, services, and agriculture. The blue dollar market in Cochabamba is more localized and may have minor variations compared to larger cities.'}
+              </p>
+
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
+                {language === 'es' 
+                  ? 'Zonas Principales para Cambiar Dólares en Cochabamba'
+                  : 'Main Areas to Exchange Dollars in Cochabamba'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+                {language === 'es'
+                  ? 'En Cochabamba, las principales zonas donde puedes encontrar casas de cambio y operadores del mercado paralelo incluyen:'
+                  : 'In Cochabamba, the main areas where you can find exchange houses and parallel market operators include:'}
+              </p>
+              <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 mb-4">
+                {language === 'es' ? (
+                  <>
+                    <li><strong>Centro de Cochabamba:</strong> Alrededor de la Plaza 14 de Septiembre y el mercado central, donde se concentran casas de cambio</li>
+                    <li><strong>Avenida Heroínas:</strong> Una de las principales avenidas comerciales con varios puntos de intercambio</li>
+                    <li><strong>Zona Queru Queru:</strong> Área comercial con actividad cambiaria</li>
+                    <li><strong>Mercado La Cancha:</strong> El mercado más grande de Sudamérica, con algunos operadores de cambio</li>
+                    <li><strong>Plataformas Digitales:</strong> Binance P2P y otras plataformas online están ganando popularidad en Cochabamba</li>
+                  </>
+                ) : (
+                  <>
+                    <li><strong>Downtown Cochabamba:</strong> Around Plaza 14 de Septiembre and the central market, where exchange houses are concentrated</li>
+                    <li><strong>Heroínas Avenue:</strong> One of the main commercial avenues with several exchange points</li>
+                    <li><strong>Queru Queru Zone:</strong> Commercial area with exchange activity</li>
+                    <li><strong>La Cancha Market:</strong> The largest market in South America, with some exchange operators</li>
+                    <li><strong>Digital Platforms:</strong> Binance P2P and other online platforms are gaining popularity in Cochabamba</li>
+                  </>
+                )}
+              </ul>
+
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
+                {language === 'es' 
+                  ? 'Factores que Afectan el Dólar Blue en Cochabamba'
+                  : 'Factors Affecting the Blue Dollar in Cochabamba'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+                {language === 'es'
+                  ? 'Varios factores influyen en el precio del dólar blue en Cochabamba:'
+                  : 'Several factors influence the blue dollar price in Cochabamba:'}
+              </p>
+              <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 mb-4">
+                {language === 'es' ? (
+                  <>
+                    <li><strong>Comercio local:</strong> Cochabamba es un importante centro de distribución y comercio regional</li>
+                    <li><strong>Agricultura:</strong> La región produce muchos productos agrícolas que se exportan, requiriendo dólares</li>
+                    <li><strong>Manufactura:</strong> Industrias locales que necesitan insumos importados</li>
+                    <li><strong>Turismo:</strong> Cochabamba atrae turistas que necesitan cambiar divisas</li>
+                    <li><strong>Remesas:</strong> Muchas familias cochabambinas reciben remesas en dólares</li>
+                    <li><strong>Estacionalidad:</strong> Ciertas épocas del año tienen mayor demanda debido a ciclos agrícolas y comerciales</li>
+                  </>
+                ) : (
+                  <>
+                    <li><strong>Local trade:</strong> Cochabamba is an important distribution and regional trade center</li>
+                    <li><strong>Agriculture:</strong> The region produces many agricultural products that are exported, requiring dollars</li>
+                    <li><strong>Manufacturing:</strong> Local industries that need imported inputs</li>
+                    <li><strong>Tourism:</strong> Cochabamba attracts tourists who need to exchange currencies</li>
+                    <li><strong>Remittances:</strong> Many Cochabamba families receive remittances in dollars</li>
+                    <li><strong>Seasonality:</strong> Certain times of year have higher demand due to agricultural and commercial cycles</li>
+                  </>
+                )}
+              </ul>
+
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
+                {language === 'es' 
+                  ? 'Consejos para Cambiar Dólares en Cochabamba'
+                  : 'Tips for Exchanging Dollars in Cochabamba'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+                {language === 'es'
+                  ? 'Si planeas cambiar dólares en Cochabamba, considera estos consejos:'
+                  : 'If you plan to exchange dollars in Cochabamba, consider these tips:'}
+              </p>
+              <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 mb-4">
+                {language === 'es' ? (
+                  <>
+                    <li><strong>Consulta la cotización actual:</strong> Usa nuestra plataforma para verificar la tasa antes de cambiar</li>
+                    <li><strong>Compara precios:</strong> Visita varios operadores para encontrar la mejor tasa</li>
+                    <li><strong>Considera plataformas digitales:</strong> Binance P2P está creciendo en popularidad en Cochabamba</li>
+                    <li><strong>Verifica la autenticidad:</strong> Asegúrate de que los billetes sean auténticos</li>
+                    <li><strong>Ten cuidado con estafas:</strong> Evita operadores que ofrecen tasas demasiado buenas para ser verdad</li>
+                    <li><strong>Usa lugares establecidos:</strong> Prefiere casas de cambio conocidas o plataformas digitales verificadas</li>
+                    <li><strong>Usa nuestra calculadora:</strong> Calcula cuánto recibirás antes de cambiar</li>
+                  </>
+                ) : (
+                  <>
+                    <li><strong>Check current quote:</strong> Use our platform to verify the rate before exchanging</li>
+                    <li><strong>Compare prices:</strong> Visit several operators to find the best rate</li>
+                    <li><strong>Consider digital platforms:</strong> Binance P2P is growing in popularity in Cochabamba</li>
+                    <li><strong>Verify authenticity:</strong> Make sure bills are authentic</li>
+                    <li><strong>Be careful with scams:</strong> Avoid operators offering rates that are too good to be true</li>
+                    <li><strong>Use established places:</strong> Prefer known exchange houses or verified digital platforms</li>
+                    <li><strong>Use our calculator:</strong> Calculate how much you will receive before exchanging</li>
+                  </>
+                )}
+              </ul>
+
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
+                {language === 'es' 
+                  ? 'Historia del Dólar Blue en Cochabamba'
+                  : 'History of the Blue Dollar in Cochabamba'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+                {language === 'es'
+                  ? 'Cochabamba ha desarrollado un mercado cambiario estable aunque más pequeño que las otras grandes ciudades. La ciudad combina características de centro comercial regional con actividad agrícola, creando una demanda constante pero más moderada de dólares. En los últimos años, el mercado ha evolucionado hacia plataformas digitales, aunque las casas de cambio tradicionales siguen siendo importantes en el centro de la ciudad.'
+                  : 'Cochabamba has developed a stable exchange market although smaller than other major cities. The city combines characteristics of a regional commercial center with agricultural activity, creating constant but more moderate demand for dollars. In recent years, the market has evolved toward digital platforms, although traditional exchange houses remain important in the city center.'}
+              </p>
+
               <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 sm:p-6 mt-6 border border-blue-200 dark:border-blue-800">
                 <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
                   {language === 'es' ? '💡 Información Importante' : '💡 Important Information'}

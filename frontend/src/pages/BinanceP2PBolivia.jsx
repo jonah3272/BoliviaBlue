@@ -328,14 +328,142 @@ function BinanceP2PBolivia() {
                 </ul>
               </div>
 
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
+                {language === 'es' 
+                  ? 'Ventajas de Usar Binance P2P en Bolivia'
+                  : 'Advantages of Using Binance P2P in Bolivia'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+                {language === 'es'
+                  ? 'Binance P2P ofrece varias ventajas sobre otros métodos de cambio en Bolivia:'
+                  : 'Binance P2P offers several advantages over other exchange methods in Bolivia:'}
+              </p>
+              <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 mb-4">
+                {language === 'es' ? (
+                  <>
+                    <li><strong>Transparencia:</strong> Puedes ver todas las ofertas disponibles y comparar precios fácilmente</li>
+                    <li><strong>Seguridad:</strong> Binance actúa como intermediario, protegiendo tanto al comprador como al vendedor</li>
+                    <li><strong>Accesibilidad:</strong> Disponible 24/7 desde cualquier dispositivo con internet</li>
+                    <li><strong>Variedad de métodos de pago:</strong> Acepta transferencias bancarias, efectivo, y otros métodos</li>
+                    <li><strong>Reputación verificada:</strong> Puedes ver la reputación y historial de cada vendedor</li>
+                    <li><strong>Sin límites geográficos:</strong> Puedes operar desde cualquier parte de Bolivia</li>
+                    <li><strong>Tasas competitivas:</strong> Generalmente ofrece mejores tasas que casas de cambio físicas</li>
+                  </>
+                ) : (
+                  <>
+                    <li><strong>Transparency:</strong> You can see all available offers and easily compare prices</li>
+                    <li><strong>Security:</strong> Binance acts as an intermediary, protecting both buyer and seller</li>
+                    <li><strong>Accessibility:</strong> Available 24/7 from any device with internet</li>
+                    <li><strong>Variety of payment methods:</strong> Accepts bank transfers, cash, and other methods</li>
+                    <li><strong>Verified reputation:</strong> You can see each seller's reputation and history</li>
+                    <li><strong>No geographic limits:</strong> You can operate from anywhere in Bolivia</li>
+                    <li><strong>Competitive rates:</strong> Generally offers better rates than physical exchange houses</li>
+                  </>
+                )}
+              </ul>
+
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
+                {language === 'es' 
+                  ? 'Cómo Elegir un Vendedor en Binance P2P Bolivia'
+                  : 'How to Choose a Seller on Binance P2P Bolivia'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+                {language === 'es'
+                  ? 'Al usar Binance P2P en Bolivia, es importante elegir vendedores confiables. Considera estos factores:'
+                  : 'When using Binance P2P in Bolivia, it\'s important to choose reliable sellers. Consider these factors:'}
+              </p>
+              <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 mb-4">
+                {language === 'es' ? (
+                  <>
+                    <li><strong>Reputación:</strong> Busca vendedores con alta calificación (4.5+ estrellas) y muchas transacciones completadas</li>
+                    <li><strong>Completación de transacciones:</strong> Revisa el porcentaje de transacciones completadas exitosamente</li>
+                    <li><strong>Tiempo de respuesta:</strong> Vendedores que responden rápidamente son más confiables</li>
+                    <li><strong>Límites de transacción:</strong> Verifica que el vendedor acepte el monto que necesitas</li>
+                    <li><strong>Métodos de pago:</strong> Asegúrate de que el vendedor acepte tu método de pago preferido</li>
+                    <li><strong>Reseñas recientes:</strong> Lee las reseñas más recientes para ver la experiencia actual de otros usuarios</li>
+                  </>
+                ) : (
+                  <>
+                    <li><strong>Reputation:</strong> Look for sellers with high ratings (4.5+ stars) and many completed transactions</li>
+                    <li><strong>Transaction completion:</strong> Review the percentage of successfully completed transactions</li>
+                    <li><strong>Response time:</strong> Sellers who respond quickly are more reliable</li>
+                    <li><strong>Transaction limits:</strong> Verify that the seller accepts the amount you need</li>
+                    <li><strong>Payment methods:</strong> Make sure the seller accepts your preferred payment method</li>
+                    <li><strong>Recent reviews:</strong> Read the most recent reviews to see current experience from other users</li>
+                  </>
+                )}
+              </ul>
+
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
+                {language === 'es' 
+                  ? 'Proceso Detallado de Transacción en Binance P2P'
+                  : 'Detailed Transaction Process on Binance P2P'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+                {language === 'es'
+                  ? 'El proceso completo de una transacción en Binance P2P Bolivia incluye los siguientes pasos detallados:'
+                  : 'The complete process of a transaction on Binance P2P Bolivia includes the following detailed steps:'}
+              </p>
+              <ol className="list-decimal list-inside text-gray-700 dark:text-gray-300 space-y-3 mb-4">
+                {language === 'es' ? (
+                  <>
+                    <li><strong>Búsqueda de oferta:</strong> Navega por las ofertas disponibles, filtra por método de pago, cantidad, y reputación del vendedor</li>
+                    <li><strong>Selección:</strong> Elige una oferta que se ajuste a tus necesidades y presiona "Comprar" o "Vender"</li>
+                    <li><strong>Confirmación:</strong> Revisa los detalles de la transacción y confirma</li>
+                    <li><strong>Pago:</strong> Realiza el pago según las instrucciones del vendedor (transferencia bancaria, efectivo, etc.)</li>
+                    <li><strong>Confirmación de pago:</strong> Marca "Pago completado" en Binance después de realizar el pago</li>
+                    <li><strong>Liberación:</strong> El vendedor confirma la recepción del pago y Binance libera los USDT o BOB</li>
+                    <li><strong>Finalización:</strong> Ambas partes confirman y la transacción se completa</li>
+                  </>
+                ) : (
+                  <>
+                    <li><strong>Offer search:</strong> Browse available offers, filter by payment method, amount, and seller reputation</li>
+                    <li><strong>Selection:</strong> Choose an offer that fits your needs and press "Buy" or "Sell"</li>
+                    <li><strong>Confirmation:</strong> Review transaction details and confirm</li>
+                    <li><strong>Payment:</strong> Make payment according to seller's instructions (bank transfer, cash, etc.)</li>
+                    <li><strong>Payment confirmation:</strong> Mark "Payment completed" on Binance after making payment</li>
+                    <li><strong>Release:</strong> Seller confirms payment receipt and Binance releases USDT or BOB</li>
+                    <li><strong>Completion:</strong> Both parties confirm and the transaction is completed</li>
+                  </>
+                )}
+              </ol>
+
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
+                {language === 'es' 
+                  ? 'Métodos de Pago Disponibles en Binance P2P Bolivia'
+                  : 'Payment Methods Available on Binance P2P Bolivia'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+                {language === 'es'
+                  ? 'Binance P2P en Bolivia acepta varios métodos de pago, dependiendo del vendedor:'
+                  : 'Binance P2P in Bolivia accepts several payment methods, depending on the seller:'}
+              </p>
+              <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 mb-4">
+                {language === 'es' ? (
+                  <>
+                    <li><strong>Transferencia bancaria:</strong> La forma más común, permite transferir BOB directamente desde tu banco</li>
+                    <li><strong>Efectivo:</strong> Algunos vendedores aceptan pago en efectivo en persona</li>
+                    <li><strong>Billeteras digitales:</strong> Algunas billeteras digitales bolivianas pueden ser aceptadas</li>
+                    <li><strong>Otras criptomonedas:</strong> Algunos vendedores pueden aceptar otras criptomonedas además de USDT</li>
+                  </>
+                ) : (
+                  <>
+                    <li><strong>Bank transfer:</strong> The most common method, allows transferring BOB directly from your bank</li>
+                    <li><strong>Cash:</strong> Some sellers accept cash payment in person</li>
+                    <li><strong>Digital wallets:</strong> Some Bolivian digital wallets may be accepted</li>
+                    <li><strong>Other cryptocurrencies:</strong> Some sellers may accept other cryptocurrencies besides USDT</li>
+                  </>
+                )}
+              </ul>
+
               <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4 sm:p-6 mt-6 border border-green-200 dark:border-green-800">
                 <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
                   {language === 'es' ? '🔗 Recursos Relacionados' : '🔗 Related Resources'}
                 </h4>
-                <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
+                <p className="text-sm text-gray-700 dark:text-gray-300 mb-3 leading-relaxed">
                   {language === 'es'
-                    ? <>Aprende más sobre el dólar blue y cómo usarlo:</>
-                    : <>Learn more about the blue dollar and how to use it:</>}
+                    ? <>Aprende más sobre el dólar blue y cómo usarlo. <Link to="/comprar-dolares" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Consulta nuestra guía completa para comprar dólares</Link>, <Link to="/usdt-bolivia" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">aprende sobre USDT en Bolivia</Link>, o <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">usa nuestra calculadora</Link> para convertir divisas.</>
+                    : <>Learn more about the blue dollar and how to use it. <Link to="/comprar-dolares" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Check our complete guide to buy dollars</Link>, <Link to="/usdt-bolivia" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">learn about USDT in Bolivia</Link>, or <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">use our calculator</Link> to convert currencies.</>}
                 </p>
                 <ul className="list-disc list-inside text-sm text-gray-700 dark:text-gray-300 space-y-2">
                   {language === 'es' ? (

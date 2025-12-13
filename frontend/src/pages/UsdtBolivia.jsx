@@ -287,14 +287,112 @@ function UsdtBolivia() {
                 )}
               </ul>
 
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
+                {language === 'es' 
+                  ? 'Ventajas de Usar USDT en Bolivia'
+                  : 'Advantages of Using USDT in Bolivia'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+                {language === 'es'
+                  ? 'USDT ofrece varias ventajas para los usuarios en Bolivia:'
+                  : 'USDT offers several advantages for users in Bolivia:'}
+              </p>
+              <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 mb-4">
+                {language === 'es' ? (
+                  <>
+                    <li><strong>Estabilidad:</strong> USDT está vinculado al dólar, manteniendo un valor estable</li>
+                    <li><strong>Rapidez:</strong> Las transacciones de USDT son rápidas, generalmente completándose en minutos</li>
+                    <li><strong>Accesibilidad:</strong> Puedes comprar y vender USDT 24/7 a través de plataformas P2P</li>
+                    <li><strong>Transparencia:</strong> Todas las transacciones están registradas en la blockchain</li>
+                    <li><strong>Sin intermediarios bancarios:</strong> No necesitas pasar por el sistema bancario tradicional</li>
+                    <li><strong>Bajos costos:</strong> Las comisiones suelen ser menores que en casas de cambio tradicionales</li>
+                    <li><strong>Seguridad:</strong> Las plataformas P2P como Binance ofrecen protección contra estafas</li>
+                  </>
+                ) : (
+                  <>
+                    <li><strong>Stability:</strong> USDT is pegged to the dollar, maintaining a stable value</li>
+                    <li><strong>Speed:</strong> USDT transactions are fast, generally completing in minutes</li>
+                    <li><strong>Accessibility:</strong> You can buy and sell USDT 24/7 through P2P platforms</li>
+                    <li><strong>Transparency:</strong> All transactions are recorded on the blockchain</li>
+                    <li><strong>No banking intermediaries:</strong> You don't need to go through the traditional banking system</li>
+                    <li><strong>Low costs:</strong> Fees are usually lower than traditional exchange houses</li>
+                    <li><strong>Security:</strong> P2P platforms like Binance offer protection against scams</li>
+                  </>
+                )}
+              </ul>
+
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
+                {language === 'es' 
+                  ? 'Cómo Calcular Conversiones USDT a BOB'
+                  : 'How to Calculate USDT to BOB Conversions'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+                {language === 'es'
+                  ? 'Para calcular cuántos bolivianos recibirás por tus USDT, simplemente multiplica la cantidad de USDT por el tipo de cambio actual. Por ejemplo:'
+                  : 'To calculate how many bolivianos you will receive for your USDT, simply multiply the amount of USDT by the current exchange rate. For example:'}
+              </p>
+              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-4">
+                <ul className="space-y-2 text-gray-700 dark:text-gray-300">
+                  {language === 'es' ? (
+                    <>
+                      <li>Si el tipo de cambio es {currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB por USDT:</li>
+                      <li className="ml-4">• 10 USDT = {((currentRate?.buy_bob_per_usd || 10.50) * 10).toFixed(2)} BOB</li>
+                      <li className="ml-4">• 50 USDT = {((currentRate?.buy_bob_per_usd || 10.50) * 50).toFixed(2)} BOB</li>
+                      <li className="ml-4">• 100 USDT = {((currentRate?.buy_bob_per_usd || 10.50) * 100).toFixed(2)} BOB</li>
+                      <li className="ml-4">• 1000 USDT = {((currentRate?.buy_bob_per_usd || 10.50) * 1000).toFixed(2)} BOB</li>
+                    </>
+                  ) : (
+                    <>
+                      <li>If the exchange rate is {currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB per USDT:</li>
+                      <li className="ml-4">• 10 USDT = {((currentRate?.buy_bob_per_usd || 10.50) * 10).toFixed(2)} BOB</li>
+                      <li className="ml-4">• 50 USDT = {((currentRate?.buy_bob_per_usd || 10.50) * 50).toFixed(2)} BOB</li>
+                      <li className="ml-4">• 100 USDT = {((currentRate?.buy_bob_per_usd || 10.50) * 100).toFixed(2)} BOB</li>
+                      <li className="ml-4">• 1000 USDT = {((currentRate?.buy_bob_per_usd || 10.50) * 1000).toFixed(2)} BOB</li>
+                    </>
+                  )}
+                </ul>
+              </div>
+
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
+                {language === 'es' 
+                  ? 'Riesgos y Consideraciones al Usar USDT'
+                  : 'Risks and Considerations When Using USDT'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+                {language === 'es'
+                  ? 'Aunque USDT es una herramienta útil, es importante considerar estos aspectos:'
+                  : 'Although USDT is a useful tool, it's important to consider these aspects:'}
+              </p>
+              <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 mb-4">
+                {language === 'es' ? (
+                  <>
+                    <li><strong>Volatilidad del tipo de cambio:</strong> El tipo de cambio USDT/BOB puede variar durante el día</li>
+                    <li><strong>Riesgo de estafa:</strong> Siempre usa plataformas verificadas como Binance P2P</li>
+                    <li><strong>Regulación:</strong> Las criptomonedas en Bolivia pueden tener consideraciones regulatorias</li>
+                    <li><strong>Comisiones:</strong> Algunas plataformas cobran comisiones, verifica antes de transaccionar</li>
+                    <li><strong>Límites de transacción:</strong> Algunos vendedores tienen límites mínimos y máximos</li>
+                    <li><strong>Tiempo de transacción:</strong> Aunque generalmente rápido, puede haber demoras según el método de pago</li>
+                  </>
+                ) : (
+                  <>
+                    <li><strong>Exchange rate volatility:</strong> The USDT/BOB exchange rate can vary during the day</li>
+                    <li><strong>Scam risk:</strong> Always use verified platforms like Binance P2P</li>
+                    <li><strong>Regulation:</strong> Cryptocurrencies in Bolivia may have regulatory considerations</li>
+                    <li><strong>Fees:</strong> Some platforms charge fees, verify before transacting</li>
+                    <li><strong>Transaction limits:</strong> Some sellers have minimum and maximum limits</li>
+                    <li><strong>Transaction time:</strong> Although generally fast, there may be delays depending on payment method</li>
+                  </>
+                )}
+              </ul>
+
               <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 sm:p-6 mt-6 border border-blue-200 dark:border-blue-800">
                 <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
                   {language === 'es' ? '💡 Información Importante' : '💡 Important Information'}
                 </h4>
-                <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
+                <p className="text-sm text-gray-700 dark:text-gray-300 mb-3 leading-relaxed">
                   {language === 'es'
-                    ? <>El tipo de cambio <strong>USDT a BOB</strong> se actualiza cada 15 minutos. Esta cotización es solo informativa y puede variar según la plataforma y el método de pago. Siempre verifica la cotización antes de realizar transacciones.</>
-                    : <>The <strong>USDT to BOB</strong> exchange rate is updated every 15 minutes. This quote is for informational purposes only and may vary by platform and payment method. Always verify the quote before making transactions.</>}
+                    ? <>El tipo de cambio <strong>USDT a BOB</strong> se actualiza cada 15 minutos. Esta cotización es solo informativa y puede variar según la plataforma y el método de pago. Siempre verifica la cotización antes de realizar transacciones. Para más información, consulta nuestra <Link to="/binance-p2p-bolivia" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">guía completa de Binance P2P en Bolivia</Link>.</>
+                    : <>The <strong>USDT to BOB</strong> exchange rate is updated every 15 minutes. This quote is for informational purposes only and may vary by platform and payment method. Always verify the quote before making transactions. For more information, check our <Link to="/binance-p2p-bolivia" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">complete guide to Binance P2P in Bolivia</Link>.</>}
                 </p>
                 <ul className="list-disc list-inside text-sm text-gray-700 dark:text-gray-300 space-y-2">
                   {language === 'es' ? (

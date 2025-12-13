@@ -5,10 +5,12 @@ import { fetchTwitterNews } from './twitterClient.js'; // Twitter/X integration
 import { insertRate, insertNews, supabase } from './db-supabase.js';
 import { median } from './median.js';
 import { checkAlerts } from './alertChecker.js';
+import { generateDailyArticles } from './dailyArticleGenerator.js';
 
 const REFRESH_INTERVAL = 15 * 60 * 1000; // 15 minutes for rates
 const NEWS_REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes for RSS news
 const TWITTER_REFRESH_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours for Twitter (free tier is only 100/month!)
+const DAILY_ARTICLE_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours for daily articles
 
 // In-memory cache for latest data
 export const cache = {
@@ -181,6 +183,19 @@ async function refreshNews(includeTwitter = false) {
 }
 
 /**
+ * Generate daily article (runs once per day)
+ */
+async function generateDailyArticle() {
+  try {
+    console.log('📝 Generating daily articles...');
+    await generateDailyArticles();
+    console.log('✅ Daily articles generated successfully');
+  } catch (error) {
+    console.error('❌ Error generating daily articles:', error);
+  }
+}
+
+/**
  * Start the scheduler
  */
 export function startScheduler() {
@@ -188,10 +203,14 @@ export function startScheduler() {
   console.log(`- Rates: every ${REFRESH_INTERVAL / 1000}s (15 min)`);
   console.log(`- RSS News: every ${NEWS_REFRESH_INTERVAL / 1000}s (5 min)`);
   console.log(`- Twitter: every ${TWITTER_REFRESH_INTERVAL / 1000}s (24 hours - conserve API quota)`);
+  console.log(`- Daily Articles: every ${DAILY_ARTICLE_INTERVAL / 1000}s (24 hours)`);
   
   // Initial refresh on boot (include Twitter on first load)
   refreshBlueRate().catch(console.error);
   refreshNews(true).catch(console.error); // Include Twitter on startup
+  
+  // Generate daily article on startup (if not already generated today)
+  generateDailyArticle().catch(console.error);
   
   // Schedule rates refresh (every 15 minutes)
   setInterval(() => {
@@ -207,5 +226,21 @@ export function startScheduler() {
   setInterval(() => {
     refreshNews(true).catch(console.error); // Include Twitter
   }, TWITTER_REFRESH_INTERVAL);
+  
+  // Schedule daily article generation (once per 24 hours, at midnight)
+  // Calculate time until next midnight
+  const now = new Date();
+  const midnight = new Date();
+  midnight.setHours(24, 0, 0, 0);
+  const msUntilMidnight = midnight - now;
+  
+  // Generate first article after midnight delay
+  setTimeout(() => {
+    generateDailyArticle().catch(console.error);
+    // Then schedule for every 24 hours
+    setInterval(() => {
+      generateDailyArticle().catch(console.error);
+    }, DAILY_ARTICLE_INTERVAL);
+  }, msUntilMidnight);
 }
 

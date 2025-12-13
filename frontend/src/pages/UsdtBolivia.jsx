@@ -282,7 +282,7 @@ function UsdtBolivia() {
                   <>
                     <li><strong>Binance P2P</strong> - The most popular and safe platform to buy and sell USDT in Bolivia</li>
                     <li><strong>Other P2P platforms</strong> - Like Airtm, Wallbit, but Binance is the most used</li>
-                    <li><strong>Individuals</strong> - Some people exchange USDT directly, but it's less safe</li>
+                    <li><strong>Individuals</strong> - Some people exchange USDT directly, but it\'s less safe</li>
                   </>
                 )}
               </ul>
@@ -314,7 +314,7 @@ function UsdtBolivia() {
                     <li><strong>Speed:</strong> USDT transactions are fast, generally completing in minutes</li>
                     <li><strong>Accessibility:</strong> You can buy and sell USDT 24/7 through P2P platforms</li>
                     <li><strong>Transparency:</strong> All transactions are recorded on the blockchain</li>
-                    <li><strong>No banking intermediaries:</strong> You don't need to go through the traditional banking system</li>
+                    <li><strong>No banking intermediaries:</strong> You don\'t need to go through the traditional banking system</li>
                     <li><strong>Low costs:</strong> Fees are usually lower than traditional exchange houses</li>
                     <li><strong>Security:</strong> P2P platforms like Binance offer protection against scams</li>
                   </>
@@ -361,7 +361,7 @@ function UsdtBolivia() {
               <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
                 {language === 'es'
                   ? 'Aunque USDT es una herramienta útil, es importante considerar estos aspectos:'
-                  : 'Although USDT is a useful tool, it's important to consider these aspects:'}
+                  : 'Although USDT is a useful tool, it\'s important to consider these aspects:'}
               </p>
               <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 mb-4">
                 {language === 'es' ? (

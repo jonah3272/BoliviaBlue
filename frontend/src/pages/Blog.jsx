@@ -289,7 +289,7 @@ function Blog() {
                 [&_ul]:list-disc [&_ul]:list-inside [&_ul]:text-gray-700 [&_ul]:dark:text-gray-300 [&_ul]:mb-4 [&_ul]:space-y-2
                 [&_ol]:list-decimal [&_ol]:list-inside [&_ol]:text-gray-700 [&_ol]:dark:text-gray-300 [&_ol]:mb-4 [&_ol]:space-y-2
                 [&_li]:ml-4 [&_li]:mb-1
-                [&_a]:text-blue-600 [&_a]:dark:text-blue-400 [&_a]:underline [&_a]:hover:text-blue-700 [&_a]:dark:hover:text-blue-300
+                [&_a]:text-blue-600 [&_a]:dark:text-blue-400 [&_a]:underline [&_a]:hover:text-blue-700 [&_a]:dark:hover:text-blue-300 [&_a]:break-all [&_a]:break-words [&_a]:overflow-wrap-anywhere
                 [&_blockquote]:border-l-4 [&_blockquote]:border-blue-500 [&_blockquote]:dark:border-blue-400 [&_blockquote]:bg-blue-50 [&_blockquote]:dark:bg-blue-900/20 [&_blockquote]:py-3 [&_blockquote]:px-4 [&_blockquote]:rounded-r [&_blockquote]:my-4 [&_blockquote]:italic
                 [&_code]:bg-gray-100 [&_code]:dark:bg-gray-800 [&_code]:text-blue-600 [&_code]:dark:text-blue-400 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-sm [&_code]:font-mono
                 [&_pre]:bg-gray-900 [&_pre]:dark:bg-gray-800 [&_pre]:text-gray-100 [&_pre]:p-4 [&_pre]:rounded-lg [&_pre]:overflow-x-auto [&_pre]:my-4

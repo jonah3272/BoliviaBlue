@@ -19,6 +19,20 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 /**
+ * Properly encode URL for HTML attributes
+ */
+function encodeUrlForHtml(url) {
+  if (!url) return '';
+  // Replace special characters that could break HTML attributes
+  return url
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+/**
  * Format date in Spanish or English
  */
 function formatDate(date, language) {
@@ -286,7 +300,9 @@ function generateSpanishContent(data) {
         content += `<p>${news.summary}</p>\n\n`;
       }
       if (news.url) {
-        content += `<p><a href="${news.url}" target="_blank" rel="noopener noreferrer">Leer noticia completa</a></p>\n\n`;
+        // Properly encode URL for HTML attribute
+        const encodedUrl = encodeUrlForHtml(news.url);
+        content += `<p><a href="${encodedUrl}" target="_blank" rel="noopener noreferrer">Leer noticia completa</a></p>\n\n`;
       }
     });
     
@@ -472,7 +488,9 @@ function generateEnglishContent(data) {
         content += `<p>${news.summary}</p>\n\n`;
       }
       if (news.url) {
-        content += `<p><a href="${news.url}" target="_blank" rel="noopener noreferrer">Read full article</a></p>\n\n`;
+        // Properly encode URL for HTML attribute
+        const encodedUrl = encodeUrlForHtml(news.url);
+        content += `<p><a href="${encodedUrl}" target="_blank" rel="noopener noreferrer">Read full article</a></p>\n\n`;
       }
     });
     

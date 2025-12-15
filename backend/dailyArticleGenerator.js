@@ -33,6 +33,16 @@ function encodeUrlForHtml(url) {
 }
 
 /**
+ * Get current date in Bolivia timezone (America/La_Paz, UTC-4)
+ */
+function getBoliviaDate() {
+  const now = new Date();
+  // Convert to Bolivia timezone using Intl API for accurate timezone handling
+  const boliviaDateStr = now.toLocaleString('en-US', { timeZone: 'America/La_Paz' });
+  return new Date(boliviaDateStr);
+}
+
+/**
  * Format date in Spanish or English
  */
 function formatDate(date, language) {
@@ -40,7 +50,8 @@ function formatDate(date, language) {
     year: 'numeric', 
     month: 'long', 
     day: 'numeric',
-    weekday: 'long'
+    weekday: 'long',
+    timeZone: 'America/La_Paz' // Bolivia timezone
   };
   
   if (language === 'es') {
@@ -92,7 +103,8 @@ function getTrendDescription(buyChange, sellChange, language) {
  * Generate comprehensive daily article content
  */
 async function generateDailyArticle(language = 'es') {
-  const today = new Date();
+  // Use Bolivia timezone for consistent dates
+  const today = getBoliviaDate();
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
   
@@ -579,9 +591,21 @@ async function saveArticle(article, language) {
     throw new Error('Supabase client not initialized');
   }
   
-  const today = new Date();
-  const dateStr = today.toISOString().split('T')[0]; // YYYY-MM-DD
+  // Use Bolivia timezone for consistent dates
+  const today = getBoliviaDate();
+  
+  // Get date string in Bolivia timezone (YYYY-MM-DD)
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  const dateStr = `${year}-${month}-${day}`;
   const slug = `analisis-diario-${dateStr}`;
+  
+  // Set published_at to start of day (midnight) in Bolivia timezone
+  // Create a date string for midnight in Bolivia, then parse it
+  // Format: YYYY-MM-DDTHH:mm:ss with Bolivia timezone offset
+  const boliviaMidnightStr = `${dateStr}T00:00:00-04:00`; // UTC-4 for Bolivia
+  const publishedDate = new Date(boliviaMidnightStr);
   
   // Check if article for today already exists
   const { data: existing } = await supabase
@@ -599,6 +623,7 @@ async function saveArticle(article, language) {
         title: article.title,
         excerpt: article.excerpt,
         content: article.content,
+        published_at: publishedDate.toISOString(),
         updated_at: new Date().toISOString()
       })
       .eq('slug', slug)
@@ -627,7 +652,7 @@ async function saveArticle(article, language) {
         category: article.category,
         featured: false,
         read_time: article.readTime,
-        published_at: today.toISOString()
+        published_at: publishedDate.toISOString()
       })
       .select()
       .single();

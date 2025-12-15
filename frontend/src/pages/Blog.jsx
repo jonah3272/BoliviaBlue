@@ -138,11 +138,14 @@ function Blog() {
   }, [slug, language]);
 
   const formatDate = (dateString) => {
+    if (!dateString) return '';
     const date = new Date(dateString);
+    // Use Bolivia timezone (America/La_Paz) for consistent date display
     return date.toLocaleDateString(language === 'es' ? 'es-BO' : 'en-US', {
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
+      timeZone: 'America/La_Paz'
     });
   };
 
@@ -280,21 +283,22 @@ function Blog() {
             </header>
 
             <div 
-              className="blog-content
+              className="blog-content max-w-full overflow-x-hidden
                 [&_h1]:text-3xl [&_h1]:font-bold [&_h1]:text-gray-900 [&_h1]:dark:text-white [&_h1]:mt-8 [&_h1]:mb-4
                 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-gray-900 [&_h2]:dark:text-white [&_h2]:mt-6 [&_h2]:mb-3
                 [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:text-gray-900 [&_h3]:dark:text-white [&_h3]:mt-5 [&_h3]:mb-2
-                [&_p]:text-base [&_p]:text-gray-700 [&_p]:dark:text-gray-300 [&_p]:leading-relaxed [&_p]:mb-4
+                [&_p]:text-base [&_p]:text-gray-700 [&_p]:dark:text-gray-300 [&_p]:leading-relaxed [&_p]:mb-4 [&_p]:max-w-full [&_p]:overflow-x-hidden
                 [&_strong]:font-bold [&_strong]:text-gray-900 [&_strong]:dark:text-white
                 [&_ul]:list-disc [&_ul]:list-inside [&_ul]:text-gray-700 [&_ul]:dark:text-gray-300 [&_ul]:mb-4 [&_ul]:space-y-2
                 [&_ol]:list-decimal [&_ol]:list-inside [&_ol]:text-gray-700 [&_ol]:dark:text-gray-300 [&_ol]:mb-4 [&_ol]:space-y-2
-                [&_li]:ml-4 [&_li]:mb-1
-                [&_a]:text-blue-600 [&_a]:dark:text-blue-400 [&_a]:underline [&_a]:hover:text-blue-700 [&_a]:dark:hover:text-blue-300 [&_a]:break-all [&_a]:break-words [&_a]:overflow-wrap-anywhere
-                [&_blockquote]:border-l-4 [&_blockquote]:border-blue-500 [&_blockquote]:dark:border-blue-400 [&_blockquote]:bg-blue-50 [&_blockquote]:dark:bg-blue-900/20 [&_blockquote]:py-3 [&_blockquote]:px-4 [&_blockquote]:rounded-r [&_blockquote]:my-4 [&_blockquote]:italic
-                [&_code]:bg-gray-100 [&_code]:dark:bg-gray-800 [&_code]:text-blue-600 [&_code]:dark:text-blue-400 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-sm [&_code]:font-mono
-                [&_pre]:bg-gray-900 [&_pre]:dark:bg-gray-800 [&_pre]:text-gray-100 [&_pre]:p-4 [&_pre]:rounded-lg [&_pre]:overflow-x-auto [&_pre]:my-4
-                [&_img]:rounded-lg [&_img]:shadow-lg [&_img]:my-6 [&_img]:w-full [&_img]:h-auto
+                [&_li]:ml-4 [&_li]:mb-1 [&_li]:max-w-full [&_li]:overflow-x-hidden
+                [&_a]:text-blue-600 [&_a]:dark:text-blue-400 [&_a]:underline [&_a]:hover:text-blue-700 [&_a]:dark:hover:text-blue-300 [&_a]:break-all [&_a]:break-words [&_a]:overflow-wrap-anywhere [&_a]:max-w-full [&_a]:inline-block [&_a]:word-break-break-all
+                [&_blockquote]:border-l-4 [&_blockquote]:border-blue-500 [&_blockquote]:dark:border-blue-400 [&_blockquote]:bg-blue-50 [&_blockquote]:dark:bg-blue-900/20 [&_blockquote]:py-3 [&_blockquote]:px-4 [&_blockquote]:rounded-r [&_blockquote]:my-4 [&_blockquote]:italic [&_blockquote]:max-w-full [&_blockquote]:overflow-x-hidden
+                [&_code]:bg-gray-100 [&_code]:dark:bg-gray-800 [&_code]:text-blue-600 [&_code]:dark:text-blue-400 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-sm [&_code]:font-mono [&_code]:break-all
+                [&_pre]:bg-gray-900 [&_pre]:dark:bg-gray-800 [&_pre]:text-gray-100 [&_pre]:p-4 [&_pre]:rounded-lg [&_pre]:overflow-x-auto [&_pre]:my-4 [&_pre]:max-w-full
+                [&_img]:rounded-lg [&_img]:shadow-lg [&_img]:my-6 [&_img]:w-full [&_img]:h-auto [&_img]:max-w-full
                 [&_hr]:border-gray-300 [&_hr]:dark:border-gray-600 [&_hr]:my-6"
+              style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}
               dangerouslySetInnerHTML={{ __html: selectedArticleData.content }}
             />
           </article>

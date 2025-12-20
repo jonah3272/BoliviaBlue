@@ -144,6 +144,17 @@ const frontendDist = join(__dirname, '../frontend/dist');
 app.use(express.static(frontendDist));
 
 /**
+ * Test endpoint to verify OPTIONS handler is working
+ */
+app.get('/api/test-cors', (req, res) => {
+  res.json({
+    message: 'CORS test endpoint',
+    timestamp: new Date().toISOString(),
+    optionsHandler: 'Should be working if you see this'
+  });
+});
+
+/**
  * Health check endpoint
  */
 app.get('/api/health', async (req, res) => {

@@ -69,25 +69,39 @@ const allowedOrigins = [
 const corsOptions = {
   origin: (origin, callback) => {
     // Allow requests with no origin (like mobile apps or curl)
-    if (!origin) return callback(null, true);
+    if (!origin) {
+      console.log('CORS: Request with no origin, allowing');
+      return callback(null, true);
+    }
+    
+    console.log(`CORS: Checking origin: ${origin}`);
+    console.log(`CORS: Allowed origins: ${allowedOrigins.join(', ')}`);
     
     // In production, only allow specific origins
     if (process.env.NODE_ENV === 'production' && ORIGIN !== '*') {
       if (allowedOrigins.includes(origin)) {
+        console.log(`CORS: Origin ${origin} allowed`);
         callback(null, true);
       } else {
-        callback(new Error('Not allowed by CORS'));
+        console.log(`CORS: Origin ${origin} NOT in allowed list`);
+        callback(new Error(`Not allowed by CORS: ${origin}`));
       }
     } else {
       // Development: allow all or specific origins
       if (allowedOrigins.includes(origin) || ORIGIN === '*') {
+        console.log(`CORS: Origin ${origin} allowed (dev mode)`);
         callback(null, true);
       } else {
-        callback(new Error('Not allowed by CORS'));
+        console.log(`CORS: Origin ${origin} NOT allowed (dev mode)`);
+        callback(new Error(`Not allowed by CORS: ${origin}`));
       }
     }
   },
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposedHeaders: ['Content-Type'],
+  optionsSuccessStatus: 200 // Some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
 app.use(cors(corsOptions));
@@ -259,6 +273,14 @@ app.get('/api/news', async (req, res) => {
 });
 
 /**
+ * Handle preflight OPTIONS request for alerts endpoint
+ * CORS middleware should handle this, but explicit handler ensures it works
+ */
+app.options('/api/alerts', cors(corsOptions), (req, res) => {
+  res.sendStatus(200);
+});
+
+/**
  * Create a new rate alert
  */
 app.post('/api/alerts', async (req, res) => {
@@ -317,9 +339,16 @@ app.post('/api/alerts', async (req, res) => {
 });
 
 /**
+ * Handle preflight OPTIONS request for unsubscribe endpoint
+ */
+app.options('/api/alerts/unsubscribe', cors(corsOptions), (req, res) => {
+  res.sendStatus(200);
+});
+
+/**
  * Unsubscribe from alerts
  */
-app.post('/api/alerts/unsubscribe', async (req, res) => {
+app.post('/api/alerts/unsubscribe', cors(corsOptions), async (req, res) => {
   try {
     const { token } = req.body;
 

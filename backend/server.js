@@ -376,21 +376,6 @@ app.post('/api/alerts', cors(corsOptions), async (req, res) => {
 });
 
 /**
- * Handle preflight OPTIONS request for unsubscribe endpoint
- * Explicit handler to ensure CORS headers are set correctly
- */
-app.options('/api/alerts/unsubscribe', (req, res) => {
-  const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-    res.header('Access-Control-Allow-Credentials', 'true');
-  }
-  res.sendStatus(200);
-});
-
-/**
  * Unsubscribe from alerts
  */
 app.post('/api/alerts/unsubscribe', cors(corsOptions), async (req, res) => {

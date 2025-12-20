@@ -4,6 +4,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PageMeta from '../components/PageMeta';
+import { getApiEndpoint } from '../utils/apiUrl';
 
 function Unsubscribe() {
   const [searchParams] = useSearchParams();
@@ -31,7 +32,7 @@ function Unsubscribe() {
     // Call unsubscribe API
     const unsubscribe = async () => {
       try {
-        const response = await fetch('/api/alerts/unsubscribe', {
+        const response = await fetch(getApiEndpoint('/api/alerts/unsubscribe'), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

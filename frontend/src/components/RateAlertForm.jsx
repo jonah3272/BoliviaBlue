@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { fetchBlueRate } from '../utils/api';
+import { getApiEndpoint } from '../utils/apiUrl';
 
 function RateAlertForm() {
   const languageContext = useLanguage();
@@ -82,7 +83,7 @@ function RateAlertForm() {
     }
 
     try {
-      const response = await fetch('/api/alerts', {
+      const response = await fetch(getApiEndpoint('/api/alerts'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

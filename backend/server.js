@@ -317,35 +317,6 @@ app.get('/api/news', async (req, res) => {
 });
 
 /**
- * Handle preflight OPTIONS request for alerts endpoint
- * Explicit handler to ensure CORS headers are set correctly
- * Must come BEFORE the POST route
- */
-app.options('/api/alerts', (req, res) => {
-  const origin = req.headers.origin;
-  
-  // Always set CORS headers for preflight, even if origin check fails
-  // The browser needs these headers to proceed
-  if (origin && allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Max-Age', '86400'); // Cache preflight for 24 hours
-    console.log(`✅ OPTIONS /api/alerts: Allowed origin ${origin}`);
-  } else {
-    // Still set headers but with a generic response
-    // This prevents the "no header" error
-    res.header('Access-Control-Allow-Origin', origin || '*');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-    console.log(`⚠️ OPTIONS /api/alerts: Origin ${origin} not in allowed list, but responding`);
-  }
-  
-  res.sendStatus(200);
-});
-
-/**
  * Create a new rate alert
  * CORS headers are set by the cors() middleware, but we ensure they're present
  */

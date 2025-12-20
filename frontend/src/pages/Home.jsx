@@ -438,14 +438,14 @@ function Home() {
           </LazyErrorBoundary>
         </section>
 
-        {/* Rate Alerts Section */}
-        <section>
+        {/* Rate Alerts Section - Hidden in production */}
+        {/* <section>
           <LazyErrorBoundary>
             <Suspense fallback={<ComponentLoader />}>
               <RateAlertForm />
             </Suspense>
           </LazyErrorBoundary>
-        </section>
+        </section> */}
 
         {/* Binance Banner - Under Chart */}
         <section>

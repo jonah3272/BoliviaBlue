@@ -42,6 +42,42 @@ app.use(helmet({
   crossOriginEmbedderPolicy: false, // Allow embedding for charts/ads
 }));
 
+// CRITICAL: Handle ALL OPTIONS requests FIRST, before ANY other middleware
+// This must be the absolute first thing after security headers
+app.use((req, res, next) => {
+  if (req.method === 'OPTIONS') {
+    const origin = req.headers.origin;
+    const allowedOrigins = [
+      'http://localhost:5173',
+      'http://localhost:3000',
+      'https://bolivia-blue-con-paz.vercel.app',
+      'https://boliviablueconpaz.vercel.app',
+      'https://boliviablue.com',
+      'https://www.boliviablue.com',
+      process.env.ORIGIN
+    ].filter(Boolean);
+    
+    // Always set CORS headers for OPTIONS
+    if (origin && allowedOrigins.includes(origin)) {
+      res.header('Access-Control-Allow-Origin', origin);
+      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+      res.header('Access-Control-Allow-Credentials', 'true');
+      res.header('Access-Control-Max-Age', '86400');
+      console.log(`✅ OPTIONS ${req.path}: Allowed origin ${origin}`);
+    } else {
+      // Still respond with headers to prevent "no header" error
+      res.header('Access-Control-Allow-Origin', origin || '*');
+      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+      console.log(`⚠️ OPTIONS ${req.path}: Origin ${origin || 'none'} - responding`);
+    }
+    
+    return res.sendStatus(200);
+  }
+  next();
+});
+
 // Middleware - Allow multiple origins (define BEFORE OPTIONS handlers)
 const allowedOrigins = [
   'http://localhost:5173',

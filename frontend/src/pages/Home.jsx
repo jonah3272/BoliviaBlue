@@ -438,14 +438,14 @@ function Home() {
           </LazyErrorBoundary>
         </section>
 
-        {/* Rate Alerts Section - Temporarily hidden until EmailJS is configured */}
-        {/* <section>
+        {/* Rate Alerts Section */}
+        <section>
           <LazyErrorBoundary>
             <Suspense fallback={<ComponentLoader />}>
               <RateAlertForm />
             </Suspense>
           </LazyErrorBoundary>
-        </section> */}
+        </section>
 
         {/* Binance Banner - Under Chart */}
         <section>

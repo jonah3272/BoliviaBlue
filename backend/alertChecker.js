@@ -1,57 +1,83 @@
 import { getActiveAlerts, markAlertTriggered, getLatestRate } from './db-supabase.js';
+import { sendEmail } from './emailService.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-const EMAILJS_SERVICE_ID = process.env.EMAILJS_SERVICE_ID;
-const EMAILJS_TEMPLATE_ID = process.env.EMAILJS_TEMPLATE_ID;
-const EMAILJS_PUBLIC_KEY = process.env.EMAILJS_PUBLIC_KEY;
 const BASE_URL = process.env.BASE_URL || 'https://boliviablue.com';
 
 /**
- * Send email notification using EmailJS
+ * Send email notification using Zoho Mail
  */
 async function sendAlertEmail(alert, currentRate) {
-  if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
-    console.warn('⚠️  EmailJS not configured. Skipping email send.');
-    console.warn('Set EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, and EMAILJS_PUBLIC_KEY in .env');
-    return false;
-  }
-
   try {
     const rateValue = alert.alert_type === 'buy' ? currentRate.buy : currentRate.sell;
     const rateType = alert.alert_type === 'buy' ? 'Compra' : 'Venta';
     const directionText = alert.direction === 'above' ? 'subió' : 'bajó';
     const unsubscribeUrl = `${BASE_URL}/unsubscribe?token=${alert.unsubscribe_token}`;
 
-    // EmailJS API endpoint
-    const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        service_id: EMAILJS_SERVICE_ID,
-        template_id: EMAILJS_TEMPLATE_ID,
-        user_id: EMAILJS_PUBLIC_KEY,
-        template_params: {
-          to_email: alert.email,
-          rate_type: rateType,
-          current_rate: rateValue.toFixed(2),
-          threshold: alert.threshold.toFixed(2),
-          direction: directionText,
-          unsubscribe_url: unsubscribeUrl,
-          site_url: BASE_URL
-        }
-      })
+    // Build HTML email content
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+          .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+          .rate-box { background: white; border-left: 4px solid #667eea; padding: 20px; margin: 20px 0; border-radius: 5px; }
+          .rate-value { font-size: 32px; font-weight: bold; color: #667eea; }
+          .button { display: inline-block; padding: 12px 30px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+          .footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #666; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>🔔 Alerta de Tipo de Cambio</h1>
+          </div>
+          <div class="content">
+            <p>Hola,</p>
+            <p>El tipo de cambio <strong>${rateType}</strong> ${directionText} a <strong>${rateValue.toFixed(2)} BOB</strong>.</p>
+            
+            <div class="rate-box">
+              <div style="color: #666; font-size: 14px;">Tu umbral configurado:</div>
+              <div class="rate-value">${alert.threshold.toFixed(2)} BOB</div>
+              <div style="color: #666; font-size: 14px; margin-top: 10px;">Tasa actual:</div>
+              <div style="font-size: 24px; font-weight: bold; color: #333; margin-top: 5px;">${rateValue.toFixed(2)} BOB</div>
+            </div>
+
+            <p style="text-align: center;">
+              <a href="${BASE_URL}" class="button">Ver Detalles</a>
+            </p>
+
+            <div class="footer">
+              <p>Visita <a href="${BASE_URL}">${BASE_URL}</a> para ver más detalles y gráficos históricos.</p>
+              <p style="margin-top: 20px;">
+                <a href="${unsubscribeUrl}" style="color: #999; text-decoration: none;">Cancelar esta alerta</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    const subject = `🔔 Bolivia Blue - Tasa de ${rateType} ${directionText} a ${rateValue.toFixed(2)} BOB`;
+
+    const emailSent = await sendEmail({
+      to: alert.email,
+      subject,
+      html,
     });
 
-    if (!response.ok) {
-      throw new Error(`EmailJS API error: ${response.statusText}`);
+    if (emailSent) {
+      console.log(`✅ Alert email sent to ${alert.email} for rate ${rateValue.toFixed(2)} BOB`);
     }
 
-    console.log(`✅ Alert email sent to ${alert.email} for rate ${rateValue.toFixed(2)} BOB`);
-    return true;
+    return emailSent;
 
   } catch (error) {
     console.error(`❌ Error sending alert email to ${alert.email}:`, error.message);

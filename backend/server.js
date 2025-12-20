@@ -27,25 +27,9 @@ const PORT = process.env.PORT || 3000;
 const ORIGIN = process.env.ORIGIN || (process.env.NODE_ENV === 'production' ? 'https://boliviablue.com' : '*');
 const STALE_THRESHOLD = 45 * 60 * 1000; // 45 minutes
 
-// Security Headers - Helmet
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      scriptSrc: ["'self'", "https://pagead2.googlesyndication.com"],
-      imgSrc: ["'self'", "data:", "https:", "http:"],
-      connectSrc: ["'self'", "https://api.binance.com", "https://p2p.binance.com"],
-    },
-  },
-  crossOriginEmbedderPolicy: false, // Allow embedding for charts/ads
-}));
-
-// CRITICAL: Handle ALL OPTIONS requests FIRST, before ANY other middleware
-// This must be the absolute first thing after security headers
+// CRITICAL: Handle ALL OPTIONS requests FIRST, before ANY other middleware including Helmet
+// This MUST be the absolute first middleware to ensure OPTIONS requests are handled
 app.use((req, res, next) => {
-  // Log ALL requests for debugging
   if (req.method === 'OPTIONS') {
     console.log(`🔍 OPTIONS request received: ${req.path} from origin: ${req.headers.origin || 'none'}`);
     
@@ -61,6 +45,7 @@ app.use((req, res, next) => {
     ].filter(Boolean);
     
     // ALWAYS set CORS headers - this is critical
+    // Use res.setHeader() multiple times to ensure headers are set
     res.setHeader('Access-Control-Allow-Origin', origin || '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
@@ -73,10 +58,26 @@ app.use((req, res, next) => {
       console.log(`⚠️ OPTIONS ${req.path}: Origin ${origin || 'none'} - headers set anyway`);
     }
     
-    return res.status(200).end();
+    // Send response immediately, don't call next()
+    return res.status(200).send('');
   }
   next();
 });
+
+// Security Headers - Helmet (after OPTIONS handler)
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      scriptSrc: ["'self'", "https://pagead2.googlesyndication.com"],
+      imgSrc: ["'self'", "data:", "https:", "http:"],
+      connectSrc: ["'self'", "https://api.binance.com", "https://p2p.binance.com"],
+    },
+  },
+  crossOriginEmbedderPolicy: false, // Allow embedding for charts/ads
+}));
 
 // Middleware - Allow multiple origins (define BEFORE OPTIONS handlers)
 const allowedOrigins = [

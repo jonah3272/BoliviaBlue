@@ -61,6 +61,7 @@ const allowedOrigins = [
   'https://bolivia-blue-con-paz.vercel.app',
   'https://boliviablueconpaz.vercel.app',
   'https://boliviablue.com',
+  'https://www.boliviablue.com',
   ORIGIN
 ].filter(Boolean);
 

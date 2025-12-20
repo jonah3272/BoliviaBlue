@@ -96,9 +96,30 @@ function RateAlertForm() {
         }),
       });
 
+      // Check if response is ok before parsing JSON
+      if (!response.ok) {
+        // Try to parse error message
+        let errorMessage;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorData.error || `HTTP ${response.status}`;
+        } catch {
+          errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        }
+        
+        setStatus('error');
+        setMessage(
+          language === 'es'
+            ? `Error al crear la alerta: ${errorMessage}. Por favor, intenta de nuevo.`
+            : `Error creating alert: ${errorMessage}. Please try again.`
+        );
+        setIsSubmitting(false);
+        return;
+      }
+
       const data = await response.json();
 
-      if (response.ok && data.success) {
+      if (data.success) {
         setStatus('success');
         setMessage(
           language === 'es'
@@ -120,11 +141,22 @@ function RateAlertForm() {
     } catch (error) {
       console.error('Error creating alert:', error);
       setStatus('error');
-      setMessage(
-        language === 'es'
+      
+      // More specific error messages
+      let errorMessage;
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        errorMessage = language === 'es'
+          ? 'No se pudo conectar con el servidor. Verifica tu conexión a internet.'
+          : 'Could not connect to server. Please check your internet connection.';
+      } else if (error.message) {
+        errorMessage = error.message;
+      } else {
+        errorMessage = language === 'es'
           ? 'Error al procesar la solicitud. Por favor, intenta de nuevo más tarde.'
-          : 'Error processing request. Please try again later.'
-      );
+          : 'Error processing request. Please try again later.';
+      }
+      
+      setMessage(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

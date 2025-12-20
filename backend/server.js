@@ -104,7 +104,12 @@ const corsOptions = {
   optionsSuccessStatus: 200 // Some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
+// Apply CORS middleware - must be before routes
 app.use(cors(corsOptions));
+
+// Handle all OPTIONS requests for CORS preflight (before other middleware)
+app.options('*', cors(corsOptions));
+
 app.use(express.json());
 
 // Serve frontend static files in production
@@ -340,8 +345,16 @@ app.post('/api/alerts', async (req, res) => {
 
 /**
  * Handle preflight OPTIONS request for unsubscribe endpoint
+ * Explicit handler to ensure CORS headers are set correctly
  */
-app.options('/api/alerts/unsubscribe', cors(corsOptions), (req, res) => {
+app.options('/api/alerts/unsubscribe', (req, res) => {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+    res.header('Access-Control-Allow-Credentials', 'true');
+  }
   res.sendStatus(200);
 });
 

@@ -27,39 +27,31 @@ const PORT = process.env.PORT || 3000;
 const ORIGIN = process.env.ORIGIN || (process.env.NODE_ENV === 'production' ? 'https://boliviablue.com' : '*');
 const STALE_THRESHOLD = 45 * 60 * 1000; // 45 minutes
 
-// CRITICAL: Handle ALL OPTIONS requests FIRST, before ANY other middleware including Helmet
-// This MUST be the absolute first middleware to ensure OPTIONS requests are handled
+// CRITICAL: Handle ALL OPTIONS requests FIRST - before ANY other middleware
+// This is the ABSOLUTE FIRST middleware - nothing can come before this
 app.use((req, res, next) => {
+  // Intercept ALL OPTIONS requests immediately
   if (req.method === 'OPTIONS') {
-    console.log(`🔍 OPTIONS request received: ${req.path} from origin: ${req.headers.origin || 'none'}`);
-    
     const origin = req.headers.origin;
-    const allowedOrigins = [
-      'http://localhost:5173',
-      'http://localhost:3000',
-      'https://bolivia-blue-con-paz.vercel.app',
-      'https://boliviablueconpaz.vercel.app',
-      'https://boliviablue.com',
-      'https://www.boliviablue.com',
-      process.env.ORIGIN
-    ].filter(Boolean);
+    console.log(`🚨 OPTIONS INTERCEPTED: ${req.path} | Origin: ${origin || 'none'} | Time: ${new Date().toISOString()}`);
     
-    // ALWAYS set CORS headers - this is critical
-    // Use res.setHeader() multiple times to ensure headers are set
+    // Set ALL required CORS headers explicitly
+    res.header('Access-Control-Allow-Origin', origin || '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Max-Age', '86400');
+    
+    // Also set via setHeader as backup
     res.setHeader('Access-Control-Allow-Origin', origin || '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Access-Control-Max-Age', '86400');
     
-    if (origin && allowedOrigins.includes(origin)) {
-      console.log(`✅ OPTIONS ${req.path}: Allowed origin ${origin} - headers set`);
-    } else {
-      console.log(`⚠️ OPTIONS ${req.path}: Origin ${origin || 'none'} - headers set anyway`);
-    }
+    console.log(`✅ OPTIONS RESPONSE: Headers set for ${req.path}`);
     
-    // Send response immediately, don't call next()
-    return res.status(200).send('');
+    // Return 200 immediately - don't call next()
+    return res.status(200).end();
   }
   next();
 });

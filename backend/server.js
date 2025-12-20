@@ -279,9 +279,16 @@ app.get('/api/news', async (req, res) => {
 
 /**
  * Handle preflight OPTIONS request for alerts endpoint
- * CORS middleware should handle this, but explicit handler ensures it works
+ * Explicit handler to ensure CORS headers are set correctly
  */
-app.options('/api/alerts', cors(corsOptions), (req, res) => {
+app.options('/api/alerts', (req, res) => {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+    res.header('Access-Control-Allow-Credentials', 'true');
+  }
   res.sendStatus(200);
 });
 

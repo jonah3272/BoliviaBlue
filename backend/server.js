@@ -42,19 +42,7 @@ app.use(helmet({
   crossOriginEmbedderPolicy: false, // Allow embedding for charts/ads
 }));
 
-// Rate Limiting
-const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.',
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
-// Apply rate limiting to API routes
-app.use('/api/', apiLimiter);
-
-// Middleware - Allow multiple origins
+// Middleware - Allow multiple origins (define BEFORE OPTIONS handlers)
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
@@ -65,8 +53,8 @@ const allowedOrigins = [
   ORIGIN
 ].filter(Boolean);
 
-// Handle OPTIONS preflight requests FIRST, before CORS middleware
-// This ensures preflight requests always get proper headers
+// Handle OPTIONS preflight requests FIRST, before rate limiting and CORS middleware
+// This ensures preflight requests always get proper headers and aren't rate limited
 app.options('/api/alerts', (req, res) => {
   const origin = req.headers.origin;
   
@@ -106,6 +94,19 @@ app.options('/api/alerts/unsubscribe', (req, res) => {
   
   res.sendStatus(200);
 });
+
+// Rate Limiting (after OPTIONS handlers to avoid blocking preflight)
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: (req) => req.method === 'OPTIONS', // Skip rate limiting for OPTIONS requests
+});
+
+// Apply rate limiting to API routes (but OPTIONS are already handled above)
+app.use('/api/', apiLimiter);
 
 // Only allow wildcard in development
 const corsOptions = {

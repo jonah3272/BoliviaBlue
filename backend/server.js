@@ -65,6 +65,48 @@ const allowedOrigins = [
   ORIGIN
 ].filter(Boolean);
 
+// Handle OPTIONS preflight requests FIRST, before CORS middleware
+// This ensures preflight requests always get proper headers
+app.options('/api/alerts', (req, res) => {
+  const origin = req.headers.origin;
+  
+  if (origin && allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Max-Age', '86400');
+    console.log(`✅ OPTIONS /api/alerts: Allowed origin ${origin}`);
+  } else {
+    // Still respond with headers to prevent "no header" error
+    // But use the requesting origin if it exists
+    res.header('Access-Control-Allow-Origin', origin || '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+    console.log(`⚠️ OPTIONS /api/alerts: Origin ${origin} - responding with headers`);
+  }
+  
+  res.sendStatus(200);
+});
+
+app.options('/api/alerts/unsubscribe', (req, res) => {
+  const origin = req.headers.origin;
+  
+  if (origin && allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Max-Age', '86400');
+  } else {
+    res.header('Access-Control-Allow-Origin', origin || '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  }
+  
+  res.sendStatus(200);
+});
+
 // Only allow wildcard in development
 const corsOptions = {
   origin: (origin, callback) => {

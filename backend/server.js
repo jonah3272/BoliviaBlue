@@ -45,7 +45,10 @@ app.use(helmet({
 // CRITICAL: Handle ALL OPTIONS requests FIRST, before ANY other middleware
 // This must be the absolute first thing after security headers
 app.use((req, res, next) => {
+  // Log ALL requests for debugging
   if (req.method === 'OPTIONS') {
+    console.log(`🔍 OPTIONS request received: ${req.path} from origin: ${req.headers.origin || 'none'}`);
+    
     const origin = req.headers.origin;
     const allowedOrigins = [
       'http://localhost:5173',
@@ -57,23 +60,20 @@ app.use((req, res, next) => {
       process.env.ORIGIN
     ].filter(Boolean);
     
-    // Always set CORS headers for OPTIONS
+    // ALWAYS set CORS headers - this is critical
+    res.setHeader('Access-Control-Allow-Origin', origin || '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Max-Age', '86400');
+    
     if (origin && allowedOrigins.includes(origin)) {
-      res.header('Access-Control-Allow-Origin', origin);
-      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-      res.header('Access-Control-Allow-Credentials', 'true');
-      res.header('Access-Control-Max-Age', '86400');
-      console.log(`✅ OPTIONS ${req.path}: Allowed origin ${origin}`);
+      console.log(`✅ OPTIONS ${req.path}: Allowed origin ${origin} - headers set`);
     } else {
-      // Still respond with headers to prevent "no header" error
-      res.header('Access-Control-Allow-Origin', origin || '*');
-      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-      console.log(`⚠️ OPTIONS ${req.path}: Origin ${origin || 'none'} - responding`);
+      console.log(`⚠️ OPTIONS ${req.path}: Origin ${origin || 'none'} - headers set anyway`);
     }
     
-    return res.sendStatus(200);
+    return res.status(200).end();
   }
   next();
 });

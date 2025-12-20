@@ -89,49 +89,7 @@ const allowedOrigins = [
   ORIGIN
 ].filter(Boolean);
 
-// Handle OPTIONS preflight requests FIRST, before rate limiting and CORS middleware
-// This ensures preflight requests always get proper headers and aren't rate limited
-app.options('/api/alerts', (req, res) => {
-  const origin = req.headers.origin;
-  
-  if (origin && allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Max-Age', '86400');
-    console.log(`✅ OPTIONS /api/alerts: Allowed origin ${origin}`);
-  } else {
-    // Still respond with headers to prevent "no header" error
-    // But use the requesting origin if it exists
-    res.header('Access-Control-Allow-Origin', origin || '*');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-    console.log(`⚠️ OPTIONS /api/alerts: Origin ${origin} - responding with headers`);
-  }
-  
-  res.sendStatus(200);
-});
-
-app.options('/api/alerts/unsubscribe', (req, res) => {
-  const origin = req.headers.origin;
-  
-  if (origin && allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Max-Age', '86400');
-  } else {
-    res.header('Access-Control-Allow-Origin', origin || '*');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-  }
-  
-  res.sendStatus(200);
-});
-
-// Rate Limiting (after OPTIONS handlers to avoid blocking preflight)
+// Rate Limiting (OPTIONS are handled by catch-all middleware above)
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // Limit each IP to 100 requests per windowMs

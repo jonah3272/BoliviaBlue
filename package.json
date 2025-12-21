@@ -1,24 +1,12 @@
 {
   "name": "bolivia-blue-con-paz",
   "version": "1.0.0",
-  "description": "Dashboard tracking Bolivia's blue market exchange rate under President Rodrigo Paz",
-  "type": "module",
+  "description": "Bolivia Blue con Paz - Exchange rate tracker",
   "scripts": {
-    "install:backend": "cd backend && npm install",
-    "install:frontend": "cd frontend && npm install",
-    "install:all": "npm run install:backend && npm run install:frontend",
-    "postinstall": "npm run install:all",
-    "dev": "npm run dev:backend & npm run dev:frontend",
-    "dev:backend": "cd backend && npm run dev",
-    "dev:frontend": "cd frontend && npm run dev",
-    "build": "npm run install:frontend && cd frontend && npm run build",
-    "build:frontend": "cd frontend && npm run build",
     "start": "cd backend && npm start",
-    "test": "npm run test:backend",
-    "test:backend": "cd backend && npm test"
+    "install:all": "cd backend && npm install"
   },
-  "keywords": ["bolivia", "exchange-rate", "blue-market", "dashboard"],
-  "author": "",
-  "license": "MIT"
+  "engines": {
+    "node": ">=20.0.0"
+  }
 }
-

@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { trackLanguageSwitch } from '../utils/analytics';
 
 const LanguageContext = createContext();
 
@@ -681,7 +682,12 @@ export function LanguageProvider({ children }) {
   }, [language]);
 
   const toggleLanguage = () => {
-    setLanguage(prev => prev === 'es' ? 'en' : 'es');
+    setLanguage(prev => {
+      const newLang = prev === 'es' ? 'en' : 'es';
+      // Track language switch
+      trackLanguageSwitch(prev, newLang);
+      return newLang;
+    });
   };
 
   const t = (key) => {

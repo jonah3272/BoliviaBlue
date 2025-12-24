@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { fetchBlueRate } from '../utils/api';
 import { getApiEndpoint } from '../utils/apiUrl';
+import { trackAlertSubmission, trackAlertFormStart, trackFormSubmission, trackFormError } from '../utils/analytics';
 
 function RateAlertForm() {
   const languageContext = useLanguage();
@@ -15,6 +16,7 @@ function RateAlertForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState(null); // 'success', 'error', null
   const [message, setMessage] = useState('');
+  const [formStarted, setFormStarted] = useState(false);
 
   // Load current rate
   useEffect(() => {
@@ -67,6 +69,7 @@ function RateAlertForm() {
           ? 'Por favor, ingresa un email válido'
           : 'Please enter a valid email address'
       );
+      trackFormError('alert_form', 'invalid_email', 'Email validation failed');
       setIsSubmitting(false);
       return;
     }
@@ -78,6 +81,7 @@ function RateAlertForm() {
           ? 'Por favor, ingresa un umbral válido'
           : 'Please enter a valid threshold'
       );
+      trackFormError('alert_form', 'invalid_threshold', 'Threshold validation failed');
       setIsSubmitting(false);
       return;
     }
@@ -126,9 +130,13 @@ function RateAlertForm() {
             ? '¡Alerta creada exitosamente! Te notificaremos cuando el tipo de cambio alcance tu umbral.'
             : 'Alert created successfully! We will notify you when the exchange rate reaches your threshold.'
         );
+        // Track successful submission
+        trackAlertSubmission(alertType, parseFloat(threshold), direction, 'USD');
+        trackFormSubmission('alert_form', 'alert', true);
         // Reset form
         setEmail('');
         setThreshold('');
+        setFormStarted(false);
       } else {
         setStatus('error');
         setMessage(
@@ -137,6 +145,8 @@ function RateAlertForm() {
             ? 'Error al crear la alerta. Por favor, intenta de nuevo.'
             : 'Error creating alert. Please try again.')
         );
+        trackFormError('alert_form', 'submission_error', data.message || 'Unknown error');
+        trackFormSubmission('alert_form', 'alert', false);
       }
     } catch (error) {
       console.error('Error creating alert:', error);
@@ -157,6 +167,8 @@ function RateAlertForm() {
       }
       
       setMessage(errorMessage);
+      trackFormError('alert_form', 'network_error', errorMessage);
+      trackFormSubmission('alert_form', 'alert', false);
     } finally {
       setIsSubmitting(false);
     }
@@ -233,7 +245,19 @@ function RateAlertForm() {
               type="email"
               id="alert-email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                if (!formStarted) {
+                  setFormStarted(true);
+                  trackAlertFormStart();
+                }
+              }}
+              onFocus={() => {
+                if (!formStarted) {
+                  setFormStarted(true);
+                  trackAlertFormStart();
+                }
+              }}
               required
               className="w-full px-4 py-3 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
               placeholder={language === 'es' ? 'tu@email.com' : 'your@email.com'}

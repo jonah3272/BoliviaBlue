@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
 import Home from './pages/Home';
 import Redirect from './components/Redirect';
+import { usePageTracking } from './hooks/usePageTracking';
 
 // Lazy load routes for code splitting
 const Calculator = lazy(() => import('./pages/Calculator'));
@@ -55,11 +56,13 @@ function LoadingFallback() {
   );
 }
 
-function App() {
+function AppContent() {
+  // Track page views, scroll depth, and time on page
+  usePageTracking();
+  
   return (
-    <Router>
-      <Suspense fallback={<LoadingFallback />}>
-        <Routes>
+    <Suspense fallback={<LoadingFallback />}>
+      <Routes>
           <Route path="/" element={<Home />} />
           
           {/* Spanish URL Aliases (Primary for SEO) */}
@@ -122,6 +125,13 @@ function App() {
           <Route path="/unsubscribe" element={<Unsubscribe />} />
         </Routes>
       </Suspense>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
     </Router>
   );
 }

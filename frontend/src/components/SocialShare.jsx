@@ -1,5 +1,6 @@
 import React from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { trackSocialShare } from '../utils/analytics';
 
 /**
  * SocialShare Component
@@ -25,10 +26,12 @@ export function SocialShare({ title, description, url }) {
   };
 
   const handleShare = (platform) => {
+    trackSocialShare(platform, 'page', window.location.pathname);
     window.open(shareLinks[platform], '_blank', 'width=600,height=400');
   };
 
   const handleCopyLink = () => {
+    trackSocialShare('copy', 'page', window.location.pathname);
     navigator.clipboard.writeText(shareUrl);
     alert(language === 'es' ? '¡Enlace copiado!' : 'Link copied!');
   };

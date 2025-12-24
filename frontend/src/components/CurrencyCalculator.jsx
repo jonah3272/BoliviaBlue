@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { fetchBlueRate } from '../utils/api';
 import { useLanguage } from '../contexts/LanguageContext';
 import AnimatedNumber from './AnimatedNumber';
+import { trackCalculatorUsage, trackCalculatorCurrencySwitch, trackCalculatorSwap } from '../utils/analytics';
 
 function CurrencyCalculator() {
   const languageContext = useLanguage();
@@ -140,6 +141,8 @@ function CurrencyCalculator() {
     // Save to history if it's a meaningful calculation
     if (bob >= 1) {
       saveToHistory('BOB', selectedCurrency, bob.toFixed(2), usd.toFixed(4), rate.toFixed(4));
+      // Track calculator usage
+      trackCalculatorUsage(bob, 'BOB', selectedCurrency, usd);
     }
   };
 
@@ -162,6 +165,8 @@ function CurrencyCalculator() {
     // Save to history if it's a meaningful calculation
     if (usd >= 0.01) {
       saveToHistory(selectedCurrency, 'BOB', usd.toFixed(4), bob.toFixed(2), rate.toFixed(4));
+      // Track calculator usage
+      trackCalculatorUsage(usd, selectedCurrency, 'BOB', bob);
     }
   };
 
@@ -182,11 +187,18 @@ function CurrencyCalculator() {
   };
 
   const handleSwap = () => {
+    const prevFromCurrency = convertFromBOB ? 'BOB' : selectedCurrency;
+    const prevToCurrency = convertFromBOB ? selectedCurrency : 'BOB';
+    
     setConvertFromBOB(!convertFromBOB);
     // Swap the values
     const tempBob = bobAmount;
     setBobAmount(usdAmount);
     setUsdAmount(tempBob);
+    
+    // Track swap
+    trackCalculatorSwap();
+    trackCalculatorCurrencySwitch(prevFromCurrency, prevToCurrency);
   };
 
   const getBuyRate = () => useOfficial ? rateData?.official_buy : rateData?.buy_bob_per_usd;
@@ -244,7 +256,13 @@ function CurrencyCalculator() {
                 {Object.entries(currencies).map(([code, data]) => (
                   <button
                     key={code}
-                    onClick={() => setSelectedCurrency(code)}
+                    onClick={() => {
+                      const prevCurrency = selectedCurrency;
+                      setSelectedCurrency(code);
+                      if (prevCurrency !== code) {
+                        trackCalculatorCurrencySwitch(prevCurrency, code);
+                      }
+                    }}
                     className={`p-3 rounded-xl font-medium transition-all text-center ${
                       selectedCurrency === code
                         ? 'bg-blue-600 text-white shadow-lg scale-105'

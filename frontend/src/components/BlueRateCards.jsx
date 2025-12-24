@@ -5,6 +5,7 @@ import { fetchBlueRate } from '../utils/api';
 import { formatRate, formatDateTime, isStale } from '../utils/formatters';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useCurrency } from '../contexts/CurrencyContext';
+import { trackRateCardView, trackOfficialRateToggle, trackRateUpdate } from '../utils/analytics';
 
 const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, isLoading, error, dailyChange, isOfficial, currency, language }) {
   const languageContext = useLanguage();
@@ -19,6 +20,13 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
   const changeValue = dailyChange ? parseFloat(dailyChange) : null;
   const changeColor = changeValue > 0 ? 'text-green-600' : changeValue < 0 ? 'text-red-600' : 'text-gray-500';
   const changeIcon = changeValue > 0 ? '↑' : changeValue < 0 ? '↓' : '';
+
+  // Track rate card view when rate is displayed
+  useEffect(() => {
+    if (rate && !isLoading && !error) {
+      trackRateCardView(type, rate, currency, isOfficial);
+    }
+  }, [rate, type, currency, isOfficial, isLoading, error]);
 
   if (isLoading) {
     // Reserve exact space to match final card dimensions (prevents layout shift)
@@ -150,6 +158,16 @@ function BlueRateCards({ showOfficial = false, setShowOfficial }) {
       if (!abortController.signal.aborted && currentCurrencyRef.current === targetCurrency) {
         setData(result);
         setError(null);
+        
+        // Track rate update
+        if (result?.buy_bob_per_usd && result?.sell_bob_per_usd) {
+          trackRateUpdate(
+            result.buy_bob_per_usd,
+            result.sell_bob_per_usd,
+            targetCurrency,
+            'api'
+          );
+        }
       }
     } catch (err) {
       // Ignore abort errors
@@ -231,7 +249,10 @@ function BlueRateCards({ showOfficial = false, setShowOfficial }) {
       <div className="flex items-center justify-center mb-6">
         <div className="inline-flex items-center bg-gray-100 dark:bg-gray-800 rounded-xl p-1.5 shadow-inner border border-gray-200 dark:border-gray-700">
           <button
-            onClick={() => effectiveSetShowOfficial(false)}
+            onClick={() => {
+              effectiveSetShowOfficial(false);
+              trackOfficialRateToggle(false);
+            }}
             className={`px-8 py-3 rounded-lg font-semibold text-sm transition-all duration-200 min-w-[200px] ${
               !effectiveShowOfficial
                 ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-md border-2 border-blue-200 dark:border-blue-600'
@@ -241,7 +262,10 @@ function BlueRateCards({ showOfficial = false, setShowOfficial }) {
             {t('blueMarketTitle')}
           </button>
           <button
-            onClick={() => effectiveSetShowOfficial(true)}
+            onClick={() => {
+              effectiveSetShowOfficial(true);
+              trackOfficialRateToggle(true);
+            }}
             className={`px-8 py-3 rounded-lg font-semibold text-sm transition-all duration-200 min-w-[200px] ${
               effectiveShowOfficial
                 ? 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 shadow-md border-2 border-gray-300 dark:border-gray-600'

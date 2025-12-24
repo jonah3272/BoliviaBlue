@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { trackCurrencySwitch } from '../utils/analytics';
 
 const CurrencyContext = createContext(null);
 
@@ -25,7 +26,12 @@ export function CurrencyProvider({ children }) {
 
   const setCurrency = (newCurrency) => {
     if (['USD', 'BRL', 'EUR'].includes(newCurrency)) {
+      const prevCurrency = currency;
       setCurrencyState(newCurrency);
+      // Track currency switch
+      if (prevCurrency !== newCurrency) {
+        trackCurrencySwitch(prevCurrency, newCurrency);
+      }
     } else {
       console.warn(`Invalid currency: ${newCurrency}. Must be USD, BRL, or EUR.`);
     }

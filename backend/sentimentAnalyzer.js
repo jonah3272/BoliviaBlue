@@ -17,9 +17,10 @@ if (OPENAI_API_KEY) {
  * Returns both direction and strength (0-100) indicating how impactful the article is
  * @param {string} title - Article title
  * @param {string} summary - Article summary
+ * @param {Object} priceData - Optional price change data from last 6 hours
  * @returns {Promise<{direction: string, strength: number}>} Object with direction ("up", "down", "neutral") and strength (0-100)
  */
-export async function analyzeSentimentAI(title, summary) {
+export async function analyzeSentimentAI(title, summary, priceData = null) {
   // Re-check API key at runtime (in case env vars changed)
   const apiKey = process.env.OPENAI_API_KEY || OPENAI_API_KEY;
   
@@ -34,6 +35,52 @@ export async function analyzeSentimentAI(title, summary) {
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), SENTIMENT_TIMEOUT);
+
+    // Build price context string if price data is available
+    let priceContext = '';
+    if (priceData) {
+      const { priceChange6h, priceChange24h, trend6h, trend24h, volatility, currentPrice, price6hAgo, price24hAgo } = priceData;
+      const changeDirection6h = priceChange6h > 0 ? 'increased' : priceChange6h < 0 ? 'decreased' : 'remained stable';
+      const changeDirection24h = priceChange24h !== null 
+        ? (priceChange24h > 0 ? 'increased' : priceChange24h < 0 ? 'decreased' : 'remained stable')
+        : 'unknown';
+      const volatilityLevel = volatility > 0.5 ? 'high volatility' : volatility > 0.2 ? 'moderate volatility' : 'low volatility';
+      
+      // Determine if there's a significant price movement that should influence sentiment
+      const significant6hMove = Math.abs(priceChange6h) > 0.5; // >0.5% in 6h is significant
+      const significant24hMove = priceChange24h !== null && Math.abs(priceChange24h) > 1.0; // >1% in 24h is significant
+      
+      priceContext = `
+
+CRITICAL MARKET CONTEXT - USE THIS TO VALIDATE YOUR ANALYSIS:
+Last 6 Hours:
+- Price change: ${priceChange6h > 0 ? '+' : ''}${priceChange6h}% (${changeDirection6h})
+- Trend: ${trend6h}
+${priceChange24h !== null ? `Last 24 Hours (DAILY):
+- Price change: ${priceChange24h > 0 ? '+' : ''}${priceChange24h}% (${changeDirection24h})
+- Trend: ${trend24h}` : ''}
+- Volatility: ${volatilityLevel} (${volatility}%)
+- Current price: ${currentPrice} BOB/USD
+- Price 6 hours ago: ${price6hAgo} BOB/USD
+${price24hAgo !== null ? `- Price 24 hours ago: ${price24hAgo} BOB/USD` : ''}
+
+CRITICAL RULES - YOU MUST FOLLOW THESE:
+1. If the dollar price is DOWN significantly (${priceChange24h !== null ? priceChange24h < -2 ? `-${Math.abs(priceChange24h).toFixed(1)}%` : '>2%' : '>2%'} in 24h), articles suggesting dollar STRENGTHENING (UP) should be:
+   - Reduced in strength by at least 30-50%
+   - Considered as potential reversals (only if very strong news)
+   - Marked as NEUTRAL if the contradiction is too strong
+
+2. If the dollar price is UP significantly (${priceChange24h !== null ? priceChange24h > 2 ? `+${priceChange24h.toFixed(1)}%` : '>2%' : '>2%'} in 24h), articles suggesting dollar WEAKENING (DOWN) should be:
+   - Reduced in strength by at least 30-50%
+   - Considered as potential reversals (only if very strong news)
+   - Marked as NEUTRAL if the contradiction is too strong
+
+3. If price movement aligns with article sentiment, you may increase strength slightly (but don't overdo it)
+
+4. For significant daily moves (>2%), the market is already reflecting sentiment - news must be EXTREMELY strong to contradict it
+
+${significant24hMove ? `⚠️ WARNING: There is a SIGNIFICANT daily price movement (${priceChange24h > 0 ? '+' : ''}${priceChange24h}%). Your sentiment analysis MUST account for this.` : ''}`;
+    }
 
     const systemPrompt = `You are a financial sentiment analyzer specializing in currency exchange rates for Bolivia. 
 Your task is to determine if a news article indicates the US dollar (USD) is rising, falling, or neutral against the Bolivian Boliviano (BOB), AND how strong/impactful this signal is.
@@ -58,6 +105,7 @@ Consider factors like:
 - Inflation (extreme inflation = higher strength)
 - Market sentiment (panic/fear = higher strength)
 - International relations (major events = higher strength)
+${priceContext ? '- Recent market price movements (align with or contradict recent trends)' : ''}
 
 Respond with ONLY a JSON object in this exact format:
 {"direction": "UP" or "DOWN" or "NEUTRAL", "strength": 0-100}`;
@@ -66,7 +114,7 @@ Respond with ONLY a JSON object in this exact format:
 
 Title: ${title}
 
-Summary: ${summary || 'No summary available'}
+Summary: ${summary || 'No summary available'}${priceContext}
 
 What is the sentiment regarding the US dollar value against the Boliviano? Provide direction and strength (0-100).`;
 
@@ -114,7 +162,7 @@ What is the sentiment regarding the US dollar value against the Boliviano? Provi
       }
       
       const parsed = JSON.parse(jsonText);
-      const direction = parsed.direction?.toLowerCase() || 'neutral';
+      let direction = parsed.direction?.toLowerCase() || 'neutral';
       let strength = parseInt(parsed.strength) || 50;
       
       // Validate and clamp strength
@@ -123,6 +171,79 @@ What is the sentiment regarding the US dollar value against the Boliviano? Provi
       // If neutral, strength should be 0
       if (direction === 'neutral') {
         strength = 0;
+      }
+      
+      // POST-PROCESSING: Validate sentiment against actual price movements
+      // This ensures we don't have contradictory signals (e.g., price down 5% but sentiment fully positive)
+      if (priceData && direction !== 'neutral' && strength > 0) {
+        const { priceChange24h, priceChange6h } = priceData;
+        
+        // Check for significant contradictions with daily price movement
+        if (priceChange24h !== null && Math.abs(priceChange24h) > 1.5) {
+          const isPriceDown = priceChange24h < -1.5;
+          const isPriceUp = priceChange24h > 1.5;
+          const sentimentUp = direction === 'up';
+          const sentimentDown = direction === 'down';
+          
+          // Strong contradiction: price down significantly but sentiment says up
+          if (isPriceDown && sentimentUp) {
+            // Reduce strength significantly or flip to neutral
+            if (Math.abs(priceChange24h) > 3.0) {
+              // Very significant move (>3%) - force neutral or reduce heavily
+              if (strength < 70) {
+                // Weak to moderate sentiment - flip to neutral
+                direction = 'neutral';
+                strength = 0;
+                console.log(`⚠️ Sentiment contradiction: Price down ${priceChange24h.toFixed(2)}% but sentiment was UP. Forced to NEUTRAL.`);
+              } else {
+                // Strong sentiment - reduce by 50-70%
+                strength = Math.max(20, Math.floor(strength * 0.3));
+                console.log(`⚠️ Sentiment contradiction: Price down ${priceChange24h.toFixed(2)}% but sentiment was UP (strength ${parsed.strength}). Reduced to ${strength}.`);
+              }
+            } else {
+              // Moderate move (1.5-3%) - reduce strength by 40-50%
+              strength = Math.max(10, Math.floor(strength * 0.5));
+              console.log(`⚠️ Sentiment contradiction: Price down ${priceChange24h.toFixed(2)}% but sentiment was UP. Reduced strength from ${parsed.strength} to ${strength}.`);
+            }
+          }
+          
+          // Strong contradiction: price up significantly but sentiment says down
+          if (isPriceUp && sentimentDown) {
+            // Reduce strength significantly or flip to neutral
+            if (Math.abs(priceChange24h) > 3.0) {
+              // Very significant move (>3%) - force neutral or reduce heavily
+              if (strength < 70) {
+                // Weak to moderate sentiment - flip to neutral
+                direction = 'neutral';
+                strength = 0;
+                console.log(`⚠️ Sentiment contradiction: Price up ${priceChange24h.toFixed(2)}% but sentiment was DOWN. Forced to NEUTRAL.`);
+              } else {
+                // Strong sentiment - reduce by 50-70%
+                strength = Math.max(20, Math.floor(strength * 0.3));
+                console.log(`⚠️ Sentiment contradiction: Price up ${priceChange24h.toFixed(2)}% but sentiment was DOWN (strength ${parsed.strength}). Reduced to ${strength}.`);
+              }
+            } else {
+              // Moderate move (1.5-3%) - reduce strength by 40-50%
+              strength = Math.max(10, Math.floor(strength * 0.5));
+              console.log(`⚠️ Sentiment contradiction: Price up ${priceChange24h.toFixed(2)}% but sentiment was DOWN. Reduced strength from ${parsed.strength} to ${strength}.`);
+            }
+          }
+        }
+        
+        // Also check 6-hour movements for additional validation (less strict)
+        if (Math.abs(priceChange6h) > 1.0 && Math.abs(priceChange24h || 0) < 1.5) {
+          // Significant 6h move but not a big daily move - apply lighter correction
+          const isPriceDown6h = priceChange6h < -1.0;
+          const isPriceUp6h = priceChange6h > 1.0;
+          const sentimentUp = direction === 'up';
+          const sentimentDown = direction === 'down';
+          
+          if ((isPriceDown6h && sentimentUp) || (isPriceUp6h && sentimentDown)) {
+            // Reduce strength by 20-30% for 6h contradictions
+            strength = Math.max(10, Math.floor(strength * 0.75));
+            console.log(`⚠️ Sentiment contradiction (6h): Price ${priceChange6h > 0 ? 'up' : 'down'} ${Math.abs(priceChange6h).toFixed(2)}% but sentiment was ${direction.toUpperCase()}. Reduced strength to ${strength}.`);
+          }
+        }
       }
       
       return {

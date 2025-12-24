@@ -2,6 +2,7 @@ import fetch from 'node-fetch';
 import crypto from 'crypto';
 import { analyzeSentimentAI } from './sentimentAnalyzer.js';
 import { categorizeArticle } from './newsClient.js';
+import { getRatesInRange } from './db-supabase.js';
 
 const TWITTER_BEARER_TOKEN = process.env.TWITTER_BEARER_TOKEN;
 const TWITTER_TIMEOUT = 15000;
@@ -11,6 +12,89 @@ const TWITTER_TIMEOUT = 15000;
  */
 function generateId(url) {
   return crypto.createHash('md5').update(url).digest('hex').substring(0, 16);
+}
+
+/**
+ * Get price change data from the last 6 hours AND 24 hours for sentiment analysis
+ * @returns {Promise<Object|null>} Price change data or null if unavailable
+ */
+async function getPriceChangeData() {
+  try {
+    const sixHoursAgo = new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString();
+    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    
+    // Fetch both 6h and 24h data
+    const [rates6h, rates24h] = await Promise.all([
+      getRatesInRange(sixHoursAgo),
+      getRatesInRange(twentyFourHoursAgo)
+    ]);
+    
+    if (!rates6h || rates6h.length === 0) {
+      return null;
+    }
+    
+    // Calculate 6-hour changes
+    const firstRate6h = rates6h[0];
+    const lastRate = rates6h[rates6h.length - 1];
+    const price6hAgo = firstRate6h.mid || ((firstRate6h.buy + firstRate6h.sell) / 2);
+    const currentPrice = lastRate.mid || ((lastRate.buy + lastRate.sell) / 2);
+    const priceChange6h = ((currentPrice - price6hAgo) / price6hAgo) * 100;
+    
+    // Calculate 24-hour changes (daily)
+    let priceChange24h = null;
+    let price24hAgo = null;
+    if (rates24h && rates24h.length > 0) {
+      const firstRate24h = rates24h[0];
+      price24hAgo = firstRate24h.mid || ((firstRate24h.buy + firstRate24h.sell) / 2);
+      priceChange24h = ((currentPrice - price24hAgo) / price24hAgo) * 100;
+    }
+    
+    // Determine trends
+    let trend6h = 'stable';
+    if (priceChange6h > 0.1) {
+      trend6h = 'rising';
+    } else if (priceChange6h < -0.1) {
+      trend6h = 'falling';
+    }
+    
+    let trend24h = 'stable';
+    if (priceChange24h !== null) {
+      if (priceChange24h > 0.1) {
+        trend24h = 'rising';
+      } else if (priceChange24h < -0.1) {
+        trend24h = 'falling';
+      }
+    }
+    
+    // Calculate volatility (standard deviation of price changes) for 6h period
+    let volatility = 0;
+    if (rates6h.length > 1) {
+      const prices = rates6h.map(r => r.mid || ((r.buy + r.sell) / 2));
+      const changes = [];
+      for (let i = 1; i < prices.length; i++) {
+        changes.push(Math.abs((prices[i] - prices[i-1]) / prices[i-1] * 100));
+      }
+      if (changes.length > 0) {
+        const mean = changes.reduce((a, b) => a + b, 0) / changes.length;
+        const variance = changes.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / changes.length;
+        volatility = Math.sqrt(variance);
+      }
+    }
+    
+    return {
+      priceChange6h: parseFloat(priceChange6h.toFixed(2)),
+      priceChange24h: priceChange24h !== null ? parseFloat(priceChange24h.toFixed(2)) : null,
+      trend6h,
+      trend24h,
+      volatility: parseFloat(volatility.toFixed(2)),
+      currentPrice: parseFloat(currentPrice.toFixed(2)),
+      price6hAgo: parseFloat(price6hAgo.toFixed(2)),
+      price24hAgo: price24hAgo !== null ? parseFloat(price24hAgo.toFixed(2)) : null
+    };
+  } catch (error) {
+    console.warn('Failed to get price change data for sentiment analysis:', error.message);
+    return null;
+  }
 }
 
 /**
@@ -112,11 +196,15 @@ export async function fetchTwitterNews() {
       new Map(allTweets.map(tweet => [tweet.url, tweet])).values()
     );
 
+    // Fetch price change data once to use for all tweets
+    const priceData = await getPriceChangeData();
+    
     const processedTweets = [];
     for (const tweet of uniqueTweets) {
       // Twitter queries are already currency-focused, so use AI for better accuracy
       // But tweets are shorter, so they're cheaper to analyze
-      const sentimentResult = await analyzeSentimentAI(tweet.title, tweet.summary);
+      // Include price change data for smarter analysis
+      const sentimentResult = await analyzeSentimentAI(tweet.title, tweet.summary, priceData);
       // Handle both old format (string) and new format (object)
       const sentiment = typeof sentimentResult === 'string' 
         ? sentimentResult 

@@ -2,6 +2,7 @@ import fetch from 'node-fetch';
 import crypto from 'crypto';
 import * as cheerio from 'cheerio';
 import { analyzeSentimentAI, analyzeSentimentKeywords } from './sentimentAnalyzer.js';
+import { getRatesInRange } from './db-supabase.js';
 
 const NEWS_FETCH_TIMEOUT = 15000;
 const MAX_RETRIES = 2;
@@ -96,13 +97,99 @@ function isCurrencyRelated(title, summary) {
 }
 
 /**
+ * Get price change data from the last 6 hours AND 24 hours for sentiment analysis
+ * @returns {Promise<Object|null>} Price change data or null if unavailable
+ */
+async function getPriceChangeData() {
+  try {
+    const sixHoursAgo = new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString();
+    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    
+    // Fetch both 6h and 24h data
+    const [rates6h, rates24h] = await Promise.all([
+      getRatesInRange(sixHoursAgo),
+      getRatesInRange(twentyFourHoursAgo)
+    ]);
+    
+    if (!rates6h || rates6h.length === 0) {
+      return null;
+    }
+    
+    // Calculate 6-hour changes
+    const firstRate6h = rates6h[0];
+    const lastRate = rates6h[rates6h.length - 1];
+    const price6hAgo = firstRate6h.mid || ((firstRate6h.buy + firstRate6h.sell) / 2);
+    const currentPrice = lastRate.mid || ((lastRate.buy + lastRate.sell) / 2);
+    const priceChange6h = ((currentPrice - price6hAgo) / price6hAgo) * 100;
+    
+    // Calculate 24-hour changes (daily)
+    let priceChange24h = null;
+    let price24hAgo = null;
+    if (rates24h && rates24h.length > 0) {
+      const firstRate24h = rates24h[0];
+      price24hAgo = firstRate24h.mid || ((firstRate24h.buy + firstRate24h.sell) / 2);
+      priceChange24h = ((currentPrice - price24hAgo) / price24hAgo) * 100;
+    }
+    
+    // Determine trends
+    let trend6h = 'stable';
+    if (priceChange6h > 0.1) {
+      trend6h = 'rising';
+    } else if (priceChange6h < -0.1) {
+      trend6h = 'falling';
+    }
+    
+    let trend24h = 'stable';
+    if (priceChange24h !== null) {
+      if (priceChange24h > 0.1) {
+        trend24h = 'rising';
+      } else if (priceChange24h < -0.1) {
+        trend24h = 'falling';
+      }
+    }
+    
+    // Calculate volatility (standard deviation of price changes) for 6h period
+    let volatility = 0;
+    if (rates6h.length > 1) {
+      const prices = rates6h.map(r => r.mid || ((r.buy + r.sell) / 2));
+      const changes = [];
+      for (let i = 1; i < prices.length; i++) {
+        changes.push(Math.abs((prices[i] - prices[i-1]) / prices[i-1] * 100));
+      }
+      if (changes.length > 0) {
+        const mean = changes.reduce((a, b) => a + b, 0) / changes.length;
+        const variance = changes.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / changes.length;
+        volatility = Math.sqrt(variance);
+      }
+    }
+    
+    return {
+      priceChange6h: parseFloat(priceChange6h.toFixed(2)),
+      priceChange24h: priceChange24h !== null ? parseFloat(priceChange24h.toFixed(2)) : null,
+      trend6h,
+      trend24h,
+      volatility: parseFloat(volatility.toFixed(2)),
+      currentPrice: parseFloat(currentPrice.toFixed(2)),
+      price6hAgo: parseFloat(price6hAgo.toFixed(2)),
+      price24hAgo: price24hAgo !== null ? parseFloat(price24hAgo.toFixed(2)) : null
+    };
+  } catch (error) {
+    console.warn('Failed to get price change data for sentiment analysis:', error.message);
+    return null;
+  }
+}
+
+/**
  * Smart sentiment analysis: Use OpenAI only for currency-related articles
  * Use keyword-based analysis for other Bolivia articles to save costs
+ * Now includes price change data from last 6 hours for smarter analysis
  */
 async function classifySentiment(title, summary) {
   // Only use expensive OpenAI API for currency-related articles
   if (isCurrencyRelated(title, summary)) {
-    return await analyzeSentimentAI(title, summary);
+    // Fetch price change data to provide context to AI
+    const priceData = await getPriceChangeData();
+    return await analyzeSentimentAI(title, summary, priceData);
   } else {
     // Use free keyword-based analysis for non-currency articles
     return analyzeSentimentKeywords(title, summary);

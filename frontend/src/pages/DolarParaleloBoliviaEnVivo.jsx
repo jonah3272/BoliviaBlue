@@ -21,7 +21,8 @@ function DolarParaleloBoliviaEnVivo() {
   const [isLoading, setIsLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState(new Date());
 
-  useAdsenseReady(isLoading);
+  // Only allow ads when content is loaded (AdSense policy compliance)
+  useAdsenseReadyWhen(isLoading, currentRate !== null);
 
   useEffect(() => {
     loadRates();

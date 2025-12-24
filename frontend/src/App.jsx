@@ -86,11 +86,18 @@ function App() {
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<Blog />} />
           
-          {/* Canonical: /bolivia-blue-rate (redirect duplicates) */}
-          <Route path="/bolivia-blue-rate" element={<BoliviaBlueRate />} />
-          <Route path="/bolivia-blue-rate-hoy" element={<Redirect to="/bolivia-blue-rate" />} />
-          <Route path="/bolivia-blue-rate-actual" element={<Redirect to="/bolivia-blue-rate" />} />
-          <Route path="/tipo-cambio-blue-bolivia" element={<Redirect to="/bolivia-blue-rate" />} />
+          {/* Canonical: /bolivian-blue (main Spanish page - redirect duplicates) */}
+          <Route path="/bolivian-blue" element={<BolivianBlue />} />
+          <Route path="/blue-dolar-bolivia" element={<Redirect to="/bolivian-blue" />} />
+          <Route path="/blue-rate-bolivia" element={<Redirect to="/bolivian-blue" />} />
+          <Route path="/cambio-blue-bolivia" element={<Redirect to="/bolivian-blue" />} />
+          <Route path="/bolivia-blue-rate" element={<Redirect to="/bolivian-blue" />} />
+          <Route path="/bolivia-blue-rate-hoy" element={<Redirect to="/bolivian-blue" />} />
+          <Route path="/bolivia-blue-rate-actual" element={<Redirect to="/bolivian-blue" />} />
+          <Route path="/tipo-cambio-blue-bolivia" element={<Redirect to="/bolivian-blue" />} />
+          
+          {/* Canonical: /blue-dollar-bolivia (main English page) */}
+          <Route path="/blue-dollar-bolivia" element={<BlueDollarBolivia />} />
           
           {/* Canonical: /cuanto-esta-dolar-bolivia (redirect duplicate) */}
           <Route path="/cuanto-esta-dolar-bolivia" element={<CuantoEstaDolarBolivia />} />
@@ -106,11 +113,6 @@ function App() {
           <Route path="/binance-p2p-bolivia" element={<BinanceP2PBolivia />} />
           <Route path="/usdt-bolivia" element={<UsdtBolivia />} />
           <Route path="/dolar-paralelo-bolivia-en-vivo" element={<DolarParaleloBoliviaEnVivo />} />
-          <Route path="/bolivian-blue" element={<BolivianBlue />} />
-          <Route path="/blue-dolar-bolivia" element={<BlueDolarBolivia />} />
-          <Route path="/blue-dollar-bolivia" element={<BlueDollarBolivia />} />
-          <Route path="/blue-rate-bolivia" element={<BlueRateBolivia />} />
-          <Route path="/cambio-blue-bolivia" element={<CambioBlueBolivia />} />
           
           {/* Currency conversion pages */}
           <Route path="/euro-a-boliviano" element={<EuroToBoliviano />} />

@@ -430,7 +430,8 @@ function Home() {
             <Suspense fallback={
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 animate-pulse">
                 <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-4"></div>
-                <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                {/* Match actual chart height: h-[240px] sm:h-[320px] md:h-[420px] */}
+                <div className="h-[240px] sm:h-[320px] md:h-[420px] bg-gray-200 dark:bg-gray-700 rounded"></div>
               </div>
             }>
               <BlueChart showOfficial={showOfficial} />

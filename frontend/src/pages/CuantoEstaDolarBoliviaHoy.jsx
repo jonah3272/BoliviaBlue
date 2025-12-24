@@ -28,7 +28,8 @@ function CuantoEstaDolarBoliviaHoy() {
     loadRate();
   }, []);
 
-  useAdsenseReadyWhen(!loading && currentRate !== null);
+  // Only allow ads when content is loaded (AdSense policy compliance)
+  useAdsenseReadyWhen(loading, currentRate !== null);
 
   const currentDate = new Date().toLocaleDateString('es-BO', {
     weekday: 'long',

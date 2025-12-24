@@ -902,12 +902,14 @@ function SentimentNewsCard() {
             >
               <div className="flex items-start gap-2 sm:gap-3">
                 {/* Favicon */}
-                <div className="flex-shrink-0 mt-0.5">
+                <div className="flex-shrink-0 mt-0.5 w-4 h-4">
                   {getFaviconUrl(articles[currentIndex].source, articles[currentIndex].url) ? (
                     <img 
                       src={getFaviconUrl(articles[currentIndex].source, articles[currentIndex].url)} 
                       alt={articles[currentIndex].source}
                       className="w-4 h-4 rounded-sm"
+                      width="16"
+                      height="16"
                       loading="lazy"
                       decoding="async"
                       onError={(e) => {

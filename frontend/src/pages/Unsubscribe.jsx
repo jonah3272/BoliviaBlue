@@ -5,8 +5,13 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PageMeta from '../components/PageMeta';
 import { getApiEndpoint } from '../utils/apiUrl';
+import { blockAdsOnThisPage } from '../utils/adsenseLoader';
 
 function Unsubscribe() {
+  // Block ads on utility pages (AdSense policy compliance)
+  useEffect(() => {
+    blockAdsOnThisPage();
+  }, []);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const languageContext = useLanguage();
@@ -88,7 +93,7 @@ function Unsubscribe() {
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 text-center">
             {status === 'loading' && (
               <>
-                <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-blue-600 mb-4"></div>
+                <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-blue-600 mb-4" data-loading-state="true"></div>
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
                   {language === 'es' ? 'Procesando...' : 'Processing...'}
                 </h1>

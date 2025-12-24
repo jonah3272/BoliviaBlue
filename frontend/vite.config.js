@@ -37,13 +37,29 @@ export default defineConfig({
             if (id.includes('react-router')) {
               return 'router-vendor';
             }
-            // Recharts is MASSIVE - isolate it completely
+            // Recharts is MASSIVE - isolate it completely (only loaded when chart is rendered)
             if (id.includes('recharts') || id.includes('d3-') || id.includes('victory')) {
               return 'charts-vendor';
             }
-            // Framer Motion animations
+            // Lightweight charts (alternative chart library)
+            if (id.includes('lightweight-charts')) {
+              return 'lightweight-charts-vendor';
+            }
+            // Framer Motion animations (only used in some components)
             if (id.includes('framer-motion')) {
               return 'motion-vendor';
+            }
+            // Supabase - large library, separate chunk
+            if (id.includes('@supabase')) {
+              return 'supabase-vendor';
+            }
+            // React Helmet - separate for better caching
+            if (id.includes('react-helmet')) {
+              return 'helmet-vendor';
+            }
+            // SWR - data fetching library
+            if (id.includes('swr')) {
+              return 'swr-vendor';
             }
             // Everything else
             return 'vendor';
@@ -51,19 +67,33 @@ export default defineConfig({
         },
       },
     },
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 500, // Lower threshold to catch large chunks
     minify: 'terser',
     terserOptions: {
       compress: {
         drop_console: true, // Remove console.logs in production
         drop_debugger: true,
-        pure_funcs: ['console.log', 'console.info', 'console.debug'], // Remove specific console calls
+        pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.warn'], // Remove specific console calls
+        passes: 2, // Multiple passes for better optimization
+        unsafe: false,
+        unsafe_comps: false,
+        unsafe_math: false,
+        unsafe_methods: false,
+      },
+      format: {
+        comments: false, // Remove all comments
       },
     },
     sourcemap: false,
     cssCodeSplit: true,
     target: 'es2015',
     assetsInlineLimit: 4096, // Inline assets smaller than 4kb
+    // Enable tree-shaking more aggressively
+    treeshake: {
+      moduleSideEffects: false,
+      propertyReadSideEffects: false,
+      tryCatchDeoptimization: false,
+    },
   }
 });
 

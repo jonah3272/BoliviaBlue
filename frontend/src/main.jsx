@@ -8,7 +8,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { CurrencyProvider } from './contexts/CurrencyContext';
 import { ToastProvider } from './contexts/ToastContext';
-import { loadAdSense } from './utils/adsenseLoader';
+import { loadAdSense, blockAdsOnThisPage } from './utils/adsenseLoader';
 
 // Global error handler for mobile debugging
 window.addEventListener('error', (event) => {
@@ -67,12 +67,29 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// Load AdSense after page is fully loaded
+// Load AdSense after page is fully loaded AND React has hydrated
+// Use requestIdleCallback for better performance (defers to idle time)
+// Falls back to setTimeout for browsers that don't support it
+const scheduleAdSenseLoad = () => {
+  if ('requestIdleCallback' in window) {
+    // Use idle time to load AdSense (better for main thread)
+    requestIdleCallback(() => {
+      console.log('[AdSense] Starting content validation after idle callback...');
+      loadAdSense('ca-pub-3497294777171749');
+    }, { timeout: 3000 });
+  } else {
+    // Fallback for browsers without requestIdleCallback
+    setTimeout(() => {
+      console.log('[AdSense] Starting content validation after delay...');
+      loadAdSense('ca-pub-3497294777171749');
+    }, 2500);
+  }
+};
+
 window.addEventListener('load', () => {
-  console.log('[AdSense] Page fully loaded, starting content validation...');
-  setTimeout(() => {
-    loadAdSense('ca-pub-3497294777171749');
-  }, 1500);
+  console.log('[AdSense] Page fully loaded, waiting for React hydration...');
+  // Wait for React to hydrate, then schedule AdSense load during idle time
+  setTimeout(scheduleAdSenseLoad, 2000);
 });
 
 // Error Boundary Component
@@ -89,21 +106,34 @@ class ErrorBoundary extends React.Component {
   componentDidCatch(error, errorInfo) {
     console.error('[React Error Boundary]', error, errorInfo);
     this.setState({ error, errorInfo });
+    // Block ads on error pages (AdSense policy compliance)
+    blockAdsOnThisPage();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    // Block ads when error state changes to true
+    if (this.state.hasError && !prevState.hasError) {
+      blockAdsOnThisPage();
+    }
   }
 
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '20px',
-          backgroundColor: '#0d0d0d',
-          color: '#fff',
-          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-        }}>
+        <div 
+          style={{
+            minHeight: '100vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px',
+            backgroundColor: '#0d0d0d',
+            color: '#fff',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+          }}
+          data-adsense-block="error-page"
+          className="error-boundary"
+        >
           <div style={{ maxWidth: '600px', textAlign: 'center' }}>
             <h1 style={{ fontSize: '2em', marginBottom: '20px' }}>🔧 Oops! Algo salió mal</h1>
             <p style={{ marginBottom: '20px', lineHeight: '1.6' }}>

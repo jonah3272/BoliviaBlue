@@ -172,7 +172,7 @@ function NewsFeed() {
       {isLoading && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-4 animate-pulse">
+            <div key={i} className="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-4 animate-pulse min-h-[120px]">
               <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-3"></div>
               <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-full mb-2"></div>
               <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
@@ -229,5 +229,6 @@ function NewsFeed() {
   );
 }
 
-export default NewsFeed;
+// Memoize NewsFeed to prevent unnecessary re-renders
+export default memo(NewsFeed);
 

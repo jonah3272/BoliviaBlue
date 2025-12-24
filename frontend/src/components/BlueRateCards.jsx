@@ -21,8 +21,9 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
   const changeIcon = changeValue > 0 ? '↑' : changeValue < 0 ? '↓' : '';
 
   if (isLoading) {
+    // Reserve exact space to match final card dimensions (prevents layout shift)
     return (
-      <div className={`backdrop-blur-sm bg-white/50 dark:bg-gray-800/50 rounded-xl border-2 ${borderColor} p-4 shadow-lg`}>
+      <div className={`backdrop-blur-sm bg-white/50 dark:bg-gray-800/50 rounded-xl border-2 ${borderColor} p-4 shadow-lg min-h-[180px]`}>
         <div className="skeleton h-4 w-20 mb-2"></div>
         <div className="skeleton h-12 w-28 mb-1"></div>
         <div className="skeleton h-3 w-32"></div>

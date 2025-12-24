@@ -218,11 +218,13 @@ function DailySentimentHeader() {
   // Tooltip text explaining the methodology
   const tooltipText = language === 'es'
     ? `Análisis inteligente basado en ${dailySentiment.total} artículos de las últimas 24h. ` +
+      `IA valida sentimiento contra cambios de precio (6h y 24h) para prevenir contradicciones. ` +
       `Ponderación temporal: artículos más recientes tienen mayor peso. ` +
       `Artículos de divisas (${dailySentiment.currencyUp + dailySentiment.currencyDown}) tienen 1.5x peso. ` +
       `Confianza: ${trendDetails.confidence}%. ` +
       `Puntuación: ↗ ${trendDetails.upScore} vs ↘ ${trendDetails.downScore}`
     : `Smart analysis based on ${dailySentiment.total} articles from last 24h. ` +
+      `AI validates sentiment against price changes (6h and 24h) to prevent contradictions. ` +
       `Time-weighted: more recent articles have higher weight. ` +
       `Currency articles (${dailySentiment.currencyUp + dailySentiment.currencyDown}) have 1.5x weight. ` +
       `Confidence: ${trendDetails.confidence}%. ` +

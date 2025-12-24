@@ -568,8 +568,11 @@ function SentimentNewsCard() {
   const tooltipText = language === 'es'
     ? `Análisis avanzado basado en ${dailySentiment.total} artículos de las últimas 24h.\n\n` +
       `📊 Metodología:\n` +
-      `• Fuerza del sentimiento (0-100): Cada artículo se analiza para determinar qué tan impactante es para el dólar. ` +
+      `• Fuerza del sentimiento (0-100): Cada artículo se analiza con IA para determinar qué tan impactante es para el dólar. ` +
       `Artículos con mayor impacto (crisis, devaluación, intervención BCB) tienen mayor peso.\n` +
+      `• Validación con precios: La IA considera cambios de precio de las últimas 6h y 24h. ` +
+      `Si el precio baja >3% pero el sentimiento es positivo, se ajusta automáticamente (fuerza reducida o neutral). ` +
+      `Esto previene señales contradictorias (ej: precio baja 5% pero sentimiento totalmente positivo).\n` +
       `• Ponderación temporal: Artículos más recientes tienen mayor peso (decaimiento exponencial cada 12h).\n` +
       `• Categoría: Artículos de divisas tienen 1.5x peso vs. artículos generales.\n` +
       `• Límite por cantidad: El puntaje máximo escala con el número de artículos ` +
@@ -582,8 +585,11 @@ function SentimentNewsCard() {
       `• Negativo (-) = Dólar baja (menos Bs por USD, ej: 10 → 9 BOB/USD)`
     : `Advanced analysis based on ${dailySentiment.total} articles from last 24h.\n\n` +
       `📊 Methodology:\n` +
-      `• Sentiment strength (0-100): Each article is analyzed to determine how impactful it is for the dollar. ` +
+      `• Sentiment strength (0-100): Each article is analyzed with AI to determine how impactful it is for the dollar. ` +
       `Higher impact articles (crisis, devaluation, BCB intervention) have greater weight.\n` +
+      `• Price validation: AI considers price changes from last 6h and 24h. ` +
+      `If price drops >3% but sentiment is positive, it's automatically adjusted (strength reduced or neutralized). ` +
+      `This prevents contradictory signals (e.g., price down 5% but sentiment fully positive).\n` +
       `• Time-weighted: More recent articles have higher weight (exponential decay every 12h).\n` +
       `• Category: Currency articles have 1.5x weight vs. general articles.\n` +
       `• Count-based capping: Maximum score scales with article count ` +

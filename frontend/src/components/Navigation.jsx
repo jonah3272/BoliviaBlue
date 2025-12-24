@@ -34,6 +34,7 @@ function Navigation() {
   const secondaryNavItems = [
     { path: '/bancos', key: 'navBancos', icon: 'bank' },
     { path: '/acerca-de', key: 'navAbout', icon: 'about' },
+    { path: '/contacto', key: 'navContact', icon: 'contact' },
     { path: '/preguntas-frecuentes', key: 'navFAQ', icon: 'faq' },
     { path: '/rodrigo-paz', key: 'navRodrigoPaz', icon: 'rodrigo' }
   ];
@@ -83,6 +84,11 @@ function Navigation() {
       bank: (
         <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
+        </svg>
+      ),
+      contact: (
+        <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
         </svg>
       )
     };

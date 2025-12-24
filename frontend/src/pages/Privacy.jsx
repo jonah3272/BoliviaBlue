@@ -302,10 +302,10 @@ function Privacy() {
               </p>
               <p className="text-gray-700 dark:text-gray-300 mb-4">
                 <a 
-                  href="mailto:contact@boliviablue.com" 
+                  href="mailto:info@boliviablue.com" 
                   className="text-blue-600 dark:text-blue-400 hover:underline"
                 >
-                  contact@boliviablue.com
+                  info@boliviablue.com
                 </a>
               </p>
             </section>
@@ -345,10 +345,10 @@ function Privacy() {
                 <p className="text-gray-700 dark:text-gray-300 mb-2">
                   <strong>{language === 'es' ? 'Email:' : 'Email:'}</strong>{' '}
                   <a 
-                    href="mailto:contact@boliviablue.com" 
+                    href="mailto:info@boliviablue.com" 
                     className="text-blue-600 dark:text-blue-400 hover:underline"
                   >
-                    contact@boliviablue.com
+                    info@boliviablue.com
                   </a>
                 </p>
                 <p className="text-gray-700 dark:text-gray-300">

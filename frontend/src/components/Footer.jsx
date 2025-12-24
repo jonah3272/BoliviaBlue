@@ -13,6 +13,7 @@ function Footer() {
     { path: '/blog', label: 'Blog' },
     { path: '/bancos', label: language === 'es' ? 'Bancos' : 'Banks' },
     { path: '/acerca-de', label: language === 'es' ? 'Acerca de' : 'About' },
+    { path: '/contacto', label: language === 'es' ? 'Contacto' : 'Contact' },
     { path: '/preguntas-frecuentes', label: 'FAQ' },
     { path: '/politica-de-privacidad', label: language === 'es' ? 'Privacidad' : 'Privacy' }
   ];

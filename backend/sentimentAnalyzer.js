@@ -52,71 +52,88 @@ export async function analyzeSentimentAI(title, summary, priceData = null) {
       
       priceContext = `
 
-CRITICAL MARKET CONTEXT - USE THIS TO VALIDATE YOUR ANALYSIS:
-Last 6 Hours:
-- Price change: ${priceChange6h > 0 ? '+' : ''}${priceChange6h}% (${changeDirection6h})
-- Trend: ${trend6h}
-${priceChange24h !== null ? `Last 24 Hours (DAILY):
-- Price change: ${priceChange24h > 0 ? '+' : ''}${priceChange24h}% (${changeDirection24h})
-- Trend: ${trend24h}` : ''}
+MARKET CONTEXT - USE FOR PREDICTIVE ANALYSIS (NOT REACTIVE VALIDATION):
+Recent Price Movements:
+- Last 6 Hours: ${priceChange6h > 0 ? '+' : ''}${priceChange6h}% (${changeDirection6h}, ${trend6h} trend)
+${priceChange24h !== null ? `- Last 24 Hours: ${priceChange24h > 0 ? '+' : ''}${priceChange24h}% (${changeDirection24h}, ${trend24h} trend)` : ''}
 - Volatility: ${volatilityLevel} (${volatility}%)
 - Current price: ${currentPrice} BOB/USD
-- Price 6 hours ago: ${price6hAgo} BOB/USD
-${price24hAgo !== null ? `- Price 24 hours ago: ${price24hAgo} BOB/USD` : ''}
 
-CRITICAL RULES - YOU MUST FOLLOW THESE:
-1. If the dollar price is DOWN significantly (${priceChange24h !== null ? priceChange24h < -2 ? `-${Math.abs(priceChange24h).toFixed(1)}%` : '>2%' : '>2%'} in 24h), articles suggesting dollar STRENGTHENING (UP) should be:
-   - Reduced in strength by at least 30-50%
-   - Considered as potential reversals (only if very strong news)
-   - Marked as NEUTRAL if the contradiction is too strong
+PREDICTIVE ANALYSIS GUIDELINES:
+Your goal is to PREDICT FUTURE price movements based on the news, not validate against current prices.
 
-2. If the dollar price is UP significantly (${priceChange24h !== null ? priceChange24h > 2 ? `+${priceChange24h.toFixed(1)}%` : '>2%' : '>2%'} in 24h), articles suggesting dollar WEAKENING (DOWN) should be:
-   - Reduced in strength by at least 30-50%
-   - Considered as potential reversals (only if very strong news)
-   - Marked as NEUTRAL if the contradiction is too strong
+1. NEW INFORMATION vs ALREADY REFLECTED:
+   - If the news is NEW (just announced, breaking news, future events), it can predict FUTURE price movements even if it contradicts current trends
+   - If the news is OLD (already known, historical data), it may already be reflected in current prices - reduce strength accordingly
+   - Strong NEW news can predict REVERSALS or ACCELERATIONS of current trends
 
-3. If price movement aligns with article sentiment, you may increase strength slightly (but don't overdo it)
+2. PREDICTIVE SIGNALS:
+   - Policy announcements → Predict future impact (often 1-7 days ahead)
+   - Crisis/breaking news → Predict immediate future impact (hours to days)
+   - Economic data releases → Predict market reaction (often immediate to 1-2 days)
+   - Central bank actions → Predict medium-term impact (days to weeks)
 
-4. For significant daily moves (>2%), the market is already reflecting sentiment - news must be EXTREMELY strong to contradict it
+3. TREND CONTINUATION vs REVERSAL:
+   - If news STRENGTHENS an existing trend → May predict ACCELERATION (increase strength)
+   - If news CONTRADICTS an existing trend → May predict REVERSAL (assess if news is strong enough)
+   - Very strong news (>70 strength) can predict reversals even during significant price movements
 
-${significant24hMove ? `⚠️ WARNING: There is a SIGNIFICANT daily price movement (${priceChange24h > 0 ? '+' : ''}${priceChange24h}%). Your sentiment analysis MUST account for this.` : ''}`;
+4. TIME HORIZON:
+   - Focus on what the news will cause in the NEXT 1-7 DAYS, not what it already caused
+   - Current prices may not yet reflect the full impact of recent news
+   - News can predict price movements that haven't happened yet
+
+${significant24hMove ? `Note: There's been a ${priceChange24h > 0 ? 'significant rise' : 'significant drop'} (${priceChange24h > 0 ? '+' : ''}${priceChange24h}%) recently. Consider: Is this news NEW information that could change the trend, or is it already reflected? If it's new and strong, it can still predict future movements.` : ''}`;
     }
 
-    const systemPrompt = `You are a financial sentiment analyzer specializing in currency exchange rates for Bolivia. 
-Your task is to determine if a news article indicates the US dollar (USD) is rising, falling, or neutral against the Bolivian Boliviano (BOB), AND how strong/impactful this signal is.
+    const systemPrompt = `You are a PREDICTIVE financial sentiment analyzer specializing in currency exchange rates for Bolivia. 
+Your task is to PREDICT if a news article indicates the US dollar (USD) will RISE or FALL in the FUTURE (next 1-7 days) against the Bolivian Boliviano (BOB), AND how strong/impactful this predictive signal is.
+
+IMPORTANT: You are predicting FUTURE price movements, not describing current prices. Focus on what the news WILL cause, not what it already caused.
 
 Context:
-- "UP" means the dollar is STRENGTHENING (getting more expensive in bolivianos, or boliviano is WEAKENING)
-- "DOWN" means the dollar is WEAKENING (getting cheaper in bolivianos, or boliviano is STRENGTHENING)
-- "NEUTRAL" means no clear directional signal
+- "UP" means the dollar will STRENGTHEN in the future (will get more expensive in bolivianos, or boliviano will WEAKEN)
+- "DOWN" means the dollar will WEAKEN in the future (will get cheaper in bolivianos, or boliviano will STRENGTHEN)
+- "NEUTRAL" means no clear predictive signal for future movement
 
-Strength (0-100):
-- 0-30: Weak signal (minor mention, indirect impact, speculative)
-- 31-60: Moderate signal (clear mention, some impact expected)
-- 61-80: Strong signal (significant news, major impact expected)
-- 81-100: Very strong signal (crisis, major policy change, extreme market conditions)
+Strength (0-100) - Based on PREDICTIVE IMPACT:
+- 0-30: Weak predictive signal (minor mention, indirect future impact, speculative)
+- 31-60: Moderate predictive signal (clear mention, some future impact expected in 1-3 days)
+- 61-80: Strong predictive signal (significant news, major future impact expected in hours to days)
+- 81-100: Very strong predictive signal (crisis, major policy change, extreme conditions - predicts immediate to near-term impact)
 
-Consider factors like:
-- Exchange rate changes (direct mentions = higher strength)
-- Economic policy (major announcements = higher strength)
-- Political stability (crises = higher strength)
-- Central bank actions (interventions = higher strength)
-- Foreign reserves (major changes = higher strength)
-- Inflation (extreme inflation = higher strength)
-- Market sentiment (panic/fear = higher strength)
-- International relations (major events = higher strength)
-${priceContext ? '- Recent market price movements (align with or contradict recent trends)' : ''}
+Consider PREDICTIVE factors:
+- NEW policy announcements → Predict future market reaction (higher strength for new info)
+- Breaking news/crises → Predict immediate future impact (hours to days)
+- Economic data releases → Predict market reaction (often immediate)
+- Central bank actions → Predict medium-term impact (days to weeks)
+- Political events → Predict market sentiment changes
+- Foreign reserves changes → Predict future market pressure
+- Inflation news → Predict future currency pressure
+- International relations → Predict future economic impact
+${priceContext ? '- Use recent price movements to understand context, but focus on predicting FUTURE movements based on news' : ''}
+
+PREDICTIVE THINKING:
+- Ask: "What will this news cause in the NEXT 1-7 DAYS?"
+- Strong new news can predict REVERSALS even if current trend is opposite
+- News that confirms a trend may predict ACCELERATION
+- Historical/old news may already be reflected - reduce strength
 
 Respond with ONLY a JSON object in this exact format:
 {"direction": "UP" or "DOWN" or "NEUTRAL", "strength": 0-100}`;
 
-    const userPrompt = `Analyze this Bolivian news article:
+    const userPrompt = `Analyze this Bolivian news article and PREDICT its impact on FUTURE dollar prices:
 
 Title: ${title}
 
 Summary: ${summary || 'No summary available'}${priceContext}
 
-What is the sentiment regarding the US dollar value against the Boliviano? Provide direction and strength (0-100).`;
+Based on this news, what will happen to the US dollar value against the Boliviano in the NEXT 1-7 DAYS? 
+- Is this NEW information that will affect future prices?
+- Will this cause the dollar to RISE (UP) or FALL (DOWN) in the future?
+- How strong is this predictive signal (0-100)?
+
+Focus on PREDICTING future movements, not describing current prices.`;
 
     // Model selection: gpt-4o-mini is optimal for sentiment analysis
     // Alternatives:
@@ -173,75 +190,31 @@ What is the sentiment regarding the US dollar value against the Boliviano? Provi
         strength = 0;
       }
       
-      // POST-PROCESSING: Validate sentiment against actual price movements
-      // This ensures we don't have contradictory signals (e.g., price down 5% but sentiment fully positive)
+      // POST-PROCESSING: Light validation for extreme contradictions only
+      // Since we're now focusing on PREDICTIVE analysis, we only adjust for extreme cases
+      // Strong news can predict reversals, so we're much less restrictive
       if (priceData && direction !== 'neutral' && strength > 0) {
         const { priceChange24h, priceChange6h } = priceData;
         
-        // Check for significant contradictions with daily price movement
-        if (priceChange24h !== null && Math.abs(priceChange24h) > 1.5) {
-          const isPriceDown = priceChange24h < -1.5;
-          const isPriceUp = priceChange24h > 1.5;
+        // Only apply corrections for EXTREME contradictions (>5% moves) AND weak sentiment
+        // Strong sentiment (>70) can predict reversals, so we allow it
+        if (priceChange24h !== null && Math.abs(priceChange24h) > 5.0) {
+          const isPriceDown = priceChange24h < -5.0;
+          const isPriceUp = priceChange24h > 5.0;
           const sentimentUp = direction === 'up';
           const sentimentDown = direction === 'down';
           
-          // Strong contradiction: price down significantly but sentiment says up
-          if (isPriceDown && sentimentUp) {
-            // Reduce strength significantly or flip to neutral
-            if (Math.abs(priceChange24h) > 3.0) {
-              // Very significant move (>3%) - force neutral or reduce heavily
-              if (strength < 70) {
-                // Weak to moderate sentiment - flip to neutral
-                direction = 'neutral';
-                strength = 0;
-                console.log(`⚠️ Sentiment contradiction: Price down ${priceChange24h.toFixed(2)}% but sentiment was UP. Forced to NEUTRAL.`);
-              } else {
-                // Strong sentiment - reduce by 50-70%
-                strength = Math.max(20, Math.floor(strength * 0.3));
-                console.log(`⚠️ Sentiment contradiction: Price down ${priceChange24h.toFixed(2)}% but sentiment was UP (strength ${parsed.strength}). Reduced to ${strength}.`);
-              }
-            } else {
-              // Moderate move (1.5-3%) - reduce strength by 40-50%
-              strength = Math.max(10, Math.floor(strength * 0.5));
-              console.log(`⚠️ Sentiment contradiction: Price down ${priceChange24h.toFixed(2)}% but sentiment was UP. Reduced strength from ${parsed.strength} to ${strength}.`);
+          // Only adjust if sentiment is WEAK (<50) - strong sentiment can predict reversals
+          if (strength < 50) {
+            // Extreme move (>5%) with weak sentiment - likely already reflected
+            if ((isPriceDown && sentimentUp) || (isPriceUp && sentimentDown)) {
+              // Reduce strength by 30-40% for weak contradictory signals
+              strength = Math.max(5, Math.floor(strength * 0.65));
+              console.log(`ℹ️ Predictive adjustment: Extreme price move (${priceChange24h > 0 ? '+' : ''}${priceChange24h.toFixed(2)}%) with weak sentiment (${parsed.strength}). Reduced to ${strength} to account for potential market reflection.`);
             }
-          }
-          
-          // Strong contradiction: price up significantly but sentiment says down
-          if (isPriceUp && sentimentDown) {
-            // Reduce strength significantly or flip to neutral
-            if (Math.abs(priceChange24h) > 3.0) {
-              // Very significant move (>3%) - force neutral or reduce heavily
-              if (strength < 70) {
-                // Weak to moderate sentiment - flip to neutral
-                direction = 'neutral';
-                strength = 0;
-                console.log(`⚠️ Sentiment contradiction: Price up ${priceChange24h.toFixed(2)}% but sentiment was DOWN. Forced to NEUTRAL.`);
-              } else {
-                // Strong sentiment - reduce by 50-70%
-                strength = Math.max(20, Math.floor(strength * 0.3));
-                console.log(`⚠️ Sentiment contradiction: Price up ${priceChange24h.toFixed(2)}% but sentiment was DOWN (strength ${parsed.strength}). Reduced to ${strength}.`);
-              }
-            } else {
-              // Moderate move (1.5-3%) - reduce strength by 40-50%
-              strength = Math.max(10, Math.floor(strength * 0.5));
-              console.log(`⚠️ Sentiment contradiction: Price up ${priceChange24h.toFixed(2)}% but sentiment was DOWN. Reduced strength from ${parsed.strength} to ${strength}.`);
-            }
-          }
-        }
-        
-        // Also check 6-hour movements for additional validation (less strict)
-        if (Math.abs(priceChange6h) > 1.0 && Math.abs(priceChange24h || 0) < 1.5) {
-          // Significant 6h move but not a big daily move - apply lighter correction
-          const isPriceDown6h = priceChange6h < -1.0;
-          const isPriceUp6h = priceChange6h > 1.0;
-          const sentimentUp = direction === 'up';
-          const sentimentDown = direction === 'down';
-          
-          if ((isPriceDown6h && sentimentUp) || (isPriceUp6h && sentimentDown)) {
-            // Reduce strength by 20-30% for 6h contradictions
-            strength = Math.max(10, Math.floor(strength * 0.75));
-            console.log(`⚠️ Sentiment contradiction (6h): Price ${priceChange6h > 0 ? 'up' : 'down'} ${Math.abs(priceChange6h).toFixed(2)}% but sentiment was ${direction.toUpperCase()}. Reduced strength to ${strength}.`);
+          } else {
+            // Strong sentiment (>50) - allow it to predict reversals even during extreme moves
+            console.log(`✅ Allowing strong predictive signal (strength ${strength}) despite extreme price move (${priceChange24h > 0 ? '+' : ''}${priceChange24h.toFixed(2)}%) - news may predict reversal.`);
           }
         }
       }

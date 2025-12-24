@@ -28,9 +28,9 @@ const pages = [
     lastmod: currentDate
   },
   {
-    path: '/cuanto-esta-dolar-bolivia-hoy',
+    path: '/cuanto-esta-dolar-bolivia',
     changefreq: 'hourly',
-    priority: '0.95',
+    priority: '0.9',
     lastmod: currentDate
   },
   
@@ -65,6 +65,12 @@ const pages = [
     priority: '0.9',
     lastmod: currentDate
   },
+  {
+    path: '/politica-de-privacidad', // Privacy policy
+    changefreq: 'monthly',
+    priority: '0.7',
+    lastmod: currentDate
+  },
   
   // Blog
   {
@@ -88,27 +94,15 @@ const pages = [
     lastmod: currentDate
   },
   
-  // Blue rate pages
+  // Blue rate pages (canonical only - redirect pages removed)
   {
-    path: '/bolivia-blue-rate',
-    changefreq: 'daily',
-    priority: '0.9',
-    lastmod: currentDate
-  },
-  {
-    path: '/bolivia-blue-rate-hoy',
+    path: '/bolivian-blue', // Main canonical Spanish page
     changefreq: 'hourly',
     priority: '0.95',
     lastmod: currentDate
   },
   {
-    path: '/bolivia-blue-rate-actual',
-    changefreq: 'hourly',
-    priority: '0.9',
-    lastmod: currentDate
-  },
-  {
-    path: '/tipo-cambio-blue-bolivia',
+    path: '/blue-dollar-bolivia', // Main canonical English page
     changefreq: 'hourly',
     priority: '0.9',
     lastmod: currentDate
@@ -165,12 +159,6 @@ const pages = [
     priority: '0.9',
     lastmod: currentDate
   },
-  {
-    path: '/buy-dollars',
-    changefreq: 'weekly',
-    priority: '0.8',
-    lastmod: currentDate
-  },
   
   // Crypto pages
   {
@@ -201,12 +189,6 @@ const pages = [
   },
   
   // Comparison & Banks
-  {
-    path: '/comparison',
-    changefreq: 'weekly',
-    priority: '0.8',
-    lastmod: currentDate
-  },
   {
     path: '/bancos',
     changefreq: 'monthly',

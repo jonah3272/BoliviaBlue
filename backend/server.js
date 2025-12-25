@@ -12,7 +12,11 @@ import {
   getTotalRatesCount,
   getRecentNews,
   createAlert,
-  deactivateAlert
+  deactivateAlert,
+  subscribeToNewsletter,
+  unsubscribeFromNewsletter,
+  getMonthlyReport,
+  getAllMonthlyReports
 } from './db-supabase.js';
 import { startScheduler, cache } from './scheduler-supabase.js';
 
@@ -404,6 +408,166 @@ app.post('/api/alerts/unsubscribe', cors(corsOptions), async (req, res) => {
 
   } catch (error) {
     console.error('Error unsubscribing:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: error.message
+    });
+  }
+});
+
+/**
+ * Subscribe to newsletter
+ */
+app.post('/api/newsletter/subscribe', cors(corsOptions), async (req, res) => {
+  try {
+    const { email, language = 'es', source = 'homepage' } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        error: 'Missing email',
+        message: 'Email is required'
+      });
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        error: 'Invalid email',
+        message: 'Please provide a valid email address'
+      });
+    }
+
+    const subscription = await subscribeToNewsletter(email, language, source);
+
+    res.json({
+      success: true,
+      message: language === 'es' 
+        ? '¡Suscripción exitosa! Revisa tu correo para confirmar.'
+        : 'Subscription successful! Check your email to confirm.',
+      subscription: {
+        email: subscription.email,
+        language: subscription.language
+      }
+    });
+
+  } catch (error) {
+    console.error('Error subscribing to newsletter:', error);
+    
+    // Handle duplicate email
+    if (error.message && error.message.includes('duplicate') || error.message.includes('unique')) {
+      return res.status(409).json({
+        error: 'Already subscribed',
+        message: 'This email is already subscribed to the newsletter'
+      });
+    }
+
+    res.status(500).json({
+      error: 'Internal server error',
+      message: error.message
+    });
+  }
+});
+
+/**
+ * Unsubscribe from newsletter
+ */
+app.post('/api/newsletter/unsubscribe', cors(corsOptions), async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        error: 'Missing email',
+        message: 'Email is required'
+      });
+    }
+
+    const result = await unsubscribeFromNewsletter(email);
+
+    if (!result) {
+      return res.status(404).json({
+        error: 'Not found',
+        message: 'Email not found in newsletter subscribers'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Successfully unsubscribed from newsletter'
+    });
+
+  } catch (error) {
+    console.error('Error unsubscribing from newsletter:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: error.message
+    });
+  }
+});
+
+/**
+ * Get monthly report
+ */
+app.get('/api/monthly-reports/:month/:year', cors(corsOptions), async (req, res) => {
+  try {
+    const { month, year } = req.params;
+    const { lang = 'es' } = req.query;
+
+    const monthNum = parseInt(month, 10);
+    const yearNum = parseInt(year, 10);
+
+    if (isNaN(monthNum) || monthNum < 1 || monthNum > 12) {
+      return res.status(400).json({
+        error: 'Invalid month',
+        message: 'Month must be between 1 and 12'
+      });
+    }
+
+    if (isNaN(yearNum) || yearNum < 2020 || yearNum > 2100) {
+      return res.status(400).json({
+        error: 'Invalid year',
+        message: 'Year must be a valid year'
+      });
+    }
+
+    const report = await getMonthlyReport(monthNum, yearNum, lang);
+
+    if (!report) {
+      return res.status(404).json({
+        error: 'Report not found',
+        message: `Monthly report for ${month}/${year} not found`
+      });
+    }
+
+    res.json(report);
+
+  } catch (error) {
+    console.error('Error fetching monthly report:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: error.message
+    });
+  }
+});
+
+/**
+ * Get all monthly reports
+ */
+app.get('/api/monthly-reports', cors(corsOptions), async (req, res) => {
+  try {
+    const { lang = 'es', limit = 12 } = req.query;
+
+    const reports = await getAllMonthlyReports(lang, parseInt(limit, 10));
+
+    res.json({
+      success: true,
+      reports,
+      count: reports.length
+    });
+
+  } catch (error) {
+    console.error('Error fetching monthly reports:', error);
     res.status(500).json({
       error: 'Internal server error',
       message: error.message

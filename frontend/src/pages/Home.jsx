@@ -12,6 +12,7 @@ const NewsTabs = lazy(() => import('../components/NewsTabs'));
 const RotatingNewsCarousel = lazy(() => import('../components/RotatingNewsCarousel'));
 const RateAlertForm = lazy(() => import('../components/RateAlertForm'));
 const SentimentNewsCard = lazy(() => import('../components/SentimentNewsCard'));
+const NewsletterSignup = lazy(() => import('../components/NewsletterSignup'));
 
 import About from '../components/About';
 import PageMeta from '../components/PageMeta';
@@ -762,6 +763,13 @@ function Home() {
               </p>
             </div>
           </div>
+        </section>
+
+        {/* Newsletter Signup Section */}
+        <section className="mb-8">
+          <Suspense fallback={<ComponentLoader />}>
+            <NewsletterSignup source="homepage" />
+          </Suspense>
         </section>
 
         {/* Social Share Section */}

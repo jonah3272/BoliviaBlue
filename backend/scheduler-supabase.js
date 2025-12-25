@@ -5,12 +5,16 @@ import { fetchTwitterNews } from './twitterClient.js'; // Twitter/X integration
 import { insertRate, insertNews, supabase } from './db-supabase.js';
 import { median } from './median.js';
 import { checkAlerts } from './alertChecker.js';
-import { generateDailyArticles } from './dailyArticleGenerator.js';
+import { generateDailyArticle } from './dailyArticleGenerator.js';
+import { sendWeeklyNewsletter } from './weeklyNewsletterGenerator.js';
+import { generatePreviousMonthReport } from './monthlyReportGenerator.js';
 
 const REFRESH_INTERVAL = 15 * 60 * 1000; // 15 minutes for rates
 const NEWS_REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes for RSS news
 const TWITTER_REFRESH_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours for Twitter (free tier is only 100/month!)
 const DAILY_ARTICLE_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours for daily articles
+const WEEKLY_NEWSLETTER_INTERVAL = 7 * 24 * 60 * 60 * 1000; // 7 days (weekly)
+const MONTHLY_REPORT_INTERVAL = 24 * 60 * 60 * 1000; // Check daily if it's the 1st of the month
 
 // In-memory cache for latest data
 export const cache = {
@@ -204,6 +208,8 @@ export function startScheduler() {
   console.log(`- RSS News: every ${NEWS_REFRESH_INTERVAL / 1000}s (5 min)`);
   console.log(`- Twitter: every ${TWITTER_REFRESH_INTERVAL / 1000}s (24 hours - conserve API quota)`);
   console.log(`- Daily Articles: every ${DAILY_ARTICLE_INTERVAL / 1000}s (24 hours)`);
+  console.log(`- Weekly Newsletter: every ${WEEKLY_NEWSLETTER_INTERVAL / 1000}s (7 days)`);
+  console.log(`- Monthly Reports: daily check (generates on 1st of month)`);
   
   // Initial refresh on boot (include Twitter on first load)
   refreshBlueRate().catch(console.error);
@@ -211,6 +217,12 @@ export function startScheduler() {
   
   // Generate daily article on startup (if not already generated today)
   generateDailyArticle().catch(console.error);
+  
+  // Check if it's the 1st of the month and generate previous month's report
+  const now = new Date();
+  if (now.getDate() === 1) {
+    generatePreviousMonthReport().catch(console.error);
+  }
   
   // Schedule rates refresh (every 15 minutes)
   setInterval(() => {
@@ -229,7 +241,6 @@ export function startScheduler() {
   
   // Schedule daily article generation (once per 24 hours, at midnight)
   // Calculate time until next midnight
-  const now = new Date();
   const midnight = new Date();
   midnight.setHours(24, 0, 0, 0);
   const msUntilMidnight = midnight - now;
@@ -242,5 +253,29 @@ export function startScheduler() {
       generateDailyArticle().catch(console.error);
     }, DAILY_ARTICLE_INTERVAL);
   }, msUntilMidnight);
+  
+  // Schedule weekly newsletter (every Monday at 9 AM Bolivia time)
+  // Calculate time until next Monday 9 AM
+  const nextMonday = new Date();
+  const daysUntilMonday = (8 - nextMonday.getDay()) % 7 || 7; // Days until next Monday
+  nextMonday.setDate(nextMonday.getDate() + daysUntilMonday);
+  nextMonday.setHours(9, 0, 0, 0); // 9 AM Bolivia time
+  const msUntilMonday = nextMonday - now;
+  
+  setTimeout(() => {
+    sendWeeklyNewsletter().catch(console.error);
+    // Then schedule for every 7 days
+    setInterval(() => {
+      sendWeeklyNewsletter().catch(console.error);
+    }, WEEKLY_NEWSLETTER_INTERVAL);
+  }, msUntilMonday);
+  
+  // Schedule monthly report generation (check daily if it's the 1st)
+  setInterval(() => {
+    const checkDate = new Date();
+    if (checkDate.getDate() === 1 && checkDate.getHours() === 0) {
+      generatePreviousMonthReport().catch(console.error);
+    }
+  }, MONTHLY_REPORT_INTERVAL);
 }
 

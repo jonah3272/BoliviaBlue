@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
+import crypto from 'crypto';
 
 dotenv.config();
 
@@ -367,6 +368,211 @@ export async function deactivateAlert(unsubscribeToken) {
   if (!supabase) {
     return null;
   }
+
+  const { data, error } = await supabase
+    .from('rate_alerts')
+    .update({ is_active: false })
+    .eq('unsubscribe_token', unsubscribeToken)
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(`Failed to deactivate alert: ${error.message}`);
+  }
+
+  return data;
+}
+
+/**
+ * Newsletter Subscription Functions
+ */
+
+/**
+ * Subscribe to newsletter
+ */
+export async function subscribeToNewsletter(email, language = 'es', source = 'homepage') {
+  if (!supabase) {
+    throw new Error('Supabase client not initialized');
+  }
+
+  // Generate verification token
+  const verificationToken = crypto.randomBytes(32).toString('hex');
+
+  const { data, error } = await supabase
+    .from('newsletter_subscribers')
+    .upsert({
+      email: email.toLowerCase().trim(),
+      language,
+      source,
+      verification_token: verificationToken,
+      is_active: true,
+      subscribed_at: new Date().toISOString(),
+      unsubscribed_at: null
+    }, {
+      onConflict: 'email',
+      ignoreDuplicates: false
+    })
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(`Failed to subscribe: ${error.message}`);
+  }
+
+  return { ...data, verification_token: verificationToken };
+}
+
+/**
+ * Get active newsletter subscribers
+ */
+export async function getActiveNewsletterSubscribers(language = null) {
+  if (!supabase) {
+    return [];
+  }
+
+  let query = supabase
+    .from('newsletter_subscribers')
+    .select('*')
+    .eq('is_active', true)
+    .is('unsubscribed_at', null);
+
+  if (language) {
+    query = query.eq('language', language);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error('Error fetching newsletter subscribers:', error);
+    return [];
+  }
+
+  return data || [];
+}
+
+/**
+ * Unsubscribe from newsletter
+ */
+export async function unsubscribeFromNewsletter(email) {
+  if (!supabase) {
+    return null;
+  }
+
+  const { data, error } = await supabase
+    .from('newsletter_subscribers')
+    .update({
+      is_active: false,
+      unsubscribed_at: new Date().toISOString()
+    })
+    .eq('email', email.toLowerCase().trim())
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(`Failed to unsubscribe: ${error.message}`);
+  }
+
+  return data;
+}
+
+/**
+ * Update last email sent timestamp
+ */
+export async function updateNewsletterLastSent(email) {
+  if (!supabase) {
+    return null;
+  }
+
+  const { data, error } = await supabase
+    .from('newsletter_subscribers')
+    .update({
+      last_email_sent_at: new Date().toISOString()
+    })
+    .eq('email', email.toLowerCase().trim())
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error updating last sent timestamp:', error);
+    return null;
+  }
+
+  return data;
+}
+
+/**
+ * Monthly Report Functions
+ */
+
+/**
+ * Get or create monthly report
+ */
+export async function getMonthlyReport(month, year, language = 'es') {
+  if (!supabase) {
+    return null;
+  }
+
+  const { data, error } = await supabase
+    .from('monthly_reports')
+    .select('*')
+    .eq('month', month)
+    .eq('year', year)
+    .eq('language', language)
+    .single();
+
+  if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+    throw new Error(`Failed to get monthly report: ${error.message}`);
+  }
+
+  return data;
+}
+
+/**
+ * Save monthly report
+ */
+export async function saveMonthlyReport(reportData) {
+  if (!supabase) {
+    throw new Error('Supabase client not initialized');
+  }
+
+  const { data, error } = await supabase
+    .from('monthly_reports')
+    .upsert(reportData, {
+      onConflict: 'month,year,language'
+    })
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(`Failed to save monthly report: ${error.message}`);
+  }
+
+  return data;
+}
+
+/**
+ * Get all monthly reports
+ */
+export async function getAllMonthlyReports(language = 'es', limit = 12) {
+  if (!supabase) {
+    return [];
+  }
+
+  const { data, error } = await supabase
+    .from('monthly_reports')
+    .select('*')
+    .eq('language', language)
+    .order('year', { ascending: false })
+    .order('month', { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error('Error fetching monthly reports:', error);
+    return [];
+  }
+
+  return data || [];
+}
 
   const { data, error } = await supabase
     .from('rate_alerts')

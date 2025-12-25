@@ -4,6 +4,7 @@ import PageMeta from '../components/PageMeta';
 import Navigation from '../components/Navigation';
 import BlueRateCards from '../components/BlueRateCards';
 import Footer from '../components/Footer';
+import Breadcrumbs from '../components/Breadcrumbs';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
@@ -28,6 +29,7 @@ function About() {
           ? "acerca de bolivia blue, metodología tipo cambio, cómo funciona dólar blue, transparencia bolivia, cómo se calcula dólar blue, fuente datos bolivia blue, metodología binance p2p, mejor que bolivianblue"
           : "about bolivia blue, exchange rate methodology, how blue dollar works, bolivia transparency, how blue dollar calculated, bolivia blue data source, binance p2p methodology, better than bolivianblue"}
         canonical="/acerca-de"
+        structuredData={breadcrumbSchema}
       />
       
       <Header />
@@ -37,6 +39,8 @@ function About() {
 
           {/* Main Content */}
           <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <Breadcrumbs items={breadcrumbs} />
+            
             {/* Rate Cards */}
             <section className="mb-8">
               <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} />

@@ -258,6 +258,8 @@ function BlueRateCards({ showOfficial = false, setShowOfficial }) {
                 ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-md border-2 border-blue-200 dark:border-blue-600'
                 : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
             }`}
+            aria-label={language === 'es' ? 'Mostrar tipo de cambio del mercado paralelo' : 'Show parallel market exchange rate'}
+            aria-pressed={!effectiveShowOfficial}
           >
             {t('blueMarketTitle')}
           </button>
@@ -271,6 +273,8 @@ function BlueRateCards({ showOfficial = false, setShowOfficial }) {
                 ? 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 shadow-md border-2 border-gray-300 dark:border-gray-600'
                 : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
             }`}
+            aria-label={language === 'es' ? 'Mostrar tipo de cambio oficial' : 'Show official exchange rate'}
+            aria-pressed={effectiveShowOfficial}
           >
             {t('officialRateTitle')}
           </button>

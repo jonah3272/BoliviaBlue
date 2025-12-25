@@ -6,6 +6,7 @@ import Navigation from '../components/Navigation';
 import BlueRateCards from '../components/BlueRateCards';
 import BinanceBanner from '../components/BinanceBanner';
 import Footer from '../components/Footer';
+import Breadcrumbs from '../components/Breadcrumbs';
 import { Link } from 'react-router-dom';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 
@@ -17,6 +18,32 @@ function RodrigoPaz() {
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
   const [showOfficial, setShowOfficial] = useState(false);
+
+  // Breadcrumbs
+  const breadcrumbs = [
+    { name: language === 'es' ? 'Inicio' : 'Home', url: '/' },
+    { name: language === 'es' ? 'Rodrigo Paz' : 'Rodrigo Paz', url: '/rodrigo-paz' }
+  ];
+
+  // Breadcrumb schema for structured data
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": language === 'es' ? "Inicio" : "Home",
+        "item": "https://boliviablue.com/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Rodrigo Paz",
+        "item": "https://boliviablue.com/rodrigo-paz"
+      }
+    ]
+  };
 
   // Person structured data
   const personSchema = {
@@ -45,7 +72,7 @@ function RodrigoPaz() {
           ? "Rodrigo Paz Bolivia, presidente Bolivia, políticas económicas Paz, dólar blue Rodrigo Paz, economía bolivia 2025, impacto Rodrigo Paz dólar, políticas cambiarias Paz, presidencia Rodrigo Paz, mejor información Rodrigo Paz"
           : "Rodrigo Paz Bolivia, Bolivia president, Paz economic policies, blue dollar Rodrigo Paz, bolivia economy 2025, Rodrigo Paz dollar impact, Paz exchange policies, Rodrigo Paz presidency, best Rodrigo Paz information"}
         canonical="/rodrigo-paz"
-        structuredData={personSchema}
+        structuredData={[breadcrumbSchema, personSchema]}
       />
       
       {/* Header */}
@@ -56,6 +83,8 @@ function RodrigoPaz() {
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Breadcrumbs items={breadcrumbs} />
+        
         {/* Rate Cards */}
         <section className="mb-8">
           <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} />

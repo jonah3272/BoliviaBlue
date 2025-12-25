@@ -80,7 +80,30 @@ app.use((req, res, next) => {
   next();
 });
 
-// Security Headers - Helmet (after OPTIONS handler)
+// CORS middleware - MUST be before Helmet to prevent header conflicts
+// This ensures CORS headers are set on ALL responses
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  
+  // Check if origin is allowed
+  if (origin && allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+  } else if (!origin) {
+    // Allow requests with no origin (like mobile apps or curl)
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
+  
+  // Set CORS headers on all responses
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+  res.setHeader('Access-Control-Max-Age', '86400');
+  
+  next();
+});
+
+// Security Headers - Helmet (after CORS middleware)
+// Configure Helmet to NOT interfere with CORS headers
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
@@ -93,6 +116,7 @@ app.use(helmet({
     },
   },
   crossOriginEmbedderPolicy: false, // Allow embedding for charts/ads
+  crossOriginResourcePolicy: { policy: "cross-origin" }, // Allow cross-origin resources
 }));
 
 // Rate Limiting (OPTIONS are handled by catch-all middleware above)
@@ -108,46 +132,31 @@ const apiLimiter = rateLimit({
 // Apply rate limiting to API routes (but OPTIONS are already handled above)
 app.use('/api/', apiLimiter);
 
-// Only allow wildcard in development
+// Additional CORS middleware using cors library as backup
+// This works alongside our custom middleware above
 const corsOptions = {
   origin: (origin, callback) => {
     // Allow requests with no origin (like mobile apps or curl)
     if (!origin) {
-      console.log('CORS: Request with no origin, allowing');
       return callback(null, true);
     }
     
-    console.log(`CORS: Checking origin: ${origin}`);
-    console.log(`CORS: Allowed origins: ${allowedOrigins.join(', ')}`);
-    
-    // In production, only allow specific origins
-    if (process.env.NODE_ENV === 'production' && ORIGIN !== '*') {
-      if (allowedOrigins.includes(origin)) {
-        console.log(`CORS: Origin ${origin} allowed`);
-        callback(null, true);
-      } else {
-        console.log(`CORS: Origin ${origin} NOT in allowed list`);
-        callback(new Error(`Not allowed by CORS: ${origin}`));
-      }
+    // Check if origin is in allowed list
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
     } else {
-      // Development: allow all or specific origins
-      if (allowedOrigins.includes(origin) || ORIGIN === '*') {
-        console.log(`CORS: Origin ${origin} allowed (dev mode)`);
-        callback(null, true);
-      } else {
-        console.log(`CORS: Origin ${origin} NOT allowed (dev mode)`);
-        callback(new Error(`Not allowed by CORS: ${origin}`));
-      }
+      console.log(`❌ CORS: Origin ${origin} NOT in allowed list`);
+      callback(new Error(`Not allowed by CORS: ${origin}`));
     }
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
   exposedHeaders: ['Content-Type'],
-  optionsSuccessStatus: 200 // Some legacy browsers (IE11, various SmartTVs) choke on 204
+  optionsSuccessStatus: 200
 };
 
-// Apply CORS middleware - must be before routes
+// Apply cors library middleware as additional layer
 app.use(cors(corsOptions));
 
 app.use(express.json());
@@ -332,7 +341,7 @@ app.get('/api/news', async (req, res) => {
  * Create a new rate alert
  * CORS headers are set by the cors() middleware, but we ensure they're present
  */
-app.post('/api/alerts', cors(corsOptions), async (req, res) => {
+app.post('/api/alerts', async (req, res) => {
   try {
     const { email, alert_type, threshold, direction } = req.body;
 
@@ -390,7 +399,7 @@ app.post('/api/alerts', cors(corsOptions), async (req, res) => {
 /**
  * Unsubscribe from alerts
  */
-app.post('/api/alerts/unsubscribe', cors(corsOptions), async (req, res) => {
+app.post('/api/alerts/unsubscribe', async (req, res) => {
   try {
     const { token } = req.body;
 
@@ -518,7 +527,7 @@ app.post('/api/newsletter/unsubscribe', async (req, res) => {
 /**
  * Get monthly report
  */
-app.get('/api/monthly-reports/:month/:year', cors(corsOptions), async (req, res) => {
+app.get('/api/monthly-reports/:month/:year', async (req, res) => {
   try {
     const { month, year } = req.params;
     const { lang = 'es' } = req.query;
@@ -563,7 +572,7 @@ app.get('/api/monthly-reports/:month/:year', cors(corsOptions), async (req, res)
 /**
  * Get all monthly reports
  */
-app.get('/api/monthly-reports', cors(corsOptions), async (req, res) => {
+app.get('/api/monthly-reports', async (req, res) => {
   try {
     const { lang = 'es', limit = 12 } = req.query;
 

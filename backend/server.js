@@ -39,23 +39,32 @@ app.use((req, res, next) => {
     const origin = req.headers.origin;
     console.log(`🚨 OPTIONS INTERCEPTED: ${req.path} | Origin: ${origin || 'none'} | Time: ${new Date().toISOString()}`);
     
-    // Set ALL required CORS headers explicitly
-    res.header('Access-Control-Allow-Origin', origin || '*');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Max-Age', '86400');
+    // Check if origin is allowed
+    const isAllowed = !origin || allowedOrigins.includes(origin) || allowedOrigins.includes('*');
     
-    // Also set via setHeader as backup
-    res.setHeader('Access-Control-Allow-Origin', origin || '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    
-    console.log(`✅ OPTIONS RESPONSE: Headers set for ${req.path}`);
-    
-    // Return 200 immediately - don't call next()
-    return res.status(200).end();
+    if (isAllowed || !origin) {
+      // Set ALL required CORS headers explicitly
+      const allowOrigin = origin && allowedOrigins.includes(origin) ? origin : (origin || '*');
+      res.header('Access-Control-Allow-Origin', allowOrigin);
+      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+      res.header('Access-Control-Allow-Credentials', 'true');
+      res.header('Access-Control-Max-Age', '86400');
+      
+      // Also set via setHeader as backup
+      res.setHeader('Access-Control-Allow-Origin', allowOrigin);
+      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+      
+      console.log(`✅ OPTIONS RESPONSE: Headers set for ${req.path} | Origin: ${allowOrigin}`);
+      
+      // Return 200 immediately - don't call next()
+      return res.status(200).end();
+    } else {
+      console.log(`❌ OPTIONS REJECTED: Origin ${origin} not allowed`);
+      return res.status(403).end();
+    }
   }
   next();
 });

@@ -79,7 +79,7 @@ function Contact() {
         </nav>
 
         {/* Header */}
-        <div className="text-center mb-12">
+        <header className="text-center mb-12">
           <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4">
             {language === 'es' ? '📧 Contáctanos' : '📧 Contact Us'}
           </h1>
@@ -88,10 +88,10 @@ function Contact() {
               ? 'Estamos aquí para ayudarte con cualquier pregunta sobre el dólar blue en Bolivia'
               : 'We\'re here to help with any questions about the blue dollar in Bolivia'}
           </p>
-        </div>
+        </header>
 
         {/* Contact Methods */}
-        <div className="grid md:grid-cols-2 gap-6 mb-12">
+        <section className="grid md:grid-cols-2 gap-6 mb-12">
           {/* Email Contact */}
           <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-8 shadow-lg border-2 border-blue-200 dark:border-blue-800">
             <div className="text-5xl mb-4 text-center">📧</div>
@@ -139,7 +139,7 @@ function Contact() {
               </Link>
             </div>
           </div>
-        </div>
+        </section>
 
         {/* What You Can Contact Us About */}
         <section className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg mb-12">

@@ -66,8 +66,8 @@ function RodrigoPaz() {
       <PageMeta
         title={t('rodrigoPazPageTitle')}
         description={language === 'es'
-          ? "Información sobre la presidencia de Rodrigo Paz en Bolivia y su impacto en el tipo de cambio del dólar blue. Políticas económicas, decisiones cambiarias y contexto histórico."
-          : "Information about Rodrigo Paz's presidency in Bolivia and its impact on the blue dollar exchange rate. Economic policies, exchange decisions and historical context."}
+          ? "Información completa sobre la presidencia de Rodrigo Paz en Bolivia y su impacto en el tipo de cambio del dólar blue. Políticas económicas, decisiones cambiarias, contexto histórico y análisis en tiempo real. Mejor que bolivianblue.net."
+          : "Complete information about Rodrigo Paz's presidency in Bolivia and its impact on the blue dollar exchange rate. Economic policies, exchange decisions, historical context and real-time analysis. Better than bolivianblue.net."}
         keywords={language === 'es'
           ? "Rodrigo Paz Bolivia, presidente Bolivia, políticas económicas Paz, dólar blue Rodrigo Paz, economía bolivia 2025, impacto Rodrigo Paz dólar, políticas cambiarias Paz, presidencia Rodrigo Paz, mejor información Rodrigo Paz"
           : "Rodrigo Paz Bolivia, Bolivia president, Paz economic policies, blue dollar Rodrigo Paz, bolivia economy 2025, Rodrigo Paz dollar impact, Paz exchange policies, Rodrigo Paz presidency, best Rodrigo Paz information"}

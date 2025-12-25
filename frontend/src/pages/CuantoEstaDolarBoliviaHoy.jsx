@@ -83,7 +83,7 @@ function CuantoEstaDolarBoliviaHoy() {
           name="keywords" 
           content="cuanto esta el dolar en bolivia hoy, cuanto esta el dolar hoy en bolivia, a cuanto esta el dolar en bolivia, cuanto vale el dolar en bolivia, precio dolar bolivia hoy, cotizacion dolar bolivia hoy, dolar bolivia hoy, cambio dolar bolivia hoy" 
         />
-        <link rel="canonical" href="https://boliviablue.com/cuanto-esta-dolar-bolivia-hoy" />
+        <link rel="canonical" href="https://boliviablue.com/cuanto-esta-dolar-bolivia" />
         <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
         <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
       </Helmet>

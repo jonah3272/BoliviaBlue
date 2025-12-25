@@ -175,7 +175,7 @@ function FAQ() {
         keywords={language === 'es'
           ? "preguntas frecuentes dólar blue, faq tipo cambio bolivia, dudas dólar paralelo, preguntas bolivia blue, qué es dólar blue, cómo funciona dólar blue, preguntas frecuentes bolivia blue, mejor que bolivianblue.net"
           : "blue dollar faq, exchange rate questions bolivia, parallel dollar questions, bolivia blue faq, what is blue dollar, how blue dollar works, bolivia blue frequently asked questions, better than bolivianblue.net"}
-        canonical="/faq"
+        canonical="/preguntas-frecuentes"
         structuredData={[faqSchema, howToSchema]}
       />
       

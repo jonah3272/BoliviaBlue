@@ -118,7 +118,7 @@ function Comparison() {
         keywords={language === 'es'
           ? 'boliviablue.com vs bolivianblue.net, mejor sitio dólar blue bolivia, comparación tipo cambio bolivia, mejor que bolivianblue.net, bolivia blue rate comparación'
           : 'boliviablue.com vs bolivianblue.net, best bolivia blue dollar site, bolivia exchange rate comparison, better than bolivianblue.net, bolivia blue rate comparison'}
-        canonical="/comparison"
+        canonical="/comparacion"
         structuredData={{
           "@context": "https://schema.org",
           "@type": "ComparisonPage",

@@ -193,7 +193,7 @@ function News() {
         keywords={language === 'es'
           ? "noticias bolivia, noticias económicas bolivia, noticias dólar blue, noticias rodrigo paz, economía bolivia, noticias tipo cambio bolivia, noticias mercado cambiario bolivia, análisis sentimiento dólar bolivia, noticias financieras bolivia, mejor fuente noticias bolivia"
           : "bolivia news, economic news bolivia, blue dollar news, rodrigo paz news, bolivia economy, bolivia exchange rate news, bolivia currency market news, bolivia dollar sentiment analysis, bolivia financial news, best bolivia news source"}
-        canonical="/news"
+        canonical="/noticias"
         structuredData={newsPageSchema}
       />
       

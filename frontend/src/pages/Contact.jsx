@@ -57,7 +57,7 @@ function Contact() {
         keywords={language === 'es'
           ? 'contacto bolivia blue, soporte dolar blue bolivia, preguntas tipo cambio, ayuda bolivia blue, contactar boliviablue.com'
           : 'contact bolivia blue, bolivia blue dollar support, exchange rate questions, bolivia blue help, contact boliviablue.com'}
-        canonical="/contact"
+        canonical="/contacto"
         structuredData={[breadcrumbSchema, organizationSchema]}
       />
 

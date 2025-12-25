@@ -152,7 +152,7 @@ function BuyDollars() {
         keywords={language === 'es'
           ? "comprar dólares bolivia, binance p2p bolivia, cómo comprar dólares, dólar blue bolivia, comprar usdt bolivia, cambiar bolivianos a dólares, binance bolivia, mercado paralelo bolivia, bolivian blue, bolivianblue, mejor que bolivianblue.net"
           : "buy dollars bolivia, binance p2p bolivia, how to buy dollars, blue dollar bolivia, buy usdt bolivia, exchange bolivianos to dollars, binance bolivia, parallel market bolivia, bolivian blue, bolivianblue, better than bolivianblue.net"}
-        canonical="/buy-dollars"
+        canonical="/comprar-dolares"
         structuredData={howToSchema}
       />
       

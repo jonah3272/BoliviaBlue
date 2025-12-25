@@ -145,6 +145,16 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/fuente-de-datos?lang=en" />
   </url>
   
+  <!-- Datos-historicos Page -->
+  <url>
+    <loc>https://boliviablue.com/datos-historicos</loc>
+    <lastmod>2025-12-25T12:00:00+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/datos-historicos" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/datos-historicos?lang=en" />
+  </url>
+  
   <!-- Bolivian-blue Page -->
   <url>
     <loc>https://boliviablue.com/bolivian-blue</loc>

@@ -105,6 +105,12 @@ const pages = [
     priority: '0.7',
     lastmod: currentDate
   },
+  {
+    path: '/datos-historicos', // Historical data archive (linkable asset)
+    changefreq: 'daily',
+    priority: '0.9',
+    lastmod: currentDate
+  },
   
   // Blue rate pages (canonical only - redirect pages removed)
   {

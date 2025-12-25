@@ -245,6 +245,30 @@ function DataSource() {
           </p>
         </section>
 
+        {/* API Access Section */}
+        <section className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            {language === 'es' ? '🔌 Acceso a API' : '🔌 API Access'}
+          </h2>
+          <div className="space-y-4 text-gray-700 dark:text-gray-300">
+            <p>
+              {language === 'es'
+                ? 'Para desarrolladores que necesitan acceso programático a nuestros datos, ofrecemos endpoints de API. Los datos están disponibles en formato JSON y se actualizan cada 15 minutos.'
+                : 'For developers who need programmatic access to our data, we offer API endpoints. Data is available in JSON format and updates every 15 minutes.'}
+            </p>
+            <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 font-mono text-sm">
+              <code className="text-blue-600 dark:text-blue-400">
+                GET https://boliviablue.com/api/rate
+              </code>
+            </div>
+            <p className="text-sm">
+              {language === 'es'
+                ? 'Para más información sobre la API, consulta nuestra documentación o contáctanos.'
+                : 'For more information about the API, check our documentation or contact us.'}
+            </p>
+          </div>
+        </section>
+
         {/* Quick Links */}
         <section className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
           <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
@@ -258,10 +282,16 @@ function DataSource() {
               {language === 'es' ? '📊 Tasas Actuales' : '📊 Current Rates'}
             </Link>
             <Link
+              to="/datos-historicos"
+              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+            >
+              {language === 'es' ? '📈 Datos Históricos' : '📈 Historical Data'}
+            </Link>
+            <Link
               to="/bolivian-blue"
               className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
             >
-              {language === 'es' ? '📈 Gráficos Históricos' : '📈 Historical Charts'}
+              {language === 'es' ? '📊 Gráficos Históricos' : '📊 Historical Charts'}
             </Link>
             <Link
               to="/noticias"

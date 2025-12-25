@@ -141,8 +141,8 @@ const corsOptions = {
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
   exposedHeaders: ['Content-Type'],
   optionsSuccessStatus: 200 // Some legacy browsers (IE11, various SmartTVs) choke on 204
 };
@@ -427,7 +427,7 @@ app.post('/api/alerts/unsubscribe', cors(corsOptions), async (req, res) => {
 /**
  * Subscribe to newsletter
  */
-app.post('/api/newsletter/subscribe', cors(corsOptions), async (req, res) => {
+app.post('/api/newsletter/subscribe', async (req, res) => {
   try {
     const { email, language = 'es', source = 'homepage' } = req.body;
 
@@ -481,7 +481,7 @@ app.post('/api/newsletter/subscribe', cors(corsOptions), async (req, res) => {
 /**
  * Unsubscribe from newsletter
  */
-app.post('/api/newsletter/unsubscribe', cors(corsOptions), async (req, res) => {
+app.post('/api/newsletter/unsubscribe', async (req, res) => {
   try {
     const { email } = req.body;
 

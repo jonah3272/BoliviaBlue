@@ -574,19 +574,5 @@ export async function getAllMonthlyReports(language = 'es', limit = 12) {
   return data || [];
 }
 
-  const { data, error } = await supabase
-    .from('rate_alerts')
-    .update({ is_active: false })
-    .eq('unsubscribe_token', unsubscribeToken)
-    .select()
-    .single();
-
-  if (error) {
-    throw new Error(`Failed to deactivate alert: ${error.message}`);
-  }
-
-  return data;
-}
-
 export default supabase;
 

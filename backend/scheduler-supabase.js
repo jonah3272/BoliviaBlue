@@ -5,7 +5,7 @@ import { fetchTwitterNews } from './twitterClient.js'; // Twitter/X integration
 import { insertRate, insertNews, supabase } from './db-supabase.js';
 import { median } from './median.js';
 import { checkAlerts } from './alertChecker.js';
-import { generateDailyArticle } from './dailyArticleGenerator.js';
+import { generateDailyArticles } from './dailyArticleGenerator.js';
 import { sendWeeklyNewsletter } from './weeklyNewsletterGenerator.js';
 import { generatePreviousMonthReport } from './monthlyReportGenerator.js';
 
@@ -189,7 +189,7 @@ async function refreshNews(includeTwitter = false) {
 /**
  * Generate daily article (runs once per day)
  */
-async function generateDailyArticle() {
+async function runDailyArticleGeneration() {
   try {
     console.log('📝 Generating daily articles...');
     await generateDailyArticles();
@@ -247,10 +247,10 @@ export function startScheduler() {
   
   // Generate first article after midnight delay
   setTimeout(() => {
-    generateDailyArticle().catch(console.error);
+    runDailyArticleGeneration().catch(console.error);
     // Then schedule for every 24 hours
     setInterval(() => {
-      generateDailyArticle().catch(console.error);
+      runDailyArticleGeneration().catch(console.error);
     }, DAILY_ARTICLE_INTERVAL);
   }, msUntilMidnight);
   

@@ -214,6 +214,7 @@ export const translations = {
     navFAQ: 'FAQ',
     navBlog: 'Blog',
     navBancos: 'Bancos',
+    navPlataformas: 'Plataformas',
     learnMore: 'Saber Más',
     
     // Twitter/X Section
@@ -541,6 +542,7 @@ export const translations = {
     navFAQ: 'FAQ',
     navBlog: 'Blog',
     navBancos: 'Banks',
+    navPlataformas: 'Platforms',
     learnMore: 'Learn More',
     
     // Twitter/X Section

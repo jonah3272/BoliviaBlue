@@ -93,6 +93,18 @@ const pages = [
     priority: '0.8',
     lastmod: currentDate
   },
+  {
+    path: '/plataformas', // Platform comparison page
+    changefreq: 'weekly',
+    priority: '0.9',
+    lastmod: currentDate
+  },
+  {
+    path: '/fuente-de-datos', // Data source for media
+    changefreq: 'monthly',
+    priority: '0.7',
+    lastmod: currentDate
+  },
   
   // Blue rate pages (canonical only - redirect pages removed)
   {

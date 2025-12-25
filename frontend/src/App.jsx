@@ -36,6 +36,8 @@ const News = lazy(() => import('./pages/News'));
     const BlueRateBolivia = lazy(() => import('./pages/BlueRateBolivia'));
     const CambioBlueBolivia = lazy(() => import('./pages/CambioBlueBolivia'));
     const Unsubscribe = lazy(() => import('./pages/Unsubscribe'));
+    const Plataformas = lazy(() => import('./pages/Plataformas'));
+    const DataSource = lazy(() => import('./pages/DataSource'));
 
 // Loading fallback component
 // IMPORTANT: This component signals to the AdSense loader that we're in a loading state
@@ -108,6 +110,8 @@ function AppContent() {
           
           <Route path="/cotiza-dolar-paralelo" element={<CotizaDolarParalelo />} />
           <Route path="/bancos" element={<Bancos />} />
+          <Route path="/plataformas" element={<Plataformas />} />
+          <Route path="/fuente-de-datos" element={<DataSource />} />
           <Route path="/dolar-blue-la-paz" element={<DolarBlueLaPaz />} />
           <Route path="/dolar-blue-santa-cruz" element={<DolarBlueSantaCruz />} />
           <Route path="/dolar-blue-cochabamba" element={<DolarBlueCochabamba />} />

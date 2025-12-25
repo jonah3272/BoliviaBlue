@@ -111,6 +111,12 @@ const pages = [
     priority: '0.9',
     lastmod: currentDate
   },
+  {
+    path: '/api-docs', // API documentation (linkable asset for developers)
+    changefreq: 'monthly',
+    priority: '0.8',
+    lastmod: currentDate
+  },
   
   // Blue rate pages (canonical only - redirect pages removed)
   {

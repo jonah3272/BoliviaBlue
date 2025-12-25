@@ -261,11 +261,17 @@ function DataSource() {
                 GET https://boliviablue.com/api/rate
               </code>
             </div>
-            <p className="text-sm">
+            <p className="text-sm mb-3">
               {language === 'es'
-                ? 'Para más información sobre la API, consulta nuestra documentación o contáctanos.'
-                : 'For more information about the API, check our documentation or contact us.'}
+                ? 'Para más información sobre la API, consulta nuestra documentación completa:'
+                : 'For more information about the API, check our complete documentation:'}
             </p>
+            <Link
+              to="/api-docs"
+              className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition-colors text-sm"
+            >
+              {language === 'es' ? 'Ver Documentación API' : 'View API Documentation'}
+            </Link>
           </div>
         </section>
 

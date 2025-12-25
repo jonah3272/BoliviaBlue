@@ -39,6 +39,7 @@ const News = lazy(() => import('./pages/News'));
     const Plataformas = lazy(() => import('./pages/Plataformas'));
     const DataSource = lazy(() => import('./pages/DataSource'));
     const DatosHistoricos = lazy(() => import('./pages/DatosHistoricos'));
+    const ApiDocs = lazy(() => import('./pages/ApiDocs'));
 
 // Loading fallback component
 // IMPORTANT: This component signals to the AdSense loader that we're in a loading state
@@ -114,6 +115,7 @@ function AppContent() {
           <Route path="/plataformas" element={<Plataformas />} />
           <Route path="/fuente-de-datos" element={<DataSource />} />
           <Route path="/datos-historicos" element={<DatosHistoricos />} />
+          <Route path="/api-docs" element={<ApiDocs />} />
           <Route path="/dolar-blue-la-paz" element={<DolarBlueLaPaz />} />
           <Route path="/dolar-blue-santa-cruz" element={<DolarBlueSantaCruz />} />
           <Route path="/dolar-blue-cochabamba" element={<DolarBlueCochabamba />} />

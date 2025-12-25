@@ -343,9 +343,15 @@ function DatosHistoricos() {
               </h3>
               <p>
                 {language === 'es'
-                  ? 'Si necesitas acceso programático a estos datos, consulta nuestra página de API o contáctanos para discutir opciones de integración.'
-                  : 'If you need programmatic access to this data, check our API page or contact us to discuss integration options.'}
+                  ? 'Si necesitas acceso programático a estos datos, consulta nuestra documentación de API o contáctanos para discutir opciones de integración.'
+                  : 'If you need programmatic access to this data, check our API documentation or contact us to discuss integration options.'}
               </p>
+              <Link
+                to="/api-docs"
+                className="inline-block mt-2 text-blue-600 dark:text-blue-400 hover:underline font-medium"
+              >
+                {language === 'es' ? 'Ver Documentación API →' : 'View API Documentation →'}
+              </Link>
             </div>
             <div>
               <h3 className="font-semibold text-gray-900 dark:text-white mb-2">

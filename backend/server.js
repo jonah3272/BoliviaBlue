@@ -31,6 +31,17 @@ const PORT = process.env.PORT || 3000;
 const ORIGIN = process.env.ORIGIN || (process.env.NODE_ENV === 'production' ? 'https://boliviablue.com' : '*');
 const STALE_THRESHOLD = 45 * 60 * 1000; // 45 minutes
 
+// Middleware - Allow multiple origins (define BEFORE OPTIONS handlers)
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'https://bolivia-blue-con-paz.vercel.app',
+  'https://boliviablueconpaz.vercel.app',
+  'https://boliviablue.com',
+  'https://www.boliviablue.com',
+  ORIGIN
+].filter(Boolean);
+
 // CRITICAL: Handle ALL OPTIONS requests FIRST - before ANY other middleware
 // This is the ABSOLUTE FIRST middleware - nothing can come before this
 app.use((req, res, next) => {
@@ -83,17 +94,6 @@ app.use(helmet({
   },
   crossOriginEmbedderPolicy: false, // Allow embedding for charts/ads
 }));
-
-// Middleware - Allow multiple origins (define BEFORE OPTIONS handlers)
-const allowedOrigins = [
-  'http://localhost:5173',
-  'http://localhost:3000',
-  'https://bolivia-blue-con-paz.vercel.app',
-  'https://boliviablueconpaz.vercel.app',
-  'https://boliviablue.com',
-  'https://www.boliviablue.com',
-  ORIGIN
-].filter(Boolean);
 
 // Rate Limiting (OPTIONS are handled by catch-all middleware above)
 const apiLimiter = rateLimit({

@@ -87,6 +87,7 @@ function AppContent() {
           <Route path="/faq" element={<Redirect to="/preguntas-frecuentes" />} />
           <Route path="/comparison" element={<Redirect to="/comparacion" />} />
           <Route path="/buy-dollars" element={<Redirect to="/comprar-dolares" />} />
+          <Route path="/platforms" element={<Redirect to="/plataformas" />} />
           
           {/* Other pages (already in Spanish) */}
           <Route path="/rodrigo-paz" element={<RodrigoPaz />} />

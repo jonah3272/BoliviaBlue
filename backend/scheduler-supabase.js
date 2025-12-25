@@ -216,7 +216,7 @@ export function startScheduler() {
   refreshNews(true).catch(console.error); // Include Twitter on startup
   
   // Generate daily article on startup (if not already generated today)
-  generateDailyArticle().catch(console.error);
+  runDailyArticleGeneration().catch(console.error);
   
   // Check if it's the 1st of the month and generate previous month's report
   const now = new Date();

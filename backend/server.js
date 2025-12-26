@@ -348,6 +348,25 @@ app.get('/api/news', async (req, res) => {
 });
 
 /**
+ * OPTIONS handler for /api/alerts
+ */
+app.options('/api/alerts', (req, res) => {
+  const origin = req.headers.origin;
+  console.log(`🚨 OPTIONS /api/alerts | Origin: ${origin || 'none'}`);
+  const headers = {
+    'Access-Control-Allow-Origin': origin || '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept, Origin',
+    'Access-Control-Max-Age': '86400'
+  };
+  if (origin) {
+    headers['Access-Control-Allow-Credentials'] = 'true';
+  }
+  res.writeHead(200, headers);
+  res.end();
+});
+
+/**
  * Create a new rate alert
  * CORS headers are set by our custom middleware
  */
@@ -441,6 +460,25 @@ app.post('/api/alerts/unsubscribe', async (req, res) => {
       message: error.message
     });
   }
+});
+
+/**
+ * OPTIONS handler for /api/newsletter/subscribe
+ */
+app.options('/api/newsletter/subscribe', (req, res) => {
+  const origin = req.headers.origin;
+  console.log(`🚨 OPTIONS /api/newsletter/subscribe | Origin: ${origin || 'none'}`);
+  const headers = {
+    'Access-Control-Allow-Origin': origin || '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept, Origin',
+    'Access-Control-Max-Age': '86400'
+  };
+  if (origin) {
+    headers['Access-Control-Allow-Credentials'] = 'true';
+  }
+  res.writeHead(200, headers);
+  res.end();
 });
 
 /**

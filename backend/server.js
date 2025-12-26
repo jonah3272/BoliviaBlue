@@ -52,15 +52,21 @@ app.use((req, res, next) => {
       console.log(`🚨 OPTIONS PREFLIGHT: ${req.path} | Origin: ${origin || 'none'} | Time: ${new Date().toISOString()}`);
       
       // Build headers object
+      // CRITICAL: When credentials are included, Access-Control-Allow-Origin cannot be '*'
+      // It must be the specific origin
       const headers = {
-        'Access-Control-Allow-Origin': origin || '*',
         'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
         'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept, Origin',
         'Access-Control-Max-Age': '86400'
       };
       
       if (origin) {
+        // When origin is present, use it (required for credentials)
+        headers['Access-Control-Allow-Origin'] = origin;
         headers['Access-Control-Allow-Credentials'] = 'true';
+      } else {
+        // No origin header (unlikely in browser, but handle it)
+        headers['Access-Control-Allow-Origin'] = '*';
       }
       
       // Set headers using ALL methods to ensure they're set
@@ -354,13 +360,15 @@ app.options('/api/alerts', (req, res) => {
   const origin = req.headers.origin;
   console.log(`🚨 OPTIONS /api/alerts | Origin: ${origin || 'none'}`);
   const headers = {
-    'Access-Control-Allow-Origin': origin || '*',
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept, Origin',
     'Access-Control-Max-Age': '86400'
   };
   if (origin) {
+    headers['Access-Control-Allow-Origin'] = origin;
     headers['Access-Control-Allow-Credentials'] = 'true';
+  } else {
+    headers['Access-Control-Allow-Origin'] = '*';
   }
   res.writeHead(200, headers);
   res.end();
@@ -432,13 +440,15 @@ app.options('/api/alerts/unsubscribe', (req, res) => {
   const origin = req.headers.origin;
   console.log(`🚨 OPTIONS /api/alerts/unsubscribe | Origin: ${origin || 'none'}`);
   const headers = {
-    'Access-Control-Allow-Origin': origin || '*',
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept, Origin',
     'Access-Control-Max-Age': '86400'
   };
   if (origin) {
+    headers['Access-Control-Allow-Origin'] = origin;
     headers['Access-Control-Allow-Credentials'] = 'true';
+  } else {
+    headers['Access-Control-Allow-Origin'] = '*';
   }
   res.writeHead(200, headers);
   res.end();
@@ -488,13 +498,15 @@ app.options('/api/newsletter/subscribe', (req, res) => {
   const origin = req.headers.origin;
   console.log(`🚨 OPTIONS /api/newsletter/subscribe | Origin: ${origin || 'none'}`);
   const headers = {
-    'Access-Control-Allow-Origin': origin || '*',
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept, Origin',
     'Access-Control-Max-Age': '86400'
   };
   if (origin) {
+    headers['Access-Control-Allow-Origin'] = origin;
     headers['Access-Control-Allow-Credentials'] = 'true';
+  } else {
+    headers['Access-Control-Allow-Origin'] = '*';
   }
   res.writeHead(200, headers);
   res.end();
@@ -572,13 +584,15 @@ app.options('/api/newsletter/unsubscribe', (req, res) => {
   const origin = req.headers.origin;
   console.log(`🚨 OPTIONS /api/newsletter/unsubscribe | Origin: ${origin || 'none'}`);
   const headers = {
-    'Access-Control-Allow-Origin': origin || '*',
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept, Origin',
     'Access-Control-Max-Age': '86400'
   };
   if (origin) {
+    headers['Access-Control-Allow-Origin'] = origin;
     headers['Access-Control-Allow-Credentials'] = 'true';
+  } else {
+    headers['Access-Control-Allow-Origin'] = '*';
   }
   res.writeHead(200, headers);
   res.end();

@@ -1,3 +1,10 @@
+// IMMEDIATE STARTUP LOGGING - This should appear FIRST in Railway logs
+console.log('🚀 SERVER STARTING...');
+console.log('📅 Time:', new Date().toISOString());
+console.log('📁 Working Directory:', process.cwd());
+console.log('🔧 Node Version:', process.version);
+console.log('🌍 NODE_ENV:', process.env.NODE_ENV || 'not set');
+
 import express from 'express';
 import dotenv from 'dotenv';
 import helmet from 'helmet';
@@ -19,7 +26,10 @@ import {
 } from './db-supabase.js';
 import { startScheduler, cache } from './scheduler-supabase.js';
 
+console.log('✅ Imports loaded successfully');
+
 dotenv.config();
+console.log('✅ Environment variables loaded');
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

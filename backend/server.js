@@ -44,51 +44,49 @@ const allowedOrigins = [
 // CRITICAL: CORS middleware - MUST be ABSOLUTE FIRST, before ANYTHING else
 // This MUST be the very first middleware - nothing can come before it
 app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  
-  // Handle OPTIONS preflight requests - MUST return immediately
-  if (req.method === 'OPTIONS') {
-    console.log(`🚨 OPTIONS PREFLIGHT: ${req.path} | Origin: ${origin || 'none'}`);
+  try {
+    const origin = req.headers.origin;
     
-    // ALWAYS set CORS headers for OPTIONS - browser requires this
-    if (origin) {
-      res.header('Access-Control-Allow-Origin', origin);
-      res.header('Access-Control-Allow-Credentials', 'true');
-    } else {
-      res.header('Access-Control-Allow-Origin', '*');
+    // Handle OPTIONS preflight requests - MUST return immediately
+    if (req.method === 'OPTIONS') {
+      console.log(`🚨 OPTIONS PREFLIGHT: ${req.path} | Origin: ${origin || 'none'} | Time: ${new Date().toISOString()}`);
+      
+      // Build headers object
+      const headers = {
+        'Access-Control-Allow-Origin': origin || '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept, Origin',
+        'Access-Control-Max-Age': '86400'
+      };
+      
+      if (origin) {
+        headers['Access-Control-Allow-Credentials'] = 'true';
+      }
+      
+      // Set headers using ALL methods to ensure they're set
+      Object.keys(headers).forEach(key => {
+        res.header(key, headers[key]);
+        res.setHeader(key, headers[key]);
+      });
+      
+      console.log(`✅ OPTIONS: Headers set, returning 200`);
+      console.log(`   Headers:`, headers);
+      
+      // CRITICAL: Use writeHead to ensure headers are set, then end immediately
+      try {
+        res.writeHead(200, headers);
+        res.end();
+      } catch (writeError) {
+        console.error('❌ Error writing OPTIONS response:', writeError);
+        // Fallback: try status and send
+        res.status(200);
+        Object.keys(headers).forEach(key => {
+          res.setHeader(key, headers[key]);
+        });
+        res.end();
+      }
+      return; // Don't call next()
     }
-    
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
-    res.header('Access-Control-Max-Age', '86400');
-    
-    // Also set via setHeader as backup
-    if (origin) {
-      res.setHeader('Access-Control-Allow-Origin', origin);
-      res.setHeader('Access-Control-Allow-Credentials', 'true');
-    } else {
-      res.setHeader('Access-Control-Allow-Origin', '*');
-    }
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
-    res.setHeader('Access-Control-Max-Age', '86400');
-    
-    // Use writeHead to ensure headers are definitely set
-    const headers = {
-      'Access-Control-Allow-Origin': origin || '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept, Origin',
-      'Access-Control-Max-Age': '86400'
-    };
-    if (origin) {
-      headers['Access-Control-Allow-Credentials'] = 'true';
-    }
-    
-    console.log(`✅ OPTIONS: Returning 200 with headers:`, headers);
-    // CRITICAL: Use writeHead to ensure headers are set, then end
-    res.writeHead(200, headers);
-    return res.end();
-  }
   
   // For all other requests (GET, POST, etc.), set CORS headers
   if (origin) {

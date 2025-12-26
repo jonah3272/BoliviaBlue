@@ -143,10 +143,22 @@ app.use(express.static(frontendDist));
  * Test endpoint to verify OPTIONS handler is working
  */
 app.get('/api/test-cors', (req, res) => {
+  // Explicit CORS headers
+  const origin = req.headers.origin;
+  if (origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+  
   res.json({
     message: 'CORS test endpoint',
     timestamp: new Date().toISOString(),
-    optionsHandler: 'Should be working if you see this'
+    optionsHandler: 'Should be working if you see this',
+    origin: origin || 'none'
   });
 });
 

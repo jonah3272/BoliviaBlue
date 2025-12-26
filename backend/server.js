@@ -426,6 +426,25 @@ app.post('/api/alerts', async (req, res) => {
 });
 
 /**
+ * OPTIONS handler for /api/alerts/unsubscribe
+ */
+app.options('/api/alerts/unsubscribe', (req, res) => {
+  const origin = req.headers.origin;
+  console.log(`🚨 OPTIONS /api/alerts/unsubscribe | Origin: ${origin || 'none'}`);
+  const headers = {
+    'Access-Control-Allow-Origin': origin || '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept, Origin',
+    'Access-Control-Max-Age': '86400'
+  };
+  if (origin) {
+    headers['Access-Control-Allow-Credentials'] = 'true';
+  }
+  res.writeHead(200, headers);
+  res.end();
+});
+
+/**
  * Unsubscribe from alerts
  */
 app.post('/api/alerts/unsubscribe', async (req, res) => {
@@ -544,6 +563,25 @@ app.post('/api/newsletter/subscribe', async (req, res) => {
       message: error.message
     });
   }
+});
+
+/**
+ * OPTIONS handler for /api/newsletter/unsubscribe
+ */
+app.options('/api/newsletter/unsubscribe', (req, res) => {
+  const origin = req.headers.origin;
+  console.log(`🚨 OPTIONS /api/newsletter/unsubscribe | Origin: ${origin || 'none'}`);
+  const headers = {
+    'Access-Control-Allow-Origin': origin || '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept, Origin',
+    'Access-Control-Max-Age': '86400'
+  };
+  if (origin) {
+    headers['Access-Control-Allow-Credentials'] = 'true';
+  }
+  res.writeHead(200, headers);
+  res.end();
 });
 
 /**

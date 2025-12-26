@@ -411,6 +411,17 @@ app.post('/api/alerts/unsubscribe', async (req, res) => {
  * Subscribe to newsletter
  */
 app.post('/api/newsletter/subscribe', async (req, res) => {
+  // Explicitly set CORS headers on this route as backup
+  const origin = req.headers.origin;
+  if (origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+  
   try {
     const { email, language = 'es', source = 'homepage' } = req.body;
 

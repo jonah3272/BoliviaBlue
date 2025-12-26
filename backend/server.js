@@ -116,36 +116,8 @@ const apiLimiter = rateLimit({
 // Apply rate limiting to API routes (but OPTIONS are already handled above)
 app.use('/api/', apiLimiter);
 
-// Additional CORS middleware using cors library as backup
-// This works alongside our custom middleware above
-const corsOptions = {
-  origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps or curl)
-    if (!origin) {
-      return callback(null, true);
-    }
-    
-    // Check if origin is in allowed list
-    if (allowedOrigins.includes(origin)) {
-      console.log(`✅ CORS: Origin ${origin} ALLOWED`);
-      callback(null, true);
-    } else {
-      console.log(`⚠️ CORS: Origin ${origin} NOT in allowed list, but allowing anyway`);
-      console.log(`   Allowed origins: ${allowedOrigins.join(', ')}`);
-      // Allow anyway - our custom middleware will handle the actual filtering
-      // This prevents the cors library from blocking preflight requests
-      callback(null, true);
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
-  exposedHeaders: ['Content-Type'],
-  optionsSuccessStatus: 200
-};
-
-// Apply cors library middleware as additional layer
-app.use(cors(corsOptions));
+// CORS is now handled entirely by our custom middleware above
+// No cors library needed - it was causing conflicts
 
 app.use(express.json());
 

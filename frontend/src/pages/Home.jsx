@@ -12,7 +12,8 @@ const NewsTabs = lazy(() => import('../components/NewsTabs'));
 const RotatingNewsCarousel = lazy(() => import('../components/RotatingNewsCarousel'));
 const RateAlertForm = lazy(() => import('../components/RateAlertForm'));
 const SentimentNewsCard = lazy(() => import('../components/SentimentNewsCard'));
-const NewsletterSignup = lazy(() => import('../components/NewsletterSignup'));
+// Temporarily disabled - Railway backend not responding
+// const NewsletterSignup = lazy(() => import('../components/NewsletterSignup'));
 
 import About from '../components/About';
 import PageMeta from '../components/PageMeta';
@@ -765,12 +766,12 @@ function Home() {
           </div>
         </section>
 
-        {/* Newsletter Signup Section */}
-        <section className="mb-8">
+        {/* Newsletter Signup Section - Temporarily disabled - Railway backend not responding */}
+        {/* <section className="mb-8">
           <Suspense fallback={<ComponentLoader />}>
             <NewsletterSignup source="homepage" />
           </Suspense>
-        </section>
+        </section> */}
 
         {/* Social Share Section */}
         <SocialShare

@@ -1,5 +1,4 @@
 import express from 'express';
-import cors from 'cors';
 import dotenv from 'dotenv';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
@@ -42,73 +41,49 @@ const allowedOrigins = [
   ORIGIN
 ].filter(Boolean);
 
-// CRITICAL: Handle ALL OPTIONS requests FIRST - before ANY other middleware
-// This is the ABSOLUTE FIRST middleware - nothing can come before this
+// CRITICAL: CORS middleware - MUST be FIRST, before ANY other middleware
+// This handles both OPTIONS preflight and sets headers on all responses
 app.use((req, res, next) => {
-  // Intercept ALL OPTIONS requests immediately
+  const origin = req.headers.origin;
+  
+  // Handle OPTIONS preflight requests
   if (req.method === 'OPTIONS') {
-    const origin = req.headers.origin;
-    console.log(`🚨 OPTIONS INTERCEPTED: ${req.path} | Origin: ${origin || 'none'}`);
+    console.log(`🚨 OPTIONS: ${req.path} | Origin: ${origin || 'none'}`);
     
-    // ALWAYS set CORS headers for OPTIONS - check origin but allow if in list
-    if (origin && allowedOrigins.includes(origin)) {
-      // Origin is in allowed list - use it
+    // ALWAYS allow OPTIONS preflight - set headers regardless
+    if (origin) {
       res.setHeader('Access-Control-Allow-Origin', origin);
       res.setHeader('Access-Control-Allow-Credentials', 'true');
-      console.log(`✅ OPTIONS: Allowing origin ${origin}`);
-    } else if (!origin) {
-      // No origin header (like curl) - allow with wildcard
-      res.setHeader('Access-Control-Allow-Origin', '*');
-      console.log(`✅ OPTIONS: No origin, allowing wildcard`);
     } else {
-      // Origin not in list - but STILL set headers to avoid CORS error
-      // The actual request will be rejected, but preflight should succeed
-      res.setHeader('Access-Control-Allow-Origin', origin);
-      res.setHeader('Access-Control-Allow-Credentials', 'true');
-      console.log(`⚠️ OPTIONS: Origin ${origin} not in allowed list, but allowing preflight`);
+      res.setHeader('Access-Control-Allow-Origin', '*');
     }
     
-    // Set ALL required CORS headers
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
     res.setHeader('Access-Control-Max-Age', '86400');
     
-    // Return 200 immediately - don't call next()
+    console.log(`✅ OPTIONS: Headers set, returning 200`);
     return res.status(200).end();
   }
-  next();
-});
-
-// CORS middleware - MUST be before Helmet to prevent header conflicts
-// This ensures CORS headers are set on ALL responses (not just OPTIONS)
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
   
-  // Set CORS headers on ALL responses
+  // For all other requests, set CORS headers
   if (origin && allowedOrigins.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Access-Control-Allow-Credentials', 'true');
   } else if (!origin) {
-    // Allow requests with no origin (like mobile apps or curl)
     res.setHeader('Access-Control-Allow-Origin', '*');
-  } else if (allowedOrigins.includes(origin)) {
-    // Double check - if somehow it's allowed
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
   } else {
-    // Even if not in list, set the origin to avoid CORS error
-    // The cors() middleware will handle the actual rejection
+    // Even if not in allowed list, set the origin to allow the request
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Access-Control-Allow-Credentials', 'true');
   }
   
-  // Always set these headers
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
-  res.setHeader('Access-Control-Max-Age', '86400');
   
   next();
 });
+
 
 // Security Headers - Helmet (after CORS middleware)
 // Configure Helmet to NOT interfere with CORS headers
@@ -120,11 +95,12 @@ app.use(helmet({
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
       scriptSrc: ["'self'", "https://pagead2.googlesyndication.com"],
       imgSrc: ["'self'", "data:", "https:", "http:"],
-      connectSrc: ["'self'", "https://api.binance.com", "https://p2p.binance.com"],
+      connectSrc: ["'self'", "https://api.binance.com", "https://p2p.binance.com", "https://boliviablue-production.up.railway.app"],
     },
   },
   crossOriginEmbedderPolicy: false, // Allow embedding for charts/ads
-  crossOriginResourcePolicy: { policy: "cross-origin" }, // Allow cross-origin resources
+  crossOriginResourcePolicy: false, // Disable to allow CORS
+  crossOriginOpenerPolicy: false, // Disable to allow CORS
 }));
 
 // Rate Limiting (OPTIONS are handled by catch-all middleware above)

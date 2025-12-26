@@ -4,6 +4,10 @@
   "installCommand": "npm --version",
   "rewrites": [
     {
+      "source": "/api/:path*",
+      "destination": "https://boliviablue-production.up.railway.app/api/:path*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

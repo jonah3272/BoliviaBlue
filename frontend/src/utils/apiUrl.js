@@ -1,7 +1,7 @@
 /**
  * Get the API base URL
  * In development, uses proxy (relative URL)
- * In production, uses environment variable or defaults to Railway backend
+ * In production, uses Vercel proxy (relative URL) to avoid CORS issues
  */
 export function getApiUrl() {
   // In development, Vite proxy handles /api routes
@@ -9,9 +9,9 @@ export function getApiUrl() {
     return '';
   }
 
-  // In production, use environment variable or default to Railway
-  const apiUrl = import.meta.env.VITE_API_URL || 'https://boliviablue-production.up.railway.app';
-  return apiUrl;
+  // In production, use relative URL - Vercel will proxy /api/* to Railway
+  // This avoids CORS entirely since requests are same-origin
+  return '';
 }
 
 /**

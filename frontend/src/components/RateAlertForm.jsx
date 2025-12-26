@@ -92,6 +92,8 @@ function RateAlertForm() {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include', // Include credentials for CORS
+        mode: 'cors', // Explicitly set CORS mode
         body: JSON.stringify({
           email,
           alert_type: alertType,

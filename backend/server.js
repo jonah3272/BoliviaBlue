@@ -41,10 +41,12 @@ const allowedOrigins = [
   ORIGIN
 ].filter(Boolean);
 
-// CRITICAL: Request logging middleware - log ALL requests to debug Railway blocking
+// Request logging middleware - log requests (reduced verbosity for performance)
 app.use((req, res, next) => {
-  console.log(`📥 INCOMING REQUEST: ${req.method} ${req.path} | Origin: ${req.headers.origin || 'none'} | Time: ${new Date().toISOString()}`);
-  console.log(`   Headers:`, JSON.stringify(req.headers, null, 2));
+  // Only log API requests, not static assets
+  if (req.path.startsWith('/api/')) {
+    console.log(`📥 ${req.method} ${req.path} | Origin: ${req.headers.origin || 'none'}`);
+  }
   next();
 });
 

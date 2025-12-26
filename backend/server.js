@@ -50,14 +50,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// CRITICAL: Request logging middleware - log ALL requests FIRST to debug Railway blocking
-// This will help us see if OPTIONS requests are even reaching Express
-app.use((req, res, next) => {
-  console.log(`📥 INCOMING REQUEST: ${req.method} ${req.path} | Origin: ${req.headers.origin || 'none'} | Time: ${new Date().toISOString()}`);
-  console.log(`   User-Agent: ${req.headers['user-agent'] || 'none'}`);
-  console.log(`   All Headers:`, Object.keys(req.headers).join(', '));
-  next();
-});
 
 // CRITICAL: CORS middleware - MUST be ABSOLUTE FIRST, before ANYTHING else
 // This MUST be the very first middleware - nothing can come before it

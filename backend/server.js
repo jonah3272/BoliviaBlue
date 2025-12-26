@@ -299,7 +299,7 @@ app.get('/api/news', async (req, res) => {
 
 /**
  * Create a new rate alert
- * CORS headers are set by the cors() middleware, but we ensure they're present
+ * CORS headers are set by our custom middleware
  */
 app.post('/api/alerts', async (req, res) => {
   try {

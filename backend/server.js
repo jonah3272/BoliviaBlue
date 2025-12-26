@@ -733,9 +733,18 @@ app.get('*', (req, res) => {
 startScheduler();
 
 // Start server - Listen on 0.0.0.0 for Railway compatibility
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Bolivia Blue con Paz backend running on port ${PORT}`);
-  console.log(`Using Supabase database at ${process.env.SUPABASE_URL}`);
-  console.log(`CORS configured for multiple origins including: ${allowedOrigins.join(', ')}`);
-});
+try {
+  console.log(`🔌 Attempting to start server on port ${PORT}...`);
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`✅ Bolivia Blue con Paz backend running on port ${PORT}`);
+    console.log(`✅ Using Supabase database at ${process.env.SUPABASE_URL || 'NOT SET'}`);
+    console.log(`✅ CORS configured for multiple origins including: ${allowedOrigins.join(', ')}`);
+    console.log(`✅ Server is ready to accept connections`);
+  });
+} catch (error) {
+  console.error('❌ FATAL ERROR: Failed to start server');
+  console.error('Error:', error);
+  console.error('Stack:', error.stack);
+  process.exit(1);
+}
 

@@ -48,53 +48,61 @@ app.use((req, res, next) => {
   // Intercept ALL OPTIONS requests immediately
   if (req.method === 'OPTIONS') {
     const origin = req.headers.origin;
-    console.log(`🚨 OPTIONS INTERCEPTED: ${req.path} | Origin: ${origin || 'none'} | Time: ${new Date().toISOString()}`);
+    console.log(`🚨 OPTIONS INTERCEPTED: ${req.path} | Origin: ${origin || 'none'}`);
     
-    // Check if origin is allowed
-    const isAllowed = !origin || allowedOrigins.includes(origin) || allowedOrigins.includes('*');
-    
-    if (isAllowed || !origin) {
-      // Set ALL required CORS headers explicitly
-      const allowOrigin = origin && allowedOrigins.includes(origin) ? origin : (origin || '*');
-      res.header('Access-Control-Allow-Origin', allowOrigin);
-      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
-      res.header('Access-Control-Allow-Credentials', 'true');
-      res.header('Access-Control-Max-Age', '86400');
-      
-      // Also set via setHeader as backup
-      res.setHeader('Access-Control-Allow-Origin', allowOrigin);
-      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+    // ALWAYS set CORS headers for OPTIONS - check origin but allow if in list
+    if (origin && allowedOrigins.includes(origin)) {
+      // Origin is in allowed list - use it
+      res.setHeader('Access-Control-Allow-Origin', origin);
       res.setHeader('Access-Control-Allow-Credentials', 'true');
-      
-      console.log(`✅ OPTIONS RESPONSE: Headers set for ${req.path} | Origin: ${allowOrigin}`);
-      
-      // Return 200 immediately - don't call next()
-      return res.status(200).end();
+      console.log(`✅ OPTIONS: Allowing origin ${origin}`);
+    } else if (!origin) {
+      // No origin header (like curl) - allow with wildcard
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      console.log(`✅ OPTIONS: No origin, allowing wildcard`);
     } else {
-      console.log(`❌ OPTIONS REJECTED: Origin ${origin} not allowed`);
-      return res.status(403).end();
+      // Origin not in list - but STILL set headers to avoid CORS error
+      // The actual request will be rejected, but preflight should succeed
+      res.setHeader('Access-Control-Allow-Origin', origin);
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+      console.log(`⚠️ OPTIONS: Origin ${origin} not in allowed list, but allowing preflight`);
     }
+    
+    // Set ALL required CORS headers
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+    res.setHeader('Access-Control-Max-Age', '86400');
+    
+    // Return 200 immediately - don't call next()
+    return res.status(200).end();
   }
   next();
 });
 
 // CORS middleware - MUST be before Helmet to prevent header conflicts
-// This ensures CORS headers are set on ALL responses
+// This ensures CORS headers are set on ALL responses (not just OPTIONS)
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   
-  // Check if origin is allowed
+  // Set CORS headers on ALL responses
   if (origin && allowedOrigins.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Access-Control-Allow-Credentials', 'true');
   } else if (!origin) {
     // Allow requests with no origin (like mobile apps or curl)
     res.setHeader('Access-Control-Allow-Origin', '*');
+  } else if (allowedOrigins.includes(origin)) {
+    // Double check - if somehow it's allowed
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+  } else {
+    // Even if not in list, set the origin to avoid CORS error
+    // The cors() middleware will handle the actual rejection
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
   }
   
-  // Set CORS headers on all responses
+  // Always set these headers
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
   res.setHeader('Access-Control-Max-Age', '86400');

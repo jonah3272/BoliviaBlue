@@ -73,9 +73,21 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
     res.setHeader('Access-Control-Max-Age', '86400');
     
-    console.log(`✅ OPTIONS: Returning 200 with CORS headers`);
-    // CRITICAL: Return immediately, don't call next()
-    return res.status(200).send();
+    // Use writeHead to ensure headers are definitely set
+    const headers = {
+      'Access-Control-Allow-Origin': origin || '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept, Origin',
+      'Access-Control-Max-Age': '86400'
+    };
+    if (origin) {
+      headers['Access-Control-Allow-Credentials'] = 'true';
+    }
+    
+    console.log(`✅ OPTIONS: Returning 200 with headers:`, headers);
+    // CRITICAL: Use writeHead to ensure headers are set, then end
+    res.writeHead(200, headers);
+    return res.end();
   }
   
   // For all other requests (GET, POST, etc.), set CORS headers

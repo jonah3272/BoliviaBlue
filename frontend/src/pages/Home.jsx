@@ -403,13 +403,23 @@ function Home() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-8 md:py-12 space-y-6 sm:space-y-8 md:space-y-12">
-        {/* Visible H1 with Keywords - Simplified and cleaner */}
-        <div className="text-center space-y-3 mb-8">
+        {/* Hero Section - Human Voice */}
+        <div className="text-center space-y-4 mb-8">
           <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-gray-900 dark:text-white leading-tight">
             {language === 'es' 
               ? 'Dólar Blue en Bolivia'
               : 'Blue Dollar in Bolivia'}
           </h1>
+          <p className="text-lg sm:text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
+            {language === 'es'
+              ? 'Somos una plataforma independiente que te muestra el precio real del dólar en el mercado paralelo boliviano. Actualizamos cada 15 minutos con datos verificados de Binance P2P, para que tomes decisiones financieras informadas.'
+              : 'We are an independent platform that shows you the real price of the dollar in Bolivia\'s parallel market. We update every 15 minutes with verified Binance P2P data, so you can make informed financial decisions.'}
+          </p>
+          <p className="text-base text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            {language === 'es'
+              ? 'Completamente gratuito, sin registro, y con total transparencia sobre cómo calculamos nuestras tasas. Para bolivianos que necesitan información confiable sobre el tipo de cambio.'
+              : 'Completely free, no registration required, and fully transparent about how we calculate our rates. For Bolivians who need reliable exchange rate information.'}
+          </p>
         </div>
         
         {/* Blue Rate Cards - At the Top */}
@@ -562,6 +572,112 @@ function Home() {
                   {language === 'es' ? 'Disponible' : 'Available'}
                 </div>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Cómo usar esta tasa - Human Voice Section */}
+        <section className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl p-4 sm:p-8 md:p-10 shadow-lg">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">
+              {language === 'es' ? '💡 Cómo usar esta tasa' : '💡 How to use this rate'}
+            </h2>
+            <div className="prose prose-lg dark:prose-invert max-w-none">
+              <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+                {language === 'es'
+                  ? 'La tasa que mostramos es un promedio calculado del mercado paralelo. Cuando vayas a cambiar dólares en persona o por Binance P2P, el precio puede variar ligeramente según la ubicación, el método de pago, y la cantidad que cambies.'
+                  : 'The rate we show is an average calculated from the parallel market. When you go to exchange dollars in person or via Binance P2P, the price may vary slightly depending on location, payment method, and the amount you exchange.'}
+              </p>
+              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 sm:p-6 mb-4 border border-blue-200 dark:border-blue-800">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+                  {language === 'es' ? 'Ejemplos prácticos:' : 'Practical examples:'}
+                </h3>
+                <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2">
+                  {language === 'es' ? (
+                    <>
+                      <li>Si la tasa muestra <strong>10.50 BOB por USD</strong>, y quieres cambiar $100 USD, recibirás aproximadamente <strong>1,050 BOB</strong></li>
+                      <li>Para compras internacionales, usa esta tasa para calcular cuántos bolivianos necesitas ahorrar</li>
+                      <li>Si recibes remesas, esta tasa te ayuda a saber cuánto recibirás en bolivianos</li>
+                      <li>Para inversiones o ahorros, compara esta tasa con la oficial del banco para tomar mejores decisiones</li>
+                    </>
+                  ) : (
+                    <>
+                      <li>If the rate shows <strong>10.50 BOB per USD</strong>, and you want to exchange $100 USD, you'll receive approximately <strong>1,050 BOB</strong></li>
+                      <li>For international purchases, use this rate to calculate how many bolivianos you need to save</li>
+                      <li>If you receive remittances, this rate helps you know how much you'll receive in bolivianos</li>
+                      <li>For investments or savings, compare this rate with the official bank rate to make better decisions</li>
+                    </>
+                  )}
+                </ul>
+              </div>
+              <p className="text-gray-700 dark:text-gray-300 text-sm">
+                {language === 'es'
+                  ? '💬 <strong>Consejo:</strong> Siempre verifica el precio exacto con tu cambista o en la plataforma antes de realizar la transacción. Nuestra tasa es una guía, no una garantía.'
+                  : '💬 <strong>Tip:</strong> Always verify the exact price with your exchanger or on the platform before making the transaction. Our rate is a guide, not a guarantee.'}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Qué hace diferente a BoliviaBlue - Human Voice Section */}
+        <section className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 rounded-xl sm:rounded-2xl p-4 sm:p-8 md:p-10 shadow-lg">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">
+              {language === 'es' ? '⭐ Qué hace diferente a BoliviaBlue' : '⭐ What makes BoliviaBlue different'}
+            </h2>
+            <div className="prose prose-lg dark:prose-invert max-w-none">
+              <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+                {language === 'es'
+                  ? 'No somos solo otro sitio de tipos de cambio. Somos una plataforma construida específicamente para bolivianos que necesitan información confiable y actualizada sobre el dólar blue.'
+                  : 'We\'re not just another exchange rate site. We\'re a platform built specifically for Bolivians who need reliable and up-to-date information about the blue dollar.'}
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div className="bg-white dark:bg-gray-800 rounded-lg p-4 sm:p-6 border border-indigo-200 dark:border-indigo-800">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    {language === 'es' ? '🔍 Transparencia total' : '🔍 Total transparency'}
+                  </h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
+                    {language === 'es'
+                      ? <>Explicamos exactamente cómo calculamos nuestras tasas. No hay cajas negras. Puedes ver nuestra metodología completa en <Link to="/acerca-de" className="text-blue-600 dark:text-blue-400 hover:underline">Acerca de</Link>.</>
+                      : <>We explain exactly how we calculate our rates. No black boxes. You can see our complete methodology on <Link to="/acerca-de" className="text-blue-600 dark:text-blue-400 hover:underline">About</Link>.</>}
+                  </p>
+                </div>
+                <div className="bg-white dark:bg-gray-800 rounded-lg p-4 sm:p-6 border border-purple-200 dark:border-purple-800">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    {language === 'es' ? '🤖 Análisis inteligente' : '🤖 Smart analysis'}
+                  </h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
+                    {language === 'es'
+                      ? 'Usamos inteligencia artificial para analizar noticias económicas y predecir tendencias. No solo mostramos números, te ayudamos a entender qué los mueve.'
+                      : 'We use artificial intelligence to analyze economic news and predict trends. We don\'t just show numbers, we help you understand what moves them.'}
+                  </p>
+                </div>
+                <div className="bg-white dark:bg-gray-800 rounded-lg p-4 sm:p-6 border border-indigo-200 dark:border-indigo-800">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    {language === 'es' ? '⚡ Actualización constante' : '⚡ Constant updates'}
+                  </h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
+                    {language === 'es'
+                      ? 'Mientras otros sitios actualizan cada hora o diariamente, nosotros actualizamos cada 15 minutos. El mercado cambia rápido, y tú necesitas información actualizada.'
+                      : 'While other sites update hourly or daily, we update every 15 minutes. The market changes fast, and you need up-to-date information.'}
+                  </p>
+                </div>
+                <div className="bg-white dark:bg-gray-800 rounded-lg p-4 sm:p-6 border border-purple-200 dark:border-purple-800">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    {language === 'es' ? '🛠️ Herramientas prácticas' : '🛠️ Practical tools'}
+                  </h3>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
+                    {language === 'es'
+                      ? 'Calculadora de divisas, gráficos históricos, alertas de precio, y guías educativas. Todo lo que necesitas en un solo lugar, sin complicaciones.'
+                      : 'Currency calculator, historical charts, price alerts, and educational guides. Everything you need in one place, without complications.'}
+                  </p>
+                </div>
+              </div>
+              <p className="text-gray-700 dark:text-gray-300 text-sm italic">
+                {language === 'es'
+                  ? 'Construido por bolivianos, para bolivianos. Sin intereses ocultos, sin afiliaciones bancarias, solo información honesta y útil.'
+                  : 'Built by Bolivians, for Bolivians. No hidden interests, no bank affiliations, just honest and useful information.'}
+              </p>
             </div>
           </div>
         </section>

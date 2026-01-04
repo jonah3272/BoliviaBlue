@@ -6,7 +6,7 @@ function Footer() {
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
 
-  // Essential footer links only
+  // Essential footer links with trust signals
   const footerLinks = [
     { path: '/calculadora', label: language === 'es' ? 'Calculadora' : 'Calculator' },
     { path: '/noticias', label: language === 'es' ? 'Noticias' : 'News' },
@@ -15,7 +15,11 @@ function Footer() {
     { path: '/acerca-de', label: language === 'es' ? 'Acerca de' : 'About' },
     { path: '/contacto', label: language === 'es' ? 'Contacto' : 'Contact' },
     { path: '/preguntas-frecuentes', label: 'FAQ' },
-    { path: '/politica-de-privacidad', label: language === 'es' ? 'Privacidad' : 'Privacy' }
+    { path: '/equipo', label: language === 'es' ? 'Equipo' : 'Team' },
+    { path: '/politica-de-privacidad', label: language === 'es' ? 'Privacidad' : 'Privacy' },
+    { path: '/terminos', label: language === 'es' ? 'Términos' : 'Terms' },
+    { path: '/correcciones', label: language === 'es' ? 'Correcciones' : 'Corrections' },
+    { path: '/politica-editorial', label: language === 'es' ? 'Política Editorial' : 'Editorial Policy' }
   ];
 
   return (

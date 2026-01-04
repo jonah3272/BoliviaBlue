@@ -138,6 +138,7 @@ function EuroToBoliviano() {
           ? "euro a boliviano, eur a bob, convertir euro a boliviano, tipo de cambio euro boliviano, cambiar euros a bolivianos, euro bolivia, cotización euro boliviano, eur/bob, mejor que bolivianblue.net"
           : "euro to boliviano, eur to bob, convert euro to boliviano, euro boliviano exchange rate, exchange euros to bolivianos, euro bolivia, euro boliviano quote, eur/bob"}
         canonical="/euro-a-boliviano"
+        noindex={true}
         structuredData={[articleSchema, faqSchema]}
       />
       

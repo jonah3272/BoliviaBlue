@@ -86,6 +86,7 @@ function Unsubscribe() {
             : 'Unsubscribe from exchange rate alerts'
         }
         canonical="/unsubscribe"
+        noindex={true}
       />
       <Header />
       <main className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4">

@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 import { fetchNews } from '../utils/api';
 import SentimentLegend from '../components/SentimentLegend';
 import { cleanSummary, cleanTitle } from '../utils/formatters';
-import { useAdsenseReadyWhen } from '../hooks/useAdsenseReady';
+import { blockAdsOnThisPage } from '../utils/adsenseLoader';
 
 const CATEGORIES = {
   all: { es: 'Todas', en: 'All', color: 'gray' },
@@ -81,8 +81,11 @@ function News() {
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
   
-  // Only allow ads when news is loaded (AdSense policy compliance)
-  useAdsenseReadyWhen(isLoading, news.length > 0);
+  // Block ads on news aggregation page (AdSense policy compliance - reduce "low value content" risk)
+  // This page aggregates external news and is excluded from AdSense monetization
+  useEffect(() => {
+    blockAdsOnThisPage();
+  }, []);
 
   // Structured data for News page
   const newsPageSchema = news.length > 0 ? {

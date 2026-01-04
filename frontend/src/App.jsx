@@ -11,6 +11,10 @@ const News = lazy(() => import('./pages/News'));
     const Contact = lazy(() => import('./pages/Contact'));
     const FAQ = lazy(() => import('./pages/FAQ'));
     const Privacy = lazy(() => import('./pages/Privacy'));
+    const Terminos = lazy(() => import('./pages/Terminos'));
+    const Correcciones = lazy(() => import('./pages/Correcciones'));
+    const PoliticaEditorial = lazy(() => import('./pages/PoliticaEditorial'));
+    const Equipo = lazy(() => import('./pages/Equipo'));
     const RodrigoPaz = lazy(() => import('./pages/RodrigoPaz'));
     const BuyDollars = lazy(() => import('./pages/BuyDollars'));
     const Blog = lazy(() => import('./pages/Blog'));
@@ -77,6 +81,10 @@ function AppContent() {
           <Route path="/contacto" element={<Contact />} />
           <Route path="/preguntas-frecuentes" element={<FAQ />} />
           <Route path="/politica-de-privacidad" element={<Privacy />} />
+          <Route path="/terminos" element={<Terminos />} />
+          <Route path="/correcciones" element={<Correcciones />} />
+          <Route path="/politica-editorial" element={<PoliticaEditorial />} />
+          <Route path="/equipo" element={<Equipo />} />
           <Route path="/comparacion" element={<Comparison />} />
           <Route path="/comprar-dolares" element={<BuyDollars />} />
           

@@ -14,16 +14,19 @@ const MIN_MEANINGFUL_ELEMENTS = 5; // Minimum number of content elements (increa
 const MAX_CHECKS = 15; // Increased checks to ensure content is fully rendered
 const CHECK_INTERVAL = 500; // Check every 500ms
 
-// Routes that should NEVER show ads (redirect pages, utility pages, etc.)
-// NOTE: Only exclude pages that are truly redirects or utility pages with no content
+// Routes that should NEVER show ads (redirect pages, utility pages, low-value content pages, etc.)
+// NOTE: Only exclude pages that are truly redirects, utility pages, or pages with low-value/aggregated content
 // DO NOT exclude legitimate content pages - they need ads!
 const EXCLUDED_ROUTES = [
   // Utility pages (no content, just functionality)
   '/unsubscribe',
+  // News aggregation pages (low-value content risk for AdSense)
+  // These pages aggregate external news and are excluded to reduce "low value content" risk
+  '/noticias', // News aggregation page - excluded from AdSense monetization
+  '/news', // Redirect alias for /noticias - also excluded
   // Redirect-only pages (these should redirect immediately, no content rendered)
   // Note: These are handled by React Router redirects, but listed here as safety
   '/calculator', // Redirects to /calculadora
-  '/news', // Redirects to /noticias
   '/about', // Redirects to /acerca-de
   '/contact', // Redirects to /contacto
   '/faq', // Redirects to /preguntas-frecuentes

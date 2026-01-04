@@ -403,22 +403,41 @@ function Home() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-8 md:py-12 space-y-6 sm:space-y-8 md:space-y-12">
-        {/* Hero Section - Human Voice */}
-        <div className="text-center space-y-4 mb-8">
+        {/* Hero Section - Clean & Modern */}
+        <div className="text-center space-y-6 mb-8">
           <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-gray-900 dark:text-white leading-tight">
             {language === 'es' 
               ? 'Dólar Blue en Bolivia'
               : 'Blue Dollar in Bolivia'}
           </h1>
-          <p className="text-lg sm:text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
+          
+          {/* Key Features - Visual Badges */}
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mb-4">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-semibold">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {language === 'es' ? 'Actualizado cada 15 min' : 'Updated every 15 min'}
+            </div>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full text-sm font-semibold">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {language === 'es' ? 'Datos de Binance P2P' : 'Binance P2P Data'}
+            </div>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-sm font-semibold">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {language === 'es' ? '100% Gratis' : '100% Free'}
+            </div>
+          </div>
+
+          {/* Short, punchy description */}
+          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
             {language === 'es'
-              ? 'Somos una plataforma independiente que te muestra el precio real del dólar en el mercado paralelo boliviano. Actualizamos cada 15 minutos con datos verificados de Binance P2P, para que tomes decisiones financieras informadas.'
-              : 'We are an independent platform that shows you the real price of the dollar in Bolivia\'s parallel market. We update every 15 minutes with verified Binance P2P data, so you can make informed financial decisions.'}
-          </p>
-          <p className="text-base text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            {language === 'es'
-              ? 'Completamente gratuito, sin registro, y con total transparencia sobre cómo calculamos nuestras tasas. Para bolivianos que necesitan información confiable sobre el tipo de cambio.'
-              : 'Completely free, no registration required, and fully transparent about how we calculate our rates. For Bolivians who need reliable exchange rate information.'}
+              ? 'El precio real del dólar en el mercado paralelo boliviano. Sin registro, sin complicaciones.'
+              : 'The real price of the dollar in Bolivia\'s parallel market. No signup, no hassle.'}
           </p>
         </div>
         

@@ -10,9 +10,9 @@ import { lazy, Suspense, useState, useEffect } from 'react';
 const BlueChart = lazy(() => import('../components/BlueChart'));
 const NewsTabs = lazy(() => import('../components/NewsTabs'));
 const RotatingNewsCarousel = lazy(() => import('../components/RotatingNewsCarousel'));
-const RateAlertForm = lazy(() => import('../components/RateAlertForm'));
 const SentimentNewsCard = lazy(() => import('../components/SentimentNewsCard'));
 // Temporarily disabled - Railway backend not responding
+// const RateAlertForm = lazy(() => import('../components/RateAlertForm'));
 // const NewsletterSignup = lazy(() => import('../components/NewsletterSignup'));
 
 import About from '../components/About';
@@ -451,14 +451,6 @@ function Home() {
           </LazyErrorBoundary>
         </section>
 
-        {/* Rate Alerts Section - Hidden in production */}
-        {/* <section>
-          <LazyErrorBoundary>
-            <Suspense fallback={<ComponentLoader />}>
-              <RateAlertForm />
-            </Suspense>
-          </LazyErrorBoundary>
-        </section> */}
 
         {/* Binance Banner - Under Chart */}
         <section>
@@ -882,12 +874,6 @@ function Home() {
           </div>
         </section>
 
-        {/* Newsletter Signup Section - Temporarily disabled - Railway backend not responding */}
-        {/* <section className="mb-8">
-          <Suspense fallback={<ComponentLoader />}>
-            <NewsletterSignup source="homepage" />
-          </Suspense>
-        </section> */}
 
         {/* Social Share Section */}
         <SocialShare

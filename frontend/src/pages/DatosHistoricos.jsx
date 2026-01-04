@@ -270,6 +270,173 @@ function DatosHistoricos() {
           </div>
         )}
 
+        {/* How to Read Historical Data Section */}
+        <section className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 md:p-8 lg:p-12 mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+            {language === 'es' ? 'Cómo Leer e Interpretar los Datos Históricos' : 'How to Read and Interpret Historical Data'}
+          </h2>
+          <p className="text-gray-700 dark:text-gray-300 mb-6">
+            {language === 'es'
+              ? <>Los datos históricos del dólar blue en Bolivia proporcionan información valiosa sobre las tendencias del mercado cambiario. Al analizar estos datos, puedes identificar patrones, predecir tendencias futuras y tomar decisiones financieras más informadas. Cada punto de datos representa una instantánea del mercado en un momento específico, capturando las fluctuaciones naturales del <strong>bolivian blue rate</strong> a lo largo del tiempo.</>
+              : <>Historical data on the blue dollar in Bolivia provides valuable information about exchange market trends. By analyzing this data, you can identify patterns, predict future trends, and make more informed financial decisions. Each data point represents a snapshot of the market at a specific moment, capturing the natural fluctuations of the <strong>bolivian blue rate</strong> over time.</>}
+          </p>
+          
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
+            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                {language === 'es' ? '📈 Identificar Tendencias' : '📈 Identifying Trends'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-3">
+                {language === 'es'
+                  ? 'Observa si el dólar blue está en una tendencia alcista (subiendo), bajista (bajando), o lateral (estable). Las tendencias pueden durar días, semanas o meses, y entenderlas te ayuda a decidir cuándo realizar transacciones.'
+                  : 'Observe if the blue dollar is in an upward trend (rising), downward trend (falling), or sideways trend (stable). Trends can last days, weeks, or months, and understanding them helps you decide when to make transactions.'}
+              </p>
+            </div>
+            
+            <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-6">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                {language === 'es' ? '📊 Analizar Volatilidad' : '📊 Analyzing Volatility'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-3">
+                {language === 'es'
+                  ? 'La diferencia entre el máximo y mínimo en un período muestra la volatilidad del mercado. Períodos de alta volatilidad pueden indicar incertidumbre económica, mientras que períodos estables sugieren confianza en el mercado.'
+                  : 'The difference between the maximum and minimum in a period shows market volatility. Periods of high volatility may indicate economic uncertainty, while stable periods suggest market confidence.'}
+              </p>
+            </div>
+            
+            <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-6">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                {language === 'es' ? '🎯 Encontrar Patrones' : '🎯 Finding Patterns'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-3">
+                {language === 'es'
+                  ? 'Algunos patrones pueden repetirse, como aumentos durante ciertos meses del año o correlaciones con eventos económicos específicos. Identificar estos patrones puede ayudarte a anticipar movimientos futuros.'
+                  : 'Some patterns may repeat, such as increases during certain months of the year or correlations with specific economic events. Identifying these patterns can help you anticipate future movements.'}
+              </p>
+            </div>
+            
+            <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-6">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                {language === 'es' ? '💡 Usar Promedios' : '💡 Using Averages'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-3">
+                {language === 'es'
+                  ? 'El promedio mensual o anual te da una visión general del comportamiento del dólar blue. Compara el promedio actual con promedios históricos para entender si el mercado está por encima o por debajo de lo normal.'
+                  : 'The monthly or annual average gives you an overview of blue dollar behavior. Compare the current average with historical averages to understand if the market is above or below normal.'}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* What Historical Data Tells Us Section */}
+        <section className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 rounded-xl shadow-lg p-6 md:p-8 lg:p-12 mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+            {language === 'es' ? 'Qué Nos Dicen los Datos Históricos sobre el Mercado' : 'What Historical Data Tells Us About the Market'}
+          </h2>
+          <p className="text-gray-700 dark:text-gray-300 mb-6">
+            {language === 'es'
+              ? <>Los datos históricos del <strong>Bolivian Blue</strong> revelan información importante sobre la salud del mercado cambiario boliviano. Cuando analizas estos datos a lo largo del tiempo, puedes identificar:</>
+              : <>Historical data on the <strong>Bolivian Blue</strong> reveals important information about the health of the Bolivian exchange market. When you analyze this data over time, you can identify:</>}
+          </p>
+          
+          <div className="space-y-4 mb-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border-l-4 border-indigo-500">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                {language === 'es' ? '1. Estabilidad del Mercado' : '1. Market Stability'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300">
+                {language === 'es'
+                  ? 'Períodos de estabilidad relativa indican confianza en la economía y políticas gubernamentales. Por el contrario, períodos de alta volatilidad pueden señalar incertidumbre o cambios en las políticas económicas.'
+                  : 'Periods of relative stability indicate confidence in the economy and government policies. Conversely, periods of high volatility may signal uncertainty or changes in economic policies.'}
+              </p>
+            </div>
+            
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border-l-4 border-purple-500">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                {language === 'es' ? '2. Impacto de Eventos Económicos' : '2. Impact of Economic Events'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300">
+                {language === 'es'
+                  ? 'Los datos históricos muestran cómo eventos como cambios en políticas monetarias, anuncios gubernamentales, o crisis económicas internacionales afectan el <strong>bolivian blue rate</strong>. Esto te ayuda a entender la sensibilidad del mercado a diferentes factores.'
+                  : 'Historical data shows how events such as changes in monetary policies, government announcements, or international economic crises affect the <strong>bolivian blue rate</strong>. This helps you understand the market\'s sensitivity to different factors.'}
+              </p>
+            </div>
+            
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border-l-4 border-blue-500">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                {language === 'es' ? '3. Estacionalidad' : '3. Seasonality'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300">
+                {language === 'es'
+                  ? 'Algunos períodos del año pueden mostrar patrones consistentes. Por ejemplo, ciertos meses pueden tener mayor demanda de dólares debido a importaciones estacionales o remesas. Identificar estos patrones puede ayudarte a planificar mejor tus transacciones.'
+                  : 'Some periods of the year may show consistent patterns. For example, certain months may have higher dollar demand due to seasonal imports or remittances. Identifying these patterns can help you better plan your transactions.'}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Using Data for Decisions Section */}
+        <section className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 md:p-8 lg:p-12 mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+            {language === 'es' ? 'Cómo Usar los Datos Históricos para Tomar Decisiones' : 'How to Use Historical Data to Make Decisions'}
+          </h2>
+          <p className="text-gray-700 dark:text-gray-300 mb-6">
+            {language === 'es'
+              ? <>Los datos históricos del <strong>Bolivian Blue</strong> son más que números; son herramientas para tomar decisiones financieras inteligentes. Aquí te explicamos cómo puedes utilizarlos:</>
+              : <>Historical data on the <strong>Bolivian Blue</strong> is more than numbers; they are tools for making smart financial decisions. Here's how you can use them:</>}
+          </p>
+          
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-5">
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                  {language === 'es' ? '✅ Para Importadores' : '✅ For Importers'}
+                </h3>
+                <p className="text-sm text-gray-700 dark:text-gray-300">
+                  {language === 'es'
+                    ? 'Analiza las tendencias para planificar tus compras internacionales. Si el dólar está en tendencia alcista, considera adelantar tus compras. Si está bajando, podrías esperar un mejor momento.'
+                    : 'Analyze trends to plan your international purchases. If the dollar is in an upward trend, consider advancing your purchases. If it\'s falling, you might wait for a better time.'}
+                </p>
+              </div>
+              
+              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-5">
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                  {language === 'es' ? '✅ Para Quienes Reciben Remesas' : '✅ For Those Receiving Remittances'}
+                </h3>
+                <p className="text-sm text-gray-700 dark:text-gray-300">
+                  {language === 'es'
+                    ? 'Observa los promedios mensuales para entender cuándo es mejor recibir tus remesas. Si el promedio del mes está por encima del histórico, podría ser un buen momento para cambiar.'
+                    : 'Observe monthly averages to understand when it\'s best to receive your remittances. If the month\'s average is above the historical average, it might be a good time to exchange.'}
+                </p>
+              </div>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-5">
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                  {language === 'es' ? '✅ Para Inversores' : '✅ For Investors'}
+                </h3>
+                <p className="text-sm text-gray-700 dark:text-gray-300">
+                  {language === 'es'
+                    ? 'La volatilidad histórica te ayuda a entender el riesgo. Períodos de alta volatilidad pueden ofrecer oportunidades, pero también mayor riesgo. Usa los datos para evaluar si el riesgo es aceptable para tu estrategia.'
+                    : 'Historical volatility helps you understand risk. Periods of high volatility may offer opportunities, but also greater risk. Use the data to evaluate if the risk is acceptable for your strategy.'}
+                </p>
+              </div>
+              
+              <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-5">
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                  {language === 'es' ? '✅ Para Planificación Financiera' : '✅ For Financial Planning'}
+                </h3>
+                <p className="text-sm text-gray-700 dark:text-gray-300">
+                  {language === 'es'
+                    ? 'Los promedios históricos te ayudan a crear presupuestos más realistas. Si planeas una compra grande en dólares, usa el promedio histórico como referencia, pero siempre considera un margen para la volatilidad.'
+                    : 'Historical averages help you create more realistic budgets. If you plan a large purchase in dollars, use the historical average as a reference, but always consider a margin for volatility.'}
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Download Section */}
         <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 rounded-xl p-8 mb-8 border-2 border-blue-200 dark:border-blue-800">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">

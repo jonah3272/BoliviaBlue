@@ -633,6 +633,133 @@ function Plataformas() {
           </ul>
         </div>
 
+        {/* Security Considerations Section */}
+        <section className="bg-gradient-to-br from-red-50 to-orange-50 dark:from-gray-800 dark:to-gray-900 rounded-xl shadow-lg p-6 md:p-8 lg:p-12 mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+            {language === 'es' ? '🔒 Consideraciones de Seguridad Importantes' : '🔒 Important Security Considerations'}
+          </h2>
+          <p className="text-gray-700 dark:text-gray-300 mb-6">
+            {language === 'es'
+              ? <>La seguridad es fundamental al elegir una plataforma P2P. Aunque todas las plataformas que recomendamos tienen medidas de seguridad, es importante entender qué buscar y cómo protegerte. La mayoría de las estafas en P2P ocurren cuando los usuarios no siguen las mejores prácticas de seguridad.</>
+              : <>Security is fundamental when choosing a P2P platform. Although all the platforms we recommend have security measures, it's important to understand what to look for and how to protect yourself. Most P2P scams occur when users don't follow security best practices.</>}
+          </p>
+          
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                {language === 'es' ? 'Sistema de Garantía (Escrow)' : 'Escrow System'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-3">
+                {language === 'es'
+                  ? 'El sistema de garantía es crucial. Cuando inicias una transacción, la plataforma retiene los fondos hasta que ambas partes confirmen. Esto protege tanto al comprador como al vendedor. Binance P2P, Bitget y Bybit tienen sistemas de garantía robustos que han protegido millones de transacciones.'
+                  : 'The escrow system is crucial. When you start a transaction, the platform holds the funds until both parties confirm. This protects both buyer and seller. Binance P2P, Bitget and Bybit have robust escrow systems that have protected millions of transactions.'}
+              </p>
+            </div>
+            
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                {language === 'es' ? 'Verificación de Identidad (KYC)' : 'Identity Verification (KYC)'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-3">
+                {language === 'es'
+                  ? 'Las plataformas que requieren verificación KYC (Know Your Customer) son generalmente más seguras. Aunque puede parecer un inconveniente, el KYC ayuda a prevenir fraudes y protege a todos los usuarios. Binance P2P requiere verificación completa, lo que aumenta significativamente la seguridad.'
+                  : 'Platforms that require KYC (Know Your Customer) verification are generally safer. Although it may seem inconvenient, KYC helps prevent fraud and protects all users. Binance P2P requires full verification, which significantly increases security.'}
+              </p>
+            </div>
+            
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                {language === 'es' ? 'Reputación del Vendedor' : 'Seller Reputation'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-3">
+                {language === 'es'
+                  ? 'Siempre revisa la reputación, tasa de finalización y tiempo de respuesta del vendedor antes de realizar una transacción. Los vendedores con alta reputación y muchas transacciones completadas son generalmente más confiables. Evita vendedores nuevos o con baja reputación, especialmente para transacciones grandes.'
+                  : 'Always check the seller\'s reputation, completion rate, and response time before making a transaction. Sellers with high reputation and many completed transactions are generally more reliable. Avoid new sellers or those with low reputation, especially for large transactions.'}
+              </p>
+            </div>
+            
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                {language === 'es' ? 'Comunicación Dentro de la Plataforma' : 'Communication Within Platform'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-3">
+                {language === 'es'
+                  ? 'Nunca aceptes comunicarte fuera de la plataforma (WhatsApp, Telegram, etc.) antes de completar la transacción. Los estafadores a menudo intentan mover la conversación fuera de la plataforma para evitar las protecciones del sistema de garantía. Si alguien te pide esto, cancela la transacción inmediatamente.'
+                  : 'Never agree to communicate outside the platform (WhatsApp, Telegram, etc.) before completing the transaction. Scammers often try to move the conversation outside the platform to avoid escrow protections. If someone asks for this, cancel the transaction immediately.'}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Platform Selection Guide Section */}
+        <section className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 md:p-8 lg:p-12 mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+            {language === 'es' ? '📖 Guía Completa de Selección de Plataforma' : '📖 Complete Platform Selection Guide'}
+          </h2>
+          <p className="text-gray-700 dark:text-gray-300 mb-6">
+            {language === 'es'
+              ? <>Elegir la plataforma correcta depende de varios factores: el monto de tu transacción, tu nivel de experiencia, tus necesidades de seguridad, y tus preferencias de método de pago. Esta guía te ayudará a tomar la mejor decisión para tu situación específica.</>
+              : <>Choosing the right platform depends on several factors: your transaction amount, your experience level, your security needs, and your payment method preferences. This guide will help you make the best decision for your specific situation.</>}
+          </p>
+          
+          <div className="space-y-6">
+            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6 border-l-4 border-blue-500">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                {language === 'es' ? 'Para Transacciones Pequeñas ($10-100 USD)' : 'For Small Transactions ($10-100 USD)'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-3">
+                {language === 'es'
+                  ? 'Si estás cambiando montos pequeños, Airtm o Wallbit son excelentes opciones. Son fáciles de usar, tienen buenas tasas para montos pequeños, y el proceso es rápido. Airtm es especialmente bueno para principiantes debido a su interfaz intuitiva y soporte al cliente.'
+                  : 'If you\'re exchanging small amounts, Airtm or Wallbit are excellent options. They are easy to use, have good rates for small amounts, and the process is fast. Airtm is especially good for beginners due to its intuitive interface and customer support.'}
+              </p>
+            </div>
+            
+            <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-6 border-l-4 border-green-500">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                {language === 'es' ? 'Para Transacciones Medianas ($100-1,000 USD)' : 'For Medium Transactions ($100-1,000 USD)'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-3">
+                {language === 'es'
+                  ? 'Para montos medianos, Binance P2P generalmente ofrece las mejores tasas. El sistema de garantía es robusto, y hay muchos vendedores disponibles. Bitget P2P también es una excelente alternativa con buenas tasas y seguridad similar.'
+                  : 'For medium amounts, Binance P2P generally offers the best rates. The escrow system is robust, and there are many sellers available. Bitget P2P is also an excellent alternative with good rates and similar security.'}
+              </p>
+            </div>
+            
+            <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-6 border-l-4 border-purple-500">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                {language === 'es' ? 'Para Transacciones Grandes ($1,000+ USD)' : 'For Large Transactions ($1,000+ USD)'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-3">
+                {language === 'es'
+                  ? 'Para transacciones grandes, Binance P2P es la mejor opción debido a su alta liquidez, mejores tasas, y sistema de garantía probado. Asegúrate de trabajar con vendedores de alta reputación y considera dividir transacciones muy grandes en múltiples transacciones más pequeñas para reducir el riesgo.'
+                  : 'For large transactions, Binance P2P is the best option due to its high liquidity, better rates, and proven escrow system. Make sure to work with high-reputation sellers and consider splitting very large transactions into multiple smaller transactions to reduce risk.'}
+              </p>
+            </div>
+            
+            <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-6 border-l-4 border-yellow-500">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                {language === 'es' ? 'Para Principiantes' : 'For Beginners'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-3">
+                {language === 'es'
+                  ? 'Si es tu primera vez usando plataformas P2P, comienza con Airtm. Es la más fácil de usar, tiene buen soporte al cliente, y el proceso es más simple. Una vez que te sientas cómodo, puedes probar Binance P2P para obtener mejores tasas.'
+                  : 'If it\'s your first time using P2P platforms, start with Airtm. It\'s the easiest to use, has good customer support, and the process is simpler. Once you feel comfortable, you can try Binance P2P to get better rates.'}
+              </p>
+            </div>
+            
+            <div className="bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-6 border-l-4 border-indigo-500">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                {language === 'es' ? 'Para Usuarios Experimentados' : 'For Experienced Users'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-3">
+                {language === 'es'
+                  ? 'Si ya tienes experiencia con plataformas P2P, Binance P2P te dará las mejores opciones en términos de tasas, liquidez y flexibilidad. También puedes considerar Bitget o Bybit si buscas alternativas con características similares.'
+                  : 'If you already have experience with P2P platforms, Binance P2P will give you the best options in terms of rates, liquidity, and flexibility. You can also consider Bitget or Bybit if you\'re looking for alternatives with similar features.'}
+              </p>
+            </div>
+          </div>
+        </section>
+
         {/* Related Links */}
         <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
           <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">

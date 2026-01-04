@@ -247,6 +247,139 @@ function Comparison() {
           </div>
         </section>
 
+        {/* Why Update Frequency Matters Section */}
+        <section className="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 sm:p-8 md:p-10 shadow-xl mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+            {language === 'es' ? '¿Por Qué Importa la Frecuencia de Actualización?' : 'Why Does Update Frequency Matter?'}
+          </h2>
+          <p className="text-gray-700 dark:text-gray-300 mb-6 text-lg">
+            {language === 'es'
+              ? <>En un mercado cambiario tan dinámico como el boliviano, donde el dólar blue puede fluctuar varias veces al día, tener información actualizada cada 15 minutos en lugar de cada hora puede hacer una diferencia significativa en tus transacciones. Imagina que necesitas cambiar $1,000 USD y el dólar sube 0.20 BOB entre las 10:00 AM y las 11:00 AM. Con boliviablue.com, verías este cambio a las 10:15 AM y podrías tomar una decisión informada. Con bolivianblue.net, no lo verías hasta las 11:00 AM, perdiendo potencialmente 200 BOB (0.20 × 1,000).</>
+              : <>In a dynamic exchange market like Bolivia's, where the blue dollar can fluctuate several times a day, having information updated every 15 minutes instead of hourly can make a significant difference in your transactions. Imagine you need to exchange $1,000 USD and the dollar rises 0.20 BOB between 10:00 AM and 11:00 AM. With boliviablue.com, you would see this change at 10:15 AM and could make an informed decision. With bolivianblue.net, you wouldn't see it until 11:00 AM, potentially losing 200 BOB (0.20 × 1,000).</>}
+          </p>
+          
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+                {language === 'es' ? '💰 Impacto Real en Transacciones' : '💰 Real Impact on Transactions'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-3">
+                {language === 'es'
+                  ? 'Para transacciones grandes, una diferencia de minutos puede significar cientos o miles de bolivianos. Nuestra actualización cada 15 minutos te da la ventaja de reaccionar rápidamente a los cambios del mercado.'
+                  : 'For large transactions, a difference of minutes can mean hundreds or thousands of bolivianos. Our 15-minute update gives you the advantage of reacting quickly to market changes.'}
+              </p>
+              <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg text-sm">
+                <strong>{language === 'es' ? 'Ejemplo:' : 'Example:'}</strong> {language === 'es'
+                  ? 'Si cambias $5,000 USD y el dólar sube 0.15 BOB en 30 minutos, con nuestra actualización verías el cambio y podrías ahorrar 750 BOB.'
+                  : 'If you exchange $5,000 USD and the dollar rises 0.15 BOB in 30 minutes, with our update you would see the change and could save 750 BOB.'}
+              </div>
+            </div>
+            
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+                {language === 'es' ? '⚡ Ventaja Competitiva' : '⚡ Competitive Advantage'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-3">
+                {language === 'es'
+                  ? 'En un mercado donde la información es poder, tener datos más actualizados te da una ventaja significativa. Puedes identificar oportunidades antes que otros y tomar decisiones más rápidas.'
+                  : 'In a market where information is power, having more up-to-date data gives you a significant advantage. You can identify opportunities before others and make faster decisions.'}
+              </p>
+              <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg text-sm">
+                <strong>{language === 'es' ? 'Caso de uso:' : 'Use case:'}</strong> {language === 'es'
+                  ? 'Importadores que monitorean el dólar para decidir cuándo hacer sus compras internacionales se benefician enormemente de actualizaciones frecuentes.'
+                  : 'Importers monitoring the dollar to decide when to make their international purchases benefit greatly from frequent updates.'}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Detailed Feature Explanations Section */}
+        <section className="bg-white dark:bg-gray-800 rounded-2xl p-6 sm:p-8 shadow-xl mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+            {language === 'es' ? 'Explicación Detallada de Características' : 'Detailed Feature Explanations'}
+          </h2>
+          
+          <div className="space-y-6">
+            <div className="border-l-4 border-blue-500 pl-6">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                {language === 'es' ? 'Análisis de Sentimiento con IA' : 'AI Sentiment Analysis'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-3">
+                {language === 'es'
+                  ? 'Nuestra plataforma utiliza inteligencia artificial para analizar noticias económicas y determinar si el sentimiento del mercado es positivo, negativo o neutral. Esta información te ayuda a entender no solo qué está pasando con el dólar, sino por qué. Por ejemplo, si el sentimiento es negativo debido a políticas gubernamentales, puedes anticipar que el dólar podría subir. Esta característica no está disponible en bolivianblue.net.'
+                  : 'Our platform uses artificial intelligence to analyze economic news and determine if market sentiment is positive, negative, or neutral. This information helps you understand not only what is happening with the dollar, but why. For example, if sentiment is negative due to government policies, you can anticipate that the dollar might rise. This feature is not available on bolivianblue.net.'}
+              </p>
+            </div>
+            
+            <div className="border-l-4 border-green-500 pl-6">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                {language === 'es' ? 'Gráficos Históricos Interactivos' : 'Interactive Historical Charts'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-3">
+                {language === 'es'
+                  ? 'Nuestros gráficos te permiten hacer zoom, ver detalles al pasar el mouse, y comparar diferentes períodos. Esto es crucial para análisis técnico y para entender tendencias a largo plazo. Los gráficos de bolivianblue.net son más básicos y no ofrecen el mismo nivel de interactividad.'
+                  : 'Our charts allow you to zoom, see details on hover, and compare different periods. This is crucial for technical analysis and understanding long-term trends. bolivianblue.net charts are more basic and do not offer the same level of interactivity.'}
+              </p>
+            </div>
+            
+            <div className="border-l-4 border-purple-500 pl-6">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                {language === 'es' ? 'Alertas de Precio' : 'Price Alerts'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-3">
+                {language === 'es'
+                  ? 'Puedes configurar alertas para que te notifiquemos cuando el dólar blue alcance un precio específico. Esto es especialmente útil si estás esperando el momento perfecto para realizar una transacción grande. Simplemente establece tu precio objetivo y recibirás una notificación cuando se alcance. Esta funcionalidad no existe en bolivianblue.net.'
+                  : 'You can set up alerts to notify you when the blue dollar reaches a specific price. This is especially useful if you are waiting for the perfect moment to make a large transaction. Simply set your target price and you will receive a notification when it is reached. This functionality does not exist on bolivianblue.net.'}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* User Benefits Section */}
+        <section className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 sm:p-8 md:p-10 shadow-xl mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+            {language === 'es' ? 'Beneficios Reales para los Usuarios' : 'Real Benefits for Users'}
+          </h2>
+          
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md">
+              <div className="text-4xl mb-4 text-center">💼</div>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3 text-center">
+                {language === 'es' ? 'Para Empresas' : 'For Businesses'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 text-sm">
+                {language === 'es'
+                  ? 'Las empresas que importan o exportan pueden ahorrar significativamente usando datos más actualizados para planificar sus transacciones. Una diferencia de 0.10 BOB en una transacción de $10,000 USD significa 1,000 BOB de diferencia.'
+                  : 'Businesses that import or export can save significantly by using more up-to-date data to plan their transactions. A difference of 0.10 BOB on a $10,000 USD transaction means a 1,000 BOB difference.'}
+              </p>
+            </div>
+            
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md">
+              <div className="text-4xl mb-4 text-center">👨‍👩‍👧‍👦</div>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3 text-center">
+                {language === 'es' ? 'Para Familias' : 'For Families'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 text-sm">
+                {language === 'es'
+                  ? 'Las familias que reciben remesas del exterior pueden maximizar el valor de su dinero cambiando en el momento óptimo. Con actualizaciones cada 15 minutos, pueden identificar el mejor momento del día para cambiar.'
+                  : 'Families receiving remittances from abroad can maximize the value of their money by exchanging at the optimal time. With updates every 15 minutes, they can identify the best time of day to exchange.'}
+              </p>
+            </div>
+            
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md">
+              <div className="text-4xl mb-4 text-center">📱</div>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3 text-center">
+                {language === 'es' ? 'Para Todos' : 'For Everyone'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 text-sm">
+                {language === 'es'
+                  ? 'Nuestra plataforma es completamente gratuita y accesible para todos. No necesitas registrarte ni pagar suscripciones. Simplemente visita boliviablue.com y obtén la información más actualizada del mercado.'
+                  : 'Our platform is completely free and accessible to everyone. You don\'t need to register or pay subscriptions. Simply visit boliviablue.com and get the most up-to-date market information.'}
+              </p>
+            </div>
+          </div>
+        </section>
+
         {/* CTA */}
         <section className="bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl p-8 text-center text-white shadow-xl">
           <h2 className="text-2xl sm:text-3xl font-bold mb-4">

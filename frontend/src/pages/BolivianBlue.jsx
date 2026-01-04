@@ -283,6 +283,123 @@ function BolivianBlue() {
             </div>
 
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6 mt-12">
+              {language === 'es' ? 'Cómo Usar el Bolivian Blue para Transacciones' : 'How to Use Bolivian Blue for Transactions'}
+            </h2>
+            <p className="text-gray-700 dark:text-gray-300 mb-6">
+              {language === 'es'
+                ? <>El <strong>Bolivian Blue</strong> es esencial para cualquier transacción que involucre dólares en Bolivia. Si estás importando productos, recibiendo remesas del exterior, o simplemente necesitas cambiar divisas, conocer el <strong>bolivian blue rate</strong> te ayudará a obtener el mejor valor por tu dinero. Muchos negocios y particulares utilizan esta tasa como referencia para sus operaciones diarias, ya que refleja el precio real del dólar en el mercado boliviano.</>
+                : <>The <strong>Bolivian Blue</strong> is essential for any transaction involving dollars in Bolivia. If you're importing products, receiving remittances from abroad, or simply need to exchange currencies, knowing the <strong>bolivian blue rate</strong> will help you get the best value for your money. Many businesses and individuals use this rate as a reference for their daily operations, as it reflects the real price of the dollar in the Bolivian market.</>}
+            </p>
+            <div className="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 p-6 rounded mb-6">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                {language === 'es' ? 'Ejemplos Prácticos de Uso' : 'Practical Usage Examples'}
+              </h3>
+              <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2">
+                {language === 'es' ? (
+                  <>
+                    <li>Si recibes $100 USD en remesas, al tipo <strong>Bolivian Blue</strong> actual obtendrías aproximadamente {currentRate?.sell_bob_per_usd ? (100 * currentRate.sell_bob_per_usd).toFixed(2) : '1,060'} BOB, mientras que a la tasa oficial recibirías menos</li>
+                    <li>Para importadores, calcular costos usando el <strong>bolivian blue rate</strong> les permite establecer precios más precisos</li>
+                    <li>Al cambiar dólares físicos en casas de cambio, el <strong>Bolivian Blue</strong> te indica si la tasa que te ofrecen es justa</li>
+                    <li>Para pagos internacionales con tarjetas bancarias, conocer el <strong>bolivian blue exchange rate</strong> te ayuda a entender el costo real</li>
+                  </>
+                ) : (
+                  <>
+                    <li>If you receive $100 USD in remittances, at the current <strong>Bolivian Blue</strong> rate you would get approximately {currentRate?.sell_bob_per_usd ? (100 * currentRate.sell_bob_per_usd).toFixed(2) : '1,060'} BOB, while at the official rate you would receive less</li>
+                    <li>For importers, calculating costs using the <strong>bolivian blue rate</strong> allows them to set more accurate prices</li>
+                    <li>When exchanging physical dollars at exchange houses, the <strong>Bolivian Blue</strong> tells you if the rate offered is fair</li>
+                    <li>For international payments with bank cards, knowing the <strong>bolivian blue exchange rate</strong> helps you understand the real cost</li>
+                  </>
+                )}
+              </ul>
+            </div>
+
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6 mt-12">
+              {language === 'es' ? 'Tendencias y Análisis del Mercado' : 'Market Trends and Analysis'}
+            </h2>
+            <p className="text-gray-700 dark:text-gray-300 mb-6">
+              {language === 'es'
+                ? <>El <strong>Bolivian Blue</strong> no es estático; fluctúa constantemente según diversos factores económicos y políticos. Factores como la oferta y demanda de dólares, políticas gubernamentales, eventos económicos internacionales, y la confianza en la economía boliviana pueden influir significativamente en el <strong>bolivian blue rate</strong>. Por ejemplo, durante períodos de incertidumbre económica o restricciones cambiarias, el <strong>Bolivian Blue</strong> puede aumentar considerablemente, reflejando la escasez de dólares en el mercado formal.</>
+                : <>The <strong>Bolivian Blue</strong> is not static; it fluctuates constantly according to various economic and political factors. Factors such as the supply and demand of dollars, government policies, international economic events, and confidence in the Bolivian economy can significantly influence the <strong>bolivian blue rate</strong>. For example, during periods of economic uncertainty or exchange restrictions, the <strong>Bolivian Blue</strong> can increase considerably, reflecting the scarcity of dollars in the formal market.</>}
+            </p>
+            <p className="text-gray-700 dark:text-gray-300 mb-6">
+              {language === 'es'
+                ? <>Nuestra plataforma monitorea estas tendencias y actualiza el <strong>Bolivian Blue</strong> cada 15 minutos para que siempre tengas la información más reciente. Al observar los gráficos históricos, puedes identificar patrones y tendencias que te ayudarán a tomar mejores decisiones sobre cuándo realizar tus transacciones cambiarias.</>
+                : <>Our platform monitors these trends and updates the <strong>Bolivian Blue</strong> every 15 minutes so you always have the most recent information. By observing historical charts, you can identify patterns and trends that will help you make better decisions about when to perform your exchange transactions.</>}
+            </p>
+
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6 mt-12">
+              {language === 'es' ? 'Consejos para Obtener las Mejores Tasas' : 'Tips for Getting the Best Rates'}
+            </h2>
+            <div className="space-y-4 mb-6">
+              <div className="bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500 p-6 rounded">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                  {language === 'es' ? '1. Compara Múltiples Fuentes' : '1. Compare Multiple Sources'}
+                </h3>
+                <p className="text-gray-700 dark:text-gray-300">
+                  {language === 'es'
+                    ? 'No te conformes con la primera tasa que encuentres. Compara el <strong>Bolivian Blue</strong> que mostramos con las tasas ofrecidas por casas de cambio, plataformas P2P como Binance, y otros servicios. Esto te ayudará a identificar la mejor opción para tu transacción específica.'
+                    : "Don't settle for the first rate you find. Compare the <strong>Bolivian Blue</strong> we show with rates offered by exchange houses, P2P platforms like Binance, and other services. This will help you identify the best option for your specific transaction."}
+                </p>
+              </div>
+              <div className="bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500 p-6 rounded">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                  {language === 'es' ? '2. Considera el Método de Pago' : '2. Consider the Payment Method'}
+                </h3>
+                <p className="text-gray-700 dark:text-gray-300">
+                  {language === 'es'
+                    ? 'Diferentes métodos de pago pueden ofrecer diferentes tasas. Por ejemplo, Binance P2P generalmente ofrece mejores tasas que las casas de cambio tradicionales. Sin embargo, también considera factores como la seguridad, velocidad de transacción, y comisiones adicionales.'
+                    : 'Different payment methods can offer different rates. For example, Binance P2P generally offers better rates than traditional exchange houses. However, also consider factors such as security, transaction speed, and additional fees.'}
+                </p>
+              </div>
+              <div className="bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500 p-6 rounded">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                  {language === 'es' ? '3. Monitorea las Tendencias' : '3. Monitor Trends'}
+                </h3>
+                <p className="text-gray-700 dark:text-gray-300">
+                  {language === 'es'
+                    ? 'El <strong>Bolivian Blue</strong> puede variar durante el día. Si no tienes prisa, monitorea las tendencias durante algunas horas o días para identificar el mejor momento para realizar tu transacción. Nuestra plataforma actualiza cada 15 minutos para ayudarte a tomar decisiones informadas.'
+                    : 'The <strong>Bolivian Blue</strong> can vary throughout the day. If you are not in a hurry, monitor trends for a few hours or days to identify the best time to make your transaction. Our platform updates every 15 minutes to help you make informed decisions.'}
+                </p>
+              </div>
+            </div>
+
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6 mt-12">
+              {language === 'es' ? 'Errores Comunes que Debes Evitar' : 'Common Mistakes to Avoid'}
+            </h2>
+            <div className="space-y-4 mb-6">
+              <div className="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-6 rounded">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                  {language === 'es' ? '❌ Confiar Solo en la Tasa Oficial' : '❌ Relying Only on the Official Rate'}
+                </h3>
+                <p className="text-gray-700 dark:text-gray-300">
+                  {language === 'es'
+                    ? 'Uno de los errores más comunes es usar solo la tasa oficial del Banco Central para calcular transacciones. En la práctica, muchas transacciones se realizan al <strong>Bolivian Blue</strong>, que puede ser 10-20% más alto. Siempre verifica el <strong>bolivian blue rate</strong> antes de realizar cálculos importantes.'
+                    : "One of the most common mistakes is using only the Central Bank's official rate to calculate transactions. In practice, many transactions are made at the <strong>Bolivian Blue</strong>, which can be 10-20% higher. Always verify the <strong>bolivian blue rate</strong> before making important calculations."}
+                </p>
+              </div>
+              <div className="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-6 rounded">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                  {language === 'es' ? '❌ No Verificar la Tasa Antes de Cambiar' : '❌ Not Verifying the Rate Before Exchanging'}
+                </h3>
+                <p className="text-gray-700 dark:text-gray-300">
+                  {language === 'es'
+                    ? 'Siempre verifica el <strong>Bolivian Blue</strong> actual antes de realizar cualquier cambio de divisas. Las tasas pueden cambiar rápidamente, y una diferencia de incluso 0.10 BOB por dólar puede significar una pérdida significativa en transacciones grandes.'
+                    : 'Always verify the current <strong>Bolivian Blue</strong> before making any currency exchange. Rates can change quickly, and a difference of even 0.10 BOB per dollar can mean a significant loss on large transactions.'}
+                </p>
+              </div>
+              <div className="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-6 rounded">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                  {language === 'es' ? '❌ Ignorar Comisiones y Costos Adicionales' : '❌ Ignoring Fees and Additional Costs'}
+                </h3>
+                <p className="text-gray-700 dark:text-gray-300">
+                  {language === 'es'
+                    ? 'El <strong>bolivian blue rate</strong> que mostramos es la tasa de cambio base. Sin embargo, algunas plataformas o casas de cambio pueden cobrar comisiones adicionales. Siempre pregunta sobre todos los costos antes de realizar una transacción para calcular el costo real total.'
+                    : 'The <strong>bolivian blue rate</strong> we show is the base exchange rate. However, some platforms or exchange houses may charge additional fees. Always ask about all costs before making a transaction to calculate the total real cost.'}
+                </p>
+              </div>
+            </div>
+
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6 mt-12">
               {language === 'es' ? 'Recursos Adicionales' : 'Additional Resources'}
             </h2>
             <div className="grid md:grid-cols-3 gap-4">

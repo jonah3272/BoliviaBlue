@@ -104,6 +104,7 @@ function BlueDollarBolivia() {
         description="Blue Dollar Bolivia - Real-Time Blue Dollar Exchange Rate. Updated every 15 minutes. Historical charts, free calculator and news. The most accurate information on the Bolivian parallel market. Check now."
         keywords="blue dollar bolivia, blue dollar exchange rate bolivia, bolivia dollar rate, bolivia dollar price, exchange rate bolivia, bolivia blue dollar, parallel dollar bolivia"
         canonical="/blue-dollar-bolivia"
+        noindex={true} // Temporarily noindex due to templated/duplicate content
         structuredData={[articleSchema, faqSchema]}
       />
       

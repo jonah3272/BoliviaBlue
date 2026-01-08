@@ -76,6 +76,7 @@ function DolarParaleloBoliviaEnVivo() {
         description="Consulta el DÓLAR PARALELO BOLIVIA EN VIVO actualizado cada 15 minutos. Cotización en tiempo real del mercado cambiario boliviano. Más rápido y preciso que otros sitios."
         keywords="dolar paralelo bolivia en vivo, dolar paralelo bolivia, tipo cambio bolivia en vivo, cotizacion dolar bolivia en vivo, bolivia blue en vivo, cambio dolar bolivia tiempo real, precio dolar paralelo bolivia, dolar negro bolivia en vivo"
         canonical="/dolar-paralelo-bolivia-en-vivo"
+        noindex={true} // Temporarily noindex due to templated/query-based content
         structuredData={structuredData}
       />
 

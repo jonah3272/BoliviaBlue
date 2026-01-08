@@ -142,6 +142,7 @@ function BolivianBlue() {
           ? "bolivian blue, bolivian blue rate, bolivian blue exchange rate, dólar blue bolivia, tipo de cambio bolivia, mercado paralelo bolivia, cotización dólar bolivia, precio dólar bolivia, mejor que bolivianblue.net"
           : "bolivian blue, bolivian blue rate, bolivian blue exchange rate, blue dollar bolivia, exchange rate bolivia, parallel market bolivia, bolivia dollar rate, bolivia dollar price, better than bolivianblue.net"}
         canonical="/bolivian-blue"
+        noindex={true} // Temporarily noindex due to templated/duplicate content
         structuredData={[articleSchema, faqSchema]}
       />
       

@@ -134,6 +134,7 @@ function CotizaDolarParalelo() {
           ? "cotiza el dólar paralelo, cotización dólar paralelo, cotizar dólar paralelo bolivia, cotiza dólar blue, cotización dólar blue bolivia, cotizar dólar blue, dólar paralelo cotización, cotización dólar paralelo hoy, cotizar dólar paralelo actual, precio dólar paralelo, cotización mercado paralelo, dólar blue cotización, cotizar dólar bolivia, cotización dólar bolivia paralelo, mejor que bolivianblue.net"
           : "quote parallel dollar, parallel dollar quote, quote blue dollar bolivia, parallel dollar price, blue dollar quote, quote dollar bolivia, parallel market quote, bolivia parallel dollar"}
         canonical="/cotiza-dolar-paralelo"
+        noindex={true} // Temporarily noindex due to templated/query-based content
         structuredData={[articleSchema, faqSchema]}
       />
       

@@ -124,6 +124,7 @@ function DolarBlueHoy() {
           ? "dólar blue hoy, dólar blue hoy bolivia, dólar blue hoy en bolivia, cotización dólar blue hoy, precio dólar blue hoy, dólar blue hoy actual, dólar blue hoy la paz, tipo cambio hoy bolivia, mejor que bolivianblue.net"
           : "blue dollar today, blue dollar today bolivia, blue dollar quote today, blue dollar price today, blue dollar current today, exchange rate today bolivia"}
         canonical="/dolar-blue-hoy"
+        noindex={true} // Temporarily noindex due to templated/query-based content
         structuredData={[articleSchema, faqSchema]}
       />
       

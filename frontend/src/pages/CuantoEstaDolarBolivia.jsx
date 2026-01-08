@@ -133,6 +133,7 @@ function CuantoEstaDolarBolivia() {
           ? "cuánto está el dólar en bolivia, cuánto vale el dólar en bolivia, precio dólar bolivia, cotización dólar bolivia, cuánto es el dólar en bolivia, precio dólar blue bolivia, cuánto cuesta el dólar en bolivia, mejor que bolivianblue.net"
           : "how much is dollar in bolivia, dollar price bolivia, dollar quote bolivia, how much is dollar bolivia, blue dollar price bolivia, dollar cost bolivia"}
         canonical="/cuanto-esta-dolar-bolivia"
+        noindex={true} // Temporarily noindex due to templated/query-based content
         structuredData={[articleSchema, faqSchema]}
       />
       

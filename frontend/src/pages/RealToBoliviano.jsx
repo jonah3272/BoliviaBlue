@@ -146,7 +146,6 @@ function RealToBoliviano() {
           ? "real brasileño a boliviano, brl a bob, convertir real a boliviano, tipo de cambio real boliviano, cambiar reales a bolivianos, real bolivia, cotización real boliviano, brl/bob, real brasileño bolivia, mejor que bolivianblue.net"
           : "brazilian real to boliviano, brl to bob, convert real to boliviano, real boliviano exchange rate, exchange reais to bolivianos, real bolivia, real boliviano quote, brl/bob, brazilian real bolivia"}
         canonical="/real-a-boliviano"
-        noindex={true}
         structuredData={[articleSchema, faqSchema]}
       />
       

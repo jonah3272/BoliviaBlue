@@ -109,7 +109,7 @@ function DolarBlueCochabamba() {
           ? "dólar blue cochabamba, dólar blue bolivia cochabamba, tipo cambio cochabamba, cotización dólar blue cochabamba, precio dólar blue cochabamba, dónde cambiar dólares cochabamba, cambio dólares cochabamba, dólar paralelo cochabamba, mejor que bolivianblue.net"
           : "blue dollar cochabamba, blue dollar bolivia cochabamba, exchange rate cochabamba, blue dollar quote cochabamba, blue dollar price cochabamba, where to exchange dollars cochabamba, exchange dollars cochabamba, parallel dollar cochabamba"}
         canonical="/dolar-blue-cochabamba"
-        noindex={true}
+        noindex={true} // Keep noindexed - city pages are too similar to each other (AdSense risk)
         structuredData={[articleSchema, faqSchema]}
       />
       

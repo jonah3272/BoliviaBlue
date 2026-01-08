@@ -109,7 +109,7 @@ function DolarBlueSantaCruz() {
           ? "dólar blue santa cruz, dólar blue bolivia santa cruz, tipo cambio santa cruz, cotización dólar blue santa cruz, precio dólar blue santa cruz, dónde cambiar dólares santa cruz, cambio dólares santa cruz, dólar paralelo santa cruz, mejor que bolivianblue.net"
           : "blue dollar santa cruz, blue dollar bolivia santa cruz, exchange rate santa cruz, blue dollar quote santa cruz, blue dollar price santa cruz, where to exchange dollars santa cruz, exchange dollars santa cruz, parallel dollar santa cruz"}
         canonical="/dolar-blue-santa-cruz"
-        noindex={true}
+        noindex={true} // Keep noindexed - city pages are too similar to each other (AdSense risk)
         structuredData={[articleSchema, faqSchema]}
       />
       

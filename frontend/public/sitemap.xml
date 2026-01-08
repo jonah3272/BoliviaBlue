@@ -205,6 +205,26 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/que-es-dolar-blue?lang=en" />
   </url>
   
+  <!-- Euro-a-boliviano Page -->
+  <url>
+    <loc>https://boliviablue.com/euro-a-boliviano</loc>
+    <lastmod>2025-12-25T12:00:00+00:00</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/euro-a-boliviano" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/euro-a-boliviano?lang=en" />
+  </url>
+  
+  <!-- Real-a-boliviano Page -->
+  <url>
+    <loc>https://boliviablue.com/real-a-boliviano</loc>
+    <lastmod>2025-12-25T12:00:00+00:00</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/real-a-boliviano" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/real-a-boliviano?lang=en" />
+  </url>
+  
   <!-- Binance-p2p-bolivia Page -->
   <url>
     <loc>https://boliviablue.com/binance-p2p-bolivia</loc>

@@ -126,7 +126,7 @@ function DolarBlueLaPaz() {
           ? "dólar blue la paz, dólar blue bolivia la paz, dólar blue hoy bolivia la paz, tipo cambio la paz, cotización dólar blue la paz, precio dólar blue la paz, dónde cambiar dólares la paz, cambio dólares la paz, dólar paralelo la paz, mejor que bolivianblue.net"
           : "blue dollar la paz, blue dollar bolivia la paz, blue dollar today la paz, exchange rate la paz, blue dollar quote la paz, blue dollar price la paz, where to exchange dollars la paz, exchange dollars la paz, parallel dollar la paz"}
         canonical="/dolar-blue-la-paz"
-        noindex={true}
+        noindex={true} // Keep noindexed - city pages are too similar to each other (AdSense risk)
         structuredData={[articleSchema, faqSchema]}
       />
       

@@ -11,9 +11,6 @@ const BlueChart = lazy(() => import('../components/BlueChart'));
 const NewsTabs = lazy(() => import('../components/NewsTabs'));
 const RotatingNewsCarousel = lazy(() => import('../components/RotatingNewsCarousel'));
 const SentimentNewsCard = lazy(() => import('../components/SentimentNewsCard'));
-// Temporarily disabled - Railway backend not responding
-// const RateAlertForm = lazy(() => import('../components/RateAlertForm'));
-// const NewsletterSignup = lazy(() => import('../components/NewsletterSignup'));
 
 import About from '../components/About';
 import PageMeta from '../components/PageMeta';

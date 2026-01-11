@@ -203,9 +203,11 @@ export function loadAdSense(publisherId) {
       script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${publisherId}`;
       script.crossOrigin = 'anonymous';
       script.setAttribute('data-ad-client', publisherId);
+      // Enable Auto Ads (in-article, anchor, vignette, sidebar)
+      script.setAttribute('data-auto-ads', 'true');
       
       script.onload = () => {
-        console.log('[AdSense] ✓ Script loaded successfully');
+        console.log('[AdSense] ✓ Script loaded successfully (Auto Ads enabled)');
       };
       
       script.onerror = () => {

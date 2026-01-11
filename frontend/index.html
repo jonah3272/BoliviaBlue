@@ -156,6 +156,17 @@
       IMPORTANT: AdSense Policy Compliance
       AdSense loading is now handled in src/main.jsx to ensure proper module bundling
       See frontend/src/main.jsx for implementation details
+      
+      Auto Ads Configuration:
+      - In-article ads: Enabled (ads between content paragraphs)
+      - Anchor ads: Enabled (sticky bottom ads on mobile)
+      - Vignette ads: Optional (full-screen interstitials - can be disabled if too intrusive)
+      - Sidebar ads: Enabled (on desktop)
+      
+      Configure in AdSense dashboard: Ads > Auto ads > Edit
+      
+      NOTE: The script is loaded dynamically via adsenseLoader.js with data-auto-ads="true"
+      This ensures content validation before ads load (policy compliance) while enabling Auto Ads
     -->
     
     <!-- Google Analytics - Load asynchronously -->

@@ -21,6 +21,8 @@ import { Link } from 'react-router-dom';
 import { articlesEs, articlesEn } from '../data/blogArticles';
 import { fetchBlueRate } from '../utils/api';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
+import AdSenseAd from '../components/AdSenseAd';
+import AdSenseAutoAds from '../components/AdSenseAutoAds';
 
 // Loading fallback component for lazy-loaded components
 const ComponentLoader = () => (
@@ -33,6 +35,9 @@ function Home() {
   // Signal to AdSense that this page has sufficient content
   // This prevents ads from loading on loading screens
   useAdsenseReady();
+  
+  // Enable Auto Ads for automatic optimization
+  // Auto Ads will place ads in optimal locations automatically
   
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
@@ -397,6 +402,9 @@ function Home() {
 
       {/* Navigation */}
       <Navigation />
+      
+      {/* Enable Auto Ads for automatic ad placement */}
+      <AdSenseAutoAds />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-8 md:py-12 space-y-6 sm:space-y-8 md:space-y-12">
@@ -471,6 +479,18 @@ function Home() {
         {/* Binance Banner - Under Chart */}
         <section>
           <BinanceBanner />
+        </section>
+
+        {/* AdSense Ad - After Chart Section (High visibility, good CTR) */}
+        <section className="my-6">
+          <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+            <AdSenseAd 
+              adSlot="YOUR_AD_SLOT_ID_HERE" 
+              adFormat="auto"
+              fullWidthResponsive={true}
+              className="max-w-4xl mx-auto"
+            />
+          </div>
         </section>
 
         {/* How It Works Section */}
@@ -687,6 +707,18 @@ function Home() {
                   : 'Built by Bolivians, for Bolivians. No hidden interests, no bank affiliations, just honest and useful information.'}
               </p>
             </div>
+          </div>
+        </section>
+
+        {/* AdSense Ad - Before News Section (Good placement for engaged users) */}
+        <section className="my-6">
+          <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+            <AdSenseAd 
+              adSlot="YOUR_AD_SLOT_ID_HERE" 
+              adFormat="horizontal"
+              fullWidthResponsive={true}
+              className="max-w-4xl mx-auto"
+            />
           </div>
         </section>
 

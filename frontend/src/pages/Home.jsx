@@ -21,7 +21,6 @@ import { Link } from 'react-router-dom';
 import { articlesEs, articlesEn } from '../data/blogArticles';
 import { fetchBlueRate } from '../utils/api';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
-import AdSenseAd from '../components/AdSenseAd';
 import AdSenseAutoAds from '../components/AdSenseAutoAds';
 
 // Loading fallback component for lazy-loaded components
@@ -481,18 +480,6 @@ function Home() {
           <BinanceBanner />
         </section>
 
-        {/* AdSense Ad - After Chart Section (High visibility, good CTR) */}
-        <section className="my-6">
-          <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
-            <AdSenseAd 
-              adSlot="YOUR_AD_SLOT_ID_HERE" 
-              adFormat="auto"
-              fullWidthResponsive={true}
-              className="max-w-4xl mx-auto"
-            />
-          </div>
-        </section>
-
         {/* How It Works Section */}
         <section className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-gray-800 dark:to-gray-900 rounded-xl sm:rounded-2xl p-4 sm:p-8 md:p-10 shadow-xl">
           <div className="text-center mb-4 sm:mb-8">
@@ -707,18 +694,6 @@ function Home() {
                   : 'Built by Bolivians, for Bolivians. No hidden interests, no bank affiliations, just honest and useful information.'}
               </p>
             </div>
-          </div>
-        </section>
-
-        {/* AdSense Ad - Before News Section (Good placement for engaged users) */}
-        <section className="my-6">
-          <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
-            <AdSenseAd 
-              adSlot="YOUR_AD_SLOT_ID_HERE" 
-              adFormat="horizontal"
-              fullWidthResponsive={true}
-              className="max-w-4xl mx-auto"
-            />
           </div>
         </section>
 

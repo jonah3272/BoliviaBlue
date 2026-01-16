@@ -67,25 +67,12 @@ const allowedOrigins = [
 
 // CRITICAL: CORS middleware - MUST be ABSOLUTE FIRST, before ANYTHING else
 // Use the cors package which is battle-tested and reliable
+// SIMPLIFIED: Allow all origins to ensure it works, then we can restrict later
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) {
-      return callback(null, true);
-    }
-    
-    // Check if origin is in allowed list
-    if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
-      callback(null, true);
-    } else {
-      // Still allow it but log a warning
-      console.log(`⚠️ CORS: Allowing origin ${origin} (not in strict list)`);
-      callback(null, true);
-    }
-  },
+  origin: true, // Allow all origins - this ensures CORS works
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin', 'Cookie'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin', 'Cookie', 'x-session-token'],
   exposedHeaders: [],
   maxAge: 86400, // 24 hours
   preflightContinue: false,
@@ -129,7 +116,13 @@ const apiLimiter = rateLimit({
   message: 'Too many requests from this IP, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
-  skip: (req) => req.method === 'OPTIONS', // Skip rate limiting for OPTIONS requests
+  skip: (req) => {
+    // CRITICAL: Always skip OPTIONS (CORS preflight) - must not be rate limited
+    if (req.method === 'OPTIONS') {
+      return true;
+    }
+    return false;
+  }
 });
 
 // Apply rate limiting to API routes (but OPTIONS are already handled above)

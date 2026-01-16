@@ -10,6 +10,7 @@ import dotenv from 'dotenv';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
@@ -65,78 +66,31 @@ const allowedOrigins = [
 ].filter(Boolean);
 
 // CRITICAL: CORS middleware - MUST be ABSOLUTE FIRST, before ANYTHING else
-// This MUST be the very first middleware - nothing can come before it
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  
-  // Handle OPTIONS preflight requests - MUST return immediately with headers
-  if (req.method === 'OPTIONS') {
-    console.log(`🚨 OPTIONS PREFLIGHT: ${req.path} | Origin: ${origin || 'none'} | Time: ${new Date().toISOString()}`);
-    
-    // ALWAYS set CORS headers for OPTIONS - browsers require this
-    const headers = {
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Cookie',
-      'Access-Control-Max-Age': '86400'
-    };
-    
-    // If origin is present, use it (required for credentials)
-    // If no origin, use wildcard (shouldn't happen in browsers, but handle it)
-    if (origin) {
-      headers['Access-Control-Allow-Origin'] = origin;
-      headers['Access-Control-Allow-Credentials'] = 'true';
-    } else {
-      headers['Access-Control-Allow-Origin'] = '*';
+// Use the cors package which is battle-tested and reliable
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) {
+      return callback(null, true);
     }
     
-    console.log(`✅ OPTIONS: Setting headers:`, headers);
-    
-    // Set headers using writeHead to ensure they're sent
-    res.writeHead(200, headers);
-    res.end();
-    return; // CRITICAL: Don't call next() for OPTIONS
-  }
-  
-  // For all other requests (GET, POST, etc.), set CORS headers
-  // Wrap res.json, res.send, res.end to ensure headers are always set
-  const originalJson = res.json;
-  const originalSend = res.send;
-  const originalEnd = res.end;
-  
-  res.json = function(body) {
-    ensureCorsHeaders(this, origin);
-    return originalJson.call(this, body);
-  };
-  
-  res.send = function(body) {
-    ensureCorsHeaders(this, origin);
-    return originalSend.call(this, body);
-  };
-  
-  res.end = function(...args) {
-    ensureCorsHeaders(this, origin);
-    return originalEnd.apply(this, args);
-  };
-  
-  // Set headers now as well
-  ensureCorsHeaders(res, origin);
-  
-  next();
-});
-
-// Helper to ensure CORS headers are set
-function ensureCorsHeaders(res, origin) {
-  if (!res.headersSent) {
-    if (origin) {
-      res.setHeader('Access-Control-Allow-Origin', origin);
-      res.setHeader('Access-Control-Allow-Credentials', 'true');
+    // Check if origin is in allowed list
+    if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+      callback(null, true);
     } else {
-      res.setHeader('Access-Control-Allow-Origin', '*');
+      // Still allow it but log a warning
+      console.log(`⚠️ CORS: Allowing origin ${origin} (not in strict list)`);
+      callback(null, true);
     }
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Cookie');
-  }
-}
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin', 'Cookie'],
+  exposedHeaders: [],
+  maxAge: 86400, // 24 hours
+  preflightContinue: false,
+  optionsSuccessStatus: 200
+}));
 
 // Request logging middleware - log requests (reduced verbosity for performance)
 app.use((req, res, next) => {
@@ -166,34 +120,7 @@ app.use(helmet({
   crossOriginOpenerPolicy: false, // Disable to allow CORS
 }));
 
-// Helper function to handle OPTIONS requests for chat endpoints
-function handleChatOptions(req, res) {
-  const origin = req.headers.origin;
-  const headers = {
-    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Cookie',
-    'Access-Control-Max-Age': '86400'
-  };
-  
-  if (origin) {
-    headers['Access-Control-Allow-Origin'] = origin;
-    headers['Access-Control-Allow-Credentials'] = 'true';
-  } else {
-    headers['Access-Control-Allow-Origin'] = '*';
-  }
-  
-  res.writeHead(200, headers);
-  res.end();
-}
-
-// Explicit OPTIONS handlers for all chat endpoints (MUST be before rate limiter)
-app.options('/api/chat/session', handleChatOptions);
-app.options('/api/chat/messages', handleChatOptions);
-app.options('/api/chat/messages/latest', handleChatOptions);
-app.options('/api/chat/messages/:id/like', handleChatOptions);
-app.options('/api/chat/messages/:id/flag', handleChatOptions);
-app.options('/api/chat/stats', handleChatOptions);
-app.options('/api/chat/*', handleChatOptions); // Catch-all for any other chat routes
+// CORS package handles all OPTIONS requests automatically
 
 // Rate Limiting (OPTIONS are handled by catch-all middleware above)
 const apiLimiter = rateLimit({
@@ -208,8 +135,7 @@ const apiLimiter = rateLimit({
 // Apply rate limiting to API routes (but OPTIONS are already handled above)
 app.use('/api/', apiLimiter);
 
-// CORS is now handled entirely by our custom middleware above
-// No cors library needed - it was causing conflicts
+// CORS is now handled by the cors package (configured above)
 
 app.use(express.json());
 app.use(cookieParser()); // For HTTP-only cookies
@@ -759,18 +685,7 @@ app.get('/api/monthly-reports', async (req, res) => {
  * ========================================
  */
 
-// Helper function to ensure CORS headers are set (backup for chat endpoints)
-function setCorsHeaders(req, res) {
-  const origin = req.headers.origin;
-  if (origin) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-  } else {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-  }
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
-}
+// CORS is handled by the cors package middleware - no need for manual header setting
 
 
 // Rate limiters for chat endpoints
@@ -800,9 +715,6 @@ const chatDailyLimiter = rateLimit({
  * Initialize anonymous session
  */
 app.post('/api/chat/session', async (req, res) => {
-  // Ensure CORS headers are set
-  setCorsHeaders(req, res);
-  
   try {
     // Generate or get session token
     let sessionToken = req.cookies?.chat_session_token;
@@ -843,9 +755,6 @@ app.post('/api/chat/session', async (req, res) => {
  * Create a new message
  */
 app.post('/api/chat/messages', chatMessageLimiter, chatDailyLimiter, async (req, res) => {
-  // Ensure CORS headers are set
-  setCorsHeaders(req, res);
-  
   try {
     const { content, category, location_hint, parent_id } = req.body;
     const sessionToken = req.cookies?.chat_session_token || req.headers['x-session-token'];
@@ -947,9 +856,6 @@ app.post('/api/chat/messages', chatMessageLimiter, chatDailyLimiter, async (req,
  * Get messages feed
  */
 app.get('/api/chat/messages', async (req, res) => {
-  // Ensure CORS headers are set
-  setCorsHeaders(req, res);
-  
   try {
     const {
       category,
@@ -1025,9 +931,6 @@ app.get('/api/chat/messages', async (req, res) => {
  * Get latest messages (for real-time updates)
  */
 app.get('/api/chat/messages/latest', async (req, res) => {
-  // Ensure CORS headers are set
-  setCorsHeaders(req, res);
-  
   try {
     const { after, limit = 20 } = req.query;
     const sessionToken = req.cookies?.chat_session_token || req.headers['x-session-token'];
@@ -1064,9 +967,6 @@ app.get('/api/chat/messages/latest', async (req, res) => {
  * Like/unlike a message
  */
 app.post('/api/chat/messages/:id/like', async (req, res) => {
-  // Ensure CORS headers are set
-  setCorsHeaders(req, res);
-  
   try {
     const { id } = req.params;
     const { action = 'like' } = req.body;
@@ -1107,9 +1007,6 @@ app.post('/api/chat/messages/:id/like', async (req, res) => {
  * Flag a message for moderation
  */
 app.post('/api/chat/messages/:id/flag', async (req, res) => {
-  // Ensure CORS headers are set
-  setCorsHeaders(req, res);
-  
   try {
     const { id } = req.params;
     const { reason = 'other' } = req.body;

@@ -66,17 +66,25 @@ const allowedOrigins = [
 ].filter(Boolean);
 
 // CRITICAL: Log ALL incoming requests at the absolute first point
+// This runs BEFORE anything else to verify requests reach the app
 app.use((req, res, next) => {
-  console.log(`🔴 FIRST MIDDLEWARE: ${req.method} ${req.path} | Origin: ${req.headers.origin || 'none'} | IP: ${req.ip}`);
-  next();
-});
-
-// CRITICAL: Log ALL requests at the absolute first point to verify they reach the app
-app.use((req, res, next) => {
-  console.log(`🔴 INCOMING REQUEST: ${req.method} ${req.path} | Origin: ${req.headers.origin || 'none'} | IP: ${req.ip || req.connection.remoteAddress}`);
-  if (req.method === 'OPTIONS') {
-    console.log(`   🔵 THIS IS AN OPTIONS REQUEST - should be handled next`);
+  const method = req.method;
+  const path = req.path;
+  const origin = req.headers.origin || 'none';
+  const ip = req.ip || req.connection?.remoteAddress || 'unknown';
+  
+  console.log(`🔴 REQUEST RECEIVED: ${method} ${path} | Origin: ${origin} | IP: ${ip}`);
+  
+  // Special logging for OPTIONS to debug CORS
+  if (method === 'OPTIONS') {
+    console.log(`   ⚠️ OPTIONS REQUEST DETECTED - checking if middleware will catch it`);
+    console.log(`   Headers:`, {
+      'access-control-request-method': req.headers['access-control-request-method'],
+      'access-control-request-headers': req.headers['access-control-request-headers'],
+      origin: req.headers.origin
+    });
   }
+  
   next();
 });
 

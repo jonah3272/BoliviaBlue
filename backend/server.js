@@ -107,7 +107,22 @@ app.use(helmet({
   crossOriginOpenerPolicy: false, // Disable to allow CORS
 }));
 
-// CORS package handles all OPTIONS requests automatically
+// Explicit OPTIONS handlers as backup (cors package should handle these, but this ensures they work)
+app.options('*', (req, res) => {
+  const origin = req.headers.origin;
+  console.log(`🔵 EXPLICIT OPTIONS: ${req.path} | Origin: ${origin || 'none'}`);
+  
+  const headers = {
+    'Access-Control-Allow-Origin': origin || '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Cookie, x-session-token',
+    'Access-Control-Allow-Credentials': 'true',
+    'Access-Control-Max-Age': '86400'
+  };
+  
+  res.writeHead(200, headers);
+  res.end();
+});
 
 // Rate Limiting (OPTIONS are handled by catch-all middleware above)
 const apiLimiter = rateLimit({

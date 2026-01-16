@@ -98,35 +98,45 @@ app.use((req, res, next) => {
   }
   
   // For all other requests (GET, POST, etc.), set CORS headers
-  // Use response finish event to ensure headers are always set
-  res.on('finish', () => {
-    // Double-check headers are set before response finishes
-    if (!res.getHeader('Access-Control-Allow-Origin')) {
-      if (origin) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-        res.setHeader('Access-Control-Allow-Credentials', 'true');
-      } else {
-        res.setHeader('Access-Control-Allow-Origin', '*');
-      }
-      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Cookie');
-    }
-  });
+  // Wrap res.json, res.send, res.end to ensure headers are always set
+  const originalJson = res.json;
+  const originalSend = res.send;
+  const originalEnd = res.end;
   
-  if (origin) {
-    // Always set the origin header if present (browsers require exact match)
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-  } else {
-    // No origin - allow with wildcard (for non-browser requests)
-    res.setHeader('Access-Control-Allow-Origin', '*');
-  }
+  res.json = function(body) {
+    ensureCorsHeaders(this, origin);
+    return originalJson.call(this, body);
+  };
   
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Cookie');
+  res.send = function(body) {
+    ensureCorsHeaders(this, origin);
+    return originalSend.call(this, body);
+  };
+  
+  res.end = function(...args) {
+    ensureCorsHeaders(this, origin);
+    return originalEnd.apply(this, args);
+  };
+  
+  // Set headers now as well
+  ensureCorsHeaders(res, origin);
   
   next();
 });
+
+// Helper to ensure CORS headers are set
+function ensureCorsHeaders(res, origin) {
+  if (!res.headersSent) {
+    if (origin) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+    } else {
+      res.setHeader('Access-Control-Allow-Origin', '*');
+    }
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Cookie');
+  }
+}
 
 // Request logging middleware - log requests (reduced verbosity for performance)
 app.use((req, res, next) => {

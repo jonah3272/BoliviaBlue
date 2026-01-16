@@ -1,34 +1,29 @@
 // API Base URL configuration
-// NO CORS NEEDED: Uses Vercel proxy (vercel.json rewrites /api/* to Railway)
-// This makes all requests same-origin, eliminating CORS issues entirely
+// Priority: 1. VITE_API_URL env var, 2. Relative URL (Vercel proxy), 3. Fallback
 
-let API_BASE = '';
+let API_BASE = import.meta.env.VITE_API_URL;
 
-// In production (Vercel): Use relative URLs - Vercel proxy handles /api/* routes
-// In development: Vite proxy handles /api/* routes (see vite.config.js)
-// This means ALL requests are same-origin = NO CORS needed!
-
-if (typeof window !== 'undefined') {
-  const isProduction = !window.location.hostname.includes('localhost');
-  
-  if (isProduction) {
-    // Production: Use relative URLs (empty string = same origin)
-    // Vercel's vercel.json rewrite will proxy /api/* to Railway
-    API_BASE = '';
-  } else {
-    // Development: Use relative URLs (Vite proxy handles it)
-    // See vite.config.js for proxy configuration
-    API_BASE = '';
-  }
-} else {
-  // SSR fallback - use relative URL
+if (!API_BASE) {
+  // If VITE_API_URL is not set, use relative URLs (Vercel proxy)
+  // This works for GET requests but may fail for POST (Vercel limitation)
   API_BASE = '';
+  
+  if (typeof window !== 'undefined') {
+    const isProduction = !window.location.hostname.includes('localhost');
+    
+    if (isProduction) {
+      // Production: Try relative URLs first (Vercel proxy)
+      // If this fails, set VITE_API_URL to Railway custom domain
+      API_BASE = '';
+    } else {
+      // Development: Use relative URLs (Vite proxy handles it)
+      API_BASE = '';
+    }
+  }
 }
 
 // Log for debugging
-if (import.meta.env.DEV) {
-  console.log('[Chat API] Using relative URLs (no CORS needed) - API_BASE:', API_BASE || '(same origin)');
-}
+console.log('[Chat API] Using API_BASE:', API_BASE || '(relative - Vercel proxy)');
 
 /**
  * Initialize anonymous session

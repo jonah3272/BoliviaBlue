@@ -89,6 +89,8 @@ app.use((req, res, next) => {
       headers['Access-Control-Allow-Origin'] = '*';
     }
     
+    console.log(`✅ OPTIONS: Setting headers:`, headers);
+    
     // Set headers using writeHead to ensure they're sent
     res.writeHead(200, headers);
     res.end();
@@ -96,6 +98,21 @@ app.use((req, res, next) => {
   }
   
   // For all other requests (GET, POST, etc.), set CORS headers
+  // Use response finish event to ensure headers are always set
+  res.on('finish', () => {
+    // Double-check headers are set before response finishes
+    if (!res.getHeader('Access-Control-Allow-Origin')) {
+      if (origin) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
+      } else {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+      }
+      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Cookie');
+    }
+  });
+  
   if (origin) {
     // Always set the origin header if present (browsers require exact match)
     res.setHeader('Access-Control-Allow-Origin', origin);
@@ -1129,16 +1146,23 @@ app.post('/api/chat/messages/:id/flag', async (req, res) => {
  * Get chat statistics
  */
 app.get('/api/chat/stats', async (req, res) => {
-  // Ensure CORS headers are set
-  setCorsHeaders(req, res);
+  // Ensure CORS headers are set BEFORE any response
+  const origin = req.headers.origin;
+  if (origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Cookie');
   
   try {
     const stats = await getChatStats();
-
     res.json(stats);
-
   } catch (error) {
     console.error('Error fetching stats:', error);
+    // Ensure CORS headers are still set on error response
     res.status(500).json({
       error: 'Internal server error',
       message: error.message

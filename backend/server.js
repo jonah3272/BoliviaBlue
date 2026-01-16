@@ -122,14 +122,14 @@ app.use((req, res, next) => {
 });
 
 // CRITICAL: CORS middleware - MUST be after explicit OPTIONS handler
-// Use the cors package which is battle-tested and reliable
-// SIMPLIFIED: Allow all origins to ensure it works, then we can restrict later
+// Use the cors package - configured like Spring Boot example: allow ALL origins, methods, headers
+// This matches the working Spring config: allowedOrigins("*"), allowedMethods("*"), allowedHeaders("*")
 app.use(cors({
-  origin: true, // Allow all origins - this ensures CORS works
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin', 'Cookie', 'x-session-token'],
-  exposedHeaders: [],
+  origin: '*', // Allow ALL origins explicitly (like Spring's allowedOrigins("*"))
+  methods: '*', // Allow ALL methods explicitly (like Spring's allowedMethods("*"))
+  allowedHeaders: '*', // Allow ALL headers explicitly (like Spring's allowedHeaders("*"))
+  exposedHeaders: '*',
+  credentials: false, // Can't use credentials with origin: '*', but this ensures it works
   maxAge: 86400, // 24 hours
   preflightContinue: false,
   optionsSuccessStatus: 200

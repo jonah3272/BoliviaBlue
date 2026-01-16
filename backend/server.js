@@ -10,7 +10,6 @@ import dotenv from 'dotenv';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import cookieParser from 'cookie-parser';
-import cors from 'cors';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
@@ -65,123 +64,46 @@ const allowedOrigins = [
   ORIGIN
 ].filter(Boolean);
 
-// CRITICAL: Log ALL incoming requests at the absolute first point
-// This runs BEFORE anything else to verify requests reach the app
+// CRITICAL: Manual CORS handler - NO cors package, handle everything ourselves
+// This runs FIRST before anything else can interfere
 app.use((req, res, next) => {
   const method = req.method;
-  const path = req.path;
-  const origin = req.headers.origin || 'none';
-  const ip = req.ip || req.connection?.remoteAddress || 'unknown';
+  const origin = req.headers.origin;
   
-  console.log(`🔴 REQUEST RECEIVED: ${method} ${path} | Origin: ${origin} | IP: ${ip}`);
+  // Log all requests
+  console.log(`🔴 REQUEST: ${method} ${req.path} | Origin: ${origin || 'none'}`);
   
-  // Special logging for OPTIONS to debug CORS
+  // Handle OPTIONS preflight requests IMMEDIATELY
   if (method === 'OPTIONS') {
-    console.log(`   ⚠️ OPTIONS REQUEST DETECTED - checking if middleware will catch it`);
-    console.log(`   Headers:`, {
-      'access-control-request-method': req.headers['access-control-request-method'],
-      'access-control-request-headers': req.headers['access-control-request-headers'],
-      origin: req.headers.origin
-    });
+    console.log(`🔵 HANDLING OPTIONS: ${req.path} | Origin: ${origin || 'none'}`);
+    
+    // Set CORS headers for OPTIONS
+    if (origin) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+    } else {
+      res.setHeader('Access-Control-Allow-Origin', '*');
+    }
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Cookie, x-session-token');
+    res.setHeader('Access-Control-Max-Age', '86400');
+    
+    console.log(`✅ OPTIONS: Headers set, sending 200`);
+    
+    // Send response immediately - don't call next()
+    res.status(200).end();
+    return;
   }
   
-  next();
-});
-
-// CRITICAL: OPTIONS middleware - MUST be ABSOLUTE FIRST, before ANYTHING else
-// This catches ALL OPTIONS requests before any other middleware can interfere
-app.use((req, res, next) => {
-  if (req.method === 'OPTIONS') {
-    const origin = req.headers.origin;
-    console.log(`🔵 OPTIONS MIDDLEWARE HIT: ${req.method} ${req.path} | Origin: ${origin || 'none'}`);
-    console.log(`   Request headers:`, JSON.stringify(req.headers, null, 2));
-    
-    const headers = {
-      'Access-Control-Allow-Origin': origin || '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Cookie, x-session-token',
-      'Access-Control-Allow-Credentials': 'true',
-      'Access-Control-Max-Age': '86400'
-    };
-    
-    console.log(`✅ OPTIONS: Writing headers:`, JSON.stringify(headers, null, 2));
-    
-    // Use writeHead to ensure headers are sent
-    try {
-      res.writeHead(200, headers);
-      res.end();
-      console.log(`✅ OPTIONS: Response sent successfully`);
-    } catch (error) {
-      console.error(`❌ OPTIONS: Error sending response:`, error);
-      res.writeHead(200, headers);
-      res.end();
-    }
-    return; // Don't call next()
+  // For all other requests, set CORS headers
+  if (origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', '*');
   }
-  next();
-});
-
-// CRITICAL: CORS middleware - MUST be after explicit OPTIONS handler
-// Use the cors package - configured like Spring Boot example: allow ALL origins, methods, headers
-// This matches the working Spring config: allowedOrigins("*"), allowedMethods("*"), allowedHeaders("*")
-app.use(cors({
-  origin: '*', // Allow ALL origins explicitly (like Spring's allowedOrigins("*"))
-  methods: '*', // Allow ALL methods explicitly (like Spring's allowedMethods("*"))
-  allowedHeaders: '*', // Allow ALL headers explicitly (like Spring's allowedHeaders("*"))
-  exposedHeaders: '*',
-  credentials: false, // Can't use credentials with origin: '*', but this ensures it works
-  maxAge: 86400, // 24 hours
-  preflightContinue: false,
-  optionsSuccessStatus: 200
-}));
-
-// CRITICAL: Response interceptor to ensure CORS headers are ALWAYS set
-// This ensures headers are on every response, even if OPTIONS never reached the server
-app.use((req, res, next) => {
-  // Store original methods
-  const originalJson = res.json;
-  const originalSend = res.send;
-  const originalEnd = res.end;
-  const originalStatus = res.status;
-  
-  // Function to ensure CORS headers are set
-  const ensureCorsHeaders = () => {
-    if (!res.headersSent) {
-      const origin = req.headers.origin;
-      if (origin) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-        res.setHeader('Access-Control-Allow-Credentials', 'true');
-      } else {
-        res.setHeader('Access-Control-Allow-Origin', '*');
-      }
-      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Cookie, x-session-token');
-    }
-  };
-  
-  // Wrap response methods to ensure CORS headers
-  res.json = function(body) {
-    ensureCorsHeaders();
-    return originalJson.call(this, body);
-  };
-  
-  res.send = function(body) {
-    ensureCorsHeaders();
-    return originalSend.call(this, body);
-  };
-  
-  res.end = function(...args) {
-    ensureCorsHeaders();
-    return originalEnd.apply(this, args);
-  };
-  
-  res.status = function(code) {
-    ensureCorsHeaders();
-    return originalStatus.call(this, code);
-  };
-  
-  // Set headers now as well (before any response is sent)
-  ensureCorsHeaders();
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Cookie, x-session-token');
   
   next();
 });

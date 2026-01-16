@@ -135,6 +135,57 @@ app.use(cors({
   optionsSuccessStatus: 200
 }));
 
+// CRITICAL: Response interceptor to ensure CORS headers are ALWAYS set
+// This ensures headers are on every response, even if OPTIONS never reached the server
+app.use((req, res, next) => {
+  // Store original methods
+  const originalJson = res.json;
+  const originalSend = res.send;
+  const originalEnd = res.end;
+  const originalStatus = res.status;
+  
+  // Function to ensure CORS headers are set
+  const ensureCorsHeaders = () => {
+    if (!res.headersSent) {
+      const origin = req.headers.origin;
+      if (origin) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
+      } else {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+      }
+      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Cookie, x-session-token');
+    }
+  };
+  
+  // Wrap response methods to ensure CORS headers
+  res.json = function(body) {
+    ensureCorsHeaders();
+    return originalJson.call(this, body);
+  };
+  
+  res.send = function(body) {
+    ensureCorsHeaders();
+    return originalSend.call(this, body);
+  };
+  
+  res.end = function(...args) {
+    ensureCorsHeaders();
+    return originalEnd.apply(this, args);
+  };
+  
+  res.status = function(code) {
+    ensureCorsHeaders();
+    return originalStatus.call(this, code);
+  };
+  
+  // Set headers now as well (before any response is sent)
+  ensureCorsHeaders();
+  
+  next();
+});
+
 // Request logging middleware - log requests (reduced verbosity for performance)
 app.use((req, res, next) => {
   // Only log API requests, not static assets

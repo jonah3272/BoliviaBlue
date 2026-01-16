@@ -65,6 +65,21 @@ const allowedOrigins = [
   ORIGIN
 ].filter(Boolean);
 
+// CRITICAL: Log ALL incoming requests at the absolute first point
+app.use((req, res, next) => {
+  console.log(`🔴 FIRST MIDDLEWARE: ${req.method} ${req.path} | Origin: ${req.headers.origin || 'none'} | IP: ${req.ip}`);
+  next();
+});
+
+// CRITICAL: Log ALL requests at the absolute first point to verify they reach the app
+app.use((req, res, next) => {
+  console.log(`🔴 INCOMING REQUEST: ${req.method} ${req.path} | Origin: ${req.headers.origin || 'none'} | IP: ${req.ip || req.connection.remoteAddress}`);
+  if (req.method === 'OPTIONS') {
+    console.log(`   🔵 THIS IS AN OPTIONS REQUEST - should be handled next`);
+  }
+  next();
+});
+
 // CRITICAL: OPTIONS middleware - MUST be ABSOLUTE FIRST, before ANYTHING else
 // This catches ALL OPTIONS requests before any other middleware can interfere
 app.use((req, res, next) => {

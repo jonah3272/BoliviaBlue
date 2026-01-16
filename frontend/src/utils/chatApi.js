@@ -61,7 +61,8 @@ export async function initializeSession() {
   } catch (error) {
     // Handle network errors
     if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-      throw new Error(`Cannot connect to server. Please check that the backend is running at ${API_BASE}`);
+      const apiUrl = API_BASE || window.location.origin;
+      throw new Error(`Application failed to respond. Please check your connection and try again.`);
     }
     throw error;
   }
@@ -81,28 +82,35 @@ export function getSessionToken() {
  * Create a new message
  */
 export async function createMessage(content, category, locationHint, parentId = null) {
-  const response = await fetch(`${API_BASE}/api/chat/messages`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    credentials: 'include',
-    body: JSON.stringify({
-      content: content.trim(),
-      category: category || 'general',
-      location_hint: locationHint || null,
-      parent_id: parentId || null
-    })
-  });
+  try {
+    const response = await fetch(`${API_BASE}/api/chat/messages`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        content: content.trim(),
+        category: category || 'general',
+        location_hint: locationHint || null,
+        parent_id: parentId || null
+      })
+    });
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Failed to create message');
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to create message');
+    }
+
+    const result = await response.json();
+    // Return the message object directly
+    return { message: result.message || result };
+  } catch (error) {
+    if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+      throw new Error('Application failed to respond. Please check your connection and try again.');
+    }
+    throw error;
   }
-
-  const result = await response.json();
-  // Return the message object directly
-  return { message: result.message || result };
 }
 
 /**
@@ -121,15 +129,22 @@ export async function getMessages(filters = {}) {
   if (filters.after) params.append('after', filters.after);
   if (filters.search) params.append('search', filters.search);
 
-  const response = await fetch(`${API_BASE}/api/chat/messages?${params.toString()}`, {
-    credentials: 'include'
-  });
+  try {
+    const response = await fetch(`${API_BASE}/api/chat/messages?${params.toString()}`, {
+      credentials: 'include'
+    });
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch messages');
+    if (!response.ok) {
+      throw new Error('Failed to fetch messages');
+    }
+
+    return response.json();
+  } catch (error) {
+    if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+      throw new Error('Application failed to respond. Please check your connection and try again.');
+    }
+    throw error;
   }
-
-  return response.json();
 }
 
 /**

@@ -1149,13 +1149,50 @@ app.get('*', (req, res) => {
 // Start scheduler
 startScheduler();
 
+// CRITICAL: Create raw HTTP server to intercept OPTIONS BEFORE Express
+// This handles OPTIONS at the HTTP level, before Railway's proxy can interfere
+import http from 'http';
+
+const server = http.createServer((req, res) => {
+  // Intercept OPTIONS requests at the lowest possible level
+  if (req.method === 'OPTIONS') {
+    const origin = req.headers.origin;
+    console.log(`🔵 RAW HTTP OPTIONS INTERCEPT: ${req.url} | Origin: ${origin || 'none'}`);
+    console.log(`   Method: ${req.method}`);
+    console.log(`   URL: ${req.url}`);
+    console.log(`   Headers:`, JSON.stringify(req.headers, null, 2));
+    
+    // Set CORS headers immediately
+    if (origin) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+    } else {
+      res.setHeader('Access-Control-Allow-Origin', '*');
+    }
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Cookie, x-session-token');
+    res.setHeader('Access-Control-Max-Age', '86400');
+    
+    console.log(`✅ RAW HTTP OPTIONS: Headers set, sending 200`);
+    console.log(`   Access-Control-Allow-Origin: ${res.getHeader('Access-Control-Allow-Origin')}`);
+    
+    res.writeHead(200);
+    res.end();
+    return; // Don't pass to Express
+  }
+  
+  // For all other requests, pass to Express
+  app(req, res);
+});
+
 // Start server - Listen on 0.0.0.0 for Railway compatibility
 try {
   console.log(`🔌 Attempting to start server on port ${PORT}...`);
-  app.listen(PORT, '0.0.0.0', () => {
+  server.listen(PORT, '0.0.0.0', () => {
     console.log(`✅ Bolivia Blue con Paz backend running on port ${PORT}`);
     console.log(`✅ Using Supabase database at ${process.env.SUPABASE_URL || 'NOT SET'}`);
     console.log(`✅ CORS configured for multiple origins including: ${allowedOrigins.join(', ')}`);
+    console.log(`✅ Raw HTTP server intercepting OPTIONS requests before Express`);
     console.log(`✅ Server is ready to accept connections`);
   });
 } catch (error) {

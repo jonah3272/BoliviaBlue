@@ -65,7 +65,26 @@ const allowedOrigins = [
   ORIGIN
 ].filter(Boolean);
 
-// CRITICAL: CORS middleware - MUST be ABSOLUTE FIRST, before ANYTHING else
+// CRITICAL: Explicit OPTIONS handler - MUST be FIRST to catch all preflight requests
+// This ensures OPTIONS requests get CORS headers even if cors package fails
+app.options('*', (req, res) => {
+  const origin = req.headers.origin;
+  console.log(`🔵 EXPLICIT OPTIONS HANDLER: ${req.method} ${req.path} | Origin: ${origin || 'none'}`);
+  
+  const headers = {
+    'Access-Control-Allow-Origin': origin || '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Cookie, x-session-token',
+    'Access-Control-Allow-Credentials': 'true',
+    'Access-Control-Max-Age': '86400'
+  };
+  
+  console.log(`✅ OPTIONS: Sending headers:`, headers);
+  res.writeHead(200, headers);
+  res.end();
+});
+
+// CRITICAL: CORS middleware - MUST be after explicit OPTIONS handler
 // Use the cors package which is battle-tested and reliable
 // SIMPLIFIED: Allow all origins to ensure it works, then we can restrict later
 app.use(cors({
@@ -107,24 +126,7 @@ app.use(helmet({
   crossOriginOpenerPolicy: false, // Disable to allow CORS
 }));
 
-// Explicit OPTIONS handlers as backup (cors package should handle these, but this ensures they work)
-app.options('*', (req, res) => {
-  const origin = req.headers.origin;
-  console.log(`🔵 EXPLICIT OPTIONS: ${req.path} | Origin: ${origin || 'none'}`);
-  
-  const headers = {
-    'Access-Control-Allow-Origin': origin || '*',
-    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Cookie, x-session-token',
-    'Access-Control-Allow-Credentials': 'true',
-    'Access-Control-Max-Age': '86400'
-  };
-  
-  res.writeHead(200, headers);
-  res.end();
-});
-
-// Rate Limiting (OPTIONS are handled by catch-all middleware above)
+// Rate Limiting (OPTIONS are handled by explicit handler above)
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // Limit each IP to 100 requests per windowMs

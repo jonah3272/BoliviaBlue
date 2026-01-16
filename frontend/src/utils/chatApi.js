@@ -90,10 +90,12 @@ export async function createMessage(content, category, locationHint, parentId = 
     parent_id: parentId || null
   };
 
-  // Log request for debugging (only in dev)
-  if (import.meta.env.DEV) {
-    console.log('[Chat API] Creating message:', { url, body: requestBody });
-  }
+  // Log request for debugging (always log to help debug 502 errors)
+  console.log('[Chat API] Creating message:', { 
+    url, 
+    body: requestBody,
+    timestamp: new Date().toISOString()
+  });
 
   try {
     const response = await fetch(url, {
@@ -105,10 +107,13 @@ export async function createMessage(content, category, locationHint, parentId = 
       body: JSON.stringify(requestBody)
     });
 
-    // Log response for debugging
-    if (import.meta.env.DEV) {
-      console.log('[Chat API] Response status:', response.status, response.statusText);
-    }
+    // Log response for debugging (always log)
+    console.log('[Chat API] Response received:', { 
+      status: response.status, 
+      statusText: response.statusText,
+      ok: response.ok,
+      timestamp: new Date().toISOString()
+    });
 
     if (!response.ok) {
       let errorMessage = 'Failed to create message';

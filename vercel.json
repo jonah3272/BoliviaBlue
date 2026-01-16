@@ -4,6 +4,14 @@
   "installCommand": "npm --version",
   "rewrites": [
     {
+      "source": "/api/chat/messages",
+      "destination": "/api/chat/messages"
+    },
+    {
+      "source": "/api/chat/session",
+      "destination": "/api/chat/session"
+    },
+    {
       "source": "/api/:path*",
       "destination": "https://boliviablue-production.up.railway.app/api/:path*"
     },

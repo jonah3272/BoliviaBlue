@@ -65,6 +65,7 @@ const allowedOrigins = [
 ].filter(Boolean);
 
 // CRITICAL: Manual CORS handler - NO cors package, handle everything ourselves
+// CRITICAL: When credentials: 'include' is used, MUST use specific origin (not '*')
 // This runs FIRST before anything else can interfere
 app.use((req, res, next) => {
   const method = req.method;
@@ -73,37 +74,39 @@ app.use((req, res, next) => {
   // Log all requests
   console.log(`🔴 REQUEST: ${method} ${req.path} | Origin: ${origin || 'none'}`);
   
-  // Handle OPTIONS preflight requests IMMEDIATELY
-  if (method === 'OPTIONS') {
-    console.log(`🔵 HANDLING OPTIONS: ${req.path} | Origin: ${origin || 'none'}`);
-    
-    // Set CORS headers for OPTIONS
+  // Function to set CORS headers (used for both OPTIONS and regular requests)
+  const setCorsHeaders = () => {
+    // CRITICAL: When credentials are used, MUST use specific origin (not '*')
+    // Frontend uses credentials: 'include', so we must match the origin exactly
     if (origin) {
       res.setHeader('Access-Control-Allow-Origin', origin);
       res.setHeader('Access-Control-Allow-Credentials', 'true');
     } else {
+      // No origin header (unlikely in browser, but handle it)
       res.setHeader('Access-Control-Allow-Origin', '*');
     }
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Cookie, x-session-token');
+  };
+  
+  // Handle OPTIONS preflight requests IMMEDIATELY
+  if (method === 'OPTIONS') {
+    console.log(`🔵 HANDLING OPTIONS: ${req.path} | Origin: ${origin || 'none'}`);
+    
+    setCorsHeaders();
     res.setHeader('Access-Control-Max-Age', '86400');
     
     console.log(`✅ OPTIONS: Headers set, sending 200`);
+    console.log(`   Access-Control-Allow-Origin: ${res.getHeader('Access-Control-Allow-Origin')}`);
+    console.log(`   Access-Control-Allow-Credentials: ${res.getHeader('Access-Control-Allow-Credentials')}`);
     
     // Send response immediately - don't call next()
     res.status(200).end();
     return;
   }
   
-  // For all other requests, set CORS headers
-  if (origin) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-  } else {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-  }
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Cookie, x-session-token');
+  // For all other requests, set CORS headers BEFORE any response is sent
+  setCorsHeaders();
   
   next();
 });

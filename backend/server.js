@@ -750,6 +750,33 @@ const chatDailyLimiter = rateLimit({
   legacyHeaders: false
 });
 
+// CRITICAL: Explicit OPTIONS handlers for ALL chat endpoints
+// These MUST be defined BEFORE the actual route handlers
+const handleChatOptions = (req, res) => {
+  const origin = req.headers.origin;
+  console.log(`🔵 CHAT OPTIONS HANDLER: ${req.path} | Origin: ${origin || 'none'}`);
+  
+  if (origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Cookie, x-session-token');
+  res.setHeader('Access-Control-Max-Age', '86400');
+  
+  res.status(200).end();
+};
+
+// Register OPTIONS handlers for all chat routes BEFORE the actual handlers
+app.options('/api/chat/session', handleChatOptions);
+app.options('/api/chat/messages', handleChatOptions);
+app.options('/api/chat/messages/latest', handleChatOptions);
+app.options('/api/chat/messages/:id/like', handleChatOptions);
+app.options('/api/chat/messages/:id/flag', handleChatOptions);
+app.options('/api/chat/stats', handleChatOptions);
+
 /**
  * Initialize anonymous session
  */

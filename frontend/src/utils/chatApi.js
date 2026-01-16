@@ -82,30 +82,59 @@ export function getSessionToken() {
  * Create a new message
  */
 export async function createMessage(content, category, locationHint, parentId = null) {
+  const url = `${API_BASE}/api/chat/messages`;
+  const requestBody = {
+    content: content.trim(),
+    category: category || 'general',
+    location_hint: locationHint || null,
+    parent_id: parentId || null
+  };
+
+  // Log request for debugging (only in dev)
+  if (import.meta.env.DEV) {
+    console.log('[Chat API] Creating message:', { url, body: requestBody });
+  }
+
   try {
-    const response = await fetch(`${API_BASE}/api/chat/messages`, {
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       credentials: 'include',
-      body: JSON.stringify({
-        content: content.trim(),
-        category: category || 'general',
-        location_hint: locationHint || null,
-        parent_id: parentId || null
-      })
+      body: JSON.stringify(requestBody)
     });
 
+    // Log response for debugging
+    if (import.meta.env.DEV) {
+      console.log('[Chat API] Response status:', response.status, response.statusText);
+    }
+
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to create message');
+      let errorMessage = 'Failed to create message';
+      try {
+        const error = await response.json();
+        errorMessage = error.message || error.error || errorMessage;
+        console.error('[Chat API] Error response:', error);
+      } catch (e) {
+        // If response isn't JSON, try to get text
+        const errorText = await response.text();
+        errorMessage = errorText || errorMessage;
+        console.error('[Chat API] Error response (text):', errorText);
+      }
+      throw new Error(errorMessage);
     }
 
     const result = await response.json();
     // Return the message object directly
     return { message: result.message || result };
   } catch (error) {
+    console.error('[Chat API] Request failed:', {
+      url,
+      error: error.message,
+      stack: error.stack
+    });
+    
     if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
       throw new Error('Application failed to respond. Please check your connection and try again.');
     }

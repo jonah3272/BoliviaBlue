@@ -170,25 +170,41 @@ app.use(express.static(frontendDist));
 
 /**
  * Test endpoint to verify OPTIONS handler is working
+ * Test with: curl -X OPTIONS -H "Origin: https://www.boliviablue.com" -v https://boliviablue-production.up.railway.app/api/test-cors
  */
 app.get('/api/test-cors', (req, res) => {
-  // Explicit CORS headers
   const origin = req.headers.origin;
-  if (origin) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-  } else {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-  }
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+  console.log(`🧪 TEST-CORS GET: Origin: ${origin || 'none'}`);
   
   res.json({
     message: 'CORS test endpoint',
     timestamp: new Date().toISOString(),
-    optionsHandler: 'Should be working if you see this',
-    origin: origin || 'none'
+    origin: origin || 'none',
+    headers: {
+      'Access-Control-Allow-Origin': res.getHeader('Access-Control-Allow-Origin'),
+      'Access-Control-Allow-Credentials': res.getHeader('Access-Control-Allow-Credentials')
+    }
   });
+});
+
+/**
+ * Explicit OPTIONS handler for test endpoint to verify it works
+ */
+app.options('/api/test-cors', (req, res) => {
+  const origin = req.headers.origin;
+  console.log(`🧪 TEST-CORS OPTIONS: Origin: ${origin || 'none'}`);
+  
+  const headers = {
+    'Access-Control-Allow-Origin': origin || '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Cookie, x-session-token',
+    'Access-Control-Allow-Credentials': 'true',
+    'Access-Control-Max-Age': '86400'
+  };
+  
+  console.log(`🧪 TEST-CORS OPTIONS: Sending headers:`, JSON.stringify(headers, null, 2));
+  res.writeHead(200, headers);
+  res.end();
 });
 
 /**

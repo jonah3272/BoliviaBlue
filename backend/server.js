@@ -65,23 +65,37 @@ const allowedOrigins = [
   ORIGIN
 ].filter(Boolean);
 
-// CRITICAL: Explicit OPTIONS handler - MUST be FIRST to catch all preflight requests
-// This ensures OPTIONS requests get CORS headers even if cors package fails
-app.options('*', (req, res) => {
-  const origin = req.headers.origin;
-  console.log(`🔵 EXPLICIT OPTIONS HANDLER: ${req.method} ${req.path} | Origin: ${origin || 'none'}`);
-  
-  const headers = {
-    'Access-Control-Allow-Origin': origin || '*',
-    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Cookie, x-session-token',
-    'Access-Control-Allow-Credentials': 'true',
-    'Access-Control-Max-Age': '86400'
-  };
-  
-  console.log(`✅ OPTIONS: Sending headers:`, headers);
-  res.writeHead(200, headers);
-  res.end();
+// CRITICAL: OPTIONS middleware - MUST be ABSOLUTE FIRST, before ANYTHING else
+// This catches ALL OPTIONS requests before any other middleware can interfere
+app.use((req, res, next) => {
+  if (req.method === 'OPTIONS') {
+    const origin = req.headers.origin;
+    console.log(`🔵 OPTIONS MIDDLEWARE HIT: ${req.method} ${req.path} | Origin: ${origin || 'none'}`);
+    console.log(`   Request headers:`, JSON.stringify(req.headers, null, 2));
+    
+    const headers = {
+      'Access-Control-Allow-Origin': origin || '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Cookie, x-session-token',
+      'Access-Control-Allow-Credentials': 'true',
+      'Access-Control-Max-Age': '86400'
+    };
+    
+    console.log(`✅ OPTIONS: Writing headers:`, JSON.stringify(headers, null, 2));
+    
+    // Use writeHead to ensure headers are sent
+    try {
+      res.writeHead(200, headers);
+      res.end();
+      console.log(`✅ OPTIONS: Response sent successfully`);
+    } catch (error) {
+      console.error(`❌ OPTIONS: Error sending response:`, error);
+      res.writeHead(200, headers);
+      res.end();
+    }
+    return; // Don't call next()
+  }
+  next();
 });
 
 // CRITICAL: CORS middleware - MUST be after explicit OPTIONS handler

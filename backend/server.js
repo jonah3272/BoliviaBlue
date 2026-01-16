@@ -77,106 +77,48 @@ app.use((req, res, next) => {
 // CRITICAL: CORS middleware - MUST be ABSOLUTE FIRST, before ANYTHING else
 // This MUST be the very first middleware - nothing can come before it
 app.use((req, res, next) => {
-  try {
-    const origin = req.headers.origin;
+  const origin = req.headers.origin;
+  
+  // Handle OPTIONS preflight requests - MUST return immediately with headers
+  if (req.method === 'OPTIONS') {
+    console.log(`🚨 OPTIONS PREFLIGHT: ${req.path} | Origin: ${origin || 'none'} | Time: ${new Date().toISOString()}`);
     
-    // Check if origin is in allowed list (or if wildcard is allowed)
-    const isAllowedOrigin = !origin || allowedOrigins.includes(origin) || allowedOrigins.includes('*');
+    // ALWAYS set CORS headers for OPTIONS - browsers require this
+    const headers = {
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Cookie',
+      'Access-Control-Max-Age': '86400'
+    };
     
-    // Handle OPTIONS preflight requests - MUST return immediately
-    if (req.method === 'OPTIONS') {
-      console.log(`🚨 OPTIONS PREFLIGHT: ${req.path} | Origin: ${origin || 'none'} | Allowed: ${isAllowedOrigin} | Time: ${new Date().toISOString()}`);
-      
-      // Build headers object
-      // CRITICAL: When credentials are included, Access-Control-Allow-Origin cannot be '*'
-      // It must be the specific origin
-      const headers = {
-        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept, Origin',
-        'Access-Control-Max-Age': '86400'
-      };
-      
-      if (origin && isAllowedOrigin) {
-        // When origin is present and allowed, use it (required for credentials)
-        headers['Access-Control-Allow-Origin'] = origin;
-        headers['Access-Control-Allow-Credentials'] = 'true';
-      } else if (origin && !isAllowedOrigin) {
-        // Origin not in allowed list - still allow but log warning
-        console.log(`⚠️ CORS: Origin ${origin} not in allowed list, but allowing for OPTIONS`);
-        headers['Access-Control-Allow-Origin'] = origin;
-        headers['Access-Control-Allow-Credentials'] = 'true';
-      } else {
-        // No origin header (unlikely in browser, but handle it)
-        headers['Access-Control-Allow-Origin'] = '*';
-      }
-      
-      // Set headers using ALL methods to ensure they're set
-      Object.keys(headers).forEach(key => {
-        res.header(key, headers[key]);
-        res.setHeader(key, headers[key]);
-      });
-      
-      console.log(`✅ OPTIONS: Headers set, returning 200`);
-      console.log(`   Headers:`, JSON.stringify(headers, null, 2));
-      
-      // CRITICAL: Use writeHead to ensure headers are set, then end immediately
-      try {
-        res.writeHead(200, headers);
-        res.end();
-      } catch (writeError) {
-        console.error('❌ Error writing OPTIONS response:', writeError);
-        // Fallback: try status and send
-        res.status(200);
-        Object.keys(headers).forEach(key => {
-          res.setHeader(key, headers[key]);
-        });
-        res.end();
-      }
-      return; // Don't call next()
+    // If origin is present, use it (required for credentials)
+    // If no origin, use wildcard (shouldn't happen in browsers, but handle it)
+    if (origin) {
+      headers['Access-Control-Allow-Origin'] = origin;
+      headers['Access-Control-Allow-Credentials'] = 'true';
+    } else {
+      headers['Access-Control-Allow-Origin'] = '*';
     }
+    
+    // Set headers using writeHead to ensure they're sent
+    res.writeHead(200, headers);
+    res.end();
+    return; // CRITICAL: Don't call next() for OPTIONS
+  }
   
   // For all other requests (GET, POST, etc.), set CORS headers
   if (origin) {
     // Always set the origin header if present (browsers require exact match)
-    // For security, we should validate, but for now allow all to fix CORS issues
-    if (isAllowedOrigin || allowedOrigins.includes('*')) {
-      res.header('Access-Control-Allow-Origin', origin);
-      res.header('Access-Control-Allow-Credentials', 'true');
-      res.setHeader('Access-Control-Allow-Origin', origin);
-      res.setHeader('Access-Control-Allow-Credentials', 'true');
-    } else {
-      // Origin not in list - log but still allow (to avoid breaking things)
-      console.log(`⚠️ CORS: Origin ${origin} not in allowed list for ${req.method} ${req.path}, but allowing`);
-      res.header('Access-Control-Allow-Origin', origin);
-      res.setHeader('Access-Control-Allow-Origin', origin);
-      res.setHeader('Access-Control-Allow-Credentials', 'true');
-    }
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
   } else {
     // No origin - allow with wildcard (for non-browser requests)
-    res.header('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Origin', '*');
   }
   
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
-    
-    next();
-  } catch (error) {
-    console.error('❌ CORS middleware error:', error);
-    // Even on error, try to set CORS headers to prevent CORS errors
-    const origin = req.headers.origin;
-    if (origin) {
-      res.setHeader('Access-Control-Allow-Origin', origin);
-      res.setHeader('Access-Control-Allow-Credentials', 'true');
-    } else {
-      res.setHeader('Access-Control-Allow-Origin', '*');
-    }
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
-    next();
-  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Cookie');
+  
+  next();
 });
 
 

@@ -64,16 +64,6 @@ const allowedOrigins = [
   ORIGIN
 ].filter(Boolean);
 
-// Request logging middleware - log requests (reduced verbosity for performance)
-app.use((req, res, next) => {
-  // Only log API requests, not static assets
-  if (req.path.startsWith('/api/')) {
-    console.log(`📥 ${req.method} ${req.path} | Origin: ${req.headers.origin || 'none'}`);
-  }
-  next();
-});
-
-
 // CRITICAL: CORS middleware - MUST be ABSOLUTE FIRST, before ANYTHING else
 // This MUST be the very first middleware - nothing can come before it
 app.use((req, res, next) => {
@@ -121,6 +111,15 @@ app.use((req, res, next) => {
   next();
 });
 
+// Request logging middleware - log requests (reduced verbosity for performance)
+app.use((req, res, next) => {
+  // Only log API requests, not static assets
+  if (req.path.startsWith('/api/')) {
+    console.log(`📥 ${req.method} ${req.path} | Origin: ${req.headers.origin || 'none'}`);
+  }
+  next();
+});
+
 
 // Security Headers - Helmet (after CORS middleware)
 // Configure Helmet to NOT interfere with CORS headers
@@ -139,6 +138,35 @@ app.use(helmet({
   crossOriginResourcePolicy: false, // Disable to allow CORS
   crossOriginOpenerPolicy: false, // Disable to allow CORS
 }));
+
+// Helper function to handle OPTIONS requests for chat endpoints
+function handleChatOptions(req, res) {
+  const origin = req.headers.origin;
+  const headers = {
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Cookie',
+    'Access-Control-Max-Age': '86400'
+  };
+  
+  if (origin) {
+    headers['Access-Control-Allow-Origin'] = origin;
+    headers['Access-Control-Allow-Credentials'] = 'true';
+  } else {
+    headers['Access-Control-Allow-Origin'] = '*';
+  }
+  
+  res.writeHead(200, headers);
+  res.end();
+}
+
+// Explicit OPTIONS handlers for all chat endpoints (MUST be before rate limiter)
+app.options('/api/chat/session', handleChatOptions);
+app.options('/api/chat/messages', handleChatOptions);
+app.options('/api/chat/messages/latest', handleChatOptions);
+app.options('/api/chat/messages/:id/like', handleChatOptions);
+app.options('/api/chat/messages/:id/flag', handleChatOptions);
+app.options('/api/chat/stats', handleChatOptions);
+app.options('/api/chat/*', handleChatOptions); // Catch-all for any other chat routes
 
 // Rate Limiting (OPTIONS are handled by catch-all middleware above)
 const apiLimiter = rateLimit({
@@ -716,6 +744,7 @@ function setCorsHeaders(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
 }
+
 
 // Rate limiters for chat endpoints
 const chatMessageLimiter = rateLimit({

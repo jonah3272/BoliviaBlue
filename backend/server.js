@@ -1053,17 +1053,6 @@ app.post('/api/chat/messages/:id/flag', async (req, res) => {
  * Get chat statistics
  */
 app.get('/api/chat/stats', async (req, res) => {
-  // Ensure CORS headers are set BEFORE any response
-  const origin = req.headers.origin;
-  if (origin) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-  } else {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-  }
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Cookie');
-  
   try {
     const stats = await getChatStats();
     res.json(stats);

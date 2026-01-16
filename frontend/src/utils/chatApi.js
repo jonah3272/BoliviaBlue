@@ -117,15 +117,36 @@ export async function createMessage(content, category, locationHint, parentId = 
 
     if (!response.ok) {
       let errorMessage = 'Failed to create message';
+      const status = response.status;
+      
+      // Log detailed error info
+      console.error('[Chat API] Error response:', {
+        status,
+        statusText: response.statusText,
+        url: response.url,
+        headers: Object.fromEntries(response.headers.entries())
+      });
+      
       try {
         const error = await response.json();
         errorMessage = error.message || error.error || errorMessage;
-        console.error('[Chat API] Error response:', error);
+        console.error('[Chat API] Error JSON:', error);
       } catch (e) {
         // If response isn't JSON, try to get text
-        const errorText = await response.text();
-        errorMessage = errorText || errorMessage;
-        console.error('[Chat API] Error response (text):', errorText);
+        try {
+          const errorText = await response.text();
+          errorMessage = errorText || errorMessage;
+          console.error('[Chat API] Error text:', errorText);
+        } catch (textError) {
+          // Can't read response at all
+          if (status === 502) {
+            errorMessage = 'Server is temporarily unavailable. Please try again in a moment.';
+          } else if (status === 504) {
+            errorMessage = 'Request timed out. Please try again.';
+          } else {
+            errorMessage = `Server error (${status}). Please try again.`;
+          }
+        }
       }
       throw new Error(errorMessage);
     }
@@ -137,13 +158,26 @@ export async function createMessage(content, category, locationHint, parentId = 
     console.error('[Chat API] Request failed:', {
       url,
       error: error.message,
-      stack: error.stack
+      stack: error.stack,
+      name: error.name,
+      cause: error.cause
     });
     
+    // More specific error messages based on error type
     if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-      throw new Error('Application failed to respond. Please check your connection and try again.');
+      // Check if it's a 502 specifically
+      if (error.message.includes('502') || url.includes('boliviablue.com')) {
+        throw new Error('Server is temporarily unavailable (502). The backend may be restarting. Please try again in a moment.');
+      }
+      throw new Error('Cannot connect to server. Please check your internet connection and try again.');
     }
-    throw error;
+    
+    // If error already has a message, use it
+    if (error.message && !error.message.includes('Failed to fetch')) {
+      throw error;
+    }
+    
+    throw new Error('Application failed to respond. Please try again.');
   }
 }
 

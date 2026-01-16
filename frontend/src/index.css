@@ -71,3 +71,56 @@
   }
 }
 
+/* AdSense Ad Overlap Prevention */
+/* Prevent Auto Ads from overlapping with content or each other */
+.adsbygoogle,
+ins.adsbygoogle {
+  display: block !important;
+  position: relative !important;
+  z-index: 1 !important;
+  margin: 1rem 0 !important;
+  min-height: 100px !important;
+  overflow: hidden !important;
+}
+
+/* Ensure proper spacing between ads and content */
+section + section {
+  margin-top: 2rem;
+}
+
+/* Prevent anchor ads from overlapping main content */
+[id*="google_ads_iframe_"][id*="ca-pub-3497294777171749"] {
+  position: fixed !important;
+  bottom: 0 !important;
+  z-index: 999 !important;
+}
+
+/* Prevent in-article ads from overlapping */
+article .adsbygoogle,
+.prose .adsbygoogle {
+  margin: 2rem auto !important;
+  max-width: 100% !important;
+  clear: both !important;
+}
+
+/* Prevent sidebar ads from overlapping on desktop */
+@media (min-width: 1024px) {
+  .adsbygoogle[data-ad-format] {
+    max-width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+}
+
+/* Ensure content sections have proper spacing to prevent ad overlap */
+main > section {
+  position: relative;
+  z-index: 0;
+  margin-bottom: 2rem;
+}
+
+/* Prevent vignette ads from causing layout issues */
+body > div[id*="google_ads"] {
+  position: fixed !important;
+  z-index: 10000 !important;
+}

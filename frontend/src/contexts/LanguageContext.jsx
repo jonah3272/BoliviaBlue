@@ -205,6 +205,7 @@ export const translations = {
     // Navigation
     navDashboard: 'Dashboard',
     navDashboardShort: 'Inicio',
+    navCommunity: 'Comunidad',
     navCalculator: 'Calculadora',
     navBuyDollars: 'Comprar Dólares',
     navNews: 'Noticias',
@@ -215,6 +216,11 @@ export const translations = {
     navBlog: 'Blog',
     navBancos: 'Bancos',
     navPlataformas: 'Plataformas',
+    navEquipo: 'Equipo',
+    navPrivacy: 'Privacidad',
+    navTerms: 'Términos',
+    navCorrections: 'Correcciones',
+    navEditorial: 'Política Editorial',
     learnMore: 'Saber Más',
     
     // Twitter/X Section
@@ -533,6 +539,7 @@ export const translations = {
     // Navigation
     navDashboard: 'Dashboard',
     navDashboardShort: 'Home',
+    navCommunity: 'Community',
     navCalculator: 'Calculator',
     navBuyDollars: 'Buy Dollars',
     navNews: 'News',
@@ -543,6 +550,11 @@ export const translations = {
     navBlog: 'Blog',
     navBancos: 'Banks',
     navPlataformas: 'Platforms',
+    navEquipo: 'Team',
+    navPrivacy: 'Privacy',
+    navTerms: 'Terms',
+    navCorrections: 'Corrections',
+    navEditorial: 'Editorial Policy',
     learnMore: 'Learn More',
     
     // Twitter/X Section

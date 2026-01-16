@@ -9,6 +9,8 @@ import express from 'express';
 import dotenv from 'dotenv';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import cookieParser from 'cookie-parser';
+import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { 
@@ -22,8 +24,19 @@ import {
   subscribeToNewsletter,
   unsubscribeFromNewsletter,
   getMonthlyReport,
-  getAllMonthlyReports
+  getAllMonthlyReports,
+  supabase
 } from './db-supabase.js';
+import {
+  initializeSession,
+  createMessage,
+  getMessages,
+  getLatestMessages,
+  toggleLike,
+  hasUserLiked,
+  flagMessage,
+  getChatStats
+} from './db-chat.js';
 import { startScheduler, cache } from './scheduler-supabase.js';
 
 console.log('✅ Imports loaded successfully');
@@ -184,6 +197,7 @@ app.use('/api/', apiLimiter);
 // No cors library needed - it was causing conflicts
 
 app.use(express.json());
+app.use(cookieParser()); // For HTTP-only cookies
 
 // Serve frontend static files in production
 const frontendDist = join(__dirname, '../frontend/dist');
@@ -717,6 +731,391 @@ app.get('/api/monthly-reports', async (req, res) => {
 
   } catch (error) {
     console.error('Error fetching monthly reports:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: error.message
+    });
+  }
+});
+
+/**
+ * ========================================
+ * ANONYMOUS CHAT API ENDPOINTS
+ * ========================================
+ */
+
+// Rate limiters for chat endpoints
+const chatMessageLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 10, // 10 messages per hour
+  keyGenerator: (req) => {
+    // Use session token from cookie or header
+    return req.cookies?.chat_session_token || req.headers['x-session-token'] || req.ip;
+  },
+  message: 'Too many messages. Please wait before posting again.',
+  standardHeaders: true,
+  legacyHeaders: false
+});
+
+const chatDailyLimiter = rateLimit({
+  windowMs: 24 * 60 * 60 * 1000, // 24 hours
+  max: 50, // 50 messages per day
+  keyGenerator: (req) => {
+    return req.cookies?.chat_session_token || req.headers['x-session-token'] || req.ip;
+  },
+  standardHeaders: true,
+  legacyHeaders: false
+});
+
+/**
+ * Initialize anonymous session
+ */
+app.post('/api/chat/session', async (req, res) => {
+  try {
+    // Generate or get session token
+    let sessionToken = req.cookies?.chat_session_token;
+    
+    if (!sessionToken) {
+      // Generate new session token
+      sessionToken = crypto.randomUUID();
+    }
+
+    // Initialize session
+    const session = await initializeSession(sessionToken);
+
+    // Set HTTP-only cookie (SECURITY FIX)
+    res.cookie('chat_session_token', sessionToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    });
+
+    res.json({
+      success: true,
+      anonymous_username: session.anonymous_username,
+      expires_at: session.expires_at
+      // Note: session_token NOT returned in response body (security fix)
+    });
+
+  } catch (error) {
+    console.error('Error initializing session:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: error.message
+    });
+  }
+});
+
+/**
+ * Create a new message
+ */
+app.post('/api/chat/messages', chatMessageLimiter, chatDailyLimiter, async (req, res) => {
+  try {
+    const { content, category, location_hint, parent_id } = req.body;
+    const sessionToken = req.cookies?.chat_session_token || req.headers['x-session-token'];
+
+    if (!sessionToken) {
+      return res.status(401).json({
+        error: 'UNAUTHORIZED',
+        message: 'Session token required'
+      });
+    }
+
+    // Validation
+    if (!content || typeof content !== 'string') {
+      return res.status(400).json({
+        error: 'VALIDATION_ERROR',
+        message: 'Content is required'
+      });
+    }
+
+    const trimmedContent = content.trim();
+    if (trimmedContent.length < 10 || trimmedContent.length > 1000) {
+      return res.status(400).json({
+        error: 'VALIDATION_ERROR',
+        message: 'Content must be between 10 and 1000 characters'
+      });
+    }
+
+    const allowedCategories = ['exchange-locations', 'street-rates', 'tips', 'binance-p2p', 'general'];
+    if (category && !allowedCategories.includes(category)) {
+      return res.status(400).json({
+        error: 'VALIDATION_ERROR',
+        message: `Category must be one of: ${allowedCategories.join(', ')}`
+      });
+    }
+
+    // Validate parent_id if provided
+    if (parent_id) {
+      // Verify parent message exists
+      const { data: parent } = await supabase
+        .from('anonymous_messages')
+        .select('id')
+        .eq('id', parent_id)
+        .eq('is_approved', true)
+        .eq('is_deleted', false)
+        .single();
+      
+      if (!parent) {
+        return res.status(404).json({
+          error: 'NOT_FOUND',
+          message: 'Parent message not found'
+        });
+      }
+    }
+
+    // Create message
+    const message = await createMessage(trimmedContent, category || 'general', location_hint, sessionToken, parent_id);
+
+    // Get rate limit info
+    const remaining = res.get('X-RateLimit-Remaining') || '9';
+    const reset = res.get('X-RateLimit-Reset') || Math.floor(Date.now() / 1000) + 3600;
+
+    res.json({
+      success: true,
+      message: {
+        id: message.id,
+        content: message.content,
+        anonymous_username: message.anonymous_username,
+        category: message.category,
+        location_hint: message.location_hint,
+        rate_mentioned: message.rate_mentioned,
+        created_at: message.created_at,
+        likes: message.likes,
+        parent_id: message.parent_id,
+        reply_count: 0,
+        has_user_liked: false,
+        replies: []
+      }
+    });
+
+  } catch (error) {
+    console.error('Error creating message:', error);
+    
+    if (error.message.includes('Rate limit exceeded')) {
+      return res.status(429).json({
+        error: 'RATE_LIMIT_EXCEEDED',
+        message: error.message,
+        retry_after: 3600
+      });
+    }
+
+    res.status(500).json({
+      error: 'Internal server error',
+      message: error.message
+    });
+  }
+});
+
+/**
+ * Get messages feed
+ */
+app.get('/api/chat/messages', async (req, res) => {
+  try {
+    const {
+      category,
+      location_hint,
+      min_rate,
+      max_rate,
+      sort = 'newest',
+      limit = 50,
+      before,
+      after,
+      search
+    } = req.query;
+
+    const sessionToken = req.cookies?.chat_session_token || req.headers['x-session-token'];
+
+    const filters = {
+      category,
+      location_hint,
+      min_rate: min_rate ? parseFloat(min_rate) : undefined,
+      max_rate: max_rate ? parseFloat(max_rate) : undefined,
+      sort,
+      limit: Math.min(parseInt(limit, 10) || 50, 200),
+      before,
+      after,
+      search
+    };
+
+    const result = await getMessages(filters);
+
+    // Check which messages user has liked (including replies)
+    const messagesWithLikes = await Promise.all(
+      result.messages.map(async (msg) => {
+        const hasLiked = sessionToken ? await hasUserLiked(msg.id, sessionToken) : false;
+        
+        // Check likes for replies too
+        const repliesWithLikes = await Promise.all(
+          (msg.replies || []).map(async (reply) => {
+            const replyHasLiked = sessionToken ? await hasUserLiked(reply.id, sessionToken) : false;
+            return {
+              ...reply,
+              has_user_liked: replyHasLiked
+            };
+          })
+        );
+        
+        return {
+          ...msg,
+          has_user_liked: hasLiked,
+          replies: repliesWithLikes
+        };
+      })
+    );
+
+    res.json({
+      messages: messagesWithLikes,
+      total: result.total,
+      has_more: result.has_more,
+      next_cursor: messagesWithLikes.length > 0 
+        ? messagesWithLikes[messagesWithLikes.length - 1].created_at 
+        : null
+    });
+
+  } catch (error) {
+    console.error('Error fetching messages:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: error.message
+    });
+  }
+});
+
+/**
+ * Get latest messages (for real-time updates)
+ */
+app.get('/api/chat/messages/latest', async (req, res) => {
+  try {
+    const { after, limit = 20 } = req.query;
+    const sessionToken = req.cookies?.chat_session_token || req.headers['x-session-token'];
+
+    const result = await getLatestMessages(after, parseInt(limit, 10) || 20);
+
+    // Check which messages user has liked
+    const messagesWithLikes = await Promise.all(
+      result.messages.map(async (msg) => {
+        const hasLiked = sessionToken ? await hasUserLiked(msg.id, sessionToken) : false;
+        return {
+          ...msg,
+          has_user_liked: hasLiked
+        };
+      })
+    );
+
+    res.json({
+      messages: messagesWithLikes,
+      count: result.count,
+      latest_timestamp: result.latest_timestamp
+    });
+
+  } catch (error) {
+    console.error('Error fetching latest messages:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: error.message
+    });
+  }
+});
+
+/**
+ * Like/unlike a message
+ */
+app.post('/api/chat/messages/:id/like', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { action = 'like' } = req.body;
+    const sessionToken = req.cookies?.chat_session_token || req.headers['x-session-token'];
+
+    if (!sessionToken) {
+      return res.status(401).json({
+        error: 'UNAUTHORIZED',
+        message: 'Session token required'
+      });
+    }
+
+    if (!['like', 'unlike'].includes(action)) {
+      return res.status(400).json({
+        error: 'VALIDATION_ERROR',
+        message: 'Action must be "like" or "unlike"'
+      });
+    }
+
+    const result = await toggleLike(id, sessionToken, action);
+
+    res.json({
+      success: true,
+      likes: result.likes,
+      has_user_liked: result.has_user_liked
+    });
+
+  } catch (error) {
+    console.error('Error toggling like:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: error.message
+    });
+  }
+});
+
+/**
+ * Flag a message for moderation
+ */
+app.post('/api/chat/messages/:id/flag', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { reason = 'other' } = req.body;
+    const sessionToken = req.cookies?.chat_session_token || req.headers['x-session-token'];
+
+    if (!sessionToken) {
+      return res.status(401).json({
+        error: 'UNAUTHORIZED',
+        message: 'Session token required'
+      });
+    }
+
+    const allowedReasons = ['spam', 'inappropriate', 'off_topic', 'other'];
+    if (!allowedReasons.includes(reason)) {
+      return res.status(400).json({
+        error: 'VALIDATION_ERROR',
+        message: `Reason must be one of: ${allowedReasons.join(', ')}`
+      });
+    }
+
+    const result = await flagMessage(id, sessionToken, reason);
+
+    res.json(result);
+
+  } catch (error) {
+    console.error('Error flagging message:', error);
+    
+    if (error.message.includes('Rate limit exceeded')) {
+      return res.status(429).json({
+        error: 'RATE_LIMIT_EXCEEDED',
+        message: error.message,
+        retry_after: 86400
+      });
+    }
+
+    res.status(500).json({
+      error: 'Internal server error',
+      message: error.message
+    });
+  }
+});
+
+/**
+ * Get chat statistics
+ */
+app.get('/api/chat/stats', async (req, res) => {
+  try {
+    const stats = await getChatStats();
+
+    res.json(stats);
+
+  } catch (error) {
+    console.error('Error fetching stats:', error);
     res.status(500).json({
       error: 'Internal server error',
       message: error.message

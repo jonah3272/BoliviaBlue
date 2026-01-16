@@ -24,6 +24,7 @@ function Navigation() {
   // Primary navigation (always visible on desktop)
   const primaryNavItems = [
     { path: '/', key: 'navDashboard', shortKey: 'navDashboardShort', icon: 'dashboard' },
+    { path: '/comunidad', key: 'navCommunity', icon: 'community' },
     { path: '/calculadora', key: 'navCalculator', icon: 'calculator' },
     { path: '/comprar-dolares', key: 'navBuyDollars', icon: 'buy' },
     { path: '/noticias', key: 'navNews', icon: 'news' },
@@ -87,6 +88,11 @@ function Navigation() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
         </svg>
       ),
+      community: (
+        <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
+        </svg>
+      ),
       bank: (
         <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
@@ -138,7 +144,10 @@ function Navigation() {
         <div className="flex items-center gap-1">
           {/* Primary Navigation Items */}
           {primaryNavItems.map((item) => {
-            const isActive = location.pathname === item.path;
+            // Check if active - handle multiple paths for community (chat, comentarios, comunidad)
+            const isActive = item.path === '/comunidad' 
+              ? ['/chat', '/comentarios', '/comunidad'].includes(location.pathname)
+              : location.pathname === item.path;
             return (
               <Link
                 key={item.path}

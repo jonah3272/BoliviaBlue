@@ -43,6 +43,7 @@ function MobileMenu() {
 
   const navItems = [
     { path: '/', key: 'navDashboard', shortKey: 'navDashboardShort', icon: 'dashboard' },
+    { path: '/comunidad', key: 'navCommunity', icon: 'community' },
     { path: '/calculadora', key: 'navCalculator', icon: 'calculator' },
     { path: '/comprar-dolares', key: 'navBuyDollars', icon: 'buy' },
     { path: '/noticias', key: 'navNews', icon: 'news' },
@@ -99,6 +100,11 @@ function MobileMenu() {
       blog: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+        </svg>
+      ),
+      community: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
         </svg>
       ),
       bank: (
@@ -195,7 +201,10 @@ function MobileMenu() {
           {/* Navigation Items */}
           <nav className="flex-1 overflow-y-auto py-4">
             {navItems.map((item) => {
-              const isActive = location.pathname === item.path;
+              // Check if active - handle multiple paths for community (chat, comentarios, comunidad)
+              const isActive = item.path === '/comunidad' 
+                ? ['/chat', '/comentarios', '/comunidad'].includes(location.pathname)
+                : location.pathname === item.path;
               return (
                 <Link
                   key={item.path}

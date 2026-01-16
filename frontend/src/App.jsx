@@ -43,8 +43,9 @@ const News = lazy(() => import('./pages/News'));
     const Plataformas = lazy(() => import('./pages/Plataformas'));
     const DataSource = lazy(() => import('./pages/DataSource'));
     const DatosHistoricos = lazy(() => import('./pages/DatosHistoricos'));
-    const ApiDocs = lazy(() => import('./pages/ApiDocs'));
-    const MonthlyReport = lazy(() => import('./pages/MonthlyReport'));
+const ApiDocs = lazy(() => import('./pages/ApiDocs'));
+const MonthlyReport = lazy(() => import('./pages/MonthlyReport'));
+const Chat = lazy(() => import('./pages/Chat'));
 
 // Loading fallback component
 // IMPORTANT: This component signals to the AdSense loader that we're in a loading state
@@ -142,6 +143,11 @@ function AppContent() {
           
           {/* Unsubscribe page */}
           <Route path="/unsubscribe" element={<Unsubscribe />} />
+          
+          {/* Chat/Community pages */}
+          <Route path="/chat" element={<Chat />} />
+          <Route path="/comentarios" element={<Chat />} />
+          <Route path="/comunidad" element={<Chat />} />
         </Routes>
       </Suspense>
   );

@@ -24,7 +24,8 @@
     "react-helmet-async": "^2.0.5",
     "react-router-dom": "^7.9.5",
     "recharts": "^2.10.3",
-    "swr": "^2.3.7"
+    "swr": "^2.3.7",
+    "date-fns": "^3.0.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.56.1",

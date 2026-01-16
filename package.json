@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Bolivia Blue con Paz - Exchange rate tracker",
   "scripts": {
-    "install": "cd backend && npm install",
     "start": "cd backend && npm start",
     "install:all": "cd backend && npm install"
   },

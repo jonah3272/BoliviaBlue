@@ -820,9 +820,19 @@ app.post('/api/chat/session', async (req, res) => {
  * Create a new message
  */
 app.post('/api/chat/messages', chatMessageLimiter, chatDailyLimiter, async (req, res) => {
+  const startTime = Date.now();
+  console.log(`📨 POST /api/chat/messages - Request received at ${new Date().toISOString()}`);
+  console.log(`   Body:`, JSON.stringify(req.body));
+  console.log(`   Headers:`, { 
+    'content-type': req.headers['content-type'],
+    'origin': req.headers.origin,
+    'cookie': req.cookies ? 'present' : 'missing'
+  });
+  
   try {
     const { content, category, location_hint, parent_id } = req.body;
     const sessionToken = req.cookies?.chat_session_token || req.headers['x-session-token'];
+    console.log(`   Session token: ${sessionToken ? 'present' : 'missing'}`);
 
     if (!sessionToken) {
       return res.status(401).json({
@@ -875,13 +885,16 @@ app.post('/api/chat/messages', chatMessageLimiter, chatDailyLimiter, async (req,
     }
 
     // Create message
+    console.log(`   Creating message...`);
+    const createStartTime = Date.now();
     const message = await createMessage(trimmedContent, category || 'general', location_hint, sessionToken, parent_id);
+    console.log(`   ✅ Message created in ${Date.now() - createStartTime}ms`);
 
     // Get rate limit info
     const remaining = res.get('X-RateLimit-Remaining') || '9';
     const reset = res.get('X-RateLimit-Reset') || Math.floor(Date.now() / 1000) + 3600;
 
-    res.json({
+    const response = {
       success: true,
       message: {
         id: message.id,
@@ -897,10 +910,15 @@ app.post('/api/chat/messages', chatMessageLimiter, chatDailyLimiter, async (req,
         has_user_liked: false,
         replies: []
       }
-    });
+    };
+    
+    console.log(`   ✅ Sending response in ${Date.now() - startTime}ms total`);
+    res.json(response);
 
   } catch (error) {
-    console.error('Error creating message:', error);
+    const elapsed = Date.now() - startTime;
+    console.error(`   ❌ Error after ${elapsed}ms:`, error.message);
+    console.error(`   Stack:`, error.stack);
     
     if (error.message.includes('Rate limit exceeded')) {
       return res.status(429).json({

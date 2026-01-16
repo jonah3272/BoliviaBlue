@@ -64,6 +64,31 @@ const allowedOrigins = [
   ORIGIN
 ].filter(Boolean);
 
+// CRITICAL: Catch-all OPTIONS handler - MUST be FIRST middleware
+// This catches ALL OPTIONS requests before ANY other middleware
+app.options('*', (req, res) => {
+  const origin = req.headers.origin;
+  console.log(`🔵 CATCH-ALL OPTIONS: ${req.path} | Origin: ${origin || 'none'}`);
+  console.log(`   Full URL: ${req.url}`);
+  console.log(`   Headers:`, JSON.stringify(req.headers, null, 2));
+  
+  // CRITICAL: When credentials are used, MUST use specific origin (not '*')
+  if (origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Cookie, x-session-token');
+  res.setHeader('Access-Control-Max-Age', '86400');
+  
+  console.log(`✅ CATCH-ALL OPTIONS: Headers set, sending 200`);
+  console.log(`   Access-Control-Allow-Origin: ${res.getHeader('Access-Control-Allow-Origin')}`);
+  
+  res.status(200).end();
+});
+
 // CRITICAL: Manual CORS handler - NO cors package, handle everything ourselves
 // CRITICAL: When credentials: 'include' is used, MUST use specific origin (not '*')
 // This runs FIRST before anything else can interfere
@@ -89,23 +114,7 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Cookie, x-session-token');
   };
   
-  // Handle OPTIONS preflight requests IMMEDIATELY
-  if (method === 'OPTIONS') {
-    console.log(`🔵 HANDLING OPTIONS: ${req.path} | Origin: ${origin || 'none'}`);
-    
-    setCorsHeaders();
-    res.setHeader('Access-Control-Max-Age', '86400');
-    
-    console.log(`✅ OPTIONS: Headers set, sending 200`);
-    console.log(`   Access-Control-Allow-Origin: ${res.getHeader('Access-Control-Allow-Origin')}`);
-    console.log(`   Access-Control-Allow-Credentials: ${res.getHeader('Access-Control-Allow-Credentials')}`);
-    
-    // Send response immediately - don't call next()
-    res.status(200).end();
-    return;
-  }
-  
-  // For all other requests, set CORS headers BEFORE any response is sent
+  // For all requests, set CORS headers BEFORE any response is sent
   setCorsHeaders();
   
   next();

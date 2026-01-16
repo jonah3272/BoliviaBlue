@@ -1,31 +1,33 @@
 // API Base URL configuration
-// Priority: 1. VITE_API_URL env var, 2. Relative URL (same origin), 3. Localhost fallback
-let API_BASE = import.meta.env.VITE_API_URL;
+// NO CORS NEEDED: Uses Vercel proxy (vercel.json rewrites /api/* to Railway)
+// This makes all requests same-origin, eliminating CORS issues entirely
 
-if (!API_BASE) {
-  // In production, if frontend and backend are on same domain, use relative URLs
-  // Otherwise, detect from window location
-  if (typeof window !== 'undefined') {
-    // Check if we're in production (not localhost)
-    const isProduction = !window.location.hostname.includes('localhost');
-    
-    if (isProduction) {
-      // Use same origin (assumes frontend and backend are on same domain)
-      // If they're on different domains, set VITE_API_URL env var
-      API_BASE = window.location.origin;
-    } else {
-      // Development: use localhost
-      API_BASE = 'http://localhost:3000';
-    }
+let API_BASE = '';
+
+// In production (Vercel): Use relative URLs - Vercel proxy handles /api/* routes
+// In development: Vite proxy handles /api/* routes (see vite.config.js)
+// This means ALL requests are same-origin = NO CORS needed!
+
+if (typeof window !== 'undefined') {
+  const isProduction = !window.location.hostname.includes('localhost');
+  
+  if (isProduction) {
+    // Production: Use relative URLs (empty string = same origin)
+    // Vercel's vercel.json rewrite will proxy /api/* to Railway
+    API_BASE = '';
   } else {
-    // SSR fallback
-    API_BASE = 'http://localhost:3000';
+    // Development: Use relative URLs (Vite proxy handles it)
+    // See vite.config.js for proxy configuration
+    API_BASE = '';
   }
+} else {
+  // SSR fallback - use relative URL
+  API_BASE = '';
 }
 
-// Log for debugging (only in dev)
+// Log for debugging
 if (import.meta.env.DEV) {
-  console.log('[Chat API] Using API_BASE:', API_BASE);
+  console.log('[Chat API] Using relative URLs (no CORS needed) - API_BASE:', API_BASE || '(same origin)');
 }
 
 /**

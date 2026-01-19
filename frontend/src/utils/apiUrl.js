@@ -1,17 +1,35 @@
 /**
  * Get the API base URL
- * In development, uses proxy (relative URL)
- * In production, uses Vercel proxy (relative URL) to avoid CORS issues
+ * Priority: 1. VITE_API_URL env var, 2. Relative URL (Vercel proxy), 3. Fallback
+ * Same pattern as chatApi.js to support Railway custom domain
  */
 export function getApiUrl() {
-  // In development, Vite proxy handles /api routes
-  if (import.meta.env.DEV) {
-    return '';
+  // Priority 1: Use VITE_API_URL if set (Railway custom domain)
+  let API_BASE = import.meta.env.VITE_API_URL;
+
+  if (!API_BASE) {
+    // Priority 2: Use relative URLs (Vercel proxy)
+    // This works for GET requests but may fail for POST (Vercel limitation)
+    API_BASE = '';
+    
+    if (typeof window !== 'undefined') {
+      const isProduction = !window.location.hostname.includes('localhost');
+      
+      if (isProduction) {
+        // Production: Try relative URLs first (Vercel proxy)
+        // If this fails, set VITE_API_URL to Railway custom domain
+        API_BASE = '';
+      } else {
+        // Development: Use relative URLs (Vite proxy handles it)
+        API_BASE = '';
+      }
+    }
   }
 
-  // In production, use relative URL - Vercel will proxy /api/* to Railway
-  // This avoids CORS entirely since requests are same-origin
-  return '';
+  // Log for debugging
+  console.log('[API URL] Using API_BASE:', API_BASE || '(relative - Vercel proxy)');
+  
+  return API_BASE;
 }
 
 /**

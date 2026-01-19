@@ -11,6 +11,7 @@ const BlueChart = lazy(() => import('../components/BlueChart'));
 const NewsTabs = lazy(() => import('../components/NewsTabs'));
 const RotatingNewsCarousel = lazy(() => import('../components/RotatingNewsCarousel'));
 const SentimentNewsCard = lazy(() => import('../components/SentimentNewsCard'));
+const RateAlertForm = lazy(() => import('../components/RateAlertForm'));
 
 import About from '../components/About';
 import PageMeta from '../components/PageMeta';
@@ -478,6 +479,15 @@ function Home() {
         {/* Binance Banner - Under Chart */}
         <section>
           <BinanceBanner />
+        </section>
+
+        {/* Rate Alerts Form */}
+        <section>
+          <LazyErrorBoundary>
+            <Suspense fallback={<ComponentLoader />}>
+              <RateAlertForm />
+            </Suspense>
+          </LazyErrorBoundary>
         </section>
 
         {/* How It Works Section */}

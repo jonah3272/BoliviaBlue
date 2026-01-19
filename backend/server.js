@@ -14,6 +14,7 @@ import cors from 'cors';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { existsSync } from 'node:fs';
 import { 
   getLatestRate, 
   getRatesInRange, 

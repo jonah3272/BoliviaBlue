@@ -162,9 +162,14 @@ app.use('/api/', apiLimiter);
 app.use(express.json());
 app.use(cookieParser()); // For HTTP-only cookies
 
-// Serve frontend static files in production
+// Serve frontend static files in production (only if frontend exists)
+// Note: Frontend is deployed on Vercel, so this is only for local development
 const frontendDist = join(__dirname, '../frontend/dist');
-app.use(express.static(frontendDist));
+if (existsSync(frontendDist)) {
+  app.use(express.static(frontendDist));
+} else {
+  console.log('⚠️ Frontend dist not found - skipping static file serving (frontend is on Vercel)');
+}
 
 /**
  * Test endpoint to verify OPTIONS handler is working
@@ -1150,8 +1155,16 @@ app.get('/api/chat/stats', async (req, res) => {
 });
 
 // Serve frontend for all other routes (SPA fallback)
+// Only if frontend dist exists (for local development)
+// In production, frontend is on Vercel, so API-only requests should reach here
 app.get('*', (req, res) => {
-  res.sendFile(join(frontendDist, 'index.html'));
+  // Only try to serve frontend if it exists (local dev)
+  if (existsSync(frontendDist)) {
+    res.sendFile(join(frontendDist, 'index.html'));
+  } else {
+    // Frontend is on Vercel - return 404 for non-API routes
+    res.status(404).json({ error: 'Not found', message: 'API endpoint not found' });
+  }
 });
 
 // Start scheduler

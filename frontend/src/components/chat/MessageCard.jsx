@@ -49,53 +49,53 @@ export default function MessageCard({ message, onLike, onFlag, onReply, isReply 
   };
 
   return (
-    <div className={`group hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-all duration-200 rounded-xl p-4 ${isReply ? 'ml-6 border-l-2 border-blue-200 dark:border-blue-800' : ''}`}>
-      <div className="flex gap-3">
+    <div className={`group hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-all duration-200 rounded-xl p-3 sm:p-4 ${isReply ? 'ml-2 sm:ml-6 border-l-2 border-blue-200 dark:border-blue-800' : ''}`}>
+      <div className="flex gap-2 sm:gap-3">
         {/* Avatar */}
         <div className="flex-shrink-0">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-xs sm:text-sm">
             {message.anonymous_username.charAt(0).toUpperCase()}
           </div>
         </div>
         
         <div className="flex-1 min-w-0">
           {/* Header */}
-          <div className="flex items-center gap-2 mb-1">
-            <span className="font-semibold text-gray-900 dark:text-white">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1">
+            <span className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white truncate">
               {message.anonymous_username}
             </span>
-            <span className="text-xs text-gray-500 dark:text-gray-400">
+            <span className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
               {timeAgo}
             </span>
           </div>
           
           {/* Content */}
-          <p className="text-gray-800 dark:text-gray-200 mb-2 leading-relaxed">
+          <p className="text-sm sm:text-base text-gray-800 dark:text-gray-200 mb-2 leading-relaxed break-words">
             {message.content}
           </p>
           
           {/* Badges */}
-          <div className="flex flex-wrap items-center gap-2 mb-2">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-2">
             {message.location_hint && (
-              <span className="px-2 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-blue-100 to-cyan-100 dark:from-blue-900/30 dark:to-cyan-900/30 text-blue-700 dark:text-blue-300">
+              <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-xs font-medium bg-gradient-to-r from-blue-100 to-cyan-100 dark:from-blue-900/30 dark:to-cyan-900/30 text-blue-700 dark:text-blue-300 truncate max-w-full">
                 📍 {message.location_hint}
               </span>
             )}
-            <span className="px-2 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 text-purple-700 dark:text-purple-300">
+            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-xs font-medium bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 text-purple-700 dark:text-purple-300">
               {getCategoryLabel(message.category)}
             </span>
             {message.rate_mentioned && (
-              <span className="px-2 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 text-green-700 dark:text-green-300">
+              <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-xs font-bold bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 text-green-700 dark:text-green-300">
                 💰 {message.rate_mentioned} BOB/USD
               </span>
             )}
           </div>
           
           {/* Actions */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
             <button
               onClick={() => onLike && onLike(message.id, message.has_user_liked ? 'unlike' : 'like')}
-              className={`flex items-center gap-1 text-sm transition-transform hover:scale-110 active:scale-95 ${
+              className={`flex items-center gap-1 text-xs sm:text-sm transition-transform hover:scale-110 active:scale-95 ${
                 message.has_user_liked
                   ? 'text-red-600 dark:text-red-400'
                   : 'text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400'
@@ -108,10 +108,10 @@ export default function MessageCard({ message, onLike, onFlag, onReply, isReply 
             {!isReply && onReply && (
               <button
                 onClick={() => setShowReplyForm(!showReplyForm)}
-                className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                className="flex items-center gap-1 text-xs sm:text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                 title={language === 'es' ? 'Responder' : 'Reply'}
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
                 <span>{message.reply_count || (message.replies?.length || 0)}</span>

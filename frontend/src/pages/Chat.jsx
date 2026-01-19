@@ -217,12 +217,12 @@ export default function Chat() {
       <Navigation />
 
       {/* Community Banner */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4">
-        <div className="max-w-4xl mx-auto px-4">
-          <h1 className="text-2xl font-bold mb-1">
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 sm:py-4">
+        <div className="max-w-4xl mx-auto px-3 sm:px-4">
+          <h1 className="text-xl sm:text-2xl font-bold mb-1">
             {language === 'es' ? 'Comunidad' : 'Community'}
           </h1>
-          <p className="text-blue-100 text-sm">
+          <p className="text-blue-100 text-xs sm:text-sm">
             {language === 'es' 
               ? 'Comparte tasas, lugares y consejos de forma anónima'
               : 'Share rates, locations and tips anonymously'}
@@ -236,7 +236,7 @@ export default function Chat() {
       </LazyErrorBoundary>
 
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 py-6">
+      <main className="max-w-4xl mx-auto px-2 sm:px-4 py-4 sm:py-6 pb-24 sm:pb-6">
         <LazyErrorBoundary>
           <MessageFeed
             messages={messages}
@@ -250,8 +250,8 @@ export default function Chat() {
       </main>
 
       {/* Message Form (Sticky) */}
-      <div className="sticky bottom-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-t border-gray-200 dark:border-gray-700 shadow-lg">
-        <div className="max-w-4xl mx-auto p-4">
+      <div className="fixed sm:sticky bottom-0 left-0 right-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-t border-gray-200 dark:border-gray-700 shadow-lg z-20">
+        <div className="max-w-4xl mx-auto p-2 sm:p-4">
           <LazyErrorBoundary>
             <MessageForm
               onSubmit={handlePostMessage}

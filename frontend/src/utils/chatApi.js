@@ -187,6 +187,7 @@ export async function getMessages(filters = {}) {
   if (filters.min_rate) params.append('min_rate', filters.min_rate);
   if (filters.max_rate) params.append('max_rate', filters.max_rate);
   if (filters.sort) params.append('sort', filters.sort);
+  if (filters.time_period) params.append('time_period', filters.time_period); // Reddit-style time filter
   if (filters.limit) params.append('limit', filters.limit);
   if (filters.before) params.append('before', filters.before);
   if (filters.after) params.append('after', filters.after);

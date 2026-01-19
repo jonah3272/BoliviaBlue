@@ -952,6 +952,7 @@ app.get('/api/chat/messages', async (req, res) => {
       min_rate,
       max_rate,
       sort = 'newest',
+      time_period,
       limit = 50,
       before,
       after,
@@ -966,6 +967,7 @@ app.get('/api/chat/messages', async (req, res) => {
       min_rate: min_rate ? parseFloat(min_rate) : undefined,
       max_rate: max_rate ? parseFloat(max_rate) : undefined,
       sort,
+      time_period, // Reddit-style time filter: 'hour', 'today', 'week', 'month', 'year', 'all'
       limit: Math.min(parseInt(limit, 10) || 50, 200),
       before,
       after,

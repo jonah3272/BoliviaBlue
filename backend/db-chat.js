@@ -188,6 +188,7 @@ export async function getMessages(filters = {}) {
     min_rate,
     max_rate,
     sort = 'newest',
+    time_period,
     limit = 50,
     before,
     after,
@@ -200,6 +201,37 @@ export async function getMessages(filters = {}) {
     .eq('is_approved', true)
     .eq('is_deleted', false)
     .is('parent_id', null); // Only top-level messages (replies fetched separately)
+
+  // Apply time period filter (Reddit-style)
+  if (time_period) {
+    const now = new Date();
+    let timeThreshold;
+    
+    switch (time_period) {
+      case 'hour':
+        timeThreshold = new Date(now.getTime() - 60 * 60 * 1000); // Last hour
+        break;
+      case 'today':
+        timeThreshold = new Date(now.setHours(0, 0, 0, 0)); // Today
+        break;
+      case 'week':
+        timeThreshold = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000); // Last 7 days
+        break;
+      case 'month':
+        timeThreshold = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000); // Last 30 days
+        break;
+      case 'year':
+        timeThreshold = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000); // Last year
+        break;
+      case 'all':
+      default:
+        timeThreshold = null; // All time
+    }
+    
+    if (timeThreshold) {
+      query = query.gte('created_at', timeThreshold.toISOString());
+    }
+  }
 
   // Apply filters
   if (category && category !== 'all') {
@@ -234,11 +266,34 @@ export async function getMessages(filters = {}) {
     });
   }
 
-  // Sort
+  // Sort - Support Reddit-style sorting
   if (sort === 'newest') {
     query = query.order('created_at', { ascending: false });
-  } else {
+  } else if (sort === 'oldest') {
     query = query.order('created_at', { ascending: true });
+  } else if (sort === 'top' || sort === 'top_all') {
+    // Sort by likes (descending), then by created_at (descending) as tiebreaker
+    query = query.order('likes', { ascending: false });
+    // Note: Supabase doesn't support multiple orderBy easily, so we'll sort in memory if needed
+  } else if (sort === 'top_today') {
+    // Top posts from today
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    query = query.gte('created_at', today.toISOString())
+               .order('likes', { ascending: false });
+  } else if (sort === 'top_week') {
+    // Top posts from this week
+    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    query = query.gte('created_at', weekAgo.toISOString())
+               .order('likes', { ascending: false });
+  } else if (sort === 'top_month') {
+    // Top posts from this month
+    const monthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    query = query.gte('created_at', monthAgo.toISOString())
+               .order('likes', { ascending: false });
+  } else {
+    // Default to newest
+    query = query.order('created_at', { ascending: false });
   }
 
   // Limit
@@ -250,8 +305,20 @@ export async function getMessages(filters = {}) {
     throw new Error(`Failed to get messages: ${error.message}`);
   }
 
+  // For 'top' sorts, we need to sort by likes then by date (Supabase limitation)
+  let sortedData = data || [];
+  if (sort === 'top' || sort === 'top_all') {
+    sortedData = sortedData.sort((a, b) => {
+      // Sort by likes (descending), then by created_at (descending) as tiebreaker
+      if (b.likes !== a.likes) {
+        return (b.likes || 0) - (a.likes || 0);
+      }
+      return new Date(b.created_at) - new Date(a.created_at);
+    });
+  }
+
   // Fetch replies and reply counts for each message
-  const messagesWithReplies = await Promise.all((data || []).map(async (message) => {
+  const messagesWithReplies = await Promise.all((sortedData || []).map(async (message) => {
     // Get replies
     const { data: replies } = await supabase
       .from('anonymous_messages')
@@ -279,7 +346,7 @@ export async function getMessages(filters = {}) {
   return {
     messages: messagesWithReplies,
     total: count || 0,
-    has_more: (data || []).length === limit
+    has_more: (sortedData || []).length === limit
   };
 }
 

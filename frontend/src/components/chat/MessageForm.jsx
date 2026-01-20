@@ -39,9 +39,10 @@ export default function MessageForm({ onSubmit, loading, compact = false }) {
   const { language } = useLanguage() || { language: 'es' };
   const [content, setContent] = useState('');
   const [category, setCategory] = useState('general');
-  const [locationHint, setLocationHint] = useState('Bolivia'); // Default to Bolivia
-  const [locationSearch, setLocationSearch] = useState('Bolivia'); // Default to Bolivia
+  const [locationHint, setLocationHint] = useState(''); // No default
+  const [locationSearch, setLocationSearch] = useState(''); // No default
   const [showLocationDropdown, setShowLocationDropdown] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState('bottom'); // 'top' or 'bottom'
   const locationRef = useRef(null);
   const textareaRef = useRef(null);
 
@@ -73,6 +74,25 @@ export default function MessageForm({ onSubmit, loading, compact = false }) {
     // If exact match, set it
     if (BOLIVIAN_CITIES.includes(value)) {
       setLocationHint(value);
+    } else {
+      setLocationHint(''); // Clear if not exact match
+    }
+  };
+
+  // Check if dropdown should open upward
+  const checkDropdownPosition = () => {
+    if (locationRef.current) {
+      const rect = locationRef.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      const dropdownHeight = 240; // max-h-60 = 240px
+      
+      // Open upward if not enough space below but enough space above
+      if (spaceBelow < dropdownHeight && spaceAbove > dropdownHeight) {
+        setDropdownPosition('top');
+      } else {
+        setDropdownPosition('bottom');
+      }
     }
   };
 
@@ -88,19 +108,30 @@ export default function MessageForm({ onSubmit, loading, compact = false }) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Check dropdown position when opening
+  const handleLocationFocus = () => {
+    checkDropdownPosition();
+    setShowLocationDropdown(true);
+  };
+
+  const handleLocationClick = () => {
+    checkDropdownPosition();
+    setShowLocationDropdown(true);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!content.trim() || loading) return;
 
     try {
-      // Use "Bolivia" if location is empty or not a valid city
+      // Only use location if it's a valid city, otherwise null
       const finalLocation = locationHint && BOLIVIAN_CITIES.includes(locationHint) 
         ? locationHint 
-        : 'Bolivia';
+        : null;
       await onSubmit(content, category, finalLocation);
       setContent('');
-      setLocationHint('Bolivia');
-      setLocationSearch('Bolivia');
+      setLocationHint('');
+      setLocationSearch('');
       if (textareaRef.current) {
         textareaRef.current.style.height = 'auto';
       }
@@ -159,16 +190,16 @@ export default function MessageForm({ onSubmit, loading, compact = false }) {
                     type="text"
                     value={locationSearch}
                     onChange={handleLocationInputChange}
-                    onFocus={() => setShowLocationDropdown(true)}
-                    onClick={() => setShowLocationDropdown(true)}
-                    placeholder={language === 'es' ? 'Ubicación' : 'Location'}
+                    onFocus={handleLocationFocus}
+                    onClick={handleLocationClick}
+                    placeholder={language === 'es' ? 'Ubicación (opcional)' : 'Location (optional)'}
                     className="w-full px-2 sm:px-3 py-1.5 pr-8 text-xs sm:text-sm rounded-lg bg-gray-100 dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 min-w-0 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
                     readOnly={false}
                   />
                   {/* Dropdown arrow indicator */}
                   <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
                     <svg 
-                      className={`w-4 h-4 text-gray-500 dark:text-gray-400 transition-transform ${showLocationDropdown ? 'rotate-180' : ''}`} 
+                      className={`w-4 h-4 text-gray-500 dark:text-gray-400 transition-transform ${showLocationDropdown ? (dropdownPosition === 'top' ? 'rotate-0' : 'rotate-180') : ''}`} 
                       fill="none" 
                       stroke="currentColor" 
                       viewBox="0 0 24 24"
@@ -178,7 +209,11 @@ export default function MessageForm({ onSubmit, loading, compact = false }) {
                   </div>
                 </div>
                 {showLocationDropdown && (
-                  <div className="absolute z-[9999] w-full mt-1 bg-white dark:bg-gray-800 border-2 border-blue-500 dark:border-blue-400 rounded-lg shadow-2xl max-h-60 overflow-y-auto">
+                  <div className={`absolute z-[9999] w-full bg-white dark:bg-gray-800 border-2 border-blue-500 dark:border-blue-400 rounded-lg shadow-2xl max-h-60 overflow-y-auto ${
+                    dropdownPosition === 'top' 
+                      ? 'bottom-full mb-1' 
+                      : 'top-full mt-1'
+                  }`}>
                     {filteredCities.length > 0 ? (
                       filteredCities.map(city => (
                         <button

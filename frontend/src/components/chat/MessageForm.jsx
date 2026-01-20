@@ -1,11 +1,48 @@
 import { useState, useRef, useEffect } from 'react';
 import { useLanguage } from '../../contexts/LanguageContext';
 
+// Major Bolivian cities
+const BOLIVIAN_CITIES = [
+  'Bolivia',
+  'La Paz',
+  'Santa Cruz de la Sierra',
+  'Cochabamba',
+  'El Alto',
+  'Oruro',
+  'Sucre',
+  'Potosí',
+  'Tarija',
+  'Trinidad',
+  'Montero',
+  'Riberalta',
+  'Yacuiba',
+  'Quillacollo',
+  'Sacaba',
+  'Warnes',
+  'Viacha',
+  'Villa Tunari',
+  'Tiquipaya',
+  'Colcapirhua',
+  'Vinto',
+  'Camiri',
+  'Cobija',
+  'Villazón',
+  'Tupiza',
+  'Uyuni',
+  'Rurrenabaque',
+  'Copacabana',
+  'Coroico',
+  'Sorata'
+];
+
 export default function MessageForm({ onSubmit, loading, compact = false }) {
   const { language } = useLanguage() || { language: 'es' };
   const [content, setContent] = useState('');
   const [category, setCategory] = useState('general');
-  const [locationHint, setLocationHint] = useState('');
+  const [locationHint, setLocationHint] = useState('Bolivia'); // Default to Bolivia
+  const [locationSearch, setLocationSearch] = useState('');
+  const [showLocationDropdown, setShowLocationDropdown] = useState(false);
+  const locationRef = useRef(null);
   const textareaRef = useRef(null);
 
   useEffect(() => {
@@ -15,14 +52,55 @@ export default function MessageForm({ onSubmit, loading, compact = false }) {
     }
   }, [content]);
 
+  // Filter cities based on search
+  const filteredCities = BOLIVIAN_CITIES.filter(city =>
+    city.toLowerCase().includes(locationSearch.toLowerCase())
+  );
+
+  // Handle location selection
+  const handleLocationSelect = (city) => {
+    setLocationHint(city);
+    setLocationSearch(city);
+    setShowLocationDropdown(false);
+  };
+
+  // Handle location input change
+  const handleLocationInputChange = (e) => {
+    const value = e.target.value;
+    setLocationSearch(value);
+    setShowLocationDropdown(true);
+    
+    // If exact match, set it
+    if (BOLIVIAN_CITIES.includes(value)) {
+      setLocationHint(value);
+    }
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (locationRef.current && !locationRef.current.contains(event.target)) {
+        setShowLocationDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!content.trim() || loading) return;
 
     try {
-      await onSubmit(content, category, locationHint || null);
+      // Use "Bolivia" if location is empty or not a valid city
+      const finalLocation = locationHint && BOLIVIAN_CITIES.includes(locationHint) 
+        ? locationHint 
+        : 'Bolivia';
+      await onSubmit(content, category, finalLocation);
       setContent('');
-      setLocationHint('');
+      setLocationHint('Bolivia');
+      setLocationSearch('Bolivia');
       if (textareaRef.current) {
         textareaRef.current.style.height = 'auto';
       }
@@ -74,13 +152,33 @@ export default function MessageForm({ onSubmit, loading, compact = false }) {
                 ))}
               </select>
               
-              <input
-                type="text"
-                value={locationHint}
-                onChange={(e) => setLocationHint(e.target.value)}
-                placeholder={language === 'es' ? 'Ubicación (opcional)' : 'Location (optional)'}
-                className="flex-1 px-2 sm:px-3 py-1.5 text-xs sm:text-sm rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 min-w-0"
-              />
+              {/* Searchable Location Dropdown */}
+              <div ref={locationRef} className="flex-1 relative min-w-0">
+                <input
+                  type="text"
+                  value={locationSearch}
+                  onChange={handleLocationInputChange}
+                  onFocus={() => setShowLocationDropdown(true)}
+                  placeholder={language === 'es' ? 'Ubicación' : 'Location'}
+                  className="w-full px-2 sm:px-3 py-1.5 text-xs sm:text-sm rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 min-w-0"
+                />
+                {showLocationDropdown && filteredCities.length > 0 && (
+                  <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                    {filteredCities.map(city => (
+                      <button
+                        key={city}
+                        type="button"
+                        onClick={() => handleLocationSelect(city)}
+                        className={`w-full text-left px-3 py-2 text-xs sm:text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+                          locationHint === city ? 'bg-blue-50 dark:bg-blue-900/20' : ''
+                        }`}
+                      >
+                        {city}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>

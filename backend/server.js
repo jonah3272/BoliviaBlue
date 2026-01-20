@@ -401,11 +401,39 @@ app.post('/api/alerts', async (req, res) => {
   try {
     const { email, alert_type, threshold, direction } = req.body;
 
+    // Capture metadata for admin tracking
+    const ipAddress = req.ip || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    const userAgent = req.headers['user-agent'] || 'unknown';
+    const referrer = req.headers['referer'] || req.headers['referrer'] || 'direct';
+    const source = req.body.source || 'homepage'; // Can be passed from frontend
+    
+    // Log alert creation with full metadata for admin visibility
+    console.log('📧 ALERT REQUEST RECEIVED:', {
+      email,
+      alert_type,
+      threshold,
+      direction,
+      ip: ipAddress,
+      user_agent: userAgent,
+      referrer,
+      source,
+      timestamp: new Date().toISOString()
+    });
+
     // Validation
     if (!email || !alert_type || !threshold || !direction) {
       return res.status(400).json({
         error: 'Missing required fields',
         message: 'Email, alert_type, threshold, and direction are required'
+      });
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        error: 'Invalid email',
+        message: 'Please provide a valid email address'
       });
     }
 
@@ -430,7 +458,22 @@ app.post('/api/alerts', async (req, res) => {
       });
     }
 
-    const alert = await createAlert(email, alert_type, parseFloat(threshold), direction);
+    const alert = await createAlert(email, alert_type, parseFloat(threshold), direction, {
+      ip_address: ipAddress,
+      user_agent: userAgent,
+      referrer,
+      source
+    });
+
+    // Log successful creation
+    console.log('✅ ALERT CREATED:', {
+      id: alert.id,
+      email: alert.email,
+      alert_type: alert.alert_type,
+      threshold: alert.threshold,
+      direction: alert.direction,
+      created_at: alert.created_at
+    });
 
     res.json({
       success: true,
@@ -444,7 +487,11 @@ app.post('/api/alerts', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error creating alert:', error);
+    console.error('❌ ERROR CREATING ALERT:', {
+      error: error.message,
+      stack: error.stack,
+      timestamp: new Date().toISOString()
+    });
     res.status(500).json({
       error: 'Internal server error',
       message: error.message

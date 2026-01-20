@@ -53,6 +53,10 @@ export default function PageMeta({
       {shouldNoindex && <meta name="robots" content="noindex, nofollow" />}
       {!shouldNoindex && <meta name="robots" content="index, follow" />}
 
+      {/* Application Name for PWA */}
+      <meta name="application-name" content="Bolivia Blue" />
+      <meta name="apple-mobile-web-app-title" content="Bolivia Blue" />
+
       {/* Language and Geo */}
       <meta name="language" content={language === 'es' ? 'Spanish' : 'English'} />
       <meta name="geo.region" content="BO" />

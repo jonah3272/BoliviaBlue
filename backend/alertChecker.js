@@ -16,48 +16,316 @@ async function sendAlertEmail(alert, currentRate) {
     const directionText = alert.direction === 'above' ? 'subió' : 'bajó';
     const unsubscribeUrl = `${BASE_URL}/unsubscribe?token=${alert.unsubscribe_token}`;
 
-    // Build HTML email content
+    // Determine if rate went up or down for visual indicator
+    const isIncrease = alert.direction === 'above' && rateValue >= alert.threshold;
+    const trendIcon = isIncrease ? '📈' : '📉';
+    const trendColor = isIncrease ? '#10B981' : '#EF4444';
+    
+    // Build HTML email content with enhanced branding
     const html = `
       <!DOCTYPE html>
       <html>
       <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
-          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
-          .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
-          .rate-box { background: white; border-left: 4px solid #667eea; padding: 20px; margin: 20px 0; border-radius: 5px; }
-          .rate-value { font-size: 32px; font-weight: bold; color: #667eea; }
-          .button { display: inline-block; padding: 12px 30px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; }
-          .footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #666; }
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6; 
+            color: #1f2937; 
+            background-color: #f3f4f6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+          }
+          .email-wrapper { 
+            background-color: #f3f4f6; 
+            padding: 20px 0;
+          }
+          .container { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            background: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          }
+          .header { 
+            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); 
+            color: white; 
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+          }
+          .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+          }
+          .logo { 
+            font-size: 28px; 
+            font-weight: 700; 
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+          }
+          .logo-icon {
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            margin-right: 8px;
+            vertical-align: middle;
+            text-align: center;
+            line-height: 32px;
+            font-size: 20px;
+          }
+          .header-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+          }
+          .alert-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-top: 16px;
+            position: relative;
+            z-index: 1;
+          }
+          .content { 
+            padding: 40px 30px;
+          }
+          .greeting {
+            font-size: 18px;
+            color: #1f2937;
+            margin-bottom: 24px;
+          }
+          .alert-message {
+            background: linear-gradient(135deg, #eff6ff 0%, #f3e8ff 100%);
+            border-left: 4px solid #2563eb;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 24px 0;
+          }
+          .alert-message-text {
+            font-size: 16px;
+            color: #1f2937;
+            line-height: 1.8;
+          }
+          .rate-comparison {
+            background: #ffffff;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 24px 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+          }
+          .rate-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid #e5e7eb;
+          }
+          .rate-row:last-child {
+            border-bottom: none;
+          }
+          .rate-label {
+            font-size: 14px;
+            color: #6b7280;
+            font-weight: 500;
+          }
+          .rate-value-large {
+            font-size: 36px;
+            font-weight: 700;
+            color: #2563eb;
+            letter-spacing: -0.5px;
+          }
+          .rate-value-current {
+            font-size: 32px;
+            font-weight: 700;
+            color: ${trendColor};
+            letter-spacing: -0.5px;
+          }
+          .trend-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: ${trendColor};
+            font-weight: 600;
+            margin-top: 8px;
+          }
+          .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+            color: white;
+            text-decoration: none;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            text-align: center;
+            margin: 32px 0;
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
+            transition: transform 0.2s;
+          }
+          .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(37, 99, 235, 0.4);
+          }
+          .features {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 32px 0;
+          }
+          .features-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 16px;
+            text-align: center;
+          }
+          .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            text-align: center;
+          }
+          .feature-item {
+            font-size: 12px;
+            color: #6b7280;
+          }
+          .feature-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+          }
+          .footer { 
+            background: #f9fafb;
+            padding: 30px;
+            text-align: center;
+            border-top: 1px solid #e5e7eb;
+          }
+          .footer-text {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 16px;
+            line-height: 1.6;
+          }
+          .footer-link {
+            color: #2563eb;
+            text-decoration: none;
+          }
+          .footer-link:hover {
+            text-decoration: underline;
+          }
+          .unsubscribe {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #e5e7eb;
+          }
+          .unsubscribe-link {
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 12px;
+          }
+          .unsubscribe-link:hover {
+            color: #6b7280;
+            text-decoration: underline;
+          }
+          @media only screen and (max-width: 600px) {
+            .container { margin: 0; border-radius: 0; }
+            .header { padding: 30px 20px; }
+            .content { padding: 30px 20px; }
+            .rate-value-large, .rate-value-current { font-size: 28px; }
+            .features-grid { grid-template-columns: 1fr; }
+          }
         </style>
       </head>
       <body>
-        <div class="container">
-          <div class="header">
-            <h1>🔔 Alerta de Tipo de Cambio</h1>
-          </div>
-          <div class="content">
-            <p>Hola,</p>
-            <p>El tipo de cambio <strong>${rateType}</strong> ${directionText} a <strong>${rateValue.toFixed(2)} BOB</strong>.</p>
-            
-            <div class="rate-box">
-              <div style="color: #666; font-size: 14px;">Tu umbral configurado:</div>
-              <div class="rate-value">${alert.threshold.toFixed(2)} BOB</div>
-              <div style="color: #666; font-size: 14px; margin-top: 10px;">Tasa actual:</div>
-              <div style="font-size: 24px; font-weight: bold; color: #333; margin-top: 5px;">${rateValue.toFixed(2)} BOB</div>
+        <div class="email-wrapper">
+          <div class="container">
+            <!-- Header with Branding -->
+            <div class="header">
+              <div class="logo">
+                <span class="logo-icon">B</span>
+                Bolivia Blue con Paz
+              </div>
+              <div class="header-subtitle">Tipo de Cambio en Tiempo Real</div>
+              <div class="alert-badge">🔔 Alerta Activada</div>
             </div>
 
-            <p style="text-align: center;">
-              <a href="${BASE_URL}" class="button">Ver Detalles</a>
-            </p>
+            <!-- Content -->
+            <div class="content">
+              <div class="greeting">Hola,</div>
+              
+              <div class="alert-message">
+                <div class="alert-message-text">
+                  El tipo de cambio <strong>${rateType}</strong> ${directionText} a <strong>${rateValue.toFixed(2)} BOB</strong>.
+                </div>
+              </div>
 
+              <!-- Rate Comparison Card -->
+              <div class="rate-comparison">
+                <div class="rate-row">
+                  <div class="rate-label">Tu umbral configurado</div>
+                  <div class="rate-value-large">${alert.threshold.toFixed(2)} BOB</div>
+                </div>
+                <div class="rate-row">
+                  <div class="rate-label">Tasa actual ${trendIcon}</div>
+                  <div>
+                    <div class="rate-value-current">${rateValue.toFixed(2)} BOB</div>
+                    <div class="trend-indicator">
+                      ${isIncrease ? '↑ Subió' : '↓ Bajó'} ${Math.abs(rateValue - alert.threshold).toFixed(2)} BOB
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- CTA Button -->
+              <div style="text-align: center;">
+                <a href="${BASE_URL}" class="cta-button">Ver Detalles y Gráficos →</a>
+              </div>
+
+              <!-- Features -->
+              <div class="features">
+                <div class="features-title">✨ En Bolivia Blue encontrarás:</div>
+                <div class="features-grid">
+                  <div class="feature-item">
+                    <div class="feature-icon">📊</div>
+                    <div>Gráficos históricos</div>
+                  </div>
+                  <div class="feature-item">
+                    <div class="feature-icon">🧮</div>
+                    <div>Calculadora gratuita</div>
+                  </div>
+                  <div class="feature-item">
+                    <div class="feature-icon">📰</div>
+                    <div>Noticias financieras</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Footer -->
             <div class="footer">
-              <p>Visita <a href="${BASE_URL}">${BASE_URL}</a> para ver más detalles y gráficos históricos.</p>
-              <p style="margin-top: 20px;">
-                <a href="${unsubscribeUrl}" style="color: #999; text-decoration: none;">Cancelar esta alerta</a>
-              </p>
+              <div class="footer-text">
+                Visita <a href="${BASE_URL}" class="footer-link">boliviablue.com</a> para ver más detalles, gráficos históricos y herramientas útiles.
+              </div>
+              <div class="unsubscribe">
+                <a href="${unsubscribeUrl}" class="unsubscribe-link">Cancelar esta alerta</a>
+              </div>
             </div>
           </div>
         </div>

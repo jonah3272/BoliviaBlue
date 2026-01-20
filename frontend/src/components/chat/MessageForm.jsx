@@ -154,28 +154,44 @@ export default function MessageForm({ onSubmit, loading, compact = false }) {
               
               {/* Searchable Location Dropdown */}
               <div ref={locationRef} className="flex-1 relative min-w-0">
-                <input
-                  type="text"
-                  value={locationSearch}
-                  onChange={handleLocationInputChange}
-                  onFocus={() => setShowLocationDropdown(true)}
-                  placeholder={language === 'es' ? 'Ubicación' : 'Location'}
-                  className="w-full px-2 sm:px-3 py-1.5 text-xs sm:text-sm rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 min-w-0"
-                />
-                {showLocationDropdown && filteredCities.length > 0 && (
-                  <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-48 overflow-y-auto">
-                    {filteredCities.map(city => (
-                      <button
-                        key={city}
-                        type="button"
-                        onClick={() => handleLocationSelect(city)}
-                        className={`w-full text-left px-3 py-2 text-xs sm:text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
-                          locationHint === city ? 'bg-blue-50 dark:bg-blue-900/20' : ''
-                        }`}
-                      >
-                        {city}
-                      </button>
-                    ))}
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={locationSearch}
+                    onChange={handleLocationInputChange}
+                    onFocus={() => setShowLocationDropdown(true)}
+                    placeholder={language === 'es' ? 'Ubicación' : 'Location'}
+                    className="w-full px-2 sm:px-3 py-1.5 pr-8 text-xs sm:text-sm rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 min-w-0 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  {/* Dropdown arrow indicator */}
+                  <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                    <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+                {showLocationDropdown && (
+                  <div className="absolute z-[100] w-full mt-1 bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 rounded-lg shadow-xl max-h-60 overflow-y-auto">
+                    {filteredCities.length > 0 ? (
+                      filteredCities.map(city => (
+                        <button
+                          key={city}
+                          type="button"
+                          onClick={() => handleLocationSelect(city)}
+                          className={`w-full text-left px-3 py-2.5 text-xs sm:text-sm hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors border-b border-gray-100 dark:border-gray-700 last:border-b-0 ${
+                            locationHint === city 
+                              ? 'bg-blue-100 dark:bg-blue-900/40 font-medium text-blue-700 dark:text-blue-300' 
+                              : 'text-gray-700 dark:text-gray-300'
+                          }`}
+                        >
+                          {city}
+                        </button>
+                      ))
+                    ) : (
+                      <div className="px-3 py-2.5 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                        {language === 'es' ? 'No se encontraron ciudades' : 'No cities found'}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

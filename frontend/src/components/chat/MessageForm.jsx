@@ -160,18 +160,25 @@ export default function MessageForm({ onSubmit, loading, compact = false }) {
                     value={locationSearch}
                     onChange={handleLocationInputChange}
                     onFocus={() => setShowLocationDropdown(true)}
+                    onClick={() => setShowLocationDropdown(true)}
                     placeholder={language === 'es' ? 'Ubicación' : 'Location'}
-                    className="w-full px-2 sm:px-3 py-1.5 pr-8 text-xs sm:text-sm rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 min-w-0 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-2 sm:px-3 py-1.5 pr-8 text-xs sm:text-sm rounded-lg bg-gray-100 dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 min-w-0 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
+                    readOnly={false}
                   />
                   {/* Dropdown arrow indicator */}
                   <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                    <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg 
+                      className={`w-4 h-4 text-gray-500 dark:text-gray-400 transition-transform ${showLocationDropdown ? 'rotate-180' : ''}`} 
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </div>
                 </div>
                 {showLocationDropdown && (
-                  <div className="absolute z-[100] w-full mt-1 bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 rounded-lg shadow-xl max-h-60 overflow-y-auto">
+                  <div className="absolute z-[9999] w-full mt-1 bg-white dark:bg-gray-800 border-2 border-blue-500 dark:border-blue-400 rounded-lg shadow-2xl max-h-60 overflow-y-auto">
                     {filteredCities.length > 0 ? (
                       filteredCities.map(city => (
                         <button

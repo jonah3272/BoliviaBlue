@@ -250,7 +250,7 @@ export default function Chat() {
       </main>
 
       {/* Message Form (Sticky) */}
-      <div className="fixed sm:sticky bottom-0 left-0 right-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-t border-gray-200 dark:border-gray-700 shadow-lg z-20">
+      <div className="fixed sm:sticky bottom-0 left-0 right-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-t border-gray-200 dark:border-gray-700 shadow-lg z-20" style={{ isolation: 'isolate' }}>
         <div className="max-w-4xl mx-auto p-2 sm:p-4">
           <LazyErrorBoundary>
             <MessageForm

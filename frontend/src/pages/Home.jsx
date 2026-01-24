@@ -444,6 +444,18 @@ function Home() {
               ? 'El precio real del dólar en el mercado paralelo boliviano. Sin registro, sin complicaciones.'
               : 'The real price of the dollar in Bolivia\'s parallel market. No signup, no hassle.'}
           </p>
+
+          <div className="flex justify-center">
+            <a
+              href="#price-alerts"
+              className="inline-flex items-center gap-2 px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-semibold shadow-md transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0a3 3 0 11-6 0h6z" />
+              </svg>
+              {language === 'es' ? 'Crear alerta de precio' : 'Set a price alert'}
+            </a>
+          </div>
         </div>
         
         {/* Blue Rate Cards - At the Top */}
@@ -482,7 +494,7 @@ function Home() {
         </section>
 
         {/* Rate Alerts Form */}
-        <section>
+        <section id="price-alerts">
           <LazyErrorBoundary>
             <Suspense fallback={<ComponentLoader />}>
               <RateAlertForm />

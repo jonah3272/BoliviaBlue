@@ -5,7 +5,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import SentimentLegend from './SentimentLegend';
 import SentimentIndicator from './SentimentIndicator';
 
-const NewsCard = memo(function NewsCard({ item }) {
+const NewsCard = memo(function NewsCard({ item, language = 'es' }) {
   return (
     <a
       href={item.url}
@@ -173,7 +173,7 @@ function NewsFeed() {
                 key={item.id}
                 className={!showAllNews && isMobile && index >= initialMobileCount ? 'hidden' : ''}
               >
-                <NewsCard item={item} />
+                <NewsCard item={item} language={language} />
               </div>
             ))}
           </div>

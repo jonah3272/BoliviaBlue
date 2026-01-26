@@ -35,40 +35,7 @@ const CategoryIcon = ({ category }) => {
   return icons[category] || icons.all;
 };
 
-// AI-Powered Sentiment Indicator - Matches legend colors
-const SentimentArrow = ({ sentiment, language }) => {
-  if (!sentiment || sentiment === 'neutral') {
-    return (
-      <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-700/50">
-        <span className="text-xl text-gray-500 dark:text-gray-400" title={language === 'es' ? 'Neutral - Sin impacto claro en divisas' : 'Neutral - No clear currency impact'}>
-          ○
-        </span>
-      </div>
-    );
-  }
-  
-  if (sentiment === 'up') {
-    return (
-      <div className="flex items-center justify-center w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30">
-        <span className="text-2xl font-bold text-green-600 dark:text-green-400" title={language === 'es' ? 'Dólar Subiendo - Boliviano Debilitándose' : 'Dollar Rising - Boliviano Weakening'}>
-          ↗
-        </span>
-      </div>
-    );
-  }
-  
-  if (sentiment === 'down') {
-    return (
-      <div className="flex items-center justify-center w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30">
-        <span className="text-2xl font-bold text-red-600 dark:text-red-400" title={language === 'es' ? 'Dólar Bajando - Boliviano Fortaleciéndose' : 'Dollar Falling - Boliviano Strengthening'}>
-          ↘
-        </span>
-      </div>
-    );
-  }
-  
-  return null;
-};
+import SentimentIndicator from '../components/SentimentIndicator';
 
 function News() {
   const languageContext = useLanguage();
@@ -354,7 +321,12 @@ function News() {
                       <span className="whitespace-nowrap">{language === 'es' ? cat.es : cat.en}</span>
                     </span>
                     <div className="flex-shrink-0">
-                      <SentimentArrow sentiment={article.sentiment} language={language} />
+                      <SentimentIndicator 
+                        sentiment={article.sentiment} 
+                        strength={article.sentiment_strength}
+                        language={language}
+                        size="md"
+                      />
                     </div>
                   </div>
 

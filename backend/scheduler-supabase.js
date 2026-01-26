@@ -8,6 +8,7 @@ import { checkAlerts } from './alertChecker.js';
 import { generateDailyArticles } from './dailyArticleGenerator.js';
 import { sendWeeklyNewsletter } from './weeklyNewsletterGenerator.js';
 import { generatePreviousMonthReport } from './monthlyReportGenerator.js';
+import { evaluatePredictions } from './predictionFeedback.js';
 
 const REFRESH_INTERVAL = 15 * 60 * 1000; // 15 minutes for rates
 const NEWS_REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes for RSS news
@@ -15,6 +16,7 @@ const TWITTER_REFRESH_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours for Twitter (f
 const DAILY_ARTICLE_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours for daily articles
 const WEEKLY_NEWSLETTER_INTERVAL = 7 * 24 * 60 * 60 * 1000; // 7 days (weekly)
 const MONTHLY_REPORT_INTERVAL = 24 * 60 * 60 * 1000; // Check daily if it's the 1st of the month
+const PREDICTION_EVALUATION_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours - evaluate predictions daily
 
 // In-memory cache for latest data
 export const cache = {
@@ -210,6 +212,7 @@ export function startScheduler() {
   console.log(`- Daily Articles: every ${DAILY_ARTICLE_INTERVAL / 1000}s (24 hours)`);
   console.log(`- Weekly Newsletter: every ${WEEKLY_NEWSLETTER_INTERVAL / 1000}s (7 days)`);
   console.log(`- Monthly Reports: daily check (generates on 1st of month)`);
+  console.log(`- Prediction Evaluation: every ${PREDICTION_EVALUATION_INTERVAL / 1000}s (24 hours)`);
   
   // Initial refresh on boot (include Twitter on first load)
   refreshBlueRate().catch(console.error);
@@ -217,6 +220,9 @@ export function startScheduler() {
   
   // Generate daily article on startup (if not already generated today)
   runDailyArticleGeneration().catch(console.error);
+  
+  // Evaluate predictions on startup (to catch up on any missed evaluations)
+  evaluatePredictions().catch(console.error);
   
   // Check if it's the 1st of the month and generate previous month's report
   const now = new Date();
@@ -277,5 +283,22 @@ export function startScheduler() {
       generatePreviousMonthReport().catch(console.error);
     }
   }, MONTHLY_REPORT_INTERVAL);
+  
+  // Schedule prediction evaluation (daily at 2 AM to avoid peak times)
+  // Calculate time until next 2 AM
+  const next2AM = new Date();
+  if (next2AM.getHours() >= 2) {
+    next2AM.setDate(next2AM.getDate() + 1);
+  }
+  next2AM.setHours(2, 0, 0, 0);
+  const msUntil2AM = next2AM - now;
+  
+  setTimeout(() => {
+    evaluatePredictions().catch(console.error);
+    // Then schedule for every 24 hours
+    setInterval(() => {
+      evaluatePredictions().catch(console.error);
+    }, PREDICTION_EVALUATION_INTERVAL);
+  }, msUntil2AM);
 }
 

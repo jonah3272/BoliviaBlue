@@ -3,41 +3,7 @@ import { fetchNews } from '../utils/api';
 import { formatTimeAgo, cleanSummary, cleanTitle } from '../utils/formatters';
 import { useLanguage } from '../contexts/LanguageContext';
 import SentimentLegend from './SentimentLegend';
-
-// AI-Powered Sentiment Indicator - Matches legend colors
-const SentimentArrow = memo(function SentimentArrow({ sentiment }) {
-  if (!sentiment || sentiment === 'neutral') {
-    return (
-      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700/50">
-        <span className="text-sm text-gray-500 dark:text-gray-400" title="Neutral - No clear currency impact">
-          ○
-        </span>
-      </div>
-    );
-  }
-  
-  if (sentiment === 'up') {
-    return (
-      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30">
-        <span className="text-lg font-bold text-green-600 dark:text-green-400" title="Dollar Rising - Boliviano Weakening">
-          ↗
-        </span>
-      </div>
-    );
-  }
-  
-  if (sentiment === 'down') {
-    return (
-      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/30">
-        <span className="text-lg font-bold text-red-600 dark:text-red-400" title="Dollar Falling - Boliviano Strengthening">
-          ↘
-        </span>
-      </div>
-    );
-  }
-  
-  return null;
-});
+import SentimentIndicator from './SentimentIndicator';
 
 const NewsCard = memo(function NewsCard({ item }) {
   return (
@@ -52,7 +18,12 @@ const NewsCard = memo(function NewsCard({ item }) {
           {cleanTitle(item.title)}
         </h3>
         <div className="ml-1 sm:ml-2 flex-shrink-0">
-          <SentimentArrow sentiment={item.sentiment} />
+          <SentimentIndicator 
+            sentiment={item.sentiment} 
+            strength={item.sentiment_strength}
+            language={language}
+            size="sm"
+          />
         </div>
       </div>
       

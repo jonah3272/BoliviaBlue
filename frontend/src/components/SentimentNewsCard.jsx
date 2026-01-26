@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { fetchNews, fetchBlueRate } from '../utils/api';
 import { useLanguage } from '../contexts/LanguageContext';
 import { cleanSummary, cleanTitle } from '../utils/formatters';
+import SentimentIndicator from './SentimentIndicator';
 
 /**
  * Binance/Kalshi-inspired News Sentiment Dashboard Component
@@ -968,23 +969,12 @@ function SentimentNewsCard() {
 
                 {/* Sentiment Indicator */}
                 <div className="flex-shrink-0">
-                  <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center ${
-                    articles[currentIndex].sentiment === 'up'
-                      ? 'bg-green-100 dark:bg-green-900/30'
-                      : articles[currentIndex].sentiment === 'down'
-                      ? 'bg-red-100 dark:bg-red-900/30'
-                      : 'bg-gray-100 dark:bg-gray-700/50'
-                  }`}>
-                    <span className={`text-base sm:text-lg font-bold ${
-                      articles[currentIndex].sentiment === 'up'
-                        ? 'text-green-600 dark:text-green-400'
-                        : articles[currentIndex].sentiment === 'down'
-                        ? 'text-red-600 dark:text-red-400'
-                        : 'text-gray-500 dark:text-gray-400'
-                    }`}>
-                      {articles[currentIndex].sentiment === 'up' ? '↗' : articles[currentIndex].sentiment === 'down' ? '↘' : '○'}
-                    </span>
-                  </div>
+                  <SentimentIndicator 
+                    sentiment={articles[currentIndex].sentiment} 
+                    strength={articles[currentIndex].sentiment_strength}
+                    language={language}
+                    size="sm"
+                  />
                 </div>
               </div>
             </a>

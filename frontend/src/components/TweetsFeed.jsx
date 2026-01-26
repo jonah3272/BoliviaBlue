@@ -2,43 +2,9 @@ import { useState, useEffect } from 'react';
 import { fetchTweets } from '../utils/api';
 import { formatTimeAgo, cleanSummary, cleanTitle } from '../utils/formatters';
 import { useLanguage } from '../contexts/LanguageContext';
+import SentimentIndicator from './SentimentIndicator';
 
-// Sentiment indicator for tweets - Matches legend colors
-function SentimentArrow({ sentiment }) {
-  if (!sentiment || sentiment === 'neutral') {
-    return (
-      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700/50">
-        <span className="text-sm text-gray-500 dark:text-gray-400" title="Neutral">
-          ○
-        </span>
-      </div>
-    );
-  }
-  
-  if (sentiment === 'up') {
-    return (
-      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30">
-        <span className="text-lg font-bold text-green-600 dark:text-green-400" title="USD Rising">
-          ↗
-        </span>
-      </div>
-    );
-  }
-  
-  if (sentiment === 'down') {
-    return (
-      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/30">
-        <span className="text-lg font-bold text-red-600 dark:text-red-400" title="USD Falling">
-          ↘
-        </span>
-      </div>
-    );
-  }
-  
-  return null;
-}
-
-function TweetCard({ tweet }) {
+function TweetCard({ tweet, language = 'es' }) {
   return (
     <a
       href={tweet.url}
@@ -59,7 +25,12 @@ function TweetCard({ tweet }) {
           </div>
         </div>
         <div className="flex-shrink-0">
-          <SentimentArrow sentiment={tweet.sentiment} />
+          <SentimentIndicator 
+            sentiment={tweet.sentiment} 
+            strength={tweet.sentiment_strength}
+            language={language}
+            size="sm"
+          />
         </div>
       </div>
       
@@ -151,7 +122,7 @@ function TweetsFeed({ maxItems = 10 }) {
   return (
     <div className="space-y-4">
       {tweets.map(tweet => (
-        <TweetCard key={tweet.id} tweet={tweet} />
+        <TweetCard key={tweet.id} tweet={tweet} language={language} />
       ))}
     </div>
   );

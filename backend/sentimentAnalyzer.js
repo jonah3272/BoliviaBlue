@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import { getAccuracyStats, getLessonsLearned } from './predictionFeedback.js';
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const SENTIMENT_TIMEOUT = 10000; // 10 seconds
@@ -86,6 +87,28 @@ Your goal is to PREDICT FUTURE price movements based on the news, not validate a
 ${significant24hMove ? `Note: There's been a ${priceChange24h > 0 ? 'significant rise' : 'significant drop'} (${priceChange24h > 0 ? '+' : ''}${priceChange24h}%) recently. Consider: Is this news NEW information that could change the trend, or is it already reflected? If it's new and strong, it can still predict future movements.` : ''}`;
     }
 
+    // Get historical accuracy context to improve predictions
+    let accuracyContext = '';
+    try {
+      const lessons = await getLessonsLearned();
+      if (lessons && lessons.insights && lessons.insights.length > 0) {
+        const accuracyStats = await getAccuracyStats(30); // Last 30 days
+        
+        accuracyContext = `
+
+LEARNING FROM PAST PREDICTIONS - USE THIS TO IMPROVE ACCURACY:
+${accuracyStats && accuracyStats.accuracy_7d !== null ? `- Overall accuracy: ${accuracyStats.accuracy_7d.toFixed(1)}% over 7 days` : ''}
+${accuracyStats && accuracyStats.direction_accuracy_7d !== null ? `- Direction accuracy: ${accuracyStats.direction_accuracy_7d.toFixed(1)}% (predicting direction is ${(accuracyStats.direction_accuracy_7d - (accuracyStats.accuracy_7d || 0)).toFixed(1)}% more accurate than full predictions)` : ''}
+${lessons.insights.length > 0 ? `- Key insights: ${lessons.insights.map(i => i.message).join('; ')}` : ''}
+${lessons.recommendations.length > 0 ? `- Recommendations: ${lessons.recommendations.map(r => r.message).join('; ')}` : ''}
+
+IMPORTANT: Learn from these patterns. If certain types of predictions have been inaccurate, adjust your approach accordingly.`;
+      }
+    } catch (error) {
+      // Silently fail - accuracy context is optional
+      console.debug('Could not load accuracy context:', error.message);
+    }
+
     const systemPrompt = `You are a PREDICTIVE financial sentiment analyzer specializing in currency exchange rates for Bolivia. 
 Your task is to PREDICT if a news article indicates the US dollar (USD) will RISE or FALL in the FUTURE (next 1-7 days) against the Bolivian Boliviano (BOB), AND how strong/impactful this predictive signal is.
 
@@ -112,12 +135,14 @@ Consider PREDICTIVE factors:
 - Inflation news → Predict future currency pressure
 - International relations → Predict future economic impact
 ${priceContext ? '- Use recent price movements to understand context, but focus on predicting FUTURE movements based on news' : ''}
+${accuracyContext}
 
 PREDICTIVE THINKING:
 - Ask: "What will this news cause in the NEXT 1-7 DAYS?"
 - Strong new news can predict REVERSALS even if current trend is opposite
 - News that confirms a trend may predict ACCELERATION
 - Historical/old news may already be reflected - reduce strength
+- Learn from past prediction accuracy patterns to improve your predictions
 
 Respond with ONLY a JSON object in this exact format:
 {"direction": "UP" or "DOWN" or "NEUTRAL", "strength": 0-100}`;

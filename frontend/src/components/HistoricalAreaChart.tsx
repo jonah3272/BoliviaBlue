@@ -110,9 +110,9 @@ export default function HistoricalAreaChart({
         timeVisible: true,
         secondsVisible: false,
         borderColor: '#4B5563', // dark:border-gray-600
-        // Better time formatting based on timeframe
-        ...(timeframe === '1D' || timeframe === '1W' 
-          ? { 
+        // 1D = time (hour:min), 1W/1M/1Y/ALL = date
+        ...(timeframe === '1D'
+          ? {
               tickMarkFormatter: (time: number) => {
                 const date = new Date(time * 1000);
                 return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });

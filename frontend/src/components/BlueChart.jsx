@@ -59,8 +59,12 @@ function BlueChart({ showOfficial = false }) {
     const loadData = async () => {
       setIsLoading(true);
       try {
-        // First, get the oldest data point to calculate total data age
-        const allDataResult = await fetchBlueHistory('ALL', currency);
+        // Fetch ALL (for data age) and selected range in parallel for faster load
+        const [allDataResult, result] = await Promise.all([
+          fetchBlueHistory('ALL', currency),
+          fetchBlueHistory(range, currency)
+        ]);
+        
         let totalDataAge = 0;
         if (allDataResult.points.length > 0) {
           const oldestPoint = new Date(allDataResult.points[0].t);
@@ -68,9 +72,6 @@ function BlueChart({ showOfficial = false }) {
           totalDataAge = Math.floor((now - oldestPoint) / (1000 * 60 * 60 * 24));
         }
         setDataAge(totalDataAge);
-        
-        // Then fetch data for the selected range
-        const result = await fetchBlueHistory(range, currency);
         
         // Store raw data for candlestick transformation
         setRawData(result.points);

@@ -4,6 +4,51 @@ import { getAccuracyStats, getLessonsLearned } from './predictionFeedback.js';
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const SENTIMENT_TIMEOUT = 10000; // 10 seconds
 
+// Static system prompt (≥1024 tokens) so OpenAI can cache it across requests (~50% cheaper input).
+// All variable content (price context, accuracy context, article) goes in the user message.
+const STATIC_SYSTEM_PROMPT = `You are a PREDICTIVE financial sentiment analyzer specializing in currency exchange rates for Bolivia.
+Your task is to PREDICT if a news article indicates the US dollar (USD) will RISE or FALL in the FUTURE (next 1-7 days) against the Bolivian Boliviano (BOB), AND how strong/impactful this predictive signal is.
+
+IMPORTANT: You are predicting FUTURE price movements, not describing current prices. Focus on what the news WILL cause, not what it already caused.
+
+Context:
+- "UP" means the dollar will STRENGTHEN in the future (will get more expensive in bolivianos, or boliviano will WEAKEN)
+- "DOWN" means the dollar will WEAKEN in the future (will get cheaper in bolivianos, or boliviano will STRENGTHEN)
+- "NEUTRAL" means no clear predictive signal for future movement
+
+Strength (0-100) - Based on PREDICTIVE IMPACT:
+- 0-30: Weak predictive signal (minor mention, indirect future impact, speculative)
+- 31-60: Moderate predictive signal (clear mention, some future impact expected in 1-3 days)
+- 61-80: Strong predictive signal (significant news, major future impact expected in hours to days)
+- 81-100: Very strong predictive signal (crisis, major policy change, extreme conditions - predicts immediate to near-term impact)
+
+Consider PREDICTIVE factors:
+- NEW policy announcements → Predict future market reaction (higher strength for new info)
+- Breaking news/crises → Predict immediate future impact (hours to days)
+- Economic data releases → Predict market reaction (often immediate)
+- Central bank actions → Predict medium-term impact (days to weeks)
+- Political events → Predict market sentiment changes
+- Foreign reserves changes → Predict future market pressure
+- Inflation news → Predict future currency pressure
+- International relations → Predict future economic impact
+- Use recent price movements to understand context when provided, but focus on predicting FUTURE movements based on news
+
+PREDICTIVE THINKING:
+- Ask: "What will this news cause in the NEXT 1-7 DAYS?"
+- Strong new news can predict REVERSALS even if current trend is opposite
+- News that confirms a trend may predict ACCELERATION
+- Historical/old news may already be reflected - reduce strength
+- When learning-from-past-predictions context is provided, use it to improve your predictions
+
+REASONING EXAMPLES (apply similar logic to new articles):
+Example 1: "BCB raises interest rate to curb inflation" → New policy action; typically strengthens local currency (boliviano) and can weaken demand for dollar in the short term. So dollar DOWN, strength 55-70 depending on how decisive the move is.
+Example 2: "Dollar hits new high in parallel market" → Describes current state, not new information about future drivers. If no new cause is given, treat as NEUTRAL or weak signal; strength low (0-25).
+Example 3: "Government announces emergency dollar injection to stabilize exchange" → New policy that increases supply of dollars; predicts downward pressure on dollar price in coming days. DOWN, strength 60-75.
+Example 4: "US Fed signals further rate hikes" → International factor that can strengthen dollar globally; often strengthens USD vs emerging market currencies like BOB. UP, strength 50-65.
+Example 5: "Analysts say blue rate already reflects political uncertainty" → Suggests news is already priced in; reduce strength. Direction depends on what new info remains; if none, NEUTRAL or low strength.
+
+Output ONLY valid JSON with keys "direction" (one of UP, DOWN, NEUTRAL) and "strength" (integer 0-100). No other text.`;
+
 // Log environment variable status on module load
 if (OPENAI_API_KEY) {
   console.log(`✅ OPENAI_API_KEY is set (length: ${OPENAI_API_KEY.length} chars, starts with: ${OPENAI_API_KEY.substring(0, 7)}...)`);
@@ -109,56 +154,19 @@ IMPORTANT: Learn from these patterns. If certain types of predictions have been 
       console.debug('Could not load accuracy context:', error.message);
     }
 
-    const systemPrompt = `You are a PREDICTIVE financial sentiment analyzer specializing in currency exchange rates for Bolivia. 
-Your task is to PREDICT if a news article indicates the US dollar (USD) will RISE or FALL in the FUTURE (next 1-7 days) against the Bolivian Boliviano (BOB), AND how strong/impactful this predictive signal is.
-
-IMPORTANT: You are predicting FUTURE price movements, not describing current prices. Focus on what the news WILL cause, not what it already caused.
-
-Context:
-- "UP" means the dollar will STRENGTHEN in the future (will get more expensive in bolivianos, or boliviano will WEAKEN)
-- "DOWN" means the dollar will WEAKEN in the future (will get cheaper in bolivianos, or boliviano will STRENGTHEN)
-- "NEUTRAL" means no clear predictive signal for future movement
-
-Strength (0-100) - Based on PREDICTIVE IMPACT:
-- 0-30: Weak predictive signal (minor mention, indirect future impact, speculative)
-- 31-60: Moderate predictive signal (clear mention, some future impact expected in 1-3 days)
-- 61-80: Strong predictive signal (significant news, major future impact expected in hours to days)
-- 81-100: Very strong predictive signal (crisis, major policy change, extreme conditions - predicts immediate to near-term impact)
-
-Consider PREDICTIVE factors:
-- NEW policy announcements → Predict future market reaction (higher strength for new info)
-- Breaking news/crises → Predict immediate future impact (hours to days)
-- Economic data releases → Predict market reaction (often immediate)
-- Central bank actions → Predict medium-term impact (days to weeks)
-- Political events → Predict market sentiment changes
-- Foreign reserves changes → Predict future market pressure
-- Inflation news → Predict future currency pressure
-- International relations → Predict future economic impact
-${priceContext ? '- Use recent price movements to understand context, but focus on predicting FUTURE movements based on news' : ''}
-${accuracyContext}
-
-PREDICTIVE THINKING:
-- Ask: "What will this news cause in the NEXT 1-7 DAYS?"
-- Strong new news can predict REVERSALS even if current trend is opposite
-- News that confirms a trend may predict ACCELERATION
-- Historical/old news may already be reflected - reduce strength
-- Learn from past prediction accuracy patterns to improve your predictions
-
-Respond with ONLY a JSON object in this exact format:
-{"direction": "UP" or "DOWN" or "NEUTRAL", "strength": 0-100}`;
-
-    const userPrompt = `Analyze this Bolivian news article and PREDICT its impact on FUTURE dollar prices:
-
+    const userPrompt = `Analyze this Bolivian news article and PREDICT its impact on FUTURE dollar prices.
+${priceContext ? `\n${priceContext.trim()}\n` : ''}
+${accuracyContext ? `\n${accuracyContext.trim()}\n` : ''}
 Title: ${title}
 
-Summary: ${summary || 'No summary available'}${priceContext}
+Summary: ${summary || 'No summary available'}
 
-Based on this news, what will happen to the US dollar value against the Boliviano in the NEXT 1-7 DAYS? 
+Based on this news, what will happen to the US dollar value against the Boliviano in the NEXT 1-7 DAYS?
 - Is this NEW information that will affect future prices?
 - Will this cause the dollar to RISE (UP) or FALL (DOWN) in the future?
 - How strong is this predictive signal (0-100)?
 
-Focus on PREDICTING future movements, not describing current prices.`;
+Focus on PREDICTING future movements, not describing current prices. Respond with ONLY a JSON object: {"direction": "UP" or "DOWN" or "NEUTRAL", "strength": 0-100}`;
 
     // Model selection: gpt-4o-mini is optimal for sentiment analysis
     // Alternatives:
@@ -166,22 +174,44 @@ Focus on PREDICTING future movements, not describing current prices.`;
     // - 'gpt-3.5-turbo': Cheaper but less accurate for nuanced financial sentiment
     // - 'o1-mini': Better reasoning but slower and more expensive
     const model = process.env.OPENAI_MODEL || 'gpt-4o-mini';
-    
+    const useStructuredOutput = /gpt-4o-mini|gpt-4o-2024-08-06/i.test(model);
+
+    const body = {
+      model: model,
+      messages: [
+        { role: 'system', content: STATIC_SYSTEM_PROMPT },
+        { role: 'user', content: userPrompt }
+      ],
+      temperature: 0.3,
+      max_tokens: 50,
+      prompt_cache_retention: '24h' // Keep cached system prompt for 24h (~50% cheaper input after first request)
+    };
+    if (useStructuredOutput) {
+      body.response_format = {
+        type: 'json_schema',
+        json_schema: {
+          name: 'sentiment_response',
+          strict: true,
+          schema: {
+            type: 'object',
+            properties: {
+              direction: { type: 'string', enum: ['UP', 'DOWN', 'NEUTRAL'] },
+              strength: { type: 'integer' }
+            },
+            required: ['direction', 'strength'],
+            additionalProperties: false
+          }
+        }
+      };
+    }
+
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`
       },
-      body: JSON.stringify({
-        model: model,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
-        ],
-        temperature: 0.3, // Lower temperature for more consistent results
-        max_tokens: 50 // Need more tokens for JSON response
-      }),
+      body: JSON.stringify(body),
       signal: controller.signal
     });
 
@@ -192,17 +222,22 @@ Focus on PREDICTING future movements, not describing current prices.`;
     }
 
     const data = await response.json();
-    const responseText = data.choices[0]?.message?.content?.trim();
-    
-    // Try to parse JSON response
+    const msg = data.choices[0]?.message;
+    if (msg?.refusal) {
+      console.warn('OpenAI refusal:', msg.refusal);
+      return analyzeSentimentKeywords(title, summary);
+    }
+    const responseText = msg?.content?.trim();
+    if (!responseText) {
+      throw new Error('Empty response from OpenAI');
+    }
+
     try {
-      // Extract JSON from response (might have markdown code blocks)
       let jsonText = responseText;
-      const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        jsonText = jsonMatch[0];
+      if (!useStructuredOutput) {
+        const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+        if (jsonMatch) jsonText = jsonMatch[0];
       }
-      
       const parsed = JSON.parse(jsonText);
       let direction = parsed.direction?.toLowerCase() || 'neutral';
       let strength = parseInt(parsed.strength) || 50;

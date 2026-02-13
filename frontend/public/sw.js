@@ -127,7 +127,9 @@ self.addEventListener('fetch', (event) => {
   }
 
   // HTML pages - network first, cache fallback
-  if (request.headers.get('accept').includes('text/html')) {
+  // Safe check: some mobile/browsers omit Accept; null.includes() would throw and break loading
+  const accept = request.headers.get('accept') || '';
+  if (accept.includes('text/html')) {
     event.respondWith(
       fetch(request)
         .then((response) => {

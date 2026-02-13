@@ -19,12 +19,35 @@ async function retryWithDelay(fn, retries = 3, delay = 1000) {
   }
 }
 
+const RATE_TIMEOUT_MS = 18000;   // 18s so slow mobile networks don't spin forever
+const HISTORY_TIMEOUT_MS = 25000; // 25s for larger history fetches
+
+// In-memory cache to reduce Supabase calls on free tier (slower). TTL short so data stays fresh.
+const RATE_CACHE_TTL_MS = 90 * 1000;   // 90s - rate updates ~every 15 min, so this is safe
+const HISTORY_CACHE_TTL_MS = 60 * 1000; // 60s - chart range toggles feel instant on repeat
+const rateCache = new Map(); // key = currency, value = { data, expiresAt }
+const historyCache = new Map(); // key = `${range}-${currency}`, value = { data, expiresAt }
+
+function withTimeout(promise, ms, message = 'Connection timed out. Please check your network.') {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error(message)), ms))
+  ]);
+}
+
 /**
- * Fetch current blue market rate directly from Supabase with retry logic
+ * Fetch current blue market rate directly from Supabase with retry logic.
+ * Uses a short in-memory cache (90s) to avoid duplicate calls on load (Home + BlueRateCards) and to ease free-tier latency.
  * @param {string} currency - Currency code: 'USD', 'BRL', or 'EUR' (default: 'USD')
  */
 export async function fetchBlueRate(currency = 'USD') {
-  return retryWithDelay(async () => {
+  const now = Date.now();
+  const cached = rateCache.get(currency);
+  if (cached && cached.expiresAt > now) {
+    return cached.data;
+  }
+  const result = await withTimeout(
+    retryWithDelay(async () => {
     // Get the latest rate
     const { data, error } = await supabase
       .from('rates')
@@ -133,8 +156,12 @@ export async function fetchBlueRate(currency = 'USD') {
     response.sell = sellRate;
     response.mid = midRate;
     
+    rateCache.set(currency, { data: response, expiresAt: now + RATE_CACHE_TTL_MS });
     return response;
-  });
+  }),
+    RATE_TIMEOUT_MS
+  );
+  return result;
 }
 
 /**
@@ -143,6 +170,13 @@ export async function fetchBlueRate(currency = 'USD') {
  * @param {string} currency - Currency code: 'USD', 'BRL', or 'EUR' (default: 'USD')
  */
 export async function fetchBlueHistory(range = '1W', currency = 'USD') {
+  const cacheKey = `${range}-${currency}`;
+  const nowMs = Date.now();
+  const cached = historyCache.get(cacheKey);
+  if (cached && cached.expiresAt > nowMs) {
+    return cached.data;
+  }
+  return withTimeout((async () => {
   let startDate;
   const now = new Date();
   
@@ -420,11 +454,14 @@ export async function fetchBlueHistory(range = '1W', currency = 'USD') {
     }
   }
   
-  return {
+  const result = {
     range,
     currency,
     points
   };
+  historyCache.set(cacheKey, { data: result, expiresAt: Date.now() + HISTORY_CACHE_TTL_MS });
+  return result;
+  })(), HISTORY_TIMEOUT_MS);
 }
 
 /**

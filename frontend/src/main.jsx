@@ -52,18 +52,16 @@ if (import.meta.env.DEV) {
   };
 }
 
-// Unregister any existing service workers to prevent caching issues
+// Unregister any existing service workers to prevent caching issues.
+// Do not reload after unregister: on slow mobile that caused "keeps loading" (reload before paint).
+// Next full navigation or refresh will get fresh content.
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.getRegistrations().then((registrations) => {
-    for (const registration of registrations) {
+    registrations.forEach((registration) => {
       registration.unregister().then((success) => {
-        if (success) {
-          console.log('[SW] Service worker unregistered successfully');
-          // Force reload to clear cache
-          window.location.reload();
-        }
+        if (success) console.log('[SW] Service worker unregistered');
       });
-    }
+    });
   });
 }
 

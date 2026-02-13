@@ -194,15 +194,32 @@ export async function getMessages(filters = {}) {
   if (filters.search) params.append('search', filters.search);
 
   try {
-    const response = await fetch(`${API_BASE}/api/chat/messages?${params.toString()}`, {
-      credentials: 'include'
+    const url = `${API_BASE}/api/chat/messages?${params.toString()}`;
+    const response = await fetch(url, {
+      credentials: 'include',
+      headers: { Accept: 'application/json' }
     });
 
     if (!response.ok) {
-      throw new Error('Failed to fetch messages');
+      const text = await response.text();
+      let detail = response.status === 404
+        ? 'Community API not found. If the app is behind a proxy, ensure /api/chat is forwarded to the backend.'
+        : response.status >= 500
+          ? 'Server error. Try again later.'
+          : text && text.length < 200 ? text : `HTTP ${response.status}`;
+      throw new Error(detail);
     }
 
-    return response.json();
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+      throw new Error('Invalid response from server (expected JSON). The community API may be misconfigured.');
+    }
+
+    const data = await response.json();
+    if (!data || typeof data.messages === 'undefined') {
+      throw new Error('Invalid response shape: missing messages. Backend may have changed.');
+    }
+    return data;
   } catch (error) {
     if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
       throw new Error('Application failed to respond. Please check your connection and try again.');

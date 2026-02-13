@@ -21,7 +21,7 @@ export default function Chat() {
   const [filters, setFilters] = useState({});
   const [stats, setStats] = useState(null);
   const chatMessages = useChatMessages(filters, true);
-  const { messages, loading: messagesLoading, refresh, updateMessageOptimistically, setMessages } = chatMessages;
+  const { messages, loading: messagesLoading, error: messagesError, refresh, updateMessageOptimistically, setMessages } = chatMessages;
   const { postMessage, likeMessage, flagMessage, loading: actionsLoading, error } = useChatActions();
 
   useEffect(() => {
@@ -237,6 +237,21 @@ export default function Chat() {
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-2 sm:px-4 py-4 sm:py-6 pb-24 sm:pb-6">
+        {messagesError && (
+          <div className="mb-4 p-4 bg-amber-500/10 dark:bg-amber-500/20 border border-amber-500/30 rounded-lg text-amber-800 dark:text-amber-200">
+            <p className="font-medium">
+              {language === 'es' ? 'No se pudieron cargar los mensajes' : 'Could not load messages'}
+            </p>
+            <p className="text-sm mt-1 opacity-90">{messagesError}</p>
+            <button
+              type="button"
+              onClick={() => refresh()}
+              className="mt-3 px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors text-sm font-medium"
+            >
+              {language === 'es' ? 'Reintentar' : 'Retry'}
+            </button>
+          </div>
+        )}
         <LazyErrorBoundary>
           <MessageFeed
             messages={messages}

@@ -59,20 +59,17 @@ function BlueChart({ showOfficial = false }) {
     const loadData = async () => {
       setIsLoading(true);
       try {
-        // Fetch ALL (for data age) and selected range in parallel for faster load
-        const [allDataResult, result] = await Promise.all([
-          fetchBlueHistory('ALL', currency),
-          fetchBlueHistory(range, currency)
-        ]);
-        
+        // Fast path: fetch only the visible range so the chart paints quickly (biggest win on slow Supabase).
+        const result = await fetchBlueHistory(range, currency);
+
         let totalDataAge = 0;
-        if (allDataResult.points.length > 0) {
-          const oldestPoint = new Date(allDataResult.points[0].t);
+        if (range === 'ALL' && result.points.length > 0) {
+          const oldestPoint = new Date(result.points[0].t);
           const now = new Date();
           totalDataAge = Math.floor((now - oldestPoint) / (1000 * 60 * 60 * 24));
         }
         setDataAge(totalDataAge);
-        
+
         // Store raw data for candlestick transformation
         setRawData(result.points);
         
@@ -217,6 +214,20 @@ function BlueChart({ showOfficial = false }) {
         
         setData(chartData);
         setError(null);
+
+        // Data-age badge: when viewing 1D/1W/1M/1Y, fetch ALL in background so chart stayed fast
+        if (range !== 'ALL') {
+          fetchBlueHistory('ALL', currency)
+            .then((allDataResult) => {
+              if (allDataResult.points.length > 0) {
+                const oldestPoint = new Date(allDataResult.points[0].t);
+                const now = new Date();
+                const age = Math.floor((now - oldestPoint) / (1000 * 60 * 60 * 24));
+                setDataAge(age);
+              }
+            })
+            .catch(() => { /* optional badge only */ });
+        }
       } catch (err) {
         console.error('Error loading chart data:', err);
         setError(err.message);

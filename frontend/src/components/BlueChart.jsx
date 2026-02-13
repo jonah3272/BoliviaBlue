@@ -14,6 +14,7 @@ function BlueChart({ showOfficial = false }) {
   const { currency } = useCurrency();
   
   const [range, setRange] = useState('1D');
+  const [effectiveRange, setEffectiveRange] = useState('1D'); // When 1D has <3 points we show 1W data
   const [data, setData] = useState([]);
   const [rawData, setRawData] = useState([]); // Store raw API data for candlestick transformation
   const [isLoading, setIsLoading] = useState(true);
@@ -60,7 +61,18 @@ function BlueChart({ showOfficial = false }) {
       setIsLoading(true);
       try {
         // Fast path: fetch only the visible range so the chart paints quickly (biggest win on slow Supabase).
-        const result = await fetchBlueHistory(range, currency);
+        let result = await fetchBlueHistory(range, currency);
+
+        // If 1D has very few points, use 1W so the chart is useful (data accumulates every 15 min)
+        let effectiveRangeForData = range;
+        if (range === '1D' && result.points.length < 3) {
+          const weekResult = await fetchBlueHistory('1W', currency);
+          if (weekResult.points.length > result.points.length) {
+            result = weekResult;
+            effectiveRangeForData = '1W';
+          }
+        }
+        setEffectiveRange(effectiveRangeForData);
 
         let totalDataAge = 0;
         if (range === 'ALL' && result.points.length > 0) {
@@ -90,18 +102,18 @@ function BlueChart({ showOfficial = false }) {
           });
         }
         
-        // Transform data with better formatting
+        // Transform data with better formatting (use effectiveRangeForData for labels when we fell back to 1W)
         // For ALL range, keep all data points but group labels by day
         const chartData = result.points.map((point, index) => {
           const date = new Date(point.t);
           let timeLabel = '';
           
-          if (range === '1D') {
+          if (effectiveRangeForData === '1D') {
             timeLabel = date.toLocaleTimeString(language === 'es' ? 'es-BO' : 'en-US', { 
               hour: '2-digit', 
               minute: '2-digit' 
             });
-          } else if (range === '1W') {
+          } else if (effectiveRangeForData === '1W') {
             // Show full dates like ALL graph (DD/MM/YYYY or MM/DD/YYYY)
             if (language === 'es') {
               // Spanish format: DD/MM/YYYY
@@ -118,12 +130,12 @@ function BlueChart({ showOfficial = false }) {
                 year: 'numeric'
               });
             }
-          } else if (range === '1M') {
+          } else if (effectiveRangeForData === '1M') {
             timeLabel = date.toLocaleDateString(language === 'es' ? 'es-BO' : 'en-US', { 
               month: 'short', 
               day: 'numeric' 
             });
-          } else if (range === 'ALL') {
+          } else if (effectiveRangeForData === 'ALL') {
             // Group labels by day: show full date (MM/DD/YYYY or DD/MM/YYYY)
             // Format: "12/11/2025" or "11/12/2025" depending on locale
             if (language === 'es') {
@@ -161,14 +173,14 @@ function BlueChart({ showOfficial = false }) {
             // Use selected rate type for chart display
             buy: showOfficial ? point.official_buy : point.buy,
             sell: showOfficial ? point.official_sell : point.sell,
-            dateKey: (range === 'ALL' || range === '1W') ? date.toDateString() : null, // For grouping labels by day
+            dateKey: (effectiveRangeForData === 'ALL' || effectiveRangeForData === '1W') ? date.toDateString() : null, // For grouping labels by day
             index
           };
         });
         
         // For ALL and 1W ranges, deduplicate labels but keep all data points
         // We'll use a custom tick formatter to show only one label per day
-        if ((range === 'ALL' || range === '1W') && chartData.length > 0) {
+        if ((effectiveRangeForData === 'ALL' || effectiveRangeForData === '1W') && chartData.length > 0) {
           // Track which dates we've shown labels for
           const shownDates = new Set();
           chartData.forEach((point) => {
@@ -179,7 +191,7 @@ function BlueChart({ showOfficial = false }) {
         
         // For ALL range, calculate indices of first occurrence of each unique date
         let dateIndices = [];
-        if (range === 'ALL' && chartData.length > 0) {
+        if (effectiveRangeForData === 'ALL' && chartData.length > 0) {
           const dateSet = new Set();
           chartData.forEach((point, idx) => {
             if (point.dateKey && !dateSet.has(point.dateKey)) {
@@ -193,7 +205,7 @@ function BlueChart({ showOfficial = false }) {
         }
         
         // Debug log for ALL range after chartData is created
-        if (range === 'ALL') {
+        if (effectiveRangeForData === 'ALL') {
           console.log(`[BlueChart] ALL range: ${result.points.length} raw points, ${chartData.length} chart points`);
           console.log(`[BlueChart] Unique dates: ${dateIndices.length}`);
           if (chartData.length > 0) {
@@ -244,15 +256,15 @@ function BlueChart({ showOfficial = false }) {
   const candlestickData = useMemo(() => {
     if (!rawData || rawData.length === 0) return [];
     
-    // Determine time bucket based on range
+    // Determine time bucket based on effective range (1D may show 1W data when few points)
     let bucket = 'hour';
-    if (range === '1D') {
+    if (effectiveRange === '1D') {
       bucket = 'hour'; // Show hour-by-hour for 1 day (minute would be too granular)
-    } else if (range === '1W') {
+    } else if (effectiveRange === '1W') {
       bucket = 'hour'; // Show hour-by-hour for 1 week
-    } else if (range === '1M') {
+    } else if (effectiveRange === '1M') {
       bucket = 'day'; // Show day-by-day for 1 month
-    } else if (range === '1Y') {
+    } else if (effectiveRange === '1Y') {
       bucket = 'day'; // Show day-by-day for 1 year
     } else {
       bucket = 'day'; // Show day-by-day for ALL
@@ -268,7 +280,7 @@ function BlueChart({ showOfficial = false }) {
     
     // Transform to OHLC
     return transformToOHLC(rateData, bucket, true); // Use mid price for better representation
-  }, [rawData, range, showOfficial]);
+  }, [rawData, effectiveRange, showOfficial]);
 
   // Transform data for area chart (Buy and Sell series)
   const areaChartData = useMemo(() => {
@@ -283,9 +295,9 @@ function BlueChart({ showOfficial = false }) {
       official_sell: point.official_sell,
     }));
     
-    // Transform to area chart format
-    return transformToAreaChartData(rateData, range, showOfficial);
-  }, [rawData, range, showOfficial]);
+    // Transform to area chart format (use effectiveRange so x-axis format matches data)
+    return transformToAreaChartData(rateData, effectiveRange, showOfficial);
+  }, [rawData, effectiveRange, showOfficial]);
 
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length > 0) {
@@ -479,8 +491,9 @@ function BlueChart({ showOfficial = false }) {
       {!isLoading && !error && data.length > 0 && data.length < 5 && (
         <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-sm">
           <span className="text-blue-700 dark:text-blue-300">
-            📊 Datos recientes: {data.length} punto{data.length > 1 ? 's' : ''}. 
-            El gráfico mejorará a medida que se acumulen más datos cada 15 minutos.
+            📊 Datos recientes: {data.length} punto{data.length > 1 ? 's' : ''}.
+            {range === '1D' && effectiveRange === '1W' && (language === 'es' ? ' Pocos datos en 24 h; mostrando última semana.' : ' Few points in 24h; showing last week.')}
+            {' '}El gráfico mejorará a medida que se acumulen más datos cada 15 minutos.
           </span>
         </div>
       )}
@@ -511,7 +524,7 @@ function BlueChart({ showOfficial = false }) {
                 height={typeof window !== 'undefined' ? 
                   (window.innerWidth >= 768 ? 420 : window.innerWidth >= 640 ? 320 : 240) : 
                   320}
-                timeframe={range}
+                timeframe={effectiveRange}
                 isLoading={isLoading}
                 className="w-full"
               />
@@ -521,7 +534,7 @@ function BlueChart({ showOfficial = false }) {
                 height={typeof window !== 'undefined' ? 
                   (window.innerWidth >= 768 ? 420 : window.innerWidth >= 640 ? 320 : 240) : 
                   320}
-                timeframe={range}
+                timeframe={effectiveRange}
                 isLoading={isLoading}
                 className="w-full"
               />

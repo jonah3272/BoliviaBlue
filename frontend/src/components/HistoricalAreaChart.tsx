@@ -76,10 +76,16 @@ export default function HistoricalAreaChart({
     spreadPercent: number;
   } | null>(null);
 
-  // Convert time string to Unix timestamp
+  // Convert time string to Unix timestamp (seconds)
   const timeToUnix = (time: string | number): number => {
     if (typeof time === 'number') return time;
     return Math.floor(new Date(time).getTime() / 1000);
+  };
+
+  // Chart library displays in UTC; convert so axis shows local time (e.g. 18:15 not 22:15)
+  const timeToUnixLocal = (time: string | number): number => {
+    const unix = timeToUnix(time);
+    return unix - new Date().getTimezoneOffset() * 60;
   };
 
   // Initialize chart
@@ -224,8 +230,9 @@ export default function HistoricalAreaChart({
         const spread = buy - sell;
         const spreadPercent = (spread / sell) * 100;
         
-        const timestamp = (param.time as number) * 1000;
-        const date = new Date(timestamp);
+        // param.time is in "display" (local) seconds; convert back for tooltip
+        const displayUnix = (param.time as number) * 1000;
+        const date = new Date(displayUnix + new Date().getTimezoneOffset() * 60 * 1000);
         
         // Format time based on timeframe
         let timeString: string;
@@ -273,10 +280,10 @@ export default function HistoricalAreaChart({
   useEffect(() => {
     if (!buySeriesRef.current || !sellSeriesRef.current) return;
 
-    // Convert and set buy data
+    // Convert and set buy data (use local time so x-axis matches "Actualizado" / tooltip)
     if (buyData && buyData.length > 0) {
       const buyChartData = buyData.map(point => ({
-        time: timeToUnix(point.time) as Time,
+        time: timeToUnixLocal(point.time) as Time,
         value: point.value,
       }));
       buySeriesRef.current.setData(buyChartData);
@@ -285,7 +292,7 @@ export default function HistoricalAreaChart({
     // Convert and set sell data
     if (sellData && sellData.length > 0) {
       const sellChartData = sellData.map(point => ({
-        time: timeToUnix(point.time) as Time,
+        time: timeToUnixLocal(point.time) as Time,
         value: point.value,
       }));
       sellSeriesRef.current.setData(sellChartData);

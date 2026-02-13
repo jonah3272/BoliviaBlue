@@ -173,7 +173,9 @@ export default function HistoricalCandlestickChart({
       const data = param.seriesData.get(candlestickSeries);
       if (data && 'open' in data) {
         const candleData = data as CandlestickData;
-        const timestamp = (candleData.time as number) * 1000;
+        // time is in "display" (local) seconds; add offset back for correct tooltip time
+        const displaySec = candleData.time as number;
+        const timestamp = (displaySec + new Date().getTimezoneOffset() * 60) * 1000;
         const date = new Date(timestamp);
         
         // Format time based on timeframe
@@ -218,12 +220,16 @@ export default function HistoricalCandlestickChart({
     };
   }, [height, width, timeframe]);
 
+  // Chart displays in UTC; convert so x-axis shows local time (match "Actualizado" / area chart)
+  const tzOffsetSeconds = new Date().getTimezoneOffset() * 60;
+
   // Update chart data when data prop changes
   useEffect(() => {
     if (!seriesRef.current || !data || data.length === 0) return;
 
-    // Convert data to TradingView format
-    const chartData = convertToTradingViewFormat(data);
+    // Convert to TradingView format, then adjust time so axis shows local not UTC
+    const raw = convertToTradingViewFormat(data);
+    const chartData = raw.map((d) => ({ ...d, time: d.time - tzOffsetSeconds }));
     
     // Set data
     seriesRef.current.setData(chartData as any);
@@ -232,7 +238,7 @@ export default function HistoricalCandlestickChart({
     if (chartRef.current) {
       chartRef.current.timeScale().fitContent();
     }
-  }, [data]);
+  }, [data, tzOffsetSeconds]);
 
   if (isLoading) {
     return (

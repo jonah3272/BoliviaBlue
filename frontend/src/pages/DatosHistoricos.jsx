@@ -8,7 +8,7 @@ import Breadcrumbs from '../components/Breadcrumbs';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import { Link } from 'react-router-dom';
 import { fetchBlueHistory } from '../utils/api';
-import { getDataset, getWebPage, getBreadcrumbList } from '../utils/seoSchema';
+import { BASE_URL, getDataset, getWebPage, getBreadcrumbList } from '../utils/seoSchema';
 
 function DatosHistoricos() {
   // Signal to AdSense that this page has sufficient content
@@ -52,7 +52,11 @@ function DatosHistoricos() {
     updateFrequency: language === 'es' ? 'Actualización cada 15 minutos (fuente en vivo)' : 'Updates every 15 minutes (live source)',
     temporalCoverage: '2024-01-01/..',
     variableMeasured: { '@type': 'PropertyValue', name: language === 'es' ? 'Tipo de cambio USD/BOB (dólar blue)' : 'USD/BOB exchange rate (blue dollar)' },
-    creator: { '@type': 'Organization', name: 'Bolivia Blue con Paz', url: 'https://boliviablue.com' }
+    creator: { '@type': 'Organization', name: 'Bolivia Blue con Paz', url: BASE_URL },
+    distribution: [
+      { '@type': 'DataDownload', contentUrl: `${BASE_URL}/api/historical-data.csv?range=30d`, encodingFormat: 'text/csv', name: language === 'es' ? 'CSV últimos 30 días' : 'CSV last 30 days' },
+      { '@type': 'DataDownload', contentUrl: `${BASE_URL}/api/historical-data.json?range=30d`, encodingFormat: 'application/json', name: language === 'es' ? 'JSON últimos 30 días' : 'JSON last 30 days' }
+    ]
   });
 
   const webPageSchema = getWebPage({
@@ -473,47 +477,105 @@ function DatosHistoricos() {
           </h2>
           <p className="text-gray-700 dark:text-gray-300 mb-6">
             {language === 'es'
-              ? 'Los datos históricos están disponibles para descarga en formato CSV para análisis y uso en investigaciones, reportes y aplicaciones.'
-              : 'Historical data is available for download in CSV format for analysis and use in research, reports and applications.'}
+              ? 'Los datos históricos están disponibles para descarga en formato CSV y JSON desde URLs estables, para análisis, investigaciones, reportes y aplicaciones.'
+              : 'Historical data is available for download in CSV and JSON from stable URLs, for analysis, research, reports and applications.'}
           </p>
-          <div className="space-y-4">
-            <div className="bg-white dark:bg-gray-700 rounded-lg p-4">
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-                {language === 'es' ? 'Formato CSV' : 'CSV Format'}
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
-                {language === 'es'
-                  ? 'Datos en formato CSV con columnas: Fecha, Compra, Venta, Promedio'
-                  : 'Data in CSV format with columns: Date, Buy, Sell, Average'}
-              </p>
-              <button
-                onClick={() => {
-                  if (historyData && historyData.history) {
-                    const csv = [
-                      ['Fecha', 'Compra', 'Venta', 'Promedio'],
-                      ...historyData.history.map(e => [
-                        new Date(e.timestamp).toISOString(),
-                        e.buy.toFixed(2),
-                        e.sell.toFixed(2),
-                        ((e.buy + e.sell) / 2).toFixed(2)
-                      ])
-                    ].map(row => row.join(',')).join('\n');
-                    
-                    const blob = new Blob([csv], { type: 'text/csv' });
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `dolar-blue-bolivia-${selectedRange}-${new Date().toISOString().split('T')[0]}.csv`;
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                  }
-                }}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition-colors"
-                disabled={!historyData || !historyData.history}
+
+          {/* Public server-backed downloads (stable URLs) */}
+          <div className="bg-white dark:bg-gray-700 rounded-lg p-4 mb-4">
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+              {language === 'es' ? 'Descarga desde el servidor (URLs estables)' : 'Download from server (stable URLs)'}
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
+              {language === 'es'
+                ? 'Columnas: timestamp, buy, sell, mid, official_buy, official_sell, official_mid. Rango: 30d, 90d, 1y o all.'
+                : 'Columns: timestamp, buy, sell, mid, official_buy, official_sell, official_mid. Range: 30d, 90d, 1y or all.'}
+            </p>
+            <div className="flex flex-wrap gap-3 items-center">
+              <a
+                href={`${BASE_URL}/api/historical-data.csv?range=30d`}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+                download
               >
-                {language === 'es' ? 'Descargar CSV' : 'Download CSV'}
-              </button>
+                CSV (30 {language === 'es' ? 'días' : 'days'})
+              </a>
+              <a
+                href={`${BASE_URL}/api/historical-data.csv?range=90d`}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+                download
+              >
+                CSV (90 {language === 'es' ? 'días' : 'days'})
+              </a>
+              <a
+                href={`${BASE_URL}/api/historical-data.csv?range=1y`}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+                download
+              >
+                CSV (1 {language === 'es' ? 'año' : 'year'})
+              </a>
+              <a
+                href={`${BASE_URL}/api/historical-data.csv?range=all`}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+                download
+              >
+                CSV (all)
+              </a>
+              <a
+                href={`${BASE_URL}/api/historical-data.json?range=30d`}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors"
+                download
+              >
+                JSON (30 {language === 'es' ? 'días' : 'days'})
+              </a>
+              <a
+                href={`${BASE_URL}/api/historical-data.json?range=all`}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors"
+                download
+              >
+                JSON (all)
+              </a>
             </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">
+              {language === 'es' ? 'Fuente de datos: Bolivia Blue con Paz (boliviablue.com)' : 'Data source: Bolivia Blue con Paz (boliviablue.com)'}
+            </p>
+          </div>
+
+          <div className="bg-white dark:bg-gray-700 rounded-lg p-4">
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+              {language === 'es' ? 'Formato CSV (período seleccionado en la página)' : 'CSV (selected period on this page)'}
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
+              {language === 'es'
+                ? 'Datos en formato CSV con columnas: Fecha, Compra, Venta, Promedio'
+                : 'Data in CSV format with columns: Date, Buy, Sell, Average'}
+            </p>
+            <button
+              onClick={() => {
+                if (historyData && historyData.history) {
+                  const csv = [
+                    ['Fecha', 'Compra', 'Venta', 'Promedio'],
+                    ...historyData.history.map(e => [
+                      new Date(e.timestamp).toISOString(),
+                      e.buy.toFixed(2),
+                      e.sell.toFixed(2),
+                      ((e.buy + e.sell) / 2).toFixed(2)
+                    ])
+                  ].map(row => row.join(',')).join('\n');
+                  
+                  const blob = new Blob([csv], { type: 'text/csv' });
+                  const url = window.URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `dolar-blue-bolivia-${selectedRange}-${new Date().toISOString().split('T')[0]}.csv`;
+                  a.click();
+                  window.URL.revokeObjectURL(url);
+                }
+              }}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition-colors"
+              disabled={!historyData || !historyData.history}
+            >
+              {language === 'es' ? 'Descargar CSV' : 'Download CSV'}
+            </button>
           </div>
         </div>
 

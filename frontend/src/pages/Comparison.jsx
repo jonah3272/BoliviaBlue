@@ -7,9 +7,10 @@ import Navigation from '../components/Navigation';
 import BlueRateCards from '../components/BlueRateCards';
 import BinanceBanner from '../components/BinanceBanner';
 import { Link } from 'react-router-dom';
-import { fetchBlueRate } from '../utils/api';
+import { fetchBlueRate, fetchBlueHistory } from '../utils/api';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
+import { getWebPage, getBreadcrumbList, getFAQPage } from '../utils/seoSchema';
 
 function Comparison() {
   // Signal to AdSense that this page has sufficient content
@@ -21,6 +22,7 @@ function Comparison() {
   const [showOfficial, setShowOfficial] = useState(false);
   const [currentRate, setCurrentRate] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(new Date());
+  const [avgSpread, setAvgSpread] = useState(null);
 
   useEffect(() => {
     const loadRate = async () => {
@@ -28,6 +30,7 @@ function Comparison() {
         const data = await fetchBlueRate();
         if (data && data.buy && data.sell) {
           setCurrentRate(data);
+          setLastUpdated(new Date());
         }
       } catch (error) {
         console.error('Error loading rate:', error);
@@ -38,10 +41,47 @@ function Comparison() {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    const loadSpread = async () => {
+      try {
+        const data = await fetchBlueHistory('1W');
+        const points = data?.points || [];
+        if (points.length === 0) return;
+        let sumBob = 0, sumPct = 0, n = 0;
+        points.forEach(p => {
+          const blueMid = p.mid != null ? p.mid : (p.buy + p.sell) / 2;
+          const offMid = p.official_mid != null ? p.official_mid : (p.official_buy + p.official_sell) / 2;
+          if (Number.isFinite(blueMid) && Number.isFinite(offMid) && offMid > 0) {
+            sumBob += blueMid - offMid;
+            sumPct += ((blueMid - offMid) / offMid) * 100;
+            n++;
+          }
+        });
+        if (n > 0) setAvgSpread({ bob: sumBob / n, pct: sumPct / n });
+      } catch (e) { /* ignore */ }
+    };
+    loadSpread();
+  }, []);
+
   const breadcrumbs = [
     { name: language === 'es' ? 'Inicio' : 'Home', url: '/' },
-    { name: language === 'es' ? 'Comparación' : 'Comparison', url: '/comparison' }
+    { name: language === 'es' ? 'Comparación' : 'Comparison', url: '/comparacion' }
   ];
+
+  const hasOfficial = currentRate && currentRate.official_buy != null && currentRate.official_sell != null;
+  const blueMid = currentRate && (currentRate.mid != null ? currentRate.mid : (currentRate.buy + currentRate.sell) / 2);
+  const officialMid = hasOfficial && (currentRate.official_mid != null ? currentRate.official_mid : (currentRate.official_buy + currentRate.official_sell) / 2);
+  const spreadBob = (blueMid != null && officialMid != null) ? blueMid - officialMid : null;
+  const spreadPct = (spreadBob != null && officialMid > 0) ? (spreadBob / officialMid) * 100 : null;
+
+  const faqItems = [
+    { q: language === 'es' ? '¿Qué es el tipo de cambio oficial en Bolivia?' : 'What is the official exchange rate in Bolivia?', a: language === 'es' ? 'El tipo de cambio oficial lo fija el Banco Central de Bolivia (BCB) y es el que usan los bancos para operaciones reguladas. Suele ser fijo o con ajustes poco frecuentes.' : 'The official rate is set by the Central Bank of Bolivia (BCB) and is used by banks for regulated operations. It is usually fixed or adjusted infrequently.' },
+    { q: language === 'es' ? '¿Qué es el dólar blue?' : 'What is the blue dollar?', a: language === 'es' ? 'El dólar blue es el tipo de cambio del mercado paralelo: el precio al que se compra y vende el dólar fuera del sistema bancario oficial (por ejemplo en plataformas P2P como Binance). Refleja la oferta y la demanda real.' : 'The blue dollar is the parallel market exchange rate: the price at which the dollar is bought and sold outside the official banking system (e.g. on P2P platforms like Binance). It reflects real supply and demand.' },
+    { q: language === 'es' ? '¿Por qué hay diferencia entre el blue y el oficial?' : 'Why is there a difference between blue and official?', a: language === 'es' ? 'El oficial lo fija el BCB; el blue lo determina el mercado. Cuando hay restricciones o escasez de dólares en el sistema formal, el blue suele subir por encima del oficial. La diferencia en BOB y en % varía con el tiempo.' : 'The official rate is set by the BCB; the blue is set by the market. When there are restrictions or dollar scarcity in the formal system, the blue often rises above the official rate. The difference in BOB and % varies over time.' }
+  ];
+  const webPageSchema = getWebPage({ name: language === 'es' ? 'Dólar blue vs oficial Bolivia | Comparación' : 'Blue dollar vs official Bolivia | Comparison', description: language === 'es' ? 'Comparación dólar blue y tipo de cambio oficial en Bolivia. Diferencia en BOB y %.' : 'Compare blue dollar and official exchange rate in Bolivia. Difference in BOB and %.', url: '/comparacion', inLanguage: language === 'es' ? 'es-BO' : 'en-US' });
+  const breadcrumbSchema = getBreadcrumbList(breadcrumbs);
+  const faqSchema = getFAQPage(faqItems.map(({ q, a }) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })));
 
   const comparisonData = [
     {
@@ -110,23 +150,16 @@ function Comparison() {
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
         title={language === 'es'
-          ? 'boliviablue.com vs bolivianblue.net - Comparación Completa | Bolivia Blue con Paz'
-          : 'boliviablue.com vs bolivianblue.net - Complete Comparison | Bolivia Blue with Paz'}
+          ? 'Dólar blue vs oficial Bolivia | Diferencia y comparación'
+          : 'Blue dollar vs official Bolivia | Difference and comparison'}
         description={language === 'es'
-          ? 'Comparación detallada entre boliviablue.com y bolivianblue.net. Descubre por qué boliviablue.com es la mejor opción para el tipo de cambio del dólar blue en Bolivia.'
-          : 'Detailed comparison between boliviablue.com and bolivianblue.net. Discover why boliviablue.com is the best choice for Bolivia blue dollar exchange rate.'}
+          ? 'Comparación dólar blue y tipo de cambio oficial en Bolivia. Diferencia en BOB y %. Qué es cada uno, por qué difieren y cómo no confundirlos.'
+          : 'Compare blue dollar and official exchange rate in Bolivia. Difference in BOB and %. What each is, why they differ, and how not to confuse them.'}
         keywords={language === 'es'
-          ? 'boliviablue.com vs bolivianblue.net, mejor sitio dólar blue bolivia, comparación tipo cambio bolivia, mejor que bolivianblue.net, bolivia blue rate comparación'
-          : 'boliviablue.com vs bolivianblue.net, best bolivia blue dollar site, bolivia exchange rate comparison, better than bolivianblue.net, bolivia blue rate comparison'}
+          ? 'dólar blue vs oficial Bolivia, diferencia dólar blue y oficial, tipo cambio paralelo vs oficial Bolivia, blue dollar vs official'
+          : 'blue dollar vs official Bolivia, difference blue and official rate, parallel vs official exchange rate Bolivia'}
         canonical="/comparacion"
-        structuredData={{
-          "@context": "https://schema.org",
-          "@type": "ComparisonPage",
-          "name": language === 'es' ? "Comparación: boliviablue.com vs bolivianblue.net" : "Comparison: boliviablue.com vs bolivianblue.net",
-          "description": language === 'es'
-            ? "Comparación detallada de plataformas de tipo de cambio del dólar blue en Bolivia"
-            : "Detailed comparison of Bolivia blue dollar exchange rate platforms"
-        }}
+        structuredData={[webPageSchema, breadcrumbSchema, faqSchema]}
       />
       
       {/* Header */}
@@ -139,28 +172,120 @@ function Comparison() {
 
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-2 text-center">
           {language === 'es'
-            ? 'boliviablue.com vs bolivianblue.net'
-            : 'boliviablue.com vs bolivianblue.net'}
+            ? 'Dólar blue vs tipo de cambio oficial'
+            : 'Blue dollar vs official exchange rate'}
         </h1>
-        <p className="text-center text-lg text-gray-600 dark:text-gray-400 mb-8">
+        <p className="text-center text-lg text-gray-600 dark:text-gray-400 mb-6 max-w-2xl mx-auto">
           {language === 'es'
-            ? 'Comparación completa: ¿Cuál es la mejor plataforma para el tipo de cambio del dólar blue en Bolivia?'
-            : 'Complete comparison: Which is the best platform for Bolivia blue dollar exchange rate?'}
+            ? 'Comparación entre el dólar blue (mercado paralelo) y el tipo de cambio oficial del Banco Central de Bolivia. Diferencia actual en BOB y en porcentaje.'
+            : 'Comparison between the blue dollar (parallel market) and the official exchange rate of the Central Bank of Bolivia. Current difference in BOB and percentage.'}
         </p>
+
+        {/* Blue vs official – current metrics */}
+        <section className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 sm:p-8 mb-8" aria-labelledby="blue-vs-oficial-heading">
+          <h2 id="blue-vs-oficial-heading" className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+            {language === 'es' ? 'Cotización actual: blue vs oficial' : 'Current quote: blue vs official'}
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">{language === 'es' ? 'Dólar blue (compra/venta)' : 'Blue dollar (buy/sell)'}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                {currentRate ? `${Number(currentRate.buy).toFixed(2)} / ${Number(currentRate.sell).toFixed(2)} BOB` : '—'}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{language === 'es' ? 'Fuente: Binance P2P' : 'Source: Binance P2P'}</p>
+            </div>
+            <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-4">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">{language === 'es' ? 'Tipo oficial (compra/venta)' : 'Official rate (buy/sell)'}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                {hasOfficial ? `${Number(currentRate.official_buy).toFixed(2)} / ${Number(currentRate.official_sell).toFixed(2)} BOB` : '—'}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{language === 'es' ? 'Fuente: BCB' : 'Source: BCB'}</p>
+            </div>
+            <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-4">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">{language === 'es' ? 'Diferencia (mid)' : 'Difference (mid)'}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                {spreadBob != null ? `${spreadBob >= 0 ? '+' : ''}${spreadBob.toFixed(2)} BOB` : '—'}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{language === 'es' ? 'Blue medio − oficial medio' : 'Blue mid − official mid'}</p>
+            </div>
+            <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-4">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">{language === 'es' ? 'Diferencia (%)' : 'Difference (%)'}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                {spreadPct != null ? `${spreadPct >= 0 ? '+' : ''}${spreadPct.toFixed(1)}%` : '—'}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{language === 'es' ? 'Sobre el tipo oficial' : 'Over official rate'}</p>
+            </div>
+          </div>
+          {avgSpread != null && (
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              {language === 'es'
+                ? `Promedio de la última semana: ${avgSpread.bob.toFixed(2)} BOB (${avgSpread.pct >= 0 ? '+' : ''}${avgSpread.pct.toFixed(1)}%). `
+                : `Last 7 days average: ${avgSpread.bob.toFixed(2)} BOB (${avgSpread.pct >= 0 ? '+' : ''}${avgSpread.pct.toFixed(1)}%). `}
+              <Link to="/datos-historicos" className="text-blue-600 dark:text-blue-400 hover:underline">{language === 'es' ? 'Ver datos históricos' : 'View historical data'}</Link>
+            </p>
+          )}
+        </section>
+
+        {/* What is being compared – short explanation */}
+        <section className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-6 mb-8">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-3">
+            {language === 'es' ? 'Qué se compara y por qué importa' : 'What is compared and why it matters'}
+          </h2>
+          <p className="text-gray-700 dark:text-gray-300 mb-2">
+            {language === 'es'
+              ? 'El tipo oficial lo fija el Banco Central de Bolivia y lo usan los bancos. El dólar blue es el precio en el mercado paralelo (P2P) y refleja la oferta y demanda real. No deben confundirse: muchas operaciones (remesas, importadores, casas de cambio) usan el blue como referencia.'
+              : 'The official rate is set by the Central Bank of Bolivia and used by banks. The blue dollar is the price in the parallel (P2P) market and reflects real supply and demand. They should not be confused: many operations (remittances, importers, exchange houses) use the blue as reference.'}
+          </p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            {language === 'es' ? 'Metodología: ' : 'Methodology: '}
+            <Link to="/fuente-de-datos" className="text-blue-600 dark:text-blue-400 hover:underline">{language === 'es' ? 'Fuente de datos' : 'Data source'}</Link>
+            {language === 'es' ? ', ' : ', '}
+            <Link to="/que-es-dolar-blue" className="text-blue-600 dark:text-blue-400 hover:underline">{language === 'es' ? 'qué es el dólar blue' : 'what is the blue dollar'}</Link>.
+          </p>
+        </section>
 
         {/* Current Rate Cards */}
         <section>
           <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} />
         </section>
 
-        {/* Comparison Table */}
+        {/* FAQ – blue vs official */}
+        <section className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 sm:p-8 mb-8" id="faq">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+            {language === 'es' ? 'Preguntas frecuentes: blue vs oficial' : 'FAQ: blue vs official'}
+          </h2>
+          <div className="space-y-4">
+            {faqItems.map(({ q, a }, i) => (
+              <div key={i}>
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-1">{q}</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">{a}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Related links */}
+        <section className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 mb-8">
+          <h2 className="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-3">
+            {language === 'es' ? 'Enlaces relacionados' : 'Related links'}
+          </h2>
+          <div className="flex flex-wrap gap-3">
+            <Link to="/" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">{language === 'es' ? 'Cotización actual' : 'Current rate'}</Link>
+            <Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">{language === 'es' ? 'Dólar blue hoy' : 'Blue dollar today'}</Link>
+            <Link to="/datos-historicos" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">{language === 'es' ? 'Datos históricos' : 'Historical data'}</Link>
+            <Link to="/fuente-de-datos" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">{language === 'es' ? 'Metodología y fuente' : 'Methodology & source'}</Link>
+            <Link to="/que-es-dolar-blue" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">{language === 'es' ? '¿Qué es el dólar blue?' : 'What is the blue dollar?'}</Link>
+          </div>
+        </section>
+
+        {/* Comparison Table – boliviablue vs bolivianblue */}
         <section className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 sm:p-8 overflow-x-auto">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-              {language === 'es' ? 'Comparación Detallada' : 'Detailed Comparison'}
+              {language === 'es' ? 'boliviablue.com vs bolivianblue.net' : 'boliviablue.com vs bolivianblue.net'}
             </h2>
             <span className="text-xs text-gray-500 dark:text-gray-400">
-              {language === 'es' ? 'Última actualización:' : 'Last updated:'} {lastUpdated.toLocaleDateString(language === 'es' ? 'es-BO' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+              {language === 'es' ? 'Datos:' : 'Data:'} {currentRate?.updated_at_iso ? new Date(currentRate.updated_at_iso).toLocaleString(language === 'es' ? 'es-BO' : 'en-US', { dateStyle: 'short', timeStyle: 'short' }) : lastUpdated.toLocaleDateString(language === 'es' ? 'es-BO' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
             </span>
           </div>
           
@@ -669,15 +794,8 @@ function Comparison() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <span>
-              {language === 'es' ? 'Última actualización: ' : 'Last updated: '}
-              {new Date().toLocaleString(language === 'es' ? 'es-BO' : 'en-US', { 
-                day: 'numeric', 
-                month: 'long', 
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                timeZone: 'America/La_Paz'
-              })}
+              {language === 'es' ? 'Cotización: ' : 'Quote: '}
+              {currentRate?.updated_at_iso ? new Date(currentRate.updated_at_iso).toLocaleString(language === 'es' ? 'es-BO' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : (language === 'es' ? 'Cargando…' : 'Loading…')}
             </span>
           </div>
         </div>

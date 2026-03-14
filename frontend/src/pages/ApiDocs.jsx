@@ -111,6 +111,32 @@ function ApiDocs() {
     },
     {
       method: 'GET',
+      path: '/api/historical-data.csv',
+      description: language === 'es'
+        ? 'Descarga datos históricos del dólar blue en CSV (URL estable, cacheable)'
+        : 'Download historical blue dollar data as CSV (stable URL, cacheable)',
+      parameters: [
+        { name: 'range', type: 'string', required: false, options: ['30d', '90d', '1y', 'all'], description: language === 'es' ? '30d (default), 90d, 1y, all' : '30d (default), 90d, 1y, all' },
+        { name: 'limit', type: 'number', required: false, description: language === 'es' ? 'Máximo de filas (cap 50000)' : 'Max rows (cap 50000)' }
+      ],
+      response: 'text/csv with columns: timestamp,buy,sell,mid,official_buy,official_sell,official_mid',
+      example: { url: 'https://boliviablue.com/api/historical-data.csv?range=30d' }
+    },
+    {
+      method: 'GET',
+      path: '/api/historical-data.json',
+      description: language === 'es'
+        ? 'Descarga datos históricos del dólar blue en JSON con metadatos y atribución'
+        : 'Download historical blue dollar data as JSON with metadata and attribution',
+      parameters: [
+        { name: 'range', type: 'string', required: false, options: ['30d', '90d', '1y', 'all'], description: language === 'es' ? '30d (default), 90d, 1y, all' : '30d (default), 90d, 1y, all' },
+        { name: 'limit', type: 'number', required: false, description: language === 'es' ? 'Máximo de filas (cap 50000)' : 'Max rows (cap 50000)' }
+      ],
+      response: 'JSON: { metadata: { source, attribution, range_requested, rows_returned, generated_at }, data: [...] }',
+      example: { url: 'https://boliviablue.com/api/historical-data.json?range=30d' }
+    },
+    {
+      method: 'GET',
       path: '/api/news',
       description: language === 'es'
         ? 'Obtiene las últimas noticias financieras relacionadas con el dólar blue en Bolivia'

@@ -7,7 +7,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { trackRateCardView, trackOfficialRateToggle, trackRateUpdate } from '../utils/analytics';
 
-const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, isLoading, error, dailyChange, isOfficial, currency, language }) {
+const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, isLoading, error, dailyChange, isOfficial, currency, language, showTimestampInCards = true }) {
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const isBuy = type === 'buy';
@@ -109,7 +109,7 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
         </div>
       </motion.div>
       
-      {timestamp && (
+      {showTimestampInCards && timestamp && (
         <div className="text-xs text-gray-600 dark:text-gray-400 mt-2 font-medium">
           {t('updated')}: {formatDateTime(timestamp)}
         </div>
@@ -118,7 +118,7 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
   );
 });
 
-function BlueRateCards({ showOfficial = false, setShowOfficial }) {
+function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInCards = true }) {
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
@@ -296,6 +296,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial }) {
               dailyChange={buyChange}
               currency={currency}
               language={language}
+              showTimestampInCards={showTimestampInCards}
             />
             <RateCard
               type="sell"
@@ -307,6 +308,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial }) {
               dailyChange={sellChange}
               currency={currency}
               language={language}
+              showTimestampInCards={showTimestampInCards}
             />
           </div>
         </div>
@@ -324,6 +326,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial }) {
               isOfficial={true}
               currency={currency}
               language={language}
+              showTimestampInCards={showTimestampInCards}
             />
             <RateCard
               type="sell"
@@ -335,6 +338,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial }) {
               isOfficial={true}
               currency={currency}
               language={language}
+              showTimestampInCards={showTimestampInCards}
             />
           </div>
         </div>

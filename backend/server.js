@@ -341,6 +341,139 @@ app.get('/api/blue-history', async (req, res) => {
   }
 });
 
+// --- Public historical data export (bounded, cacheable) ---
+const EXPORT_MAX_ROWS = 50000;
+const EXPORT_DEFAULT_RANGE = '30d';
+const EXPORT_CACHE_MAX_AGE = 300; // 5 minutes
+
+/**
+ * Parse range query and fetch rates for export. Returns { rows, range, startDate }.
+ * Supported range: 30d, 90d, 1y, all. Enforces EXPORT_MAX_ROWS cap.
+ */
+async function getHistoricalExportRows(rangeParam, limitParam) {
+  const range = (rangeParam || EXPORT_DEFAULT_RANGE).toLowerCase();
+  const maxRows = Math.min(
+    Math.max(1, parseInt(limitParam, 10) || EXPORT_MAX_ROWS),
+    EXPORT_MAX_ROWS
+  );
+
+  let startDate;
+  let rows;
+
+  switch (range) {
+    case '30d':
+      startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      rows = await getRatesInRange(startDate);
+      break;
+    case '90d':
+      startDate = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
+      rows = await getRatesInRange(startDate);
+      break;
+    case '1y':
+      startDate = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString();
+      rows = await getRatesInRange(startDate);
+      break;
+    case 'all':
+      rows = await getAllRates();
+      break;
+    default:
+      throw new Error(`Invalid range. Use: 30d, 90d, 1y, all`);
+  }
+
+  if (!rows || rows.length === 0) {
+    return { rows: [], range, startDate: startDate || null };
+  }
+
+  // Enforce cap: keep most recent rows (ascending order, so last N)
+  const capped = rows.length > maxRows ? rows.slice(-maxRows) : rows;
+  return { rows: capped, range, startDate: startDate || null };
+}
+
+/**
+ * GET /api/historical-data.csv
+ * Query: range=30d|90d|1y|all (default 30d), limit= (max rows, cap 50000)
+ * Columns: timestamp,buy,sell,mid,official_buy,official_sell,official_mid
+ */
+app.get('/api/historical-data.csv', async (req, res) => {
+  try {
+    const { rows, range } = await getHistoricalExportRows(req.query.range, req.query.limit);
+
+    const BOM = '\uFEFF';
+    const header = 'timestamp,buy,sell,mid,official_buy,official_sell,official_mid';
+    const csvLines = rows.map(row => {
+      const t = row.t ? new Date(row.t).toISOString() : '';
+      const buy = row.buy != null ? row.buy : '';
+      const sell = row.sell != null ? row.sell : '';
+      const mid = row.mid != null ? row.mid : '';
+      const ob = row.official_buy != null ? row.official_buy : '';
+      const os = row.official_sell != null ? row.official_sell : '';
+      const om = row.official_mid != null ? row.official_mid : '';
+      return `${t},${buy},${sell},${mid},${ob},${os},${om}`;
+    });
+    const body = BOM + header + '\n' + csvLines.join('\n');
+
+    res.set({
+      'Content-Type': 'text/csv; charset=utf-8',
+      'Content-Disposition': `attachment; filename="bolivia-blue-historical-${range}.csv"`,
+      'Cache-Control': `public, max-age=${EXPORT_CACHE_MAX_AGE}`,
+      'Access-Control-Allow-Origin': '*'
+    });
+    res.send(body);
+  } catch (error) {
+    if (error.message && error.message.startsWith('Invalid range')) {
+      return res.status(400).json({ error: error.message });
+    }
+    console.error('Error exporting historical CSV:', error);
+    res.status(500).json({ error: 'Internal server error', message: error.message });
+  }
+});
+
+/**
+ * GET /api/historical-data.json
+ * Query: range=30d|90d|1y|all (default 30d), limit= (max rows, cap 50000)
+ */
+app.get('/api/historical-data.json', async (req, res) => {
+  try {
+    const { rows, range, startDate } = await getHistoricalExportRows(req.query.range, req.query.limit);
+
+    const data = rows.map(row => ({
+      timestamp: row.t,
+      buy: row.buy,
+      sell: row.sell,
+      mid: row.mid,
+      official_buy: row.official_buy,
+      official_sell: row.official_sell,
+      official_mid: row.official_mid
+    }));
+
+    const payload = {
+      metadata: {
+        source: 'Bolivia Blue con Paz',
+        attribution: 'https://boliviablue.com',
+        range_requested: range,
+        rows_returned: data.length,
+        generated_at: new Date().toISOString(),
+        fields: ['timestamp', 'buy', 'sell', 'mid', 'official_buy', 'official_sell', 'official_mid']
+      },
+      data
+    };
+    if (startDate) payload.metadata.start_date = startDate;
+
+    res.set({
+      'Content-Type': 'application/json; charset=utf-8',
+      'Cache-Control': `public, max-age=${EXPORT_CACHE_MAX_AGE}`,
+      'Access-Control-Allow-Origin': '*'
+    });
+    res.json(payload);
+  } catch (error) {
+    if (error.message && error.message.startsWith('Invalid range')) {
+      return res.status(400).json({ error: error.message });
+    }
+    console.error('Error exporting historical JSON:', error);
+    res.status(500).json({ error: 'Internal server error', message: error.message });
+  }
+});
+
 /**
  * Get recent news headlines
  */

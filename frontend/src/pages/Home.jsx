@@ -384,7 +384,7 @@ function Home() {
               {language === 'es' ? 'Datos actualizados' : 'Data updated'}: {formatDateTime(currentRate.updated_at_iso, language === 'es' ? 'es-BO' : 'en-US')}
             </p>
           )}
-          <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} />
+          <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} showTimestampInCards={false} />
         </section>
 
         {/* Combined Sentiment + News Card */}
@@ -862,9 +862,11 @@ function Home() {
               <h2 className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-white">
                 {language === 'es' ? '¿Qué es el Bolivia Blue Rate?' : 'What is Bolivia Blue Rate?'}
               </h2>
+              {currentRate?.updated_at_iso && (
               <span className="text-xs text-gray-500 dark:text-gray-400">
-                {language === 'es' ? 'Última actualización:' : 'Last updated:'} {new Date().toLocaleDateString(language === 'es' ? 'es-BO' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                {language === 'es' ? 'Datos:' : 'Data:'} {formatDateTime(currentRate.updated_at_iso, language === 'es' ? 'es-BO' : 'en-US')}
               </span>
+            )}
             </div>
             <div className="prose prose-lg dark:prose-invert max-w-none">
               <p className="text-gray-700 dark:text-gray-300 mb-4">

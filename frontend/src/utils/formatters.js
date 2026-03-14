@@ -101,11 +101,14 @@ export function formatTimeAgo(isoString) {
 
 /**
  * Format ISO timestamp to La Paz timezone
+ * @param {string} isoString - ISO 8601 timestamp
+ * @param {string} [locale='es-BO'] - BCP 47 locale (e.g. 'es-BO', 'en-US') for localization
  */
-export function formatDateTime(isoString) {
+export function formatDateTime(isoString, locale = 'es-BO') {
+  if (!isoString) return '';
   const date = new Date(isoString);
-  
-  return date.toLocaleString('es-BO', {
+
+  return date.toLocaleString(locale, {
     timeZone: 'America/La_Paz',
     year: 'numeric',
     month: 'short',

@@ -8,6 +8,7 @@ import Breadcrumbs from '../components/Breadcrumbs';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import { Link } from 'react-router-dom';
 import { fetchBlueHistory } from '../utils/api';
+import { getDataset, getWebPage, getBreadcrumbList } from '../utils/seoSchema';
 
 function DatosHistoricos() {
   // Signal to AdSense that this page has sufficient content
@@ -39,34 +40,33 @@ function DatosHistoricos() {
     { name: language === 'es' ? 'Datos Históricos' : 'Historical Data', url: '/datos-historicos' }
   ];
 
-  // Dataset schema for structured data
-  const datasetSchema = {
-    "@context": "https://schema.org",
-    "@type": "Dataset",
-    "name": language === 'es' 
-      ? "Datos Históricos del Dólar Blue en Bolivia"
-      : "Historical Data of Blue Dollar in Bolivia",
-    "description": language === 'es'
-      ? "Archivo completo de datos históricos del tipo de cambio del dólar blue en Bolivia. Incluye promedios mensuales, máximos, mínimos y tendencias desde 2024."
-      : "Complete archive of historical data on the blue dollar exchange rate in Bolivia. Includes monthly averages, highs, lows and trends since 2024.",
-    "url": "https://boliviablue.com/datos-historicos",
-    "keywords": language === 'es'
-      ? "dólar blue bolivia histórico, datos históricos dólar blue, tipo cambio histórico bolivia, estadísticas dólar blue"
-      : "blue dollar bolivia historical, historical blue dollar data, bolivia exchange rate history, blue dollar statistics",
-    "creator": {
-      "@type": "Organization",
-      "name": "Bolivia Blue con Paz",
-      "url": "https://boliviablue.com"
-    },
-    "datePublished": "2024-01-01",
-    "dateModified": new Date().toISOString().split('T')[0],
-    "license": "https://creativecommons.org/licenses/by/4.0/",
-    "distribution": {
-      "@type": "DataDownload",
-      "encodingFormat": "CSV",
-      "contentUrl": "https://boliviablue.com/api/historical-data.csv"
-    }
-  };
+  const datasetSchema = getDataset({
+    name: language === 'es' ? 'Datos Históricos del Dólar Blue en Bolivia' : 'Historical Data of Blue Dollar in Bolivia',
+    description: language === 'es'
+      ? 'Archivo completo de datos históricos del tipo de cambio del dólar blue en Bolivia. Incluye compra, venta, promedios y tendencias desde 2024. La cotización en vivo se actualiza cada 15 minutos; este archivo recopila esos datos.'
+      : 'Complete archive of historical blue dollar exchange rate data in Bolivia. Includes buy, sell, averages and trends since 2024. Live quote updates every 15 minutes; this archive collects that data.',
+    url: '/datos-historicos',
+    datePublished: '2024-01-01',
+    dateModified: new Date().toISOString().split('T')[0],
+    inLanguage: language === 'es' ? 'es-BO' : 'en-US',
+    updateFrequency: language === 'es' ? 'Actualización cada 15 minutos (fuente en vivo)' : 'Updates every 15 minutes (live source)',
+    temporalCoverage: '2024-01-01/..',
+    variableMeasured: { '@type': 'PropertyValue', name: language === 'es' ? 'Tipo de cambio USD/BOB (dólar blue)' : 'USD/BOB exchange rate (blue dollar)' },
+    creator: { '@type': 'Organization', name: 'Bolivia Blue con Paz', url: 'https://boliviablue.com' }
+  });
+
+  const webPageSchema = getWebPage({
+    name: language === 'es' ? 'Datos Históricos del Dólar Blue' : 'Historical Blue Dollar Data',
+    description: language === 'es' ? 'Archivo de cotizaciones pasadas para analizar tendencias. Datos desde 2024; la fuente se actualiza cada 15 min.' : 'Archive of past quotes to analyze trends. Data from 2024; source updates every 15 min.',
+    url: '/datos-historicos',
+    dateModified: new Date().toISOString().split('T')[0],
+    inLanguage: language === 'es' ? 'es-BO' : 'en-US'
+  });
+
+  const breadcrumbSchema = getBreadcrumbList([
+    { name: language === 'es' ? 'Inicio' : 'Home', url: '/' },
+    { name: language === 'es' ? 'Datos Históricos' : 'Historical Data', url: '/datos-historicos' }
+  ]);
 
   // Calculate statistics
   const calculateStats = () => {
@@ -90,16 +90,16 @@ function DatosHistoricos() {
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
         title={language === 'es' 
-          ? 'Datos Históricos del Dólar Blue Bolivia | Archivo Completo 2024-2025'
-          : 'Historical Data of Blue Dollar Bolivia | Complete Archive 2024-2025'}
+          ? 'Datos Históricos Dólar Blue Bolivia | Archivo 2024-2025'
+          : 'Blue Dollar Bolivia Historical Data | Archive 2024-2025'}
         description={language === 'es'
-          ? 'Archivo completo de datos históricos del dólar blue en Bolivia. Promedios mensuales, máximos, mínimos, tendencias y análisis desde 2024. Datos disponibles para descarga.'
-          : 'Complete archive of historical blue dollar data in Bolivia. Monthly averages, highs, lows, trends and analysis since 2024. Data available for download.'}
+          ? 'Archivo de datos históricos del dólar blue en Bolivia. Promedios, máximos, mínimos y tendencias desde 2024. Descarga disponible.'
+          : 'Historical blue dollar data archive in Bolivia. Averages, highs, lows and trends since 2024. Download available.'}
         keywords={language === 'es'
           ? 'dólar blue bolivia histórico, datos históricos dólar blue, tipo cambio histórico bolivia, estadísticas dólar blue, promedio mensual dólar blue, máximo mínimo dólar blue bolivia'
           : 'blue dollar bolivia historical, historical blue dollar data, bolivia exchange rate history, blue dollar statistics, monthly average blue dollar, high low blue dollar bolivia'}
         canonical="/datos-historicos"
-        structuredData={[datasetSchema]}
+        structuredData={[webPageSchema, breadcrumbSchema, datasetSchema]}
       />
 
       <Header />
@@ -115,10 +115,18 @@ function DatosHistoricos() {
               ? '📊 Datos Históricos del Dólar Blue'
               : '📊 Historical Blue Dollar Data'}
           </h1>
+          <p className="text-base font-medium text-gray-600 dark:text-gray-400 mb-2">
+            {language === 'es' ? 'Archivo de cotizaciones pasadas para analizar tendencias.' : 'Archive of past quotes to analyze trends.'}
+          </p>
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
             {language === 'es'
-              ? 'Archivo completo de datos históricos del tipo de cambio del dólar blue en Bolivia. Analiza tendencias, promedios mensuales y estadísticas desde 2024.'
-              : 'Complete archive of historical data on the blue dollar exchange rate in Bolivia. Analyze trends, monthly averages and statistics since 2024.'}
+              ? 'Aquí puedes ver y analizar el histórico del tipo de cambio del dólar blue en Bolivia: tendencias, promedios y estadísticas desde 2024.'
+              : 'View and analyze the history of the blue dollar exchange rate in Bolivia: trends, averages and statistics since 2024.'}
+          </p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 max-w-2xl mx-auto mt-2">
+            {language === 'es'
+              ? 'El gráfico y la tabla muestran compra/venta y promedio por período. Los datos provienen de la misma fuente que la cotización en vivo (actualización cada 15 min).'
+              : 'The chart and table show buy/sell and average by period. Data comes from the same source as the live quote (updated every 15 min).'}
           </p>
         </div>
 
@@ -164,6 +172,27 @@ function DatosHistoricos() {
             </div>
           </div>
         )}
+
+        {/* Related Links - short, above main content */}
+        <section className="mb-8">
+          <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
+            {language === 'es' ? 'También en esta web' : 'More on this site'}
+          </h2>
+          <div className="flex flex-wrap gap-3">
+            <Link to="/" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+              {language === 'es' ? 'Cotización actual' : 'Current quote'}
+            </Link>
+            <Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+              {language === 'es' ? 'Dólar blue hoy' : 'Blue dollar today'}
+            </Link>
+            <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+              {language === 'es' ? 'Calculadora de divisas' : 'Currency calculator'}
+            </Link>
+            <Link to="/que-es-dolar-blue" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+              {language === 'es' ? '¿Qué es el dólar blue?' : 'What is the blue dollar?'}
+            </Link>
+          </div>
+        </section>
 
         {/* Time Range Selector */}
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8">

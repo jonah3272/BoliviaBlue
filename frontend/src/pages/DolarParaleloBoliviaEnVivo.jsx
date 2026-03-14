@@ -7,7 +7,10 @@ import PageMeta from '../components/PageMeta';
 import { SocialShare } from '../components/SocialShare';
 import { useLanguage } from '../contexts/LanguageContext';
 import { fetchBlueRate } from '../utils/api';
-import { useAdsenseReady } from '../hooks/useAdsenseReady';
+import { formatDateTime } from '../utils/formatters';
+import { getWebPage, getBreadcrumbList } from '../utils/seoSchema';
+import { Link } from 'react-router-dom';
+import { useAdsenseReadyWhen } from '../hooks/useAdsenseReady';
 
 /**
  * DolarParaleloBoliviaEnVivo Component
@@ -49,34 +52,38 @@ function DolarParaleloBoliviaEnVivo() {
     }
   };
 
-  // Structured data for this specific page
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "WebPage",
-    "name": "Dólar Paralelo Bolivia EN VIVO",
-    "description": "Cotización del dólar paralelo en Bolivia actualizado EN VIVO cada 15 minutos. La información más actualizada del mercado cambiario boliviano.",
-    "url": "https://boliviablue.com/dolar-paralelo-bolivia-en-vivo",
-    "mainEntity": {
-      "@type": "FinancialProduct",
-      "name": "Dólar Paralelo Bolivia",
-      "description": "Tipo de cambio del dólar paralelo en Bolivia",
-      "feesAndCommissionsSpecification": "Información gratuita actualizada cada 15 minutos"
-    },
-    "isPartOf": {
-      "@type": "WebSite",
-      "name": "Bolivia Blue con Paz",
-      "url": "https://boliviablue.com"
+  const rateDateModified = currentRate?.updated_at_iso ?? undefined;
+  const webPageSchema = getWebPage({
+    name: language === 'es' ? 'Dólar Paralelo Bolivia EN VIVO' : 'Bolivia Parallel Dollar LIVE',
+    description: language === 'es'
+      ? 'Cotización del dólar paralelo Bolivia EN VIVO. Actualizamos cada 15 minutos con datos de Binance P2P.'
+      : 'Bolivia parallel dollar LIVE. We update every 15 minutes with Binance P2P data.',
+    url: '/dolar-paralelo-bolivia-en-vivo',
+    dateModified: rateDateModified || undefined,
+    inLanguage: language === 'es' ? 'es-BO' : 'en-US',
+    mainEntity: {
+      '@type': 'FinancialProduct',
+      name: language === 'es' ? 'Dólar Paralelo Bolivia' : 'Bolivia Parallel Dollar',
+      description: language === 'es' ? 'Tipo de cambio del dólar paralelo en Bolivia' : 'Bolivia parallel dollar exchange rate'
     }
-  };
+  });
+  const breadcrumbSchema = getBreadcrumbList([
+    { name: language === 'es' ? 'Inicio' : 'Home', url: '/' },
+    { name: language === 'es' ? 'Dólar Paralelo Bolivia EN VIVO' : 'Bolivia Parallel Dollar LIVE', url: '/dolar-paralelo-bolivia-en-vivo' }
+  ]);
+  const structuredData = [webPageSchema, breadcrumbSchema];
 
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900">
       <PageMeta
-        title="🔴 Dólar Paralelo Bolivia EN VIVO | Actualizado Cada 15 Minutos"
-        description="Consulta el DÓLAR PARALELO BOLIVIA EN VIVO actualizado cada 15 minutos. Cotización en tiempo real del mercado cambiario boliviano. Más rápido y preciso que otros sitios."
-        keywords="dolar paralelo bolivia en vivo, dolar paralelo bolivia, tipo cambio bolivia en vivo, cotizacion dolar bolivia en vivo, bolivia blue en vivo, cambio dolar bolivia tiempo real, precio dolar paralelo bolivia, dolar negro bolivia en vivo"
+        title={language === 'es'
+          ? '🔴 Dólar Paralelo Bolivia EN VIVO | Cotización en Tiempo Real'
+          : '🔴 Bolivia Parallel Dollar LIVE | Real-Time Quote'}
+        description={language === 'es'
+          ? 'Dólar paralelo Bolivia EN VIVO. Cotización en tiempo real cada 15 min. Mercado cambiario boliviano. Ver precio ahora.'
+          : 'Bolivia parallel dollar LIVE. Real-time quote every 15 min. Exchange market. Check price now.'}
+        keywords="dolar blue en vivo, dolar paralelo bolivia en vivo, dolar blue bolivia en vivo, dolar paralelo bolivia, tipo cambio bolivia en vivo, cotizacion dolar blue bolivia, bolivia blue en vivo, precio dolar paralelo bolivia"
         canonical="/dolar-paralelo-bolivia-en-vivo"
-        noindex={true} // Temporarily noindex due to templated/query-based content
         structuredData={structuredData}
       />
 
@@ -91,7 +98,9 @@ function DolarParaleloBoliviaEnVivo() {
               EN VIVO
             </span>
             <span className="text-sm text-gray-600 dark:text-gray-300">
-              Actualizado: {lastUpdate.toLocaleTimeString('es-BO')}
+              {language === 'es' ? 'Actualizado' : 'Updated'}: {currentRate?.updated_at_iso
+                ? formatDateTime(currentRate.updated_at_iso, language === 'es' ? 'es-BO' : 'en-US')
+                : lastUpdate.toLocaleTimeString(language === 'es' ? 'es-BO' : 'en-US', { hour: '2-digit', minute: '2-digit' })}
             </span>
           </div>
           
@@ -103,8 +112,8 @@ function DolarParaleloBoliviaEnVivo() {
           
           <p className="text-lg sm:text-xl text-gray-700 dark:text-gray-200 mb-6">
             {language === 'es'
-              ? 'Cotización del dólar paralelo en Bolivia actualizada cada 15 minutos. La información más rápida y precisa del mercado cambiario boliviano.'
-              : 'Bolivia parallel dollar rate updated every 15 minutes. The fastest and most accurate information from the Bolivian exchange market.'}
+              ? 'Cotización del dólar paralelo Bolivia EN VIVO. Aquí ves la cotización en tiempo real; actualizamos cada 15 minutos con datos de Binance P2P.'
+              : 'Bolivia parallel dollar LIVE. Real-time quote here; we update every 15 minutes with Binance P2P data.'}
           </p>
 
           {/* Current Rate Display */}
@@ -142,11 +151,14 @@ function DolarParaleloBoliviaEnVivo() {
 
         {/* Historical Chart */}
         <section className="bg-white dark:bg-gray-800 rounded-xl p-6 sm:p-8 shadow-lg">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-6">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
             {language === 'es' 
               ? 'Evolución del Dólar Paralelo Bolivia'
               : 'Bolivia Parallel Dollar Evolution'}
           </h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            {language === 'es' ? 'Evolución del tipo de cambio en el tiempo.' : 'Exchange rate evolution over time.'}
+          </p>
           <BlueChart />
         </section>
 
@@ -198,6 +210,27 @@ function DolarParaleloBoliviaEnVivo() {
                   : 'Calculator, historical charts, trend analysis and price alerts. All in one place.'}
               </p>
             </div>
+          </div>
+        </section>
+
+        {/* Related Links */}
+        <section className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 sm:p-6">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-3">
+            {language === 'es' ? 'También te puede interesar' : 'You may also be interested in'}
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+            <Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+              {language === 'es' ? 'Dólar blue hoy' : 'Blue dollar today'}
+            </Link>
+            <Link to="/cuanto-esta-dolar-bolivia" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+              {language === 'es' ? '¿Cuánto está el dólar?' : 'How much is the dollar?'}
+            </Link>
+            <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+              {language === 'es' ? 'Calculadora de divisas' : 'Currency calculator'}
+            </Link>
+            <Link to="/que-es-dolar-blue" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+              {language === 'es' ? '¿Qué es el dólar blue?' : 'What is the blue dollar?'}
+            </Link>
           </div>
         </section>
 

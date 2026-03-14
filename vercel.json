@@ -8,6 +8,30 @@
       "destination": "https://boliviablue-production.up.railway.app/api/:path*"
     },
     {
+      "source": "/dolar-blue-hoy",
+      "destination": "/dolar-blue-hoy/index.html"
+    },
+    {
+      "source": "/dolar-paralelo-bolivia-en-vivo",
+      "destination": "/dolar-paralelo-bolivia-en-vivo/index.html"
+    },
+    {
+      "source": "/cuanto-esta-dolar-bolivia",
+      "destination": "/cuanto-esta-dolar-bolivia/index.html"
+    },
+    {
+      "source": "/bolivian-blue",
+      "destination": "/bolivian-blue/index.html"
+    },
+    {
+      "source": "/que-es-dolar-blue",
+      "destination": "/que-es-dolar-blue/index.html"
+    },
+    {
+      "source": "/datos-historicos",
+      "destination": "/datos-historicos/index.html"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

@@ -8,6 +8,8 @@ import BlueRateCards from '../components/BlueRateCards';
 import BinanceBanner from '../components/BinanceBanner';
 import { Link } from 'react-router-dom';
 import { fetchBlueRate } from '../utils/api';
+import { formatDateTime } from '../utils/formatters';
+import { getWebPage, getBreadcrumbList } from '../utils/seoSchema';
 import { lazy, Suspense } from 'react';
 const BlueChart = lazy(() => import('../components/BlueChart'));
 import Breadcrumbs from '../components/Breadcrumbs';
@@ -39,6 +41,7 @@ function CuantoEstaDolarBolivia() {
     return () => clearInterval(interval);
   }, []);
 
+  const rateDateModified = currentRate?.updated_at_iso ?? undefined;
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -48,21 +51,24 @@ function CuantoEstaDolarBolivia() {
     "description": language === 'es'
       ? "¿Cuánto está el dólar en Bolivia? Consulta el precio actual del dólar blue en Bolivia. Cotización en tiempo real actualizada cada 15 minutos. Gráficos históricos y calculadora gratuita."
       : "How much is the dollar in Bolivia? Check the current blue dollar price in Bolivia. Real-time quote updated every 15 minutes. Historical charts and free calculator.",
-    "author": {
-      "@type": "Organization",
-      "name": "Bolivia Blue con Paz"
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": "Bolivia Blue con Paz",
-      "logo": {
-        "@type": "ImageObject",
-        "url": "https://boliviablue.com/favicon.svg"
-      }
-    },
+    "author": { "@type": "Organization", "name": "Bolivia Blue con Paz" },
+    "publisher": { "@type": "Organization", "name": "Bolivia Blue con Paz", "logo": { "@type": "ImageObject", "url": "https://boliviablue.com/favicon.svg" } },
     "datePublished": "2025-01-01",
-    "dateModified": new Date().toISOString().split('T')[0]
+    ...(rateDateModified && { "dateModified": rateDateModified })
   };
+
+  const webPageSchema = getWebPage({
+    name: language === 'es' ? '¿Cuánto Está el Dólar en Bolivia?' : 'How Much is the Dollar in Bolivia?',
+    description: language === 'es' ? 'Respuesta directa: el precio actual del dólar blue está abajo; usa la calculadora para cualquier monto.' : 'Direct answer: the current blue dollar price is below; use the calculator for any amount.',
+    url: '/cuanto-esta-dolar-bolivia',
+    dateModified: rateDateModified,
+    inLanguage: language === 'es' ? 'es-BO' : 'en-US'
+  });
+
+  const breadcrumbSchema = getBreadcrumbList([
+    { name: language === 'es' ? 'Inicio' : 'Home', url: '/' },
+    { name: language === 'es' ? '¿Cuánto Está el Dólar?' : 'How Much is the Dollar?', url: '/cuanto-esta-dolar-bolivia' }
+  ]);
 
   const faqSchema = {
     "@context": "https://schema.org",
@@ -124,17 +130,16 @@ function CuantoEstaDolarBolivia() {
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
         title={language === 'es'
-          ? '¿Cuánto Está el Dólar en Bolivia? Precio Actual 2025 | Actualizado Cada 15 Min'
-          : 'How Much is the Dollar in Bolivia? Current Price 2025 | Updated Every 15 Min'}
+          ? '¿Cuánto Está el Dólar en Bolivia? Precio Actual 2025'
+          : 'How Much is the Dollar in Bolivia? Current Price 2025'}
         description={language === 'es'
-          ? '¿Cuánto está el dólar en Bolivia? Consulta el precio actual del dólar blue en Bolivia. Cotización en tiempo real actualizada cada 15 minutos. Gráficos históricos y calculadora gratuita. Gratis y sin registro.'
-          : 'How much is the dollar in Bolivia? Check the current blue dollar price in Bolivia. Real-time quote updated every 15 minutes. Historical charts and free calculator. Free and no registration required.'}
+          ? '¿Cuánto está el dólar en Bolivia? Precio actual del dólar blue. Cotización cada 15 min. Gráficos históricos y calculadora. Gratis.'
+          : 'How much is the dollar in Bolivia? Current blue dollar price. Quote every 15 min. Historical charts and calculator. Free.'}
         keywords={language === 'es'
           ? "cuánto está el dólar en bolivia, cuánto vale el dólar en bolivia, precio dólar bolivia, cotización dólar bolivia, cuánto es el dólar en bolivia, precio dólar blue bolivia, cuánto cuesta el dólar en bolivia, mejor que bolivianblue.net"
           : "how much is dollar in bolivia, dollar price bolivia, dollar quote bolivia, how much is dollar bolivia, blue dollar price bolivia, dollar cost bolivia"}
         canonical="/cuanto-esta-dolar-bolivia"
-        noindex={true} // Temporarily noindex due to templated/query-based content
-        structuredData={[articleSchema, faqSchema]}
+        structuredData={[webPageSchema, breadcrumbSchema, articleSchema, faqSchema]}
       />
       
       <Header />
@@ -158,10 +163,15 @@ function CuantoEstaDolarBolivia() {
             ? '¿Cuánto Está el Dólar en Bolivia?'
             : 'How Much is the Dollar in Bolivia?'}
         </h1>
-        <p className="text-center text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-3 sm:mb-6">
+        <p className="text-center text-base text-gray-600 dark:text-gray-400 mb-1">
           {language === 'es'
-            ? `Última actualización: ${lastUpdated.toLocaleString(language === 'es' ? 'es-BO' : 'en-US', { dateStyle: 'long', timeStyle: 'short' })}`
-            : `Last updated: ${lastUpdated.toLocaleString(language === 'es' ? 'es-BO' : 'en-US', { dateStyle: 'long', timeStyle: 'short' })}`}
+            ? 'Respuesta directa: el precio actual del dólar blue está abajo; usa la calculadora para cualquier monto.'
+            : 'Direct answer: the current blue dollar price is below; use the calculator for any amount.'}
+        </p>
+        <p className="text-center text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-3 sm:mb-6">
+          {language === 'es' ? 'Última actualización' : 'Last updated'}: {currentRate?.updated_at_iso
+            ? formatDateTime(currentRate.updated_at_iso, language === 'es' ? 'es-BO' : 'en-US')
+            : lastUpdated.toLocaleString(language === 'es' ? 'es-BO' : 'en-US', { dateStyle: 'long', timeStyle: 'short' })}
         </p>
 
         {/* Rate Cards - Prominently Displayed */}
@@ -224,6 +234,13 @@ function CuantoEstaDolarBolivia() {
 
         {/* Chart */}
         <section>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+            {language === 'es' ? (
+              <>Evolución reciente. Histórico completo: <Link to="/datos-historicos" className="text-blue-600 dark:text-blue-400 hover:underline">Datos históricos</Link>.</>
+            ) : (
+              <>Recent evolution. Full history: <Link to="/datos-historicos" className="text-blue-600 dark:text-blue-400 hover:underline">Historical data</Link>.</>
+            )}
+          </p>
           <Suspense fallback={
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 animate-pulse">
               <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-4"></div>
@@ -407,7 +424,7 @@ function CuantoEstaDolarBolivia() {
           <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">
             {language === 'es' ? 'Páginas Relacionadas' : 'Related Pages'}
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             <Link
               to="/calculadora"
               className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
@@ -424,21 +441,32 @@ function CuantoEstaDolarBolivia() {
               className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
             >
               <div className="font-medium text-gray-900 dark:text-white mb-1">
-                {language === 'es' ? 'Dólar Blue Hoy' : 'Blue Dollar Today'}
+                {language === 'es' ? 'Dólar blue hoy' : 'Blue dollar today'}
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-400">
-                {language === 'es' ? 'Cotización actual' : 'Current quote'}
+                {language === 'es' ? 'Cotización del día' : 'Today\'s quote'}
               </div>
             </Link>
             <Link
-              to="/que-es-dolar-blue"
+              to="/dolar-paralelo-bolivia-en-vivo"
               className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
             >
               <div className="font-medium text-gray-900 dark:text-white mb-1">
-                {language === 'es' ? '¿Qué es el Dólar Blue?' : 'What is Blue Dollar?'}
+                {language === 'es' ? 'Dólar paralelo EN VIVO' : 'Parallel dollar LIVE'}
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-400">
-                {language === 'es' ? 'Guía completa' : 'Complete guide'}
+                {language === 'es' ? 'Cotización en tiempo real' : 'Real-time quote'}
+              </div>
+            </Link>
+            <Link
+              to="/datos-historicos"
+              className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+            >
+              <div className="font-medium text-gray-900 dark:text-white mb-1">
+                {language === 'es' ? 'Datos históricos' : 'Historical data'}
+              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                {language === 'es' ? 'Archivo de cotizaciones' : 'Quote archive'}
               </div>
             </Link>
           </div>

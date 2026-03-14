@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/inject-seo-shell.cjs",
     "preview": "vite preview",
     "test": "vitest",
     "generate-sitemap": "node scripts/generate-sitemap.js",

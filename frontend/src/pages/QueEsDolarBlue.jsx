@@ -8,6 +8,7 @@ import BlueRateCards from '../components/BlueRateCards';
 import BinanceBanner from '../components/BinanceBanner';
 import { Link } from 'react-router-dom';
 import { fetchBlueRate } from '../utils/api';
+import { getWebPage, getBreadcrumbList } from '../utils/seoSchema';
 import { lazy, Suspense } from 'react';
 const BlueChart = lazy(() => import('../components/BlueChart'));
 import Breadcrumbs from '../components/Breadcrumbs';
@@ -41,34 +42,29 @@ function QueEsDolarBlue() {
     "@context": "https://schema.org",
     "@type": "Article",
     "headline": language === 'es' 
-      ? "¿Qué es el Dólar Blue? Guía Completa 2025 | Bolivia Blue con Paz"
-      : "What is the Blue Dollar? Complete Guide 2025 | Bolivia Blue with Paz",
+      ? "¿Qué es el Dólar Blue? Guía 2025 – En Bolivia y Latinoamérica | Bolivia Blue"
+      : "What Is the Dollar Blue? Guide 2025 – Bolivia & Latin America | Bolivia Blue",
     "description": language === 'es'
       ? "¿Qué es el dólar blue? Guía completa sobre el dólar blue en Bolivia. Explicación del mercado paralelo, cómo funciona, diferencia con el dólar oficial y por qué es importante. Actualizado cada 15 minutos."
       : "What is the blue dollar? Complete guide about the blue dollar in Bolivia. Explanation of the parallel market, how it works, difference with official dollar and why it is important. Updated every 15 minutes.",
-    "author": {
-      "@type": "Organization",
-      "name": "Bolivia Blue con Paz"
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": "Bolivia Blue con Paz",
-      "logo": {
-        "@type": "ImageObject",
-        "url": "https://boliviablue.com/favicon.svg"
-      }
-    },
+    "author": { "@type": "Organization", "name": "Bolivia Blue con Paz" },
+    "publisher": { "@type": "Organization", "name": "Bolivia Blue con Paz", "logo": { "@type": "ImageObject", "url": "https://boliviablue.com/favicon.svg" } },
     "datePublished": "2025-01-01",
-    "dateModified": new Date().toISOString().split('T')[0],
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.9",
-      "bestRating": "5",
-      "worstRating": "1",
-      "ratingCount": "256",
-      "reviewCount": "89"
-    }
+    "dateModified": new Date().toISOString().split('T')[0]
   };
+
+  const webPageSchema = getWebPage({
+    name: language === 'es' ? '¿Qué es el Dólar Blue?' : 'What is the Blue Dollar?',
+    description: language === 'es' ? 'Guía completa sobre el dólar blue en Bolivia: qué es, cómo funciona y por qué es importante.' : 'Complete guide about the blue dollar in Bolivia: what it is, how it works and why it is important.',
+    url: '/que-es-dolar-blue',
+    dateModified: new Date().toISOString().split('T')[0],
+    inLanguage: language === 'es' ? 'es-BO' : 'en-US'
+  });
+
+  const breadcrumbSchema = getBreadcrumbList([
+    { name: language === 'es' ? 'Inicio' : 'Home', url: '/' },
+    { name: language === 'es' ? '¿Qué es el Dólar Blue?' : 'What is the Blue Dollar?', url: '/que-es-dolar-blue' }
+  ]);
 
   const faqSchema = {
     "@context": "https://schema.org",
@@ -113,6 +109,14 @@ function QueEsDolarBlue() {
           "@type": "Answer",
           "text": "El dólar blue opera en el mercado paralelo, fuera del sistema bancario oficial. Aunque no es ilegal intercambiar divisas entre particulares, las transacciones del dólar blue no están reguladas por el Banco Central de Bolivia. Es importante tener precaución y verificar la cotización antes de realizar transacciones."
         }
+      },
+      {
+        "@type": "Question",
+        "name": "¿Por qué se llama dólar blue?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "El término dólar blue tiene origen en Argentina: se asociaba con operaciones en \"negro\" (black market) y la palabra \"blue\" (azul en inglés) se usaba como eufemismo. Con el tiempo se extendió en Latinoamérica para referirse al tipo de cambio paralelo. En Bolivia se usa igual: dólar blue o dólar paralelo."
+        }
       }
     ] : [
       {
@@ -138,6 +142,14 @@ function QueEsDolarBlue() {
           "@type": "Answer",
           "text": "The main difference is that the official dollar is set by the Central Bank of Bolivia and is fixed or adjusted very rarely, while the blue dollar fluctuates constantly according to market conditions. The blue dollar is generally higher than the official rate, reflecting the scarcity of dollars in the formal market. The difference can be 10-20% or more."
         }
+      },
+      {
+        "@type": "Question",
+        "name": "Why is it called blue dollar?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The term blue dollar originated in Argentina, where it was associated with black market operations and \"blue\" was used as a euphemism. Over time it spread across Latin America for the parallel exchange rate. In Bolivia the same terms are used: blue dollar or parallel dollar."
+        }
       }
     ]
   };
@@ -146,8 +158,8 @@ function QueEsDolarBlue() {
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
         title={language === 'es'
-          ? '¿Qué es el Dólar Blue? Guía Completa 2025 | Bolivia Blue con Paz'
-          : 'What is the Blue Dollar? Complete Guide 2025 | Bolivia Blue with Paz'}
+          ? '¿Qué es el Dólar Blue? Guía 2025 – Bolivia y Latinoamérica'
+          : 'What Is the Blue Dollar? Guide 2025 – Bolivia & Latin America'}
         description={language === 'es'
           ? '¿Qué es el dólar blue? Guía completa sobre el dólar blue en Bolivia. Explicación del mercado paralelo, cómo funciona, diferencia con el dólar oficial y por qué es importante. Actualizado cada 15 minutos. Gratis.'
           : 'What is the blue dollar? Complete guide about the blue dollar in Bolivia. Explanation of the parallel market, how it works, difference with official dollar and why it is important. Updated every 15 minutes. Free.'}
@@ -155,7 +167,7 @@ function QueEsDolarBlue() {
           ? "qué es el dólar blue, qué es dólar blue bolivia, qué es el dólar blue en bolivia, cómo funciona dólar blue, dólar blue explicación, dólar paralelo bolivia, mercado paralelo bolivia, diferencia dólar blue oficial, mejor que bolivianblue.net"
           : "what is blue dollar, what is blue dollar bolivia, how does blue dollar work, blue dollar explanation, parallel dollar bolivia, parallel market bolivia, blue dollar vs official, difference blue dollar official"}
         canonical="/que-es-dolar-blue"
-        structuredData={[articleSchema, faqSchema]}
+        structuredData={[webPageSchema, breadcrumbSchema, articleSchema, faqSchema]}
       />
       
       <Header />
@@ -179,10 +191,13 @@ function QueEsDolarBlue() {
             ? '¿Qué es el Dólar Blue?'
             : 'What is the Blue Dollar?'}
         </h1>
-        <p className="text-center text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-3 sm:mb-6">
+        <p className="text-center text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-1 sm:mb-2">
           {language === 'es'
             ? 'Guía completa sobre el dólar blue en Bolivia: qué es, cómo funciona y por qué es importante'
             : 'Complete guide about the blue dollar in Bolivia: what it is, how it works and why it is important'}
+        </p>
+        <p className="text-center text-sm text-gray-500 dark:text-gray-500 mb-3 sm:mb-6">
+          {language === 'es' ? 'Última actualización: Enero 2025' : 'Last updated: January 2025'}
         </p>
 
         {/* Rate Cards */}
@@ -202,8 +217,8 @@ function QueEsDolarBlue() {
               
               <p className="text-gray-700 dark:text-gray-300 mb-6 text-lg">
                 {language === 'es' 
-                  ? <>El <strong>dólar blue</strong> es el tipo de cambio del dólar estadounidense en el mercado paralelo de Bolivia. También conocido como <strong>dólar paralelo</strong> o <strong>dólar negro</strong>, este valor refleja la tasa real a la que los bolivianos intercambian dólares fuera del sistema bancario oficial.</>
-                  : <>The <strong>blue dollar</strong> is the exchange rate of the US dollar in Bolivia's parallel market. Also known as the <strong>parallel dollar</strong> or <strong>black dollar</strong>, this value reflects the real rate at which Bolivians exchange dollars outside the official banking system.</>}
+                  ? <>El <strong>dólar blue</strong> es el tipo de cambio del dólar estadounidense en el mercado paralelo de Bolivia. También conocido como <strong>dólar paralelo</strong> o <strong>dólar negro</strong>, este valor refleja la tasa real a la que los bolivianos intercambian dólares fuera del sistema bancario oficial. Esta guía explica qué es, cómo funciona y por qué importa; para la cotización actual, consulta la <Link to="/" className="text-blue-600 dark:text-blue-400 hover:underline">página principal</Link> o <Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline">dólar blue hoy</Link>.</>
+                  : <>The <strong>blue dollar</strong> is the exchange rate of the US dollar in Bolivia's parallel market. Also known as the <strong>parallel dollar</strong> or <strong>black dollar</strong>, this value reflects the real rate at which Bolivians exchange dollars outside the official banking system. This guide explains what it is, how it works, and why it matters; for the current quote, see the <Link to="/" className="text-blue-600 dark:text-blue-400 hover:underline">homepage</Link> or <Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline">blue dollar today</Link>.</>}
               </p>
 
               <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4">
@@ -322,6 +337,20 @@ function QueEsDolarBlue() {
                 )}
               </ul>
 
+              <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4">
+                {language === 'es' ? 'Dólar Blue en Otros Países' : 'Blue Dollar in Other Countries'}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 mb-4">
+                {language === 'es'
+                  ? <>El <strong>dólar blue</strong> existe en varios países de Latinoamérica donde hay restricciones al dólar oficial. En <strong>Argentina</strong> es muy conocido y su cotización marca el ritmo del mercado paralelo. En <strong>Venezuela</strong> el dólar paralelo también es referencia. En <strong>Bolivia</strong>, el dólar blue se calcula con datos en tiempo real de Binance P2P y se actualiza cada 15 minutos en esta plataforma.</>
+                  : <>The <strong>blue dollar</strong> exists in several Latin American countries with restrictions on the official dollar. In <strong>Argentina</strong> it is well known and its quote sets the pace for the parallel market. In <strong>Venezuela</strong> the parallel dollar is also a reference. In <strong>Bolivia</strong>, the blue dollar is calculated with real-time Binance P2P data and updated every 15 minutes on this platform.</>}
+              </p>
+              <p className="text-gray-700 dark:text-gray-300 mb-6">
+                {language === 'es'
+                  ? <>Consulta la cotización del dólar blue en Bolivia en vivo: <Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Dólar blue hoy</Link> y <Link to="/" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">página principal</Link>.</>
+                  : <>Check the blue dollar quote in Bolivia live: <Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Blue dollar today</Link> and <Link to="/" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">homepage</Link>.</>}
+              </p>
+
               <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4 sm:p-6 mt-6 border border-green-200 dark:border-green-800">
                 <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
                   {language === 'es' ? '💡 Cómo Usar Esta Información' : '💡 How to Use This Information'}
@@ -337,14 +366,14 @@ function QueEsDolarBlue() {
                       <li><Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Usar nuestra calculadora</Link> para convertir divisas</li>
                       <li><Link to="/comprar-dolares" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Aprender cómo comprar dólares</Link> de forma segura</li>
                       <li><Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Consultar el dólar blue hoy</Link> actualizado cada 15 minutos</li>
-                      <li><Link to="/bolivia-blue-rate" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Ver gráficos históricos</Link> del dólar blue</li>
+                      <li><Link to="/datos-historicos" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Ver datos históricos</Link> del dólar blue</li>
                     </>
                   ) : (
                     <>
                       <li><Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Use our calculator</Link> to convert currencies</li>
                       <li><Link to="/comprar-dolares" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Learn how to buy dollars</Link> safely</li>
                       <li><Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Check the blue dollar today</Link> updated every 15 minutes</li>
-                      <li><Link to="/bolivia-blue-rate" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">View historical charts</Link> of the blue dollar</li>
+                      <li><Link to="/datos-historicos" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">View historical data</Link> of the blue dollar</li>
                     </>
                   )}
                 </ul>
@@ -358,13 +387,13 @@ function QueEsDolarBlue() {
           <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">
             {language === 'es' ? 'Páginas Relacionadas' : 'Related Pages'}
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             <Link
               to="/dolar-blue-hoy"
               className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
             >
               <div className="font-medium text-gray-900 dark:text-white mb-1">
-                {language === 'es' ? 'Dólar Blue Hoy' : 'Blue Dollar Today'}
+                {language === 'es' ? 'Dólar blue hoy' : 'Blue dollar today'}
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-400">
                 {language === 'es' ? 'Cotización actual' : 'Current quote'}
@@ -375,10 +404,21 @@ function QueEsDolarBlue() {
               className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
             >
               <div className="font-medium text-gray-900 dark:text-white mb-1">
-                {language === 'es' ? '¿Cuánto Está el Dólar?' : 'How Much is the Dollar?'}
+                {language === 'es' ? '¿Cuánto está el dólar?' : 'How much is the dollar?'}
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-400">
                 {language === 'es' ? 'Precio actual' : 'Current price'}
+              </div>
+            </Link>
+            <Link
+              to="/datos-historicos"
+              className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+            >
+              <div className="font-medium text-gray-900 dark:text-white mb-1">
+                {language === 'es' ? 'Datos históricos' : 'Historical data'}
+              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                {language === 'es' ? 'Archivo de cotizaciones' : 'Quote archive'}
               </div>
             </Link>
             <Link
@@ -386,10 +426,10 @@ function QueEsDolarBlue() {
               className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
             >
               <div className="font-medium text-gray-900 dark:text-white mb-1">
-                {language === 'es' ? 'Comprar Dólares' : 'Buy Dollars'}
+                {language === 'es' ? 'Comprar dólares' : 'Buy dollars'}
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-400">
-                {language === 'es' ? 'Guía completa' : 'Complete guide'}
+                {language === 'es' ? 'Guía' : 'Guide'}
               </div>
             </Link>
           </div>

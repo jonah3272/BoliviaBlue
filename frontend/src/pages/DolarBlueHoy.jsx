@@ -8,6 +8,8 @@ import BlueRateCards from '../components/BlueRateCards';
 import BinanceBanner from '../components/BinanceBanner';
 import { Link } from 'react-router-dom';
 import { fetchBlueRate } from '../utils/api';
+import { formatDateTime } from '../utils/formatters';
+import { getWebPage, getBreadcrumbList } from '../utils/seoSchema';
 import { lazy, Suspense } from 'react';
 const BlueChart = lazy(() => import('../components/BlueChart'));
 import Breadcrumbs from '../components/Breadcrumbs';
@@ -39,6 +41,7 @@ function DolarBlueHoy() {
     return () => clearInterval(interval);
   }, []);
 
+  const rateDateModified = currentRate?.updated_at_iso ?? undefined;
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -48,21 +51,24 @@ function DolarBlueHoy() {
     "description": language === 'es'
       ? "Dólar blue hoy actualizado cada 15 minutos. Consulta la cotización actual del dólar blue en Bolivia hoy. Precio en tiempo real, gráficos históricos y análisis del mercado paralelo."
       : "Blue dollar today updated every 15 minutes. Check the current blue dollar quote in Bolivia today. Real-time price, historical charts and parallel market analysis.",
-    "author": {
-      "@type": "Organization",
-      "name": "Bolivia Blue con Paz"
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": "Bolivia Blue con Paz",
-      "logo": {
-        "@type": "ImageObject",
-        "url": "https://boliviablue.com/favicon.svg"
-      }
-    },
+    "author": { "@type": "Organization", "name": "Bolivia Blue con Paz" },
+    "publisher": { "@type": "Organization", "name": "Bolivia Blue con Paz", "logo": { "@type": "ImageObject", "url": "https://boliviablue.com/favicon.svg" } },
     "datePublished": "2025-01-01",
-    "dateModified": new Date().toISOString().split('T')[0]
+    ...(rateDateModified && { "dateModified": rateDateModified })
   };
+
+  const webPageSchema = getWebPage({
+    name: language === 'es' ? 'Cotización del Dólar Blue Hoy – Bolivia' : 'Blue Dollar Quote Today – Bolivia',
+    description: language === 'es' ? 'Esta es la cotización del dólar blue hoy en Bolivia, actualizada cada 15 minutos.' : "This is today's blue dollar quote in Bolivia, updated every 15 minutes.",
+    url: '/dolar-blue-hoy',
+    dateModified: rateDateModified,
+    inLanguage: language === 'es' ? 'es-BO' : 'en-US'
+  });
+
+  const breadcrumbSchema = getBreadcrumbList([
+    { name: language === 'es' ? 'Inicio' : 'Home', url: '/' },
+    { name: language === 'es' ? 'Dólar Blue Hoy' : 'Blue Dollar Today', url: '/dolar-blue-hoy' }
+  ]);
 
   const faqSchema = {
     "@context": "https://schema.org",
@@ -115,17 +121,16 @@ function DolarBlueHoy() {
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
         title={language === 'es'
-          ? 'Dólar Blue Hoy - Cotización Actual del Dólar Blue en Bolivia | Actualizado Cada 15 Min'
-          : 'Blue Dollar Today - Current Blue Dollar Quote in Bolivia | Updated Every 15 Min'}
+          ? 'Dólar Blue Hoy Bolivia | Cotización Actual Cada 15 Min'
+          : 'Blue Dollar Today Bolivia | Current Quote Every 15 Min'}
         description={language === 'es'
-          ? 'Dólar Blue Hoy Bolivia - Cotización Actual Actualizada Cada 15 Min. La información más precisa del mercado paralelo. Consulta el precio ahora. Gratis, sin registro.'
-          : 'Blue Dollar Today Bolivia - Current Quote Updated Every 15 Min. The most accurate information on the parallel market. Check the price now. Free, no registration required.'}
+          ? 'Cotización del dólar blue hoy en Bolivia. Precio actual actualizado cada 15 min. Mercado paralelo. Gratis y sin registro.'
+          : 'Blue dollar quote today in Bolivia. Current price updated every 15 min. Parallel market. Free, no registration.'}
         keywords={language === 'es'
           ? "dólar blue hoy, dólar blue hoy bolivia, dólar blue hoy en bolivia, cotización dólar blue hoy, precio dólar blue hoy, dólar blue hoy actual, dólar blue hoy la paz, tipo cambio hoy bolivia, mejor que bolivianblue.net"
           : "blue dollar today, blue dollar today bolivia, blue dollar quote today, blue dollar price today, blue dollar current today, exchange rate today bolivia"}
         canonical="/dolar-blue-hoy"
-        noindex={true} // Temporarily noindex due to templated/query-based content
-        structuredData={[articleSchema, faqSchema]}
+        structuredData={[webPageSchema, breadcrumbSchema, articleSchema, faqSchema]}
       />
       
       <Header />
@@ -150,13 +155,18 @@ function DolarBlueHoy() {
           </div>
           <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">
             {language === 'es' 
-              ? 'Dólar Blue Hoy Bolivia - Cotización Actual'
-              : 'Blue Dollar Today Bolivia - Current Quote'}
+              ? 'Cotización del Dólar Blue Hoy – Bolivia'
+              : 'Blue Dollar Quote Today – Bolivia'}
           </h1>
-          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">
+          <p className="text-base text-gray-600 dark:text-gray-400 mb-1">
             {language === 'es'
-              ? `Última actualización: ${lastUpdated.toLocaleTimeString(language === 'es' ? 'es-BO' : 'en-US', { hour: '2-digit', minute: '2-digit' })}`
-              : `Last updated: ${lastUpdated.toLocaleTimeString(language === 'es' ? 'es-BO' : 'en-US', { hour: '2-digit', minute: '2-digit' })}`}
+              ? 'Esta es la cotización del dólar blue hoy en Bolivia, actualizada cada 15 minutos.'
+              : 'This is today\'s blue dollar quote in Bolivia, updated every 15 minutes.'}
+          </p>
+          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">
+            {language === 'es' ? 'Última actualización' : 'Last updated'}: {currentRate?.updated_at_iso
+              ? formatDateTime(currentRate.updated_at_iso, language === 'es' ? 'es-BO' : 'en-US')
+              : lastUpdated.toLocaleTimeString(language === 'es' ? 'es-BO' : 'en-US', { hour: '2-digit', minute: '2-digit' })}
           </p>
         </div>
 
@@ -209,6 +219,13 @@ function DolarBlueHoy() {
 
         {/* Chart */}
         <section>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+            {language === 'es' ? (
+              <>Evolución reciente del dólar blue. Para el histórico completo: <Link to="/datos-historicos" className="text-blue-600 dark:text-blue-400 hover:underline">Datos históricos</Link>.</>
+            ) : (
+              <>Recent blue dollar evolution. For full history: <Link to="/datos-historicos" className="text-blue-600 dark:text-blue-400 hover:underline">Historical data</Link>.</>
+            )}
+          </p>
           <Suspense fallback={
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 animate-pulse">
               <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-4"></div>
@@ -407,7 +424,18 @@ function DolarBlueHoy() {
           <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">
             {language === 'es' ? 'Páginas Relacionadas' : 'Related Pages'}
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+            <Link
+              to="/dolar-paralelo-bolivia-en-vivo"
+              className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+            >
+              <div className="font-medium text-gray-900 dark:text-white mb-1">
+                {language === 'es' ? 'Dólar paralelo EN VIVO' : 'Parallel dollar LIVE'}
+              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                {language === 'es' ? 'Cotización en tiempo real' : 'Real-time quote'}
+              </div>
+            </Link>
             <Link
               to="/cuanto-esta-dolar-bolivia"
               className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
@@ -420,6 +448,17 @@ function DolarBlueHoy() {
               </div>
             </Link>
             <Link
+              to="/datos-historicos"
+              className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+            >
+              <div className="font-medium text-gray-900 dark:text-white mb-1">
+                {language === 'es' ? 'Datos históricos' : 'Historical data'}
+              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                {language === 'es' ? 'Archivo de cotizaciones' : 'Quote archive'}
+              </div>
+            </Link>
+            <Link
               to="/calculadora"
               className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
             >
@@ -428,17 +467,6 @@ function DolarBlueHoy() {
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-400">
                 {language === 'es' ? 'Convierte divisas' : 'Convert currencies'}
-              </div>
-            </Link>
-            <Link
-              to="/que-es-dolar-blue"
-              className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
-            >
-              <div className="font-medium text-gray-900 dark:text-white mb-1">
-                {language === 'es' ? '¿Qué es el Dólar Blue?' : 'What is Blue Dollar?'}
-              </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
-                {language === 'es' ? 'Guía completa' : 'Complete guide'}
               </div>
             </Link>
           </div>

@@ -21,6 +21,8 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { Link } from 'react-router-dom';
 import { articlesEs, articlesEn } from '../data/blogArticles';
 import { fetchBlueRate } from '../utils/api';
+import { formatDateTime } from '../utils/formatters';
+import { BASE_URL, getWebPage, getBreadcrumbList, getDataFeedItem } from '../utils/seoSchema';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import AdSenseAutoAds from '../components/AdSenseAutoAds';
 
@@ -98,6 +100,14 @@ function Home() {
     "mainEntity": language === 'es' ? [
       {
         "@type": "Question",
+        "name": "¿Qué es el dólar blue?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "El dólar blue es el tipo de cambio del dólar en el mercado paralelo. En Bolivia, refleja la tasa real a la que se compra y vende el dólar fuera del sistema bancario oficial. En nuestra plataforma el dólar blue Bolivia se actualiza cada 15 minutos con datos de Binance P2P."
+        }
+      },
+      {
+        "@type": "Question",
         "name": "¿Qué es el Bolivian Blue?",
         "acceptedAnswer": {
           "@type": "Answer",
@@ -161,6 +171,14 @@ function Home() {
         }
       }
     ] : [
+      {
+        "@type": "Question",
+        "name": "What is the dollar blue?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The dollar blue (or blue dollar) is the parallel market exchange rate for the US dollar. In Bolivia, it reflects the real rate at which people buy and sell dollars outside the official banking system. On our platform the Bolivia blue dollar rate is updated every 15 minutes using Binance P2P data."
+        }
+      },
       {
         "@type": "Question",
         "name": "What is Bolivian Blue?",
@@ -248,7 +266,8 @@ function Home() {
     }
   } : null;
 
-  // DataFeed schema for rate updates
+  // DataFeed schema for rate updates (dateModified only when we have real rate timestamp)
+  const rateDateModified = currentRate?.updated_at_iso ?? null;
   const dataFeedSchema = {
     "@context": "https://schema.org",
     "@type": "DataFeed",
@@ -256,141 +275,41 @@ function Home() {
     "description": language === 'es'
       ? "Feed de datos del tipo de cambio del dólar blue en Bolivia actualizado cada 15 minutos"
       : "Data feed of Bolivia blue dollar exchange rate updated every 15 minutes",
-    "dataFeedElement": currentRate ? [{
-      "@type": "DataFeedItem",
-      "dateModified": new Date().toISOString(),
-      "item": {
-        "@type": "FinancialProduct",
-        "name": "Bolivia Blue Rate",
-        "exchangeRate": {
-          "@type": "UnitPriceSpecification",
-          "price": currentRate.buy?.toFixed(2) || "0",
-          "priceCurrency": "BOB"
-        }
-      }
-    }] : []
+    "dataFeedElement": currentRate ? [getDataFeedItem(currentRate, rateDateModified)] : []
   };
 
-  // AggregateRating schema for star ratings in search results
-  const aggregateRatingSchema = {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "Bolivia Blue con Paz",
-    "alternateName": "Bolivia Blue with Paz",
-    "url": "https://boliviablue.com",
-    "description": language === 'es'
-      ? "Plataforma de seguimiento en tiempo real del tipo de cambio del dólar blue en Bolivia"
-      : "Real-time tracking platform for the blue dollar exchange rate in Bolivia",
-    "applicationCategory": "FinanceApplication",
-    "operatingSystem": "Web",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
-    },
-    "featureList": language === 'es' 
-      ? [
-          "Cotización del dólar blue en tiempo real",
-          "Gráficos históricos de tipo de cambio",
-          "Calculadora de divisas USD/BOB",
-          "Noticias financieras de Bolivia",
-          "Análisis de sentimiento con IA"
-        ]
-      : [
-          "Real-time blue dollar quotes",
-          "Historical exchange rate charts",
-          "USD/BOB currency calculator",
-          "Bolivia financial news",
-          "AI-powered sentiment analysis"
-        ],
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.9",
-      "bestRating": "5",
-      "worstRating": "1",
-      "ratingCount": "487",
-      "reviewCount": "156"
-    }
-  };
+  // WebPage schema: authority, freshness, canonical (dateModified only when rate timestamp available)
+  const webPageSchema = getWebPage({
+    name: language === 'es' ? 'Dólar Blue Bolivia – Cotización en Tiempo Real' : 'Bolivia Blue Dollar – Live Rate & Tools',
+    description: language === 'es'
+      ? 'Tu fuente principal para el dólar blue en Bolivia: cotización cada 15 min, gráficos históricos, calculadora y noticias. Sin registro.'
+      : 'Your main source for the Bolivia blue dollar: quote every 15 min, historical charts, calculator and news. No signup.',
+    url: '/',
+    dateModified: rateDateModified || undefined,
+    inLanguage: language === 'es' ? 'es-BO' : 'en-US',
+    mainEntity: financialProductSchema ? { '@type': 'FinancialProduct', name: language === 'es' ? 'Cotización Dólar Blue Bolivia' : 'Bolivia Blue Dollar Rate' } : undefined
+  });
 
-  // VideoObject schema for video rich results
-  const videoSchema = {
-    "@context": "https://schema.org",
-    "@type": "VideoObject",
-    "name": language === 'es' ? "Cómo usar Bolivia Blue - Tutorial rápido" : "How to use Bolivia Blue - Quick tutorial",
-    "description": language === 'es' ? "Tutorial de 2 minutos sobre cómo consultar el dólar blue en Bolivia" : "2-minute tutorial on how to check the blue dollar in Bolivia",
-    "thumbnailUrl": "https://boliviablue.com/og-image.webp",
-    "uploadDate": "2025-11-20T08:00:00+00:00",
-    "duration": "PT2M30S",
-    "contentUrl": "https://boliviablue.com/"
-  };
+  // Breadcrumb schema (reusable helper)
+  const breadcrumbSchema = getBreadcrumbList([
+    { name: language === 'es' ? 'Inicio' : 'Home', url: '/' }
+  ]);
 
-  // LocalBusiness schema for local SEO
-  const localBusinessSchema = {
-    "@context": "https://schema.org",
-    "@type": "FinancialService",
-    "name": "Bolivia Blue con Paz",
-    "url": "https://boliviablue.com",
-    "logo": "https://boliviablue.com/favicon-96x96.png",
-    "description": language === 'es' 
-      ? "Plataforma de seguimiento en tiempo real del tipo de cambio del dólar blue en Bolivia"
-      : "Real-time tracking platform for the blue dollar exchange rate in Bolivia",
-    "areaServed": {
-      "@type": "Country",
-      "name": "Bolivia"
-    },
-    "address": {
-      "@type": "PostalAddress",
-      "addressCountry": "BO"
-    },
-    "priceRange": language === 'es' ? "Gratis" : "Free",
-    "hasOfferCatalog": {
-      "@type": "OfferCatalog",
-      "name": language === 'es' ? "Servicios Gratuitos" : "Free Services",
-      "itemListElement": [
-        {
-          "@type": "Offer",
-          "itemOffered": {
-            "@type": "Service",
-            "name": language === 'es' ? "Consulta de tipo de cambio en tiempo real" : "Real-time exchange rate query"
-          }
-        }
-      ]
-    }
-  };
-
-  // Combine all structured data
-  const allStructuredData = [organizationSchema, faqSchema];
+  // Combine structured data: no AggregateRating (no visible reviews), no VideoObject (no real video), no LocalBusiness (weak fit)
+  const allStructuredData = [organizationSchema, webPageSchema, faqSchema];
   if (financialProductSchema) allStructuredData.push(financialProductSchema);
   allStructuredData.push(dataFeedSchema);
-  allStructuredData.push(aggregateRatingSchema); // Add rating schema
-  allStructuredData.push(videoSchema); // Add video schema
-  allStructuredData.push(localBusinessSchema); // Add local business schema
-
-  // Breadcrumb schema for better SEO
-  const breadcrumbSchema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      {
-        "@type": "ListItem",
-        "position": 1,
-        "name": language === 'es' ? "Inicio" : "Home",
-        "item": "https://boliviablue.com/"
-      }
-    ]
-  };
   allStructuredData.push(breadcrumbSchema);
   
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
         title={language === 'es' 
-          ? '¿Cuánto Está el Dólar Blue en Bolivia Hoy? 🔴 Actualizado Cada 15 Min'
-          : 'What is the Blue Dollar Rate in Bolivia Today? 🔴 Updated Every 15 Min'}
+          ? 'Dólar Blue Bolivia en Tiempo Real | Cotización Cada 15 Min'
+          : 'Blue Dollar Bolivia Live | Quote Every 15 Min'}
         description={language === 'es' 
-          ? "¿Cuánto está el dólar blue en Bolivia HOY? Consulta la cotización EN VIVO actualizada cada 15 minutos. Gráficos históricos, calculadora gratuita y alertas de precio. La información más precisa y rápida del mercado paralelo boliviano."
-          : "What is the blue dollar rate in Bolivia TODAY? Check the LIVE quote updated every 15 minutes. Historical charts, free calculator and price alerts. The most accurate and fastest information on the Bolivian parallel market."}
+          ? "Cotización del dólar blue en Bolivia actualizada cada 15 min. Gráficos históricos, calculadora y alertas. Sin registro. Datos de Binance P2P."
+          : "Bolivia blue dollar quote updated every 15 min. Historical charts, calculator and alerts. No signup. Binance P2P data."}
         keywords={language === 'es'
           ? "cuanto esta el dolar en bolivia hoy, cuanto esta el dolar blue en bolivia, precio del dolar en bolivia hoy, a cuanto esta el dolar en bolivia, cambio de dolar en bolivia hoy, cotizacion dolar bolivia hoy, dolar paralelo bolivia hoy, bolivia blue rate, bolivia blue exchange rate, dólar bolivia, tipo de cambio bolivia, boliviano dólar, blue bolivia, dólar blue bolivia, tipo cambio bolivia, cambio dólar bolivia, mercado paralelo bolivia, dólar paralelo, Rodrigo Paz, BCB, banco central bolivia, binance bolivia, usdt bob, usdt a bob, boliviano a dólar, dólar a boliviano, cotización dólar bolivia, precio dólar bolivia, tasa cambio bolivia, bolivian blue, bolivianblue, mejor que bolivianblue.net"
           : "how much is the dollar in bolivia today, what is the blue dollar rate in bolivia, bolivia dollar price today, what is the dollar rate in bolivia, dollar exchange in bolivia today, bolivia dollar quote today, bolivia parallel dollar today, bolivia blue rate, bolivia blue exchange rate, bolivia dollar, exchange rate bolivia, boliviano dollar, blue dollar bolivia, bolivia blue dollar, bolivia exchange rate, bolivia currency, parallel market bolivia, bolivia parallel dollar, Rodrigo Paz, BCB, central bank bolivia, binance bolivia, usdt bob, usdt to bob, boliviano to dollar, dollar to boliviano, bolivia dollar rate, bolivia dollar price, bolivia exchange rate, bolivian blue, bolivianblue, better than bolivianblue.net, bolivia blue market, bolivia dollar calculator"}
@@ -408,12 +327,12 @@ function Home() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-8 md:py-12 space-y-6 sm:space-y-8 md:space-y-12">
-        {/* Hero Section - Clean & Modern */}
+        {/* Hero Section - Clean & Modern (hub positioning) */}
         <div className="text-center space-y-6 mb-8">
           <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-gray-900 dark:text-white leading-tight">
             {language === 'es' 
-              ? 'Dólar Blue en Bolivia'
-              : 'Blue Dollar in Bolivia'}
+              ? 'Dólar Blue Bolivia – Cotización en Tiempo Real y Herramientas'
+              : 'Bolivia Blue Dollar – Live Rate & Tools'}
           </h1>
           
           {/* Key Features - Visual Badges */}
@@ -438,11 +357,11 @@ function Home() {
             </div>
           </div>
 
-          {/* Short, punchy description */}
+          {/* Hub positioning: main source, not interchangeable with "today" or "live" subpages */}
           <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
             {language === 'es'
-              ? 'El precio real del dólar en el mercado paralelo boliviano. Sin registro, sin complicaciones.'
-              : 'The real price of the dollar in Bolivia\'s parallel market. No signup, no hassle.'}
+              ? 'Tu fuente principal para el dólar blue en Bolivia: cotización cada 15 min, gráficos históricos, calculadora y noticias. Sin registro.'
+              : 'Your main source for the Bolivia blue dollar: quote every 15 min, historical charts, calculator and news. No signup.'}
           </p>
 
           <div className="flex justify-center">
@@ -460,6 +379,11 @@ function Home() {
         
         {/* Blue Rate Cards - At the Top */}
         <section>
+          {currentRate?.updated_at_iso && (
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-2 text-center">
+              {language === 'es' ? 'Datos actualizados' : 'Data updated'}: {formatDateTime(currentRate.updated_at_iso, language === 'es' ? 'es-BO' : 'en-US')}
+            </p>
+          )}
           <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} />
         </section>
 
@@ -474,6 +398,11 @@ function Home() {
 
         {/* Chart */}
         <section>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+            {language === 'es'
+              ? 'Evolución del tipo de cambio (arriba: cotización actual).'
+              : 'Exchange rate evolution (above: current quote).'}
+          </p>
           <LazyErrorBoundary>
             <Suspense fallback={
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 animate-pulse">
@@ -969,6 +898,27 @@ function Home() {
                 )}
               </ul>
             </div>
+          </div>
+        </section>
+
+        {/* Related: reinforce hub and topical clusters */}
+        <section className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 sm:p-6">
+          <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
+            {language === 'es' ? 'También en esta web' : 'More on this site'}
+          </h2>
+          <div className="flex flex-wrap gap-3">
+            <Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+              {language === 'es' ? 'Cotización del dólar blue hoy' : 'Blue dollar quote today'}
+            </Link>
+            <Link to="/cuanto-esta-dolar-bolivia" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+              {language === 'es' ? '¿Cuánto está el dólar en Bolivia?' : 'How much is the dollar in Bolivia?'}
+            </Link>
+            <Link to="/datos-historicos" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+              {language === 'es' ? 'Datos históricos del dólar blue' : 'Historical blue dollar data'}
+            </Link>
+            <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+              {language === 'es' ? 'Calculadora de divisas' : 'Currency calculator'}
+            </Link>
           </div>
         </section>
 

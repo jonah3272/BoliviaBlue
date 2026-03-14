@@ -1138,6 +1138,27 @@ export const articlesEs = [
     `,
     author: "Equipo Bolivia Blue",
     category: "Política Económica"
+  },
+  {
+    id: 7,
+    title: "¿Por Qué Se Llama Dólar Blue? Origen del Término",
+    slug: "por-que-se-llama-dolar-blue-origen",
+    date: "2025-01-26",
+    featured: true,
+    readTime: "4 min",
+    excerpt: "El origen del término dólar blue: por qué se llama así, su historia en Argentina y cómo se extendió a Bolivia y Latinoamérica. Curiosidad y contexto para entender el mercado paralelo.",
+    content: `
+      <h2>¿Por qué se llama dólar blue?</h2>
+      <p>El <strong>dólar blue</strong> debe su nombre al contexto argentino. En Argentina, las operaciones en efectivo del mercado negro se asociaban con billetes que llegaban manchados de tinta azul (por los sobres de correo o el manejo en negro). Otra versión popular es que \"blue\" se usaba como eufemismo en inglés para \"black\" (mercado negro). Con el tiempo, <strong>dólar blue</strong> se instaló como la forma coloquial de referirse al tipo de cambio paralelo.</p>
+      
+      <h2>De Argentina a Latinoamérica</h2>
+      <p>El término se extendió a otros países con mercados paralelos: Venezuela, Bolivia, etc. En <strong>Bolivia</strong>, <a href="/que-es-dolar-blue">qué es el dólar blue</a> se explica como el tipo de cambio del dólar en el mercado paralelo, actualizado en tiempo real en nuestra plataforma. No es solo un nombre: refleja la misma realidad de oferta y demanda fuera del sistema bancario oficial.</p>
+      
+      <h2>Dólar blue en Bolivia hoy</h2>
+      <p>Si quieres ver la cotización actual del <strong>dólar blue</strong> en Bolivia, consulta <a href="/dolar-blue-hoy">dólar blue hoy</a> o la <a href="/">página principal</a>. Actualizamos cada 15 minutos con datos de Binance P2P.</p>
+    `,
+    author: "Equipo Bolivia Blue",
+    category: "Educación Financiera"
   }
 ];
 
@@ -2061,6 +2082,27 @@ export const articlesEn = [
     `,
     author: "Bolivia Blue Team",
     category: "Economic Policy"
+  },
+  {
+    id: 7,
+    title: "Why Is It Called Blue Dollar? Origin of the Term",
+    slug: "why-is-it-called-blue-dollar-origin",
+    date: "2025-01-26",
+    featured: true,
+    readTime: "4 min",
+    excerpt: "The origin of the term blue dollar: why it's called that, its history in Argentina, and how it spread to Bolivia and Latin America. Context for understanding the parallel market.",
+    content: `
+      <h2>Why is it called blue dollar?</h2>
+      <p>The <strong>blue dollar</strong> gets its name from the Argentine context. In Argentina, black market cash operations were associated with bills that arrived stained with blue ink (from mail envelopes or informal handling). Another popular version is that \"blue\" was used as a euphemism in English for \"black\" (black market). Over time, <strong>blue dollar</strong> became the common way to refer to the parallel exchange rate.</p>
+      
+      <h2>From Argentina to Latin America</h2>
+      <p>The term spread to other countries with parallel markets: Venezuela, Bolivia, etc. In <strong>Bolivia</strong>, <a href="/que-es-dolar-blue">what is the blue dollar</a> is explained as the dollar exchange rate in the parallel market, updated in real time on our platform. It's not just a name: it reflects the same reality of supply and demand outside the official banking system.</p>
+      
+      <h2>Blue dollar in Bolivia today</h2>
+      <p>To see the current <strong>blue dollar</strong> quote in Bolivia, check <a href="/dolar-blue-hoy">blue dollar today</a> or the <a href="/">homepage</a>. We update every 15 minutes with Binance P2P data.</p>
+    `,
+    author: "Bolivia Blue Team",
+    category: "Financial Education"
   }
 ];
 

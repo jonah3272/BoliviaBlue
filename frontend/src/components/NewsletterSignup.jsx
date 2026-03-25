@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { getApiEndpoint } from '../utils/apiUrl';
-import { trackEvent } from '../utils/analytics';
+import { trackNewsletterSignupStarted, trackNewsletterSignupCompleted } from '../utils/analyticsEvents';
 
 function NewsletterSignup({ source = 'homepage', compact = false }) {
   const languageContext = useLanguage();
@@ -10,6 +10,13 @@ function NewsletterSignup({ source = 'homepage', compact = false }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState(null); // 'success', 'error', null
   const [message, setMessage] = useState('');
+  const startedTrackedRef = useRef(false);
+
+  const markSignupStarted = () => {
+    if (startedTrackedRef.current) return;
+    startedTrackedRef.current = true;
+    trackNewsletterSignupStarted({ language, source });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -54,7 +61,8 @@ function NewsletterSignup({ source = 'homepage', compact = false }) {
             : 'Subscription successful! Check your email to confirm.'
         );
         setEmail('');
-        trackEvent('newsletter', 'subscribe', { source, language });
+        startedTrackedRef.current = false;
+        trackNewsletterSignupCompleted({ language, source });
       } else {
         setStatus('error');
         setMessage(
@@ -63,7 +71,6 @@ function NewsletterSignup({ source = 'homepage', compact = false }) {
             ? 'Error al suscribirse. Por favor, intenta de nuevo.'
             : 'Error subscribing. Please try again.')
         );
-        trackEvent('newsletter', 'subscribe_error', { source, error: data.message });
       }
     } catch (error) {
       console.error('Error subscribing to newsletter:', error);
@@ -73,7 +80,6 @@ function NewsletterSignup({ source = 'homepage', compact = false }) {
           ? 'Error al procesar la solicitud. Por favor, intenta de nuevo más tarde.'
           : 'Error processing request. Please try again later.'
       );
-      trackEvent('newsletter', 'subscribe_error', { source, error: error.message });
     } finally {
       setIsSubmitting(false);
     }
@@ -86,7 +92,11 @@ function NewsletterSignup({ source = 'homepage', compact = false }) {
           <input
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              markSignupStarted();
+              setEmail(e.target.value);
+            }}
+            onFocus={markSignupStarted}
             placeholder={language === 'es' ? 'Tu email' : 'Your email'}
             required
             className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -141,7 +151,11 @@ function NewsletterSignup({ source = 'homepage', compact = false }) {
             type="email"
             id="newsletter-email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              markSignupStarted();
+              setEmail(e.target.value);
+            }}
+            onFocus={markSignupStarted}
             required
             className="w-full px-4 py-3 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
             placeholder={language === 'es' ? 'tu@email.com' : 'your@email.com'}

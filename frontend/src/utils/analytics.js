@@ -8,24 +8,39 @@ const isGtagAvailable = () => {
   return typeof window !== 'undefined' && typeof window.gtag === 'function';
 };
 
+/** Dev / QA: set localStorage bb_analytics_debug = "1" or VITE_ANALYTICS_DEBUG=true to log all GA events. */
+export const isAnalyticsDebug = () => {
+  if (typeof window === 'undefined') return false;
+  try {
+    if (import.meta.env?.VITE_ANALYTICS_DEBUG === 'true') return true;
+    return window.localStorage?.getItem('bb_analytics_debug') === '1';
+  } catch {
+    return false;
+  }
+};
+
 /**
  * Track custom events with consistent parameters
  */
 export const trackEvent = (eventName, eventParams = {}) => {
+  const payload = {
+    ...eventParams,
+    event_timestamp: new Date().toISOString(),
+  };
+
+  if (isAnalyticsDebug()) {
+    console.debug('[GA4]', eventName, payload);
+  }
+
   if (!isGtagAvailable()) {
-    // Silently fail in development or if GA is not loaded
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env?.DEV && !isAnalyticsDebug()) {
       console.log('[Analytics]', eventName, eventParams);
     }
     return;
   }
 
   try {
-    window.gtag('event', eventName, {
-      ...eventParams,
-      // Add timestamp for debugging
-      event_timestamp: new Date().toISOString(),
-    });
+    window.gtag('event', eventName, payload);
   } catch (error) {
     console.error('[Analytics Error]', error);
   }
@@ -302,18 +317,6 @@ export const trackNavigation = (destination, linkText, linkType = 'internal') =>
     link_type: linkType, // 'internal', 'external'
     event_category: 'Navigation',
     event_label: linkText,
-  });
-};
-
-/**
- * Track language switch
- */
-export const trackLanguageSwitch = (fromLang, toLang) => {
-  trackEvent('language_switch', {
-    from_language: fromLang,
-    to_language: toLang,
-    event_category: 'User Preferences',
-    event_label: `${fromLang}_to_${toLang}`,
   });
 };
 

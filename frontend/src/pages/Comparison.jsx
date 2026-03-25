@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -11,6 +11,7 @@ import { fetchBlueRate, fetchBlueHistory } from '../utils/api';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import { getWebPage, getBreadcrumbList, getFAQPage } from '../utils/seoSchema';
+import { trackComparisonPageViewed, trackRelatedLinkClicked } from '../utils/analyticsEvents';
 
 function Comparison() {
   // Signal to AdSense that this page has sufficient content
@@ -19,10 +20,20 @@ function Comparison() {
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
+  const comparisonViewedRef = useRef(false);
   const [showOfficial, setShowOfficial] = useState(false);
   const [currentRate, setCurrentRate] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(new Date());
   const [avgSpread, setAvgSpread] = useState(null);
+
+  const trackRel = (destination, link_label) => () =>
+    trackRelatedLinkClicked({ language, destination, link_label, page_type: 'comparison' });
+
+  useEffect(() => {
+    if (comparisonViewedRef.current) return;
+    comparisonViewedRef.current = true;
+    trackComparisonPageViewed({ language });
+  }, [language]);
 
   useEffect(() => {
     const loadRate = async () => {
@@ -221,7 +232,13 @@ function Comparison() {
               {language === 'es'
                 ? `Promedio de la última semana: ${avgSpread.bob.toFixed(2)} BOB (${avgSpread.pct >= 0 ? '+' : ''}${avgSpread.pct.toFixed(1)}%). `
                 : `Last 7 days average: ${avgSpread.bob.toFixed(2)} BOB (${avgSpread.pct >= 0 ? '+' : ''}${avgSpread.pct.toFixed(1)}%). `}
-              <Link to="/datos-historicos" className="text-blue-600 dark:text-blue-400 hover:underline">{language === 'es' ? 'Ver datos históricos' : 'View historical data'}</Link>
+              <Link
+                to="/datos-historicos"
+                onClick={trackRel('/datos-historicos', 'view_historical_data')}
+                className="text-blue-600 dark:text-blue-400 hover:underline"
+              >
+                {language === 'es' ? 'Ver datos históricos' : 'View historical data'}
+              </Link>
             </p>
           )}
         </section>
@@ -238,9 +255,22 @@ function Comparison() {
           </p>
           <p className="text-sm text-gray-600 dark:text-gray-400">
             {language === 'es' ? 'Metodología: ' : 'Methodology: '}
-            <Link to="/fuente-de-datos" className="text-blue-600 dark:text-blue-400 hover:underline">{language === 'es' ? 'Fuente de datos' : 'Data source'}</Link>
+            <Link
+              to="/fuente-de-datos"
+              onClick={trackRel('/fuente-de-datos', 'methodology')}
+              className="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              {language === 'es' ? 'Fuente de datos' : 'Data source'}
+            </Link>
             {language === 'es' ? ', ' : ', '}
-            <Link to="/que-es-dolar-blue" className="text-blue-600 dark:text-blue-400 hover:underline">{language === 'es' ? 'qué es el dólar blue' : 'what is the blue dollar'}</Link>.
+            <Link
+              to="/que-es-dolar-blue"
+              onClick={trackRel('/que-es-dolar-blue', 'what_is_blue')}
+              className="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              {language === 'es' ? 'qué es el dólar blue' : 'what is the blue dollar'}
+            </Link>
+            .
           </p>
         </section>
 
@@ -270,11 +300,37 @@ function Comparison() {
             {language === 'es' ? 'Enlaces relacionados' : 'Related links'}
           </h2>
           <div className="flex flex-wrap gap-3">
-            <Link to="/" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">{language === 'es' ? 'Cotización actual' : 'Current rate'}</Link>
-            <Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">{language === 'es' ? 'Dólar blue hoy' : 'Blue dollar today'}</Link>
-            <Link to="/datos-historicos" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">{language === 'es' ? 'Datos históricos' : 'Historical data'}</Link>
-            <Link to="/fuente-de-datos" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">{language === 'es' ? 'Metodología y fuente' : 'Methodology & source'}</Link>
-            <Link to="/que-es-dolar-blue" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">{language === 'es' ? '¿Qué es el dólar blue?' : 'What is the blue dollar?'}</Link>
+            <Link to="/" onClick={trackRel('/', 'current_rate')} className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+              {language === 'es' ? 'Cotización actual' : 'Current rate'}
+            </Link>
+            <Link
+              to="/dolar-blue-hoy"
+              onClick={trackRel('/dolar-blue-hoy', 'dolar_blue_hoy')}
+              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+            >
+              {language === 'es' ? 'Dólar blue hoy' : 'Blue dollar today'}
+            </Link>
+            <Link
+              to="/datos-historicos"
+              onClick={trackRel('/datos-historicos', 'historical')}
+              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+            >
+              {language === 'es' ? 'Datos históricos' : 'Historical data'}
+            </Link>
+            <Link
+              to="/fuente-de-datos"
+              onClick={trackRel('/fuente-de-datos', 'methodology_footer')}
+              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+            >
+              {language === 'es' ? 'Metodología y fuente' : 'Methodology & source'}
+            </Link>
+            <Link
+              to="/que-es-dolar-blue"
+              onClick={trackRel('/que-es-dolar-blue', 'what_is_blue_footer')}
+              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+            >
+              {language === 'es' ? '¿Qué es el dólar blue?' : 'What is the blue dollar?'}
+            </Link>
           </div>
         </section>
 

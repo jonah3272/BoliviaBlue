@@ -11,6 +11,7 @@ import { fetchBlueRate } from '../utils/api';
 import { BINANCE_REFERRAL_LINK, BINANCE_P2P_LINK } from '../config/referrals';
 import { BinanceButton, AirtmButton } from '../components/BrandButton';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
+import { trackOutboundSourceClicked } from '../utils/analyticsEvents';
 
 // Platform Card Component for Secondary Options
 function PlatformCard({ name, description, features, link, color, iconColor, language }) {
@@ -237,6 +238,13 @@ function BuyDollars() {
                 href={BINANCE_P2P_LINK}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() =>
+                  trackOutboundSourceClicked({
+                    language,
+                    destination: BINANCE_P2P_LINK,
+                    link_label: 'buy_dollars_binance_p2p',
+                  })
+                }
                 className="inline-flex items-center justify-center px-6 py-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all border-2 border-gray-300 dark:border-gray-600"
               >
                 {language === 'es' ? 'Ir a P2P' : 'Go to P2P'}

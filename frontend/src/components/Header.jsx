@@ -5,6 +5,7 @@ import LanguageToggle from './LanguageToggle';
 import CurrencyToggle from './CurrencyToggle';
 import MobileMenu from './MobileMenu';
 import { BINANCE_REFERRAL_LINK, AIRTM_REFERRAL_LINK } from '../config/referrals';
+import { trackOutboundSourceClicked } from '../utils/analyticsEvents';
 
 function Header() {
   const languageContext = useLanguage();
@@ -54,6 +55,13 @@ function Header() {
               href={BINANCE_REFERRAL_LINK}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() =>
+                trackOutboundSourceClicked({
+                  language,
+                  destination: BINANCE_REFERRAL_LINK,
+                  link_label: 'header_binance',
+                })
+              }
               aria-label={language === 'es' ? 'Comprar dólares con Binance' : 'Buy dollars with Binance'}
               className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border-2 border-yellow-500/70 dark:border-yellow-400/50 text-yellow-700 dark:text-yellow-300 hover:bg-yellow-50 dark:hover:bg-yellow-900/10 hover:border-yellow-600 dark:hover:border-yellow-400 transition-all duration-200 text-sm font-medium whitespace-nowrap"
             >
@@ -70,6 +78,13 @@ function Header() {
               href={AIRTM_REFERRAL_LINK}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() =>
+                trackOutboundSourceClicked({
+                  language,
+                  destination: AIRTM_REFERRAL_LINK,
+                  link_label: 'header_airtm',
+                })
+              }
               aria-label={language === 'es' ? 'Comprar bolivianos con Airtm' : 'Buy bolivianos with Airtm'}
               className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border-2 border-cyan-500/70 dark:border-cyan-400/50 text-cyan-700 dark:text-cyan-300 hover:bg-cyan-50 dark:hover:bg-cyan-900/10 hover:border-cyan-600 dark:hover:border-cyan-400 transition-all duration-200 text-sm font-medium whitespace-nowrap"
             >

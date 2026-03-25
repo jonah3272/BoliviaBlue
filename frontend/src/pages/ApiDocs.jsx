@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -6,6 +7,7 @@ import Navigation from '../components/Navigation';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import { Link } from 'react-router-dom';
+import { trackApiDocsViewed } from '../utils/analyticsEvents';
 
 function ApiDocs() {
   // Signal to AdSense that this page has sufficient content
@@ -13,6 +15,13 @@ function ApiDocs() {
   
   const languageContext = useLanguage();
   const language = languageContext?.language || 'es';
+  const apiDocsViewedRef = useRef(false);
+
+  useEffect(() => {
+    if (apiDocsViewedRef.current) return;
+    apiDocsViewedRef.current = true;
+    trackApiDocsViewed({ language });
+  }, [language]);
 
   const breadcrumbs = [
     { name: language === 'es' ? 'Inicio' : 'Home', url: '/' },

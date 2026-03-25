@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { fetchBlueRate } from '../utils/api';
 import { getApiEndpoint } from '../utils/apiUrl';
 import { trackAlertSubmission, trackAlertFormStart, trackFormSubmission, trackFormError } from '../utils/analytics';
+import { trackRateAlertOpened, trackRateAlertSubmitted } from '../utils/analyticsEvents';
 
 function RateAlertForm() {
   const languageContext = useLanguage();
@@ -17,6 +18,25 @@ function RateAlertForm() {
   const [status, setStatus] = useState(null); // 'success', 'error', null
   const [message, setMessage] = useState('');
   const [formStarted, setFormStarted] = useState(false);
+  const sectionRef = useRef(null);
+  const openedTrackedRef = useRef(false);
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el || openedTrackedRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !openedTrackedRef.current) {
+          openedTrackedRef.current = true;
+          trackRateAlertOpened({ language });
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.15 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [language]);
 
   // Load current rate
   useEffect(() => {
@@ -134,6 +154,12 @@ function RateAlertForm() {
         );
         // Track successful submission
         trackAlertSubmission(alertType, parseFloat(threshold), direction, 'USD');
+        trackRateAlertSubmitted({
+          language,
+          alert_type: alertType,
+          direction,
+          threshold: parseFloat(threshold),
+        });
         trackFormSubmission('alert_form', 'alert', true);
         // Reset form
         setEmail('');
@@ -190,7 +216,10 @@ function RateAlertForm() {
   };
 
   return (
-    <section className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-gray-800 dark:via-gray-800 dark:to-gray-900 rounded-xl sm:rounded-2xl p-6 sm:p-8 md:p-10 shadow-xl border-2 border-indigo-200 dark:border-indigo-800">
+    <section
+      ref={sectionRef}
+      className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-gray-800 dark:via-gray-800 dark:to-gray-900 rounded-xl sm:rounded-2xl p-6 sm:p-8 md:p-10 shadow-xl border-2 border-indigo-200 dark:border-indigo-800"
+    >
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="text-center mb-6 sm:mb-8">

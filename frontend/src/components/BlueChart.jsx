@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { trackChartRangeChanged } from '../utils/analyticsEvents';
 import { fetchBlueHistory } from '../utils/api';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useCurrency } from '../contexts/CurrencyContext';
@@ -22,7 +23,23 @@ function BlueChart({ showOfficial = false }) {
   const [stats, setStats] = useState({ latestBuy: 0, latestSell: 0, change: 0 });
   const [uniqueDateIndices, setUniqueDateIndices] = useState([]); // For ALL range X-axis ticks
   const [chartType, setChartType] = useState('area'); // 'area' or 'candlestick'
-  
+  const rangeForAnalyticsRef = useRef('1W');
+
+  const selectRange = (value, isDisabled) => {
+    if (isDisabled) return;
+    const prev = rangeForAnalyticsRef.current;
+    if (prev !== value) {
+      trackChartRangeChanged({
+        language,
+        range_previous: prev,
+        range_selected: value,
+        chart_context: 'blue_chart',
+      });
+      rangeForAnalyticsRef.current = value;
+    }
+    setRange(value);
+  };
+
   // Define TIME_RANGES using useMemo to ensure t() is available
   const TIME_RANGES = useMemo(() => {
     if (!t || typeof t !== 'function') {
@@ -432,7 +449,7 @@ function BlueChart({ showOfficial = false }) {
             return (
               <button
                 key={value}
-                onClick={() => !isDisabled && setRange(value)}
+                onClick={() => selectRange(value, isDisabled)}
                 disabled={isDisabled}
                 title={isDisabled ? `Disponible después de ${minDays} días de datos` : ''}
                 className={`px-3 sm:px-4 py-1.5 sm:py-2 md:py-2.5 rounded-lg text-xs sm:text-sm font-semibold transition-all transform hover:scale-105 ${

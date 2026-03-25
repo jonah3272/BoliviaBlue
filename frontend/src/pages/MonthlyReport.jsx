@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import Header from '../components/Header';
@@ -8,6 +8,7 @@ import Navigation from '../components/Navigation';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import { getApiEndpoint } from '../utils/apiUrl';
+import { trackMonthlyReportViewed } from '../utils/analyticsEvents';
 
 function MonthlyReport() {
   useAdsenseReady();
@@ -19,6 +20,7 @@ function MonthlyReport() {
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const reportViewTrackedRef = useRef(null);
 
   useEffect(() => {
     const loadReport = async () => {
@@ -54,6 +56,18 @@ function MonthlyReport() {
       loadReport();
     }
   }, [month, year, language]);
+
+  useEffect(() => {
+    if (!report || loading || error) return;
+    const key = `${month}-${year}-${language}`;
+    if (reportViewTrackedRef.current === key) return;
+    reportViewTrackedRef.current = key;
+    trackMonthlyReportViewed({
+      language,
+      report_month: month,
+      report_year: year,
+    });
+  }, [report, loading, error, month, year, language]);
 
   const breadcrumbs = [
     { name: language === 'es' ? 'Inicio' : 'Home', url: '/' },

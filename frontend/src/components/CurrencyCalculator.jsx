@@ -3,6 +3,7 @@ import { fetchBlueRate } from '../utils/api';
 import { useLanguage } from '../contexts/LanguageContext';
 import AnimatedNumber from './AnimatedNumber';
 import { trackCalculatorUsage, trackCalculatorCurrencySwitch, trackCalculatorSwap } from '../utils/analytics';
+import { trackCalculatorUsed } from '../utils/analyticsEvents';
 
 function CurrencyCalculator() {
   const languageContext = useLanguage();
@@ -143,6 +144,12 @@ function CurrencyCalculator() {
       saveToHistory('BOB', selectedCurrency, bob.toFixed(2), usd.toFixed(4), rate.toFixed(4));
       // Track calculator usage
       trackCalculatorUsage(bob, 'BOB', selectedCurrency, usd);
+      trackCalculatorUsed({
+        language,
+        from_currency: 'BOB',
+        to_currency: selectedCurrency,
+        use_official: useOfficial,
+      });
     }
   };
 
@@ -167,6 +174,12 @@ function CurrencyCalculator() {
       saveToHistory(selectedCurrency, 'BOB', usd.toFixed(4), bob.toFixed(2), rate.toFixed(4));
       // Track calculator usage
       trackCalculatorUsage(usd, selectedCurrency, 'BOB', bob);
+      trackCalculatorUsed({
+        language,
+        from_currency: selectedCurrency,
+        to_currency: 'BOB',
+        use_official: useOfficial,
+      });
     }
   };
 

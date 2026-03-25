@@ -1,7 +1,10 @@
 import { BINANCE_REFERRAL_LINK, AIRTM_REFERRAL_LINK } from '../config/referrals';
+import { useLanguage } from '../contexts/LanguageContext';
+import { trackOutboundSourceClicked } from '../utils/analyticsEvents';
 
 // Reusable brand button component with animations
 export function BinanceButton({ children, className = '', size = 'md' }) {
+  const language = useLanguage()?.language || 'es';
   const sizeClasses = {
     sm: 'px-4 py-2 text-sm',
     md: 'px-5 py-2.5 text-sm',
@@ -13,6 +16,13 @@ export function BinanceButton({ children, className = '', size = 'md' }) {
       href={BINANCE_REFERRAL_LINK}
       target="_blank"
       rel="noopener noreferrer"
+      onClick={() =>
+        trackOutboundSourceClicked({
+          language,
+          destination: BINANCE_REFERRAL_LINK,
+          link_label: 'binance_referral',
+        })
+      }
       className={`inline-flex items-center gap-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 font-bold whitespace-nowrap relative overflow-hidden group ${sizeClasses[size]} ${className}`}
       style={{
         background: 'linear-gradient(135deg, #F3BA2F 0%, #FCD535 50%, #F3BA2F 100%)',
@@ -47,6 +57,7 @@ export function BinanceButton({ children, className = '', size = 'md' }) {
 }
 
 export function AirtmButton({ children, className = '', size = 'md' }) {
+  const language = useLanguage()?.language || 'es';
   const sizeClasses = {
     sm: 'px-4 py-2 text-sm',
     md: 'px-5 py-2.5 text-sm',
@@ -58,6 +69,13 @@ export function AirtmButton({ children, className = '', size = 'md' }) {
       href={AIRTM_REFERRAL_LINK}
       target="_blank"
       rel="noopener noreferrer"
+      onClick={() =>
+        trackOutboundSourceClicked({
+          language,
+          destination: AIRTM_REFERRAL_LINK,
+          link_label: 'airtm_referral',
+        })
+      }
       className={`inline-flex items-center gap-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 font-bold whitespace-nowrap relative overflow-hidden group ${sizeClasses[size]} ${className}`}
       style={{
         background: 'linear-gradient(135deg, #00D9FF 0%, #00A8CC 50%, #00D9FF 100%)',

@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -7,6 +8,7 @@ import Breadcrumbs from '../components/Breadcrumbs';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import { Link } from 'react-router-dom';
 import { BASE_URL, getWebPage, getBreadcrumbList, getFAQPage } from '../utils/seoSchema';
+import { trackMethodologyPageViewed, trackRelatedLinkClicked } from '../utils/analyticsEvents';
 
 function DataSource() {
   // Signal to AdSense that this page has sufficient content
@@ -14,6 +16,16 @@ function DataSource() {
   
   const languageContext = useLanguage();
   const language = languageContext?.language || 'es';
+  const methodologyViewedRef = useRef(false);
+
+  const trackRel = (destination, link_label) => () =>
+    trackRelatedLinkClicked({ language, destination, link_label, page_type: 'methodology' });
+
+  useEffect(() => {
+    if (methodologyViewedRef.current) return;
+    methodologyViewedRef.current = true;
+    trackMethodologyPageViewed({ language });
+  }, [language]);
 
   const breadcrumbs = [
     { name: language === 'es' ? 'Inicio' : 'Home', url: '/' },
@@ -225,7 +237,11 @@ function DataSource() {
                 ? 'En nuestra plataforma mostramos ambas cotizaciones: la del mercado paralelo (blue, desde Binance P2P) y la oficial (desde el BCB o fuentes que reflejan el tipo oficial). No modificamos ni mezclamos estas fuentes.'
                 : 'On our platform we show both rates: the parallel market (blue, from Binance P2P) and the official rate (from the BCB or sources that reflect the official rate). We do not modify or mix these sources.'}
             </p>
-            <Link to="/comparacion" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+            <Link
+              to="/comparacion"
+              onClick={trackRel('/comparacion', 'comparison')}
+              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+            >
               {language === 'es' ? 'Comparar con otros sitios →' : 'Compare with other sites →'}
             </Link>
           </div>
@@ -244,7 +260,11 @@ function DataSource() {
             </p>
             <ul className="list-disc list-inside space-y-2 ml-4">
               <li>
-                <Link to="/datos-historicos" className="text-blue-600 dark:text-blue-400 hover:underline">
+                <Link
+                  to="/datos-historicos"
+                  onClick={trackRel('/datos-historicos', 'historical')}
+                  className="text-blue-600 dark:text-blue-400 hover:underline"
+                >
                   {language === 'es' ? 'Datos históricos' : 'Historical data'}
                 </Link>
                 {language === 'es' ? ' – gráficos, tabla y descarga por período.' : ' – charts, table and download by period.'}
@@ -255,7 +275,11 @@ function DataSource() {
                   : 'Public export: CSV and JSON by range (30d, 90d, 1y, all) at stable URLs. See links on that page.'}
               </li>
               <li>
-                <Link to="/reporte-mensual/1/2025" className="text-blue-600 dark:text-blue-400 hover:underline">
+                <Link
+                  to="/reporte-mensual/1/2025"
+                  onClick={trackRel('/reporte-mensual/1/2025', 'monthly_reports')}
+                  className="text-blue-600 dark:text-blue-400 hover:underline"
+                >
                   {language === 'es' ? 'Reportes mensuales' : 'Monthly reports'}
                 </Link>
                 {language === 'es' ? ' – resúmenes por mes.' : ' – monthly summaries.'}
@@ -303,6 +327,7 @@ function DataSource() {
             </p>
             <Link
               to="/api-docs"
+              onClick={trackRel('/api-docs', 'api_docs_cta')}
               className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition-colors text-sm"
             >
               {language === 'es' ? 'Ver documentación API' : 'View API documentation'}
@@ -415,6 +440,7 @@ function DataSource() {
             </p>
             <Link
               to="/contacto"
+              onClick={trackRel('/contacto', 'contact')}
               className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors"
             >
               {language === 'es' ? 'Ir a Contacto' : 'Go to Contact'}
@@ -428,25 +454,49 @@ function DataSource() {
             {language === 'es' ? 'Enlaces útiles' : 'Useful links'}
           </h2>
           <div className="flex flex-wrap gap-4">
-            <Link to="/" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+            <Link to="/" onClick={trackRel('/', 'current_rate')} className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
               {language === 'es' ? 'Cotización actual' : 'Current rate'}
             </Link>
-            <Link to="/datos-historicos" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+            <Link
+              to="/datos-historicos"
+              onClick={trackRel('/datos-historicos', 'historical_footer')}
+              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+            >
               {language === 'es' ? 'Datos históricos' : 'Historical data'}
             </Link>
-            <Link to="/api-docs" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+            <Link
+              to="/api-docs"
+              onClick={trackRel('/api-docs', 'api_docs')}
+              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+            >
               {language === 'es' ? 'Documentación API' : 'API documentation'}
             </Link>
-            <Link to="/comparacion" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+            <Link
+              to="/comparacion"
+              onClick={trackRel('/comparacion', 'comparison_footer')}
+              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+            >
               {language === 'es' ? 'Comparación' : 'Comparison'}
             </Link>
-            <Link to="/reporte-mensual/1/2025" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+            <Link
+              to="/reporte-mensual/1/2025"
+              onClick={trackRel('/reporte-mensual/1/2025', 'monthly_reports_footer')}
+              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+            >
               {language === 'es' ? 'Reportes mensuales' : 'Monthly reports'}
             </Link>
-            <Link to="/que-es-dolar-blue" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+            <Link
+              to="/que-es-dolar-blue"
+              onClick={trackRel('/que-es-dolar-blue', 'what_is_blue')}
+              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+            >
               {language === 'es' ? '¿Qué es el dólar blue?' : 'What is the blue dollar?'}
             </Link>
-            <Link to="/acerca-de" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+            <Link
+              to="/acerca-de"
+              onClick={trackRel('/acerca-de', 'about')}
+              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+            >
               {language === 'es' ? 'Acerca de' : 'About'}
             </Link>
           </div>

@@ -5,6 +5,7 @@ import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
 import CurrencyToggle from './CurrencyToggle';
 import { BINANCE_REFERRAL_LINK, AIRTM_REFERRAL_LINK } from '../config/referrals';
+import { trackOutboundSourceClicked } from '../utils/analyticsEvents';
 
 function MobileMenu() {
   const [isOpen, setIsOpen] = useState(false);
@@ -253,6 +254,13 @@ function MobileMenu() {
               href={BINANCE_REFERRAL_LINK}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() =>
+                trackOutboundSourceClicked({
+                  language,
+                  destination: BINANCE_REFERRAL_LINK,
+                  link_label: 'mobile_menu_binance',
+                })
+              }
               className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-lg border-2 border-yellow-500/70 dark:border-yellow-400/50 text-yellow-700 dark:text-yellow-300 hover:bg-yellow-50 dark:hover:bg-yellow-900/10 transition-colors font-medium"
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -264,6 +272,13 @@ function MobileMenu() {
               href={AIRTM_REFERRAL_LINK}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() =>
+                trackOutboundSourceClicked({
+                  language,
+                  destination: AIRTM_REFERRAL_LINK,
+                  link_label: 'mobile_menu_airtm',
+                })
+              }
               className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-lg border-2 border-cyan-500/70 dark:border-cyan-400/50 text-cyan-700 dark:text-cyan-300 hover:bg-cyan-50 dark:hover:bg-cyan-900/10 transition-colors font-medium"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -9,6 +9,12 @@ import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import { Link } from 'react-router-dom';
 import { fetchBlueHistory } from '../utils/api';
 import { BASE_URL, getDataset, getWebPage, getBreadcrumbList } from '../utils/seoSchema';
+import {
+  trackChartRangeChanged,
+  trackHistoricalDownloadCsv,
+  trackHistoricalDownloadJson,
+  trackRelatedLinkClicked,
+} from '../utils/analyticsEvents';
 
 function DatosHistoricos() {
   // Signal to AdSense that this page has sufficient content
@@ -19,6 +25,29 @@ function DatosHistoricos() {
   const [selectedRange, setSelectedRange] = useState('1M');
   const [historyData, setHistoryData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const rangeAnalyticsRef = useRef('1M');
+
+  const selectHistoricalRange = (value) => {
+    const prev = rangeAnalyticsRef.current;
+    if (prev !== value) {
+      trackChartRangeChanged({
+        language,
+        range_previous: prev,
+        range_selected: value,
+        chart_context: 'historical_page',
+      });
+      rangeAnalyticsRef.current = value;
+    }
+    setSelectedRange(value);
+  };
+
+  const onServerHistoricalDownload = (format, rangeParam) => {
+    if (format === 'csv') {
+      trackHistoricalDownloadCsv({ language, range: rangeParam, source: 'server_api' });
+    } else {
+      trackHistoricalDownloadJson({ language, range: rangeParam, source: 'server_api' });
+    }
+  };
 
   useEffect(() => {
     const loadHistory = async () => {
@@ -183,16 +212,60 @@ function DatosHistoricos() {
             {language === 'es' ? 'También en esta web' : 'More on this site'}
           </h2>
           <div className="flex flex-wrap gap-3">
-            <Link to="/" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+            <Link
+              to="/"
+              onClick={() =>
+                trackRelatedLinkClicked({
+                  language,
+                  destination: '/',
+                  link_label: 'current_quote',
+                  page_type: 'historical',
+                })
+              }
+              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+            >
               {language === 'es' ? 'Cotización actual' : 'Current quote'}
             </Link>
-            <Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+            <Link
+              to="/dolar-blue-hoy"
+              onClick={() =>
+                trackRelatedLinkClicked({
+                  language,
+                  destination: '/dolar-blue-hoy',
+                  link_label: 'dolar_blue_hoy',
+                  page_type: 'historical',
+                })
+              }
+              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+            >
               {language === 'es' ? 'Dólar blue hoy' : 'Blue dollar today'}
             </Link>
-            <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+            <Link
+              to="/calculadora"
+              onClick={() =>
+                trackRelatedLinkClicked({
+                  language,
+                  destination: '/calculadora',
+                  link_label: 'calculator',
+                  page_type: 'historical',
+                })
+              }
+              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+            >
               {language === 'es' ? 'Calculadora de divisas' : 'Currency calculator'}
             </Link>
-            <Link to="/que-es-dolar-blue" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+            <Link
+              to="/que-es-dolar-blue"
+              onClick={() =>
+                trackRelatedLinkClicked({
+                  language,
+                  destination: '/que-es-dolar-blue',
+                  link_label: 'what_is_blue',
+                  page_type: 'historical',
+                })
+              }
+              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+            >
               {language === 'es' ? '¿Qué es el dólar blue?' : 'What is the blue dollar?'}
             </Link>
           </div>
@@ -214,7 +287,7 @@ function DatosHistoricos() {
             ].map(range => (
               <button
                 key={range.value}
-                onClick={() => setSelectedRange(range.value)}
+                onClick={() => selectHistoricalRange(range.value)}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                   selectedRange === range.value
                     ? 'bg-blue-600 text-white'
@@ -494,6 +567,7 @@ function DatosHistoricos() {
             <div className="flex flex-wrap gap-3 items-center">
               <a
                 href={`${BASE_URL}/api/historical-data.csv?range=30d`}
+                onClick={() => onServerHistoricalDownload('csv', '30d')}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
                 download
               >
@@ -501,6 +575,7 @@ function DatosHistoricos() {
               </a>
               <a
                 href={`${BASE_URL}/api/historical-data.csv?range=90d`}
+                onClick={() => onServerHistoricalDownload('csv', '90d')}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
                 download
               >
@@ -508,6 +583,7 @@ function DatosHistoricos() {
               </a>
               <a
                 href={`${BASE_URL}/api/historical-data.csv?range=1y`}
+                onClick={() => onServerHistoricalDownload('csv', '1y')}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
                 download
               >
@@ -515,6 +591,7 @@ function DatosHistoricos() {
               </a>
               <a
                 href={`${BASE_URL}/api/historical-data.csv?range=all`}
+                onClick={() => onServerHistoricalDownload('csv', 'all')}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
                 download
               >
@@ -522,6 +599,7 @@ function DatosHistoricos() {
               </a>
               <a
                 href={`${BASE_URL}/api/historical-data.json?range=30d`}
+                onClick={() => onServerHistoricalDownload('json', '30d')}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors"
                 download
               >
@@ -529,6 +607,7 @@ function DatosHistoricos() {
               </a>
               <a
                 href={`${BASE_URL}/api/historical-data.json?range=all`}
+                onClick={() => onServerHistoricalDownload('json', 'all')}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors"
                 download
               >
@@ -552,6 +631,11 @@ function DatosHistoricos() {
             <button
               onClick={() => {
                 if (historyData && historyData.history) {
+                  trackHistoricalDownloadCsv({
+                    language,
+                    range: selectedRange,
+                    source: 'client_generated',
+                  });
                   const csv = [
                     ['Fecha', 'Compra', 'Venta', 'Promedio'],
                     ...historyData.history.map(e => [

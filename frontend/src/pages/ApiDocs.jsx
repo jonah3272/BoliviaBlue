@@ -7,7 +7,7 @@ import Navigation from '../components/Navigation';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import { Link } from 'react-router-dom';
-import { trackApiDocsViewed } from '../utils/analyticsEvents';
+import { trackApiDocsViewed, trackCommercialAccessClicked } from '../utils/analyticsEvents';
 
 function ApiDocs() {
   // Signal to AdSense that this page has sufficient content
@@ -122,27 +122,65 @@ function ApiDocs() {
       method: 'GET',
       path: '/api/historical-data.csv',
       description: language === 'es'
-        ? 'Descarga datos históricos del dólar blue en CSV (URL estable, cacheable)'
-        : 'Download historical blue dollar data as CSV (stable URL, cacheable)',
+        ? 'Descarga histórica en CSV. Rango 30d es público (muestra acotada, ideal para citas). Rangos 90d, 1y y all requieren token devuelto por POST /api/data-export/register (desbloqueo con email en /datos-historicos).'
+        : 'Historical CSV. The 30d range is public (bounded sample, citable). Ranges 90d, 1y, and all require a token from POST /api/data-export/register (email unlock on /datos-historicos).',
       parameters: [
-        { name: 'range', type: 'string', required: false, options: ['30d', '90d', '1y', 'all'], description: language === 'es' ? '30d (default), 90d, 1y, all' : '30d (default), 90d, 1y, all' },
-        { name: 'limit', type: 'number', required: false, description: language === 'es' ? 'Máximo de filas (cap 50000)' : 'Max rows (cap 50000)' }
+        { name: 'range', type: 'string', required: false, options: ['30d', '90d', '1y', 'all'], description: language === 'es' ? '30d (default público), 90d|1y|all con token' : '30d (default, public), 90d|1y|all with token' },
+        { name: 'limit', type: 'number', required: false, description: language === 'es' ? 'Máximo de filas (cap 50000; 30d sin token: cap ~4000)' : 'Max rows (cap 50000; 30d without token: ~4000 cap)' },
+        { name: 'token', type: 'string', required: false, description: language === 'es' ? 'Firma HMAC para rangos extendidos' : 'HMAC-signed token for extended ranges' }
       ],
       response: 'text/csv with columns: timestamp,buy,sell,mid,official_buy,official_sell,official_mid',
-      example: { url: 'https://boliviablue.com/api/historical-data.csv?range=30d' }
+      example: {
+        url: 'https://boliviablue.com/api/historical-data.csv?range=30d',
+        response: { note: 'CSV body; use range=90d&token=... for extended after unlock' }
+      }
     },
     {
       method: 'GET',
       path: '/api/historical-data.json',
       description: language === 'es'
-        ? 'Descarga datos históricos del dólar blue en JSON con metadatos y atribución'
-        : 'Download historical blue dollar data as JSON with metadata and attribution',
+        ? 'Histórico en JSON con metadatos. Misma política de rangos que el CSV (30d público; extendido con token).'
+        : 'Historical JSON with metadata. Same range policy as CSV (30d public; extended with token).',
       parameters: [
-        { name: 'range', type: 'string', required: false, options: ['30d', '90d', '1y', 'all'], description: language === 'es' ? '30d (default), 90d, 1y, all' : '30d (default), 90d, 1y, all' },
-        { name: 'limit', type: 'number', required: false, description: language === 'es' ? 'Máximo de filas (cap 50000)' : 'Max rows (cap 50000)' }
+        { name: 'range', type: 'string', required: false, options: ['30d', '90d', '1y', 'all'], description: language === 'es' ? '30d (default público), 90d|1y|all con token' : '30d (default, public), 90d|1y|all with token' },
+        { name: 'limit', type: 'number', required: false, description: language === 'es' ? 'Máximo de filas (cap 50000)' : 'Max rows (cap 50000)' },
+        { name: 'token', type: 'string', required: false, description: language === 'es' ? 'Token para rangos extendidos' : 'Token for extended ranges' }
       ],
       response: 'JSON: { metadata: { source, attribution, range_requested, rows_returned, generated_at }, data: [...] }',
-      example: { url: 'https://boliviablue.com/api/historical-data.json?range=30d' }
+      example: {
+        url: 'https://boliviablue.com/api/historical-data.json?range=30d',
+        response: {
+          metadata: {
+            source: 'Bolivia Blue con Paz',
+            attribution: 'https://boliviablue.com',
+            range_requested: '30d',
+            rows_returned: 120
+          },
+          data: [{ timestamp: '2025-01-17T12:00:00Z', buy: 8.45, sell: 8.5, mid: 8.475 }]
+        }
+      }
+    },
+    {
+      method: 'POST',
+      path: '/api/data-export/register',
+      description: language === 'es'
+        ? 'Desbloquea descargas CSV/JSON extendidas (90d, 1y, all). Registra el email en la lista de Bolivia Blue (source: historical_extended_download) y devuelve un token válido varios días. Requiere consent: true.'
+        : 'Unlock extended CSV/JSON downloads (90d, 1y, all). Subscribes the email to Bolivia Blue updates (source: historical_extended_download) and returns a multi-day token. Requires consent: true.',
+      parameters: [
+        { name: 'email', type: 'string', required: true, description: language === 'es' ? 'Email válido' : 'Valid email' },
+        { name: 'language', type: 'string', required: false, options: ['es', 'en'], description: language === 'es' ? 'Idioma preferido' : 'Preferred language' },
+        { name: 'consent', type: 'boolean', required: true, description: language === 'es' ? 'Debe ser true' : 'Must be true' }
+      ],
+      response: '{ success, token, expires_in_days, message }',
+      example: {
+        url: 'POST https://boliviablue.com/api/data-export/register  Body: {"email":"you@example.com","language":"es","consent":true}',
+        response: {
+          success: true,
+          token: '<signed-token>',
+          expires_in_days: 7,
+          message: 'Done. You can download extended files.'
+        }
+      }
     },
     {
       method: 'GET',
@@ -263,6 +301,46 @@ function ApiDocs() {
                 curl https://boliviablue.com/api/blue-history?range=1W
               </code>
             </div>
+          </div>
+        </div>
+
+        {/* Commercial / higher-volume CTA */}
+        <div className="bg-slate-100 dark:bg-slate-800/80 rounded-xl p-6 mb-8 border border-slate-200 dark:border-slate-600">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+            {language === 'es' ? '¿Necesitás más volumen o acceso automático?' : 'Need higher volume or automated access?'}
+          </h2>
+          <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">
+            {language === 'es'
+              ? 'La API pública cubre tasas en vivo e histórico por intervalos. Para scraping intensivo, white-label, o licencias de datos, escribinos.'
+              : 'The public API covers live rates and history by interval. For heavy scraping, white-label, or data licensing, contact us.'}
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              to="/datos-historicos"
+              onClick={() =>
+                trackCommercialAccessClicked({
+                  language,
+                  destination: '/datos-historicos',
+                  link_label: 'api_docs_datos_historicos',
+                })
+              }
+              className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              {language === 'es' ? 'Descargas en datos históricos →' : 'Downloads on historical data →'}
+            </Link>
+            <Link
+              to="/contacto"
+              onClick={() =>
+                trackCommercialAccessClicked({
+                  language,
+                  destination: '/contacto',
+                  link_label: 'api_docs_contact_commercial',
+                })
+              }
+              className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              {language === 'es' ? 'Contacto comercial →' : 'Commercial contact →'}
+            </Link>
           </div>
         </div>
 

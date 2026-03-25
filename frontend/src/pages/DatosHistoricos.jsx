@@ -1,20 +1,36 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PageMeta from '../components/PageMeta';
 import Navigation from '../components/Navigation';
 import Breadcrumbs from '../components/Breadcrumbs';
+import LazyErrorBoundary from '../components/LazyErrorBoundary';
+import BinanceBanner from '../components/BinanceBanner';
+
+const BlueChart = lazy(() => import('../components/BlueChart'));
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import { Link } from 'react-router-dom';
 import { fetchBlueHistory } from '../utils/api';
 import { BASE_URL, getDataset, getWebPage, getBreadcrumbList } from '../utils/seoSchema';
+import { getApiEndpoint } from '../utils/apiUrl';
 import {
   trackChartRangeChanged,
   trackHistoricalDownloadCsv,
   trackHistoricalDownloadJson,
   trackRelatedLinkClicked,
+  trackFreeDownloadClicked,
+  trackExtendedDownloadStarted,
+  trackExtendedDownloadUnlocked,
+  trackExportLeadSubmitted,
+  trackCommercialAccessClicked,
 } from '../utils/analyticsEvents';
+
+const EXPORT_TOKEN_STORAGE_KEY = 'bb_data_export_token_v1';
+/** Server export ranges that require a signed token */
+const EXTENDED_API_RANGES = new Set(['90d', '1y', 'all']);
+/** Page chart/table ranges that need unlock for client CSV snapshot */
+const EXTENDED_PAGE_RANGES = new Set(['3M', '1Y', 'ALL']);
 
 function DatosHistoricos() {
   // Signal to AdSense that this page has sufficient content
@@ -26,6 +42,22 @@ function DatosHistoricos() {
   const [historyData, setHistoryData] = useState(null);
   const [loading, setLoading] = useState(true);
   const rangeAnalyticsRef = useRef('1M');
+  const [exportToken, setExportToken] = useState('');
+  const [exportEmail, setExportEmail] = useState('');
+  const [exportConsent, setExportConsent] = useState(false);
+  const [exportSubmitting, setExportSubmitting] = useState(false);
+  const [exportFormMessage, setExportFormMessage] = useState(null);
+  const [exportFormError, setExportFormError] = useState(null);
+  const [showOfficial, setShowOfficial] = useState(false);
+
+  useEffect(() => {
+    try {
+      const t = sessionStorage.getItem(EXPORT_TOKEN_STORAGE_KEY);
+      if (t) setExportToken(t);
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   const selectHistoricalRange = (value) => {
     const prev = rangeAnalyticsRef.current;
@@ -41,13 +73,89 @@ function DatosHistoricos() {
     setSelectedRange(value);
   };
 
+  const buildServerExportHref = (format, rangeParam) => {
+    const path = `${BASE_URL}/api/historical-data.${format}?range=${encodeURIComponent(rangeParam)}`;
+    if (EXTENDED_API_RANGES.has(rangeParam) && exportToken) {
+      return `${path}&token=${encodeURIComponent(exportToken)}`;
+    }
+    return path;
+  };
+
   const onServerHistoricalDownload = (format, rangeParam) => {
+    const source =
+      EXTENDED_API_RANGES.has(rangeParam) && exportToken ? 'server_api_extended' : 'server_api';
+    if (rangeParam === '30d') {
+      trackFreeDownloadClicked({ language, format, range: rangeParam });
+    }
     if (format === 'csv') {
-      trackHistoricalDownloadCsv({ language, range: rangeParam, source: 'server_api' });
+      trackHistoricalDownloadCsv({ language, range: rangeParam, source });
     } else {
-      trackHistoricalDownloadJson({ language, range: rangeParam, source: 'server_api' });
+      trackHistoricalDownloadJson({ language, range: rangeParam, source });
     }
   };
+
+  const handleExportLeadSubmit = async (e) => {
+    e.preventDefault();
+    setExportFormError(null);
+    setExportFormMessage(null);
+    if (!exportEmail || !exportEmail.includes('@')) {
+      setExportFormError(
+        language === 'es' ? 'Ingresa un email válido.' : 'Please enter a valid email.'
+      );
+      return;
+    }
+    if (!exportConsent) {
+      setExportFormError(
+        language === 'es'
+          ? 'Debes aceptar recibir información ocasional y las condiciones de uso de la descarga.'
+          : 'Please accept occasional updates and the download terms.'
+      );
+      return;
+    }
+    trackExtendedDownloadStarted({ language });
+    setExportSubmitting(true);
+    try {
+      const res = await fetch(getApiEndpoint('/api/data-export/register'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        mode: 'cors',
+        body: JSON.stringify({
+          email: exportEmail.trim(),
+          language,
+          consent: true,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setExportFormError(data.message || (language === 'es' ? 'Error al registrar.' : 'Registration failed.'));
+        return;
+      }
+      if (data.token) {
+        try {
+          sessionStorage.setItem(EXPORT_TOKEN_STORAGE_KEY, data.token);
+        } catch {
+          /* ignore */
+        }
+        setExportToken(data.token);
+        trackExportLeadSubmitted({ language, source: 'historical_extended_download' });
+        trackExtendedDownloadUnlocked({ language });
+        setExportFormMessage(data.message || '');
+        setExportEmail('');
+        setExportConsent(false);
+      }
+    } catch {
+      setExportFormError(
+        language === 'es'
+          ? 'No se pudo conectar. Intenta de nuevo.'
+          : 'Could not connect. Please try again.'
+      );
+    } finally {
+      setExportSubmitting(false);
+    }
+  };
+
+  const clientCsvNeedsUnlock = EXTENDED_PAGE_RANGES.has(selectedRange) && !exportToken;
 
   useEffect(() => {
     const loadHistory = async () => {
@@ -101,6 +209,35 @@ function DatosHistoricos() {
     { name: language === 'es' ? 'Datos Históricos' : 'Historical Data', url: '/datos-historicos' }
   ]);
 
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: language === 'es' ? '¿Cómo descargo el historial completo del dólar blue?' : 'How do I download the full blue dollar history?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text:
+            language === 'es'
+              ? 'Podés bajar CSV o JSON de los últimos 30 días sin registro. Para 90 días, un año o la serie completa, dejá tu email en boliviablue.com/datos-historicos y desbloqueamos las descargas en tu navegador.'
+              : 'You can download CSV or JSON for the last 30 days without signing up. For 90 days, one year, or the full series, enter your email on boliviablue.com/datos-historicos to unlock downloads in your browser.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: language === 'es' ? '¿Hay API para empresas o desarrolladores?' : 'Is there an API for businesses or developers?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text:
+            language === 'es'
+              ? 'Sí: documentación pública en /api-docs y contacto comercial en /contacto para volumen, licencias o integraciones a medida.'
+              : 'Yes: public docs at /api-docs and commercial contact at /contacto for volume, licensing, or custom integration.',
+        },
+      },
+    ],
+  };
+
   // Calculate statistics
   const calculateStats = () => {
     if (!historyData || !historyData.history || historyData.history.length === 0) {
@@ -132,608 +269,579 @@ function DatosHistoricos() {
           ? 'dólar blue bolivia histórico, datos históricos dólar blue, tipo cambio histórico bolivia, estadísticas dólar blue, promedio mensual dólar blue, máximo mínimo dólar blue bolivia'
           : 'blue dollar bolivia historical, historical blue dollar data, bolivia exchange rate history, blue dollar statistics, monthly average blue dollar, high low blue dollar bolivia'}
         canonical="/datos-historicos"
-        structuredData={[webPageSchema, breadcrumbSchema, datasetSchema]}
+        structuredData={[webPageSchema, breadcrumbSchema, datasetSchema, faqSchema]}
       />
 
       <Header />
       <Navigation />
 
-      <main className="max-w-7xl mx-auto px-4 py-12">
+      <main className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:space-y-10 sm:px-6 sm:py-10 md:py-12">
         <Breadcrumbs items={breadcrumbs} />
 
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            {language === 'es' 
-              ? '📊 Datos Históricos del Dólar Blue'
-              : '📊 Historical Blue Dollar Data'}
-          </h1>
-          <p className="text-base font-medium text-gray-600 dark:text-gray-400 mb-2">
-            {language === 'es' ? 'Archivo de cotizaciones pasadas para analizar tendencias.' : 'Archive of past quotes to analyze trends.'}
-          </p>
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            {language === 'es'
-              ? 'Aquí puedes ver y analizar el histórico del tipo de cambio del dólar blue en Bolivia: tendencias, promedios y estadísticas desde 2024.'
-              : 'View and analyze the history of the blue dollar exchange rate in Bolivia: trends, averages and statistics since 2024.'}
-          </p>
-          <p className="text-sm text-gray-500 dark:text-gray-400 max-w-2xl mx-auto mt-2">
-            {language === 'es'
-              ? 'El gráfico y la tabla muestran compra/venta y promedio por período. Los datos provienen de la misma fuente que la cotización en vivo (actualización cada 15 min).'
-              : 'The chart and table show buy/sell and average by period. Data comes from the same source as the live quote (updated every 15 min).'}
-          </p>
-        </div>
+        {/* Hero + period stats — single surface */}
+        <header className="overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800/90">
+          <div className="border-b border-gray-100 px-5 py-8 dark:border-gray-700 sm:px-8">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-600 dark:text-blue-400">
+              {language === 'es' ? 'Archivo público' : 'Public archive'}
+            </p>
+            <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+              {language === 'es' ? 'Datos históricos del dólar blue' : 'Blue dollar historical data'}
+            </h1>
+            <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-gray-600 dark:text-gray-300">
+              {language === 'es' ? (
+                <>
+                  Gráfico y tabla por período. Fuente Binance P2P, misma que la{' '}
+                  <Link
+                    to="/"
+                    onClick={() =>
+                      trackRelatedLinkClicked({
+                        language,
+                        destination: '/',
+                        link_label: 'hero_live_rate',
+                        page_type: 'historical',
+                      })
+                    }
+                    className="font-medium text-blue-600 underline decoration-blue-600/30 underline-offset-2 hover:decoration-blue-600 dark:text-blue-400 dark:decoration-blue-400/30"
+                  >
+                    cotización en vivo
+                  </Link>
+                  {' '}(~15 min).{' '}
+                  <Link
+                    to="/fuente-de-datos"
+                    onClick={() =>
+                      trackRelatedLinkClicked({
+                        language,
+                        destination: '/fuente-de-datos',
+                        link_label: 'hero_methodology',
+                        page_type: 'historical',
+                      })
+                    }
+                    className="font-medium text-blue-600 underline decoration-blue-600/30 underline-offset-2 hover:decoration-blue-600 dark:text-blue-400 dark:decoration-blue-400/30"
+                  >
+                    Metodología
+                  </Link>
+                  .
+                </>
+              ) : (
+                <>
+                  Chart and table by period. Binance P2P source, same as the{' '}
+                  <Link
+                    to="/"
+                    onClick={() =>
+                      trackRelatedLinkClicked({
+                        language,
+                        destination: '/',
+                        link_label: 'hero_live_rate',
+                        page_type: 'historical',
+                      })
+                    }
+                    className="font-medium text-blue-600 underline decoration-blue-600/30 underline-offset-2 hover:decoration-blue-600 dark:text-blue-400 dark:decoration-blue-400/30"
+                  >
+                    live quote
+                  </Link>
+                  {' '}(~15 min).{' '}
+                  <Link
+                    to="/fuente-de-datos"
+                    onClick={() =>
+                      trackRelatedLinkClicked({
+                        language,
+                        destination: '/fuente-de-datos',
+                        link_label: 'hero_methodology',
+                        page_type: 'historical',
+                      })
+                    }
+                    className="font-medium text-blue-600 underline decoration-blue-600/30 underline-offset-2 hover:decoration-blue-600 dark:text-blue-400 dark:decoration-blue-400/30"
+                  >
+                    Methodology
+                  </Link>
+                  .
+                </>
+              )}
+            </p>
+          </div>
+          {stats && (
+            <div className="grid divide-y divide-gray-100 bg-slate-50/80 dark:divide-gray-700 dark:bg-gray-900/40 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+              <div className="px-5 py-4 sm:px-6 sm:py-5">
+                <p className="text-[11px] font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                  {language === 'es' ? 'Promedio' : 'Average'}
+                </p>
+                <p className="mt-1 text-2xl font-bold tabular-nums text-gray-900 dark:text-white sm:text-[1.65rem]">
+                  {stats.avg.toFixed(2)}{' '}
+                  <span className="text-base font-semibold text-gray-500 dark:text-gray-400">BOB</span>
+                </p>
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  {language === 'es' ? `${stats.count} puntos en el período` : `${stats.count} points in range`}
+                </p>
+              </div>
+              <div className="px-5 py-4 sm:px-6 sm:py-5">
+                <p className="text-[11px] font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                  {language === 'es' ? 'Máximo' : 'High'}
+                </p>
+                <p className="mt-1 text-2xl font-bold tabular-nums text-rose-600 dark:text-rose-400 sm:text-[1.65rem]">
+                  {stats.max.toFixed(2)} <span className="text-base font-semibold opacity-80">BOB</span>
+                </p>
+                {stats.maxDate && (
+                  <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    {new Date(stats.maxDate).toLocaleDateString(language === 'es' ? 'es-BO' : 'en-US')}
+                  </p>
+                )}
+              </div>
+              <div className="px-5 py-4 sm:px-6 sm:py-5">
+                <p className="text-[11px] font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                  {language === 'es' ? 'Mínimo' : 'Low'}
+                </p>
+                <p className="mt-1 text-2xl font-bold tabular-nums text-emerald-600 dark:text-emerald-400 sm:text-[1.65rem]">
+                  {stats.min.toFixed(2)} <span className="text-base font-semibold opacity-80">BOB</span>
+                </p>
+                {stats.minDate && (
+                  <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    {new Date(stats.minDate).toLocaleDateString(language === 'es' ? 'es-BO' : 'en-US')}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+        </header>
 
-        {/* Statistics Summary */}
-        {stats && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
-              <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">
-                {language === 'es' ? 'Promedio' : 'Average'}
-              </h3>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                {stats.avg.toFixed(2)} BOB
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                {language === 'es' ? `${stats.count} puntos de datos` : `${stats.count} data points`}
-              </p>
-            </div>
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
-              <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">
-                {language === 'es' ? 'Máximo' : 'Maximum'}
-              </h3>
-              <p className="text-3xl font-bold text-red-600 dark:text-red-400">
-                {stats.max.toFixed(2)} BOB
-              </p>
-              {stats.maxDate && (
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  {new Date(stats.maxDate).toLocaleDateString(language === 'es' ? 'es-BO' : 'en-US')}
+        <section
+          className="overflow-hidden rounded-2xl border border-gray-200/80 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800/90 sm:p-6"
+          aria-labelledby="historical-chart-heading"
+        >
+          <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <h2 id="historical-chart-heading" className="text-lg font-semibold text-gray-900 dark:text-white">
+              {language === 'es' ? 'Gráfico histórico' : 'Historical chart'}
+            </h2>
+            <label className="inline-flex cursor-pointer select-none items-center gap-2 rounded-lg border border-transparent px-2 py-1 text-sm text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700/50">
+              <input
+                type="checkbox"
+                checked={showOfficial}
+                onChange={(e) => setShowOfficial(e.target.checked)}
+                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
+              />
+              {language === 'es' ? 'Incluir tipo oficial' : 'Include official rate'}
+            </label>
+          </div>
+          <div className="overflow-hidden rounded-xl border border-gray-100 bg-gray-50/30 dark:border-gray-600 dark:bg-gray-900/30">
+            <LazyErrorBoundary>
+              <Suspense
+                fallback={
+                  <div className="flex min-h-[280px] items-center justify-center bg-white dark:bg-gray-800">
+                    <div className="text-center">
+                      <div className="mx-auto mb-3 h-9 w-9 animate-spin rounded-full border-2 border-gray-200 border-t-blue-600 dark:border-gray-600 dark:border-t-blue-400" />
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        {language === 'es' ? 'Cargando gráfico…' : 'Loading chart…'}
+                      </p>
+                    </div>
+                  </div>
+                }
+              >
+                <BlueChart showOfficial={showOfficial} />
+              </Suspense>
+            </LazyErrorBoundary>
+          </div>
+          <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">
+            {language === 'es'
+              ? 'Rangos del gráfico (1D, 1W…) son independientes del período de la tabla.'
+              : 'Chart ranges (1D, 1W…) are independent from the table period below.'}
+          </p>
+        </section>
+
+        <BinanceBanner />
+
+        {/* Table + period — one card, segmented control */}
+        <div className="overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800/90">
+          <div className="border-b border-gray-100 px-5 py-5 dark:border-gray-700 sm:px-6">
+            <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+              <div className="min-w-0">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {language === 'es' ? 'Registros por período' : 'Records by period'}
+                </h2>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  {language === 'es'
+                    ? 'Hasta 50 filas visibles; serie completa en descargas o en el gráfico.'
+                    : 'Up to 50 visible rows; full series via downloads or the chart.'}
                 </p>
-              )}
-            </div>
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
-              <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">
-                {language === 'es' ? 'Mínimo' : 'Minimum'}
-              </h3>
-              <p className="text-3xl font-bold text-green-600 dark:text-green-400">
-                {stats.min.toFixed(2)} BOB
-              </p>
-              {stats.minDate && (
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  {new Date(stats.minDate).toLocaleDateString(language === 'es' ? 'es-BO' : 'en-US')}
-                </p>
-              )}
+              </div>
+              <div
+                className="flex flex-wrap gap-1 rounded-xl bg-gray-100 p-1 dark:bg-gray-900/90 dark:ring-1 dark:ring-gray-600"
+                role="group"
+                aria-label={language === 'es' ? 'Período de la tabla' : 'Table period'}
+              >
+                {[
+                  { value: '1D', label: language === 'es' ? '24 h' : '24h' },
+                  { value: '1W', label: language === 'es' ? '7 d' : '7d' },
+                  { value: '1M', label: language === 'es' ? '1 mes' : '1M' },
+                  { value: '3M', label: language === 'es' ? '3 meses' : '3M' },
+                  { value: '1Y', label: language === 'es' ? '1 año' : '1Y' },
+                  { value: 'ALL', label: language === 'es' ? 'Todo' : 'All' },
+                ].map((range) => (
+                  <button
+                    key={range.value}
+                    type="button"
+                    onClick={() => selectHistoricalRange(range.value)}
+                    className={`rounded-lg px-3.5 py-2 text-sm font-medium transition-all ${
+                      selectedRange === range.value
+                        ? 'bg-white text-gray-900 shadow-sm dark:bg-gray-700 dark:text-white'
+                        : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
+                    }`}
+                  >
+                    {range.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
+          {loading ? (
+            <div className="px-5 py-16 text-center sm:px-6">
+              <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-2 border-gray-200 border-t-blue-600 dark:border-gray-600 dark:border-t-blue-400" />
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {language === 'es' ? 'Cargando datos…' : 'Loading data…'}
+              </p>
+            </div>
+          ) : historyData && historyData.history && historyData.history.length > 0 ? (
+            <>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[560px] text-sm">
+                <thead>
+                  <tr className="border-b border-gray-200 bg-gray-50/90 dark:border-gray-700 dark:bg-gray-900/50">
+                    <th className="sticky left-0 z-10 bg-gray-50/95 py-3 pl-5 pr-3 text-left font-semibold text-gray-900 backdrop-blur-sm dark:bg-gray-900/90 dark:text-white">
+                      {language === 'es' ? 'Fecha' : 'Date'}
+                    </th>
+                    <th className="py-3 px-3 text-right font-semibold text-gray-900 dark:text-white">
+                      {language === 'es' ? 'Compra' : 'Buy'}
+                    </th>
+                    <th className="py-3 px-3 text-right font-semibold text-gray-900 dark:text-white">
+                      {language === 'es' ? 'Venta' : 'Sell'}
+                    </th>
+                    <th className="py-3 pr-5 pl-3 text-right font-semibold text-gray-900 dark:text-white">
+                      {language === 'es' ? 'Prom.' : 'Avg'}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100 dark:divide-gray-700/80">
+                  {historyData.history.slice(0, 50).map((entry, index) => {
+                    const avg = (entry.buy + entry.sell) / 2;
+                    return (
+                      <tr
+                        key={index}
+                        className="hover:bg-gray-50/80 dark:hover:bg-gray-700/40 transition-colors even:bg-gray-50/40 dark:even:bg-gray-800/30"
+                      >
+                        <td className="sticky left-0 z-[1] whitespace-nowrap bg-white/95 py-2.5 pl-5 pr-3 text-gray-700 backdrop-blur-sm dark:bg-gray-800/95 dark:text-gray-300">
+                          {new Date(entry.timestamp).toLocaleDateString(language === 'es' ? 'es-BO' : 'en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </td>
+                        <td className="py-2.5 px-3 text-right tabular-nums text-gray-700 dark:text-gray-300">
+                          {entry.buy.toFixed(2)}
+                        </td>
+                        <td className="py-2.5 px-3 text-right tabular-nums text-gray-700 dark:text-gray-300">
+                          {entry.sell.toFixed(2)}
+                        </td>
+                        <td className="py-2.5 pr-5 pl-3 text-right tabular-nums font-medium text-gray-900 dark:text-white">
+                          {avg.toFixed(2)}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            {historyData.history.length > 50 && (
+              <p className="border-t border-gray-100 px-5 py-3 text-center text-xs text-gray-500 dark:border-gray-700 dark:text-gray-400">
+                {language === 'es'
+                  ? `Mostrando 50 de ${historyData.history.length} registros en este período.`
+                  : `Showing 50 of ${historyData.history.length} rows in this period.`}
+              </p>
+            )}
+            </>
+        ) : (
+          <div className="border-t border-gray-100 px-5 py-14 text-center dark:border-gray-700 sm:px-6">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              {language === 'es' 
+                ? 'No hay datos para este período.'
+                : 'No data for this period.'}
+            </p>
+          </div>
         )}
+        </div>
 
-        {/* Related Links - short, above main content */}
-        <section className="mb-8">
-          <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
-            {language === 'es' ? 'También en esta web' : 'More on this site'}
-          </h2>
-          <div className="flex flex-wrap gap-3">
-            <Link
-              to="/"
-              onClick={() =>
-                trackRelatedLinkClicked({
-                  language,
-                  destination: '/',
-                  link_label: 'current_quote',
-                  page_type: 'historical',
-                })
-              }
-              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
-            >
-              {language === 'es' ? 'Cotización actual' : 'Current quote'}
-            </Link>
-            <Link
-              to="/dolar-blue-hoy"
-              onClick={() =>
-                trackRelatedLinkClicked({
-                  language,
-                  destination: '/dolar-blue-hoy',
-                  link_label: 'dolar_blue_hoy',
-                  page_type: 'historical',
-                })
-              }
-              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
-            >
-              {language === 'es' ? 'Dólar blue hoy' : 'Blue dollar today'}
-            </Link>
-            <Link
-              to="/calculadora"
-              onClick={() =>
-                trackRelatedLinkClicked({
-                  language,
-                  destination: '/calculadora',
-                  link_label: 'calculator',
-                  page_type: 'historical',
-                })
-              }
-              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
-            >
-              {language === 'es' ? 'Calculadora de divisas' : 'Currency calculator'}
-            </Link>
-            <Link
-              to="/que-es-dolar-blue"
-              onClick={() =>
-                trackRelatedLinkClicked({
-                  language,
-                  destination: '/que-es-dolar-blue',
-                  link_label: 'what_is_blue',
-                  page_type: 'historical',
-                })
-              }
-              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
-            >
-              {language === 'es' ? '¿Qué es el dólar blue?' : 'What is the blue dollar?'}
-            </Link>
+        {/* Downloads & monetization — immediately after data */}
+        <section className="mb-10 overflow-hidden rounded-2xl border border-blue-200/70 bg-white shadow-md dark:border-blue-900/50 dark:bg-gray-800/90 sm:shadow-lg">
+          <div className="border-b border-blue-100/80 bg-gradient-to-r from-blue-50/90 to-white px-5 py-6 dark:border-blue-900/40 dark:from-blue-950/40 dark:to-gray-900/80 sm:px-8">
+            <h2 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+              {language === 'es' ? 'Descargar o integrar' : 'Download or integrate'}
+            </h2>
+            <p className="mt-1 max-w-2xl text-sm text-gray-600 dark:text-gray-300">
+              {language === 'es'
+                ? 'Archivos listos para Excel o scripts. Para series largas pedimos un email (lista de novedades, baja cuando quieras). Para productos o volumen: API y contacto comercial.'
+                : 'Files ready for Excel or scripts. Long series need one email (updates list, unsubscribe anytime). For products or volume: API and commercial contact.'}
+            </p>
+          </div>
+
+          <div className="space-y-6 p-5 sm:p-8">
+            <div className="rounded-xl border-2 border-indigo-300/80 bg-indigo-50/60 p-5 dark:border-indigo-700 dark:bg-indigo-950/30 sm:p-6">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-300">
+              {language === 'es' ? 'Más valor — mismo precio (gratis)' : 'More value — still free'}
+            </p>
+            <h3 className="mt-1 text-lg font-bold text-gray-900 dark:text-white">
+              {language === 'es' ? '90 días, 1 año o historial completo' : '90 days, 1 year, or full history'}
+            </h3>
+            <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
+              {language === 'es'
+                ? 'Dejá tu email y desbloqueamos CSV/JSON en este navegador. Te avisamos de tasas y novedades; podés darte de baja en un clic.'
+                : 'Enter your email and we unlock CSV/JSON in this browser. We’ll send rates and updates; one-click unsubscribe.'}
+            </p>
+            {!exportToken ? (
+              <form onSubmit={handleExportLeadSubmit} className="space-y-3 max-w-md">
+                <input
+                  type="email"
+                  value={exportEmail}
+                  onChange={(e) => setExportEmail(e.target.value)}
+                  placeholder={language === 'es' ? 'tu@email.com' : 'you@email.com'}
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                  autoComplete="email"
+                />
+                <label className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={exportConsent}
+                    onChange={(e) => setExportConsent(e.target.checked)}
+                    className="mt-1 rounded border-gray-300"
+                  />
+                  <span>
+                    {language === 'es'
+                      ? 'Acepto recibir correos ocasionales de Bolivia Blue (tasas, novedades) y usar estos datos con atribución a boliviablue.com. No revendo datos personales.'
+                      : 'I agree to receive occasional Bolivia Blue emails (rates, updates) and to use this data with attribution to boliviablue.com. We do not sell personal data.'}
+                  </span>
+                </label>
+                {exportFormError && (
+                  <p className="text-sm text-red-600 dark:text-red-400">{exportFormError}</p>
+                )}
+                <button
+                  type="submit"
+                  disabled={exportSubmitting}
+                  className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg disabled:opacity-50"
+                >
+                  {exportSubmitting
+                    ? language === 'es'
+                      ? 'Enviando…'
+                      : 'Sending…'
+                    : language === 'es'
+                      ? 'Desbloquear descargas ampliadas'
+                      : 'Unlock extended downloads'}
+                </button>
+              </form>
+            ) : (
+              <p className="text-sm text-green-700 dark:text-green-400 mb-3">
+                {exportFormMessage ||
+                  (language === 'es'
+                    ? 'Descargas ampliadas activas en este navegador.'
+                    : 'Extended downloads are active in this browser.')}
+              </p>
+            )}
+            {exportToken && (
+              <div className="flex flex-wrap gap-3 items-center mt-4">
+                {['90d', '1y', 'all'].map((r) => (
+                  <span key={r} className="flex flex-wrap gap-2 items-center">
+                    <a
+                      href={buildServerExportHref('csv', r)}
+                      onClick={() => onServerHistoricalDownload('csv', r)}
+                      className="inline-flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors"
+                      download
+                    >
+                      CSV ({r})
+                    </a>
+                    <a
+                      href={buildServerExportHref('json', r)}
+                      onClick={() => onServerHistoricalDownload('json', r)}
+                      className="inline-flex items-center gap-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg transition-colors"
+                      download
+                    >
+                      JSON ({r})
+                    </a>
+                  </span>
+                ))}
+              </div>
+            )}
+            </div>
+
+            <div className="grid gap-5 border-t border-gray-200/80 pt-6 dark:border-gray-700 md:grid-cols-2 lg:grid-cols-3">
+              <div className="rounded-xl border border-gray-100 bg-slate-50/70 p-4 dark:border-gray-600 dark:bg-gray-900/40">
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                  {language === 'es' ? 'Sin registro' : 'No signup'}
+                </p>
+                <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                  {language === 'es' ? '~30 días · CSV o JSON' : '~30 days · CSV or JSON'}
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <a
+                    href={buildServerExportHref('csv', '30d')}
+                    onClick={() => onServerHistoricalDownload('csv', '30d')}
+                    className="inline-flex rounded-lg border border-blue-200 bg-white px-3 py-1.5 text-sm font-medium text-blue-700 hover:bg-blue-50 dark:border-blue-800 dark:bg-gray-800 dark:text-blue-300"
+                    download
+                  >
+                    CSV
+                  </a>
+                  <a
+                    href={buildServerExportHref('json', '30d')}
+                    onClick={() => onServerHistoricalDownload('json', '30d')}
+                    className="inline-flex rounded-lg border border-emerald-200 bg-white px-3 py-1.5 text-sm font-medium text-emerald-700 hover:bg-emerald-50 dark:border-emerald-800 dark:bg-gray-800 dark:text-emerald-300"
+                    download
+                  >
+                    JSON
+                  </a>
+                </div>
+              </div>
+              <div className="rounded-xl border border-gray-100 bg-slate-50/70 p-4 dark:border-gray-600 dark:bg-gray-900/40">
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                  {language === 'es' ? 'Empresas y devs' : 'Teams & devs'}
+                </p>
+                <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                  {language === 'es' ? 'API, volumen y licencias.' : 'API, volume, licensing.'}
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <Link
+                    to="/api-docs"
+                    onClick={() =>
+                      trackCommercialAccessClicked({
+                        language,
+                        destination: '/api-docs',
+                        link_label: 'datos_historicos_api_grid',
+                      })
+                    }
+                    className="inline-flex rounded-lg bg-gray-900 px-3 py-1.5 text-sm font-semibold text-white hover:opacity-90 dark:bg-white dark:text-gray-900"
+                  >
+                    API
+                  </Link>
+                  <Link
+                    to="/contacto"
+                    onClick={() =>
+                      trackCommercialAccessClicked({
+                        language,
+                        destination: '/contacto',
+                        link_label: 'datos_historicos_contact_grid',
+                      })
+                    }
+                    className="inline-flex rounded-lg border border-gray-700 px-3 py-1.5 text-sm font-semibold text-gray-900 dark:border-gray-300 dark:text-white"
+                  >
+                    {language === 'es' ? 'Contacto' : 'Contact'}
+                  </Link>
+                </div>
+              </div>
+              <div className="rounded-xl border border-gray-100 bg-white p-4 dark:border-gray-600 dark:bg-gray-800/60 md:col-span-2 lg:col-span-1">
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                  {language === 'es' ? 'CSV de la tabla' : 'Table CSV'}
+                </p>
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  {language === 'es'
+                    ? 'Mismo período que la tabla. 3M / 1Y / todo: desbloqueá arriba.'
+                    : 'Same range as the table. 3M / 1Y / ALL: unlock above.'}
+                </p>
+                {clientCsvNeedsUnlock && (
+                  <p className="mt-2 text-xs text-amber-800 dark:text-amber-200">
+                    {language === 'es' ? 'Período largo: usá el formulario de email.' : 'Long range: use the email form above.'}
+                  </p>
+                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (historyData && historyData.history && !clientCsvNeedsUnlock) {
+                      trackHistoricalDownloadCsv({
+                        language,
+                        range: selectedRange,
+                        source: 'client_generated',
+                      });
+                      const csv = [
+                        ['Fecha', 'Compra', 'Venta', 'Promedio'],
+                        ...historyData.history.map((e) => [
+                          new Date(e.timestamp).toISOString(),
+                          e.buy.toFixed(2),
+                          e.sell.toFixed(2),
+                          ((e.buy + e.sell) / 2).toFixed(2),
+                        ]),
+                      ]
+                        .map((row) => row.join(','))
+                        .join('\n');
+                      const blob = new Blob([csv], { type: 'text/csv' });
+                      const url = window.URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = `dolar-blue-bolivia-${selectedRange}-${new Date().toISOString().split('T')[0]}.csv`;
+                      a.click();
+                      window.URL.revokeObjectURL(url);
+                    }
+                  }}
+                  className="mt-3 w-full rounded-lg bg-blue-600 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-40"
+                  disabled={!historyData || !historyData.history || clientCsvNeedsUnlock}
+                >
+                  {language === 'es' ? 'Descargar CSV de la tabla' : 'Download table CSV'}
+                </button>
+              </div>
+            </div>
+
+            <p className="text-xs leading-relaxed text-gray-500 dark:text-gray-400">
+              {language === 'es' ? (
+                <>
+                  Creative Commons · cita <span className="font-medium text-gray-700 dark:text-gray-300">boliviablue.com</span>.{' '}
+                  <Link
+                    to="/fuente-de-datos"
+                    className="font-medium text-blue-600 underline decoration-blue-600/25 underline-offset-2 hover:decoration-blue-600 dark:text-blue-400"
+                  >
+                    Metodología
+                  </Link>
+                  {' · '}
+                  <Link to="/calculadora" className="font-medium text-blue-600 underline decoration-blue-600/25 underline-offset-2 dark:text-blue-400">
+                    Calculadora
+                  </Link>
+                </>
+              ) : (
+                <>
+                  Creative Commons · cite <span className="font-medium text-gray-700 dark:text-gray-300">boliviablue.com</span>.{' '}
+                  <Link
+                    to="/fuente-de-datos"
+                    className="font-medium text-blue-600 underline decoration-blue-600/25 underline-offset-2 dark:text-blue-400"
+                  >
+                    Methodology
+                  </Link>
+                  {' · '}
+                  <Link to="/calculadora" className="font-medium text-blue-600 underline decoration-blue-600/25 underline-offset-2 dark:text-blue-400">
+                    Calculator
+                  </Link>
+                </>
+              )}
+            </p>
           </div>
         </section>
 
-        {/* Time Range Selector */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-            {language === 'es' ? 'Seleccionar Período' : 'Select Period'}
-          </h2>
-          <div className="flex flex-wrap gap-3">
-            {[
-              { value: '1D', label: language === 'es' ? 'Últimas 24 horas' : 'Last 24 hours' },
-              { value: '1W', label: language === 'es' ? 'Última semana' : 'Last week' },
-              { value: '1M', label: language === 'es' ? 'Último mes' : 'Last month' },
-              { value: '3M', label: language === 'es' ? 'Últimos 3 meses' : 'Last 3 months' },
-              { value: '1Y', label: language === 'es' ? 'Último año' : 'Last year' },
-              { value: 'ALL', label: language === 'es' ? 'Todo' : 'All time' }
-            ].map(range => (
-              <button
-                key={range.value}
-                onClick={() => selectHistoricalRange(range.value)}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  selectedRange === range.value
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                }`}
-              >
-                {range.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Data Table */}
-        {loading ? (
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-12 text-center">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-blue-600 mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-400">
-              {language === 'es' ? 'Cargando datos históricos...' : 'Loading historical data...'}
-            </p>
-          </div>
-        ) : historyData && historyData.history && historyData.history.length > 0 ? (
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8 overflow-x-auto">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-              {language === 'es' ? 'Datos Detallados' : 'Detailed Data'}
-            </h2>
-            <table className="w-full min-w-[600px]">
-              <thead>
-                <tr className="border-b border-gray-200 dark:border-gray-700">
-                  <th className="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">
-                    {language === 'es' ? 'Fecha' : 'Date'}
-                  </th>
-                  <th className="text-right py-3 px-4 font-semibold text-gray-900 dark:text-white">
-                    {language === 'es' ? 'Compra' : 'Buy'}
-                  </th>
-                  <th className="text-right py-3 px-4 font-semibold text-gray-900 dark:text-white">
-                    {language === 'es' ? 'Venta' : 'Sell'}
-                  </th>
-                  <th className="text-right py-3 px-4 font-semibold text-gray-900 dark:text-white">
-                    {language === 'es' ? 'Promedio' : 'Average'}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {historyData.history.slice(0, 50).map((entry, index) => {
-                  const avg = (entry.buy + entry.sell) / 2;
-                  return (
-                    <tr key={index} className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                      <td className="py-3 px-4 text-gray-700 dark:text-gray-300">
-                        {new Date(entry.timestamp).toLocaleDateString(language === 'es' ? 'es-BO' : 'en-US', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
-                      </td>
-                      <td className="py-3 px-4 text-right text-gray-700 dark:text-gray-300">
-                        {entry.buy.toFixed(2)} BOB
-                      </td>
-                      <td className="py-3 px-4 text-right text-gray-700 dark:text-gray-300">
-                        {entry.sell.toFixed(2)} BOB
-                      </td>
-                      <td className="py-3 px-4 text-right font-medium text-gray-900 dark:text-white">
-                        {avg.toFixed(2)} BOB
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-            {historyData.history.length > 50 && (
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-4 text-center">
-                {language === 'es' 
-                  ? `Mostrando 50 de ${historyData.history.length} registros. Usa el gráfico histórico para ver todos los datos.`
-                  : `Showing 50 of ${historyData.history.length} records. Use the historical chart to view all data.`}
+        <details className="group mb-6 overflow-hidden rounded-xl border border-gray-200/80 bg-white text-sm shadow-sm dark:border-gray-700 dark:bg-gray-800/80">
+          <summary className="cursor-pointer list-none px-4 py-3 font-medium text-gray-800 dark:text-gray-200 [&::-webkit-details-marker]:hidden">
+            <span className="inline-flex w-full items-center justify-between gap-2">
+              {language === 'es' ? 'Más contexto (SEO)' : 'More context (SEO)'}
+              <span className="text-gray-400 group-open:rotate-180" aria-hidden>
+                ▾
+              </span>
+            </span>
+          </summary>
+          <div className="border-t border-gray-100 px-4 py-3 text-gray-600 dark:border-gray-700 dark:text-gray-300">
+            {language === 'es' ? (
+              <p>
+                Archivo del <strong>dólar blue en Bolivia</strong> y del <strong>bolivian blue rate</strong>: compra, venta y
+                promedio desde 2024, alineado con la cotización en vivo. Los datos no son asesoría financiera; sirven para
+                tendencias y análisis con atribución a boliviablue.com.
+              </p>
+            ) : (
+              <p>
+                Archive of the <strong>blue dollar in Bolivia</strong> and <strong>bolivian blue rate</strong>: buy, sell, and
+                mid since 2024, aligned with the live quote. Data is not financial advice; use for trends and analysis with
+                attribution to boliviablue.com.
               </p>
             )}
           </div>
-        ) : (
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-12 text-center">
-            <p className="text-gray-600 dark:text-gray-400">
-              {language === 'es' 
-                ? 'No hay datos históricos disponibles para este período.'
-                : 'No historical data available for this period.'}
-            </p>
-          </div>
-        )}
-
-        {/* How to Read Historical Data Section */}
-        <section className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 md:p-8 lg:p-12 mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
-            {language === 'es' ? 'Cómo Leer e Interpretar los Datos Históricos' : 'How to Read and Interpret Historical Data'}
-          </h2>
-          <p className="text-gray-700 dark:text-gray-300 mb-6">
-            {language === 'es'
-              ? <>Los datos históricos del dólar blue en Bolivia proporcionan información valiosa sobre las tendencias del mercado cambiario. Al analizar estos datos, puedes identificar patrones, predecir tendencias futuras y tomar decisiones financieras más informadas. Cada punto de datos representa una instantánea del mercado en un momento específico, capturando las fluctuaciones naturales del <strong>bolivian blue rate</strong> a lo largo del tiempo.</>
-              : <>Historical data on the blue dollar in Bolivia provides valuable information about exchange market trends. By analyzing this data, you can identify patterns, predict future trends, and make more informed financial decisions. Each data point represents a snapshot of the market at a specific moment, capturing the natural fluctuations of the <strong>bolivian blue rate</strong> over time.</>}
-          </p>
-          
-          <div className="grid md:grid-cols-2 gap-6 mb-6">
-            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6">
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
-                {language === 'es' ? '📈 Identificar Tendencias' : '📈 Identifying Trends'}
-              </h3>
-              <p className="text-gray-700 dark:text-gray-300 mb-3">
-                {language === 'es'
-                  ? 'Observa si el dólar blue está en una tendencia alcista (subiendo), bajista (bajando), o lateral (estable). Las tendencias pueden durar días, semanas o meses, y entenderlas te ayuda a decidir cuándo realizar transacciones.'
-                  : 'Observe if the blue dollar is in an upward trend (rising), downward trend (falling), or sideways trend (stable). Trends can last days, weeks, or months, and understanding them helps you decide when to make transactions.'}
-              </p>
-            </div>
-            
-            <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-6">
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
-                {language === 'es' ? '📊 Analizar Volatilidad' : '📊 Analyzing Volatility'}
-              </h3>
-              <p className="text-gray-700 dark:text-gray-300 mb-3">
-                {language === 'es'
-                  ? 'La diferencia entre el máximo y mínimo en un período muestra la volatilidad del mercado. Períodos de alta volatilidad pueden indicar incertidumbre económica, mientras que períodos estables sugieren confianza en el mercado.'
-                  : 'The difference between the maximum and minimum in a period shows market volatility. Periods of high volatility may indicate economic uncertainty, while stable periods suggest market confidence.'}
-              </p>
-            </div>
-            
-            <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-6">
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
-                {language === 'es' ? '🎯 Encontrar Patrones' : '🎯 Finding Patterns'}
-              </h3>
-              <p className="text-gray-700 dark:text-gray-300 mb-3">
-                {language === 'es'
-                  ? 'Algunos patrones pueden repetirse, como aumentos durante ciertos meses del año o correlaciones con eventos económicos específicos. Identificar estos patrones puede ayudarte a anticipar movimientos futuros.'
-                  : 'Some patterns may repeat, such as increases during certain months of the year or correlations with specific economic events. Identifying these patterns can help you anticipate future movements.'}
-              </p>
-            </div>
-            
-            <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-6">
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
-                {language === 'es' ? '💡 Usar Promedios' : '💡 Using Averages'}
-              </h3>
-              <p className="text-gray-700 dark:text-gray-300 mb-3">
-                {language === 'es'
-                  ? 'El promedio mensual o anual te da una visión general del comportamiento del dólar blue. Compara el promedio actual con promedios históricos para entender si el mercado está por encima o por debajo de lo normal.'
-                  : 'The monthly or annual average gives you an overview of blue dollar behavior. Compare the current average with historical averages to understand if the market is above or below normal.'}
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* What Historical Data Tells Us Section */}
-        <section className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 rounded-xl shadow-lg p-6 md:p-8 lg:p-12 mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
-            {language === 'es' ? 'Qué Nos Dicen los Datos Históricos sobre el Mercado' : 'What Historical Data Tells Us About the Market'}
-          </h2>
-          <p className="text-gray-700 dark:text-gray-300 mb-6">
-            {language === 'es'
-              ? <>Los datos históricos del <strong>Bolivian Blue</strong> revelan información importante sobre la salud del mercado cambiario boliviano. Cuando analizas estos datos a lo largo del tiempo, puedes identificar:</>
-              : <>Historical data on the <strong>Bolivian Blue</strong> reveals important information about the health of the Bolivian exchange market. When you analyze this data over time, you can identify:</>}
-          </p>
-          
-          <div className="space-y-4 mb-6">
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border-l-4 border-indigo-500">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                {language === 'es' ? '1. Estabilidad del Mercado' : '1. Market Stability'}
-              </h3>
-              <p className="text-gray-700 dark:text-gray-300">
-                {language === 'es'
-                  ? 'Períodos de estabilidad relativa indican confianza en la economía y políticas gubernamentales. Por el contrario, períodos de alta volatilidad pueden señalar incertidumbre o cambios en las políticas económicas.'
-                  : 'Periods of relative stability indicate confidence in the economy and government policies. Conversely, periods of high volatility may signal uncertainty or changes in economic policies.'}
-              </p>
-            </div>
-            
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border-l-4 border-purple-500">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                {language === 'es' ? '2. Impacto de Eventos Económicos' : '2. Impact of Economic Events'}
-              </h3>
-              <p className="text-gray-700 dark:text-gray-300">
-                {language === 'es'
-                  ? 'Los datos históricos muestran cómo eventos como cambios en políticas monetarias, anuncios gubernamentales, o crisis económicas internacionales afectan el <strong>bolivian blue rate</strong>. Esto te ayuda a entender la sensibilidad del mercado a diferentes factores.'
-                  : 'Historical data shows how events such as changes in monetary policies, government announcements, or international economic crises affect the <strong>bolivian blue rate</strong>. This helps you understand the market\'s sensitivity to different factors.'}
-              </p>
-            </div>
-            
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border-l-4 border-blue-500">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                {language === 'es' ? '3. Estacionalidad' : '3. Seasonality'}
-              </h3>
-              <p className="text-gray-700 dark:text-gray-300">
-                {language === 'es'
-                  ? 'Algunos períodos del año pueden mostrar patrones consistentes. Por ejemplo, ciertos meses pueden tener mayor demanda de dólares debido a importaciones estacionales o remesas. Identificar estos patrones puede ayudarte a planificar mejor tus transacciones.'
-                  : 'Some periods of the year may show consistent patterns. For example, certain months may have higher dollar demand due to seasonal imports or remittances. Identifying these patterns can help you better plan your transactions.'}
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Using Data for Decisions Section */}
-        <section className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 md:p-8 lg:p-12 mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
-            {language === 'es' ? 'Cómo Usar los Datos Históricos para Tomar Decisiones' : 'How to Use Historical Data to Make Decisions'}
-          </h2>
-          <p className="text-gray-700 dark:text-gray-300 mb-6">
-            {language === 'es'
-              ? <>Los datos históricos del <strong>Bolivian Blue</strong> son más que números; son herramientas para tomar decisiones financieras inteligentes. Aquí te explicamos cómo puedes utilizarlos:</>
-              : <>Historical data on the <strong>Bolivian Blue</strong> is more than numbers; they are tools for making smart financial decisions. Here's how you can use them:</>}
-          </p>
-          
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-5">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-                  {language === 'es' ? '✅ Para Importadores' : '✅ For Importers'}
-                </h3>
-                <p className="text-sm text-gray-700 dark:text-gray-300">
-                  {language === 'es'
-                    ? 'Analiza las tendencias para planificar tus compras internacionales. Si el dólar está en tendencia alcista, considera adelantar tus compras. Si está bajando, podrías esperar un mejor momento.'
-                    : 'Analyze trends to plan your international purchases. If the dollar is in an upward trend, consider advancing your purchases. If it\'s falling, you might wait for a better time.'}
-                </p>
-              </div>
-              
-              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-5">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-                  {language === 'es' ? '✅ Para Quienes Reciben Remesas' : '✅ For Those Receiving Remittances'}
-                </h3>
-                <p className="text-sm text-gray-700 dark:text-gray-300">
-                  {language === 'es'
-                    ? 'Observa los promedios mensuales para entender cuándo es mejor recibir tus remesas. Si el promedio del mes está por encima del histórico, podría ser un buen momento para cambiar.'
-                    : 'Observe monthly averages to understand when it\'s best to receive your remittances. If the month\'s average is above the historical average, it might be a good time to exchange.'}
-                </p>
-              </div>
-            </div>
-            
-            <div className="space-y-4">
-              <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-5">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-                  {language === 'es' ? '✅ Para Inversores' : '✅ For Investors'}
-                </h3>
-                <p className="text-sm text-gray-700 dark:text-gray-300">
-                  {language === 'es'
-                    ? 'La volatilidad histórica te ayuda a entender el riesgo. Períodos de alta volatilidad pueden ofrecer oportunidades, pero también mayor riesgo. Usa los datos para evaluar si el riesgo es aceptable para tu estrategia.'
-                    : 'Historical volatility helps you understand risk. Periods of high volatility may offer opportunities, but also greater risk. Use the data to evaluate if the risk is acceptable for your strategy.'}
-                </p>
-              </div>
-              
-              <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-5">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-                  {language === 'es' ? '✅ Para Planificación Financiera' : '✅ For Financial Planning'}
-                </h3>
-                <p className="text-sm text-gray-700 dark:text-gray-300">
-                  {language === 'es'
-                    ? 'Los promedios históricos te ayudan a crear presupuestos más realistas. Si planeas una compra grande en dólares, usa el promedio histórico como referencia, pero siempre considera un margen para la volatilidad.'
-                    : 'Historical averages help you create more realistic budgets. If you plan a large purchase in dollars, use the historical average as a reference, but always consider a margin for volatility.'}
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Download Section */}
-        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 rounded-xl p-8 mb-8 border-2 border-blue-200 dark:border-blue-800">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            {language === 'es' ? '📥 Descargar Datos' : '📥 Download Data'}
-          </h2>
-          <p className="text-gray-700 dark:text-gray-300 mb-6">
-            {language === 'es'
-              ? 'Los datos históricos están disponibles para descarga en formato CSV y JSON desde URLs estables, para análisis, investigaciones, reportes y aplicaciones.'
-              : 'Historical data is available for download in CSV and JSON from stable URLs, for analysis, research, reports and applications.'}
-          </p>
-
-          {/* Public server-backed downloads (stable URLs) */}
-          <div className="bg-white dark:bg-gray-700 rounded-lg p-4 mb-4">
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-              {language === 'es' ? 'Descarga desde el servidor (URLs estables)' : 'Download from server (stable URLs)'}
-            </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
-              {language === 'es'
-                ? 'Columnas: timestamp, buy, sell, mid, official_buy, official_sell, official_mid. Rango: 30d, 90d, 1y o all.'
-                : 'Columns: timestamp, buy, sell, mid, official_buy, official_sell, official_mid. Range: 30d, 90d, 1y or all.'}
-            </p>
-            <div className="flex flex-wrap gap-3 items-center">
-              <a
-                href={`${BASE_URL}/api/historical-data.csv?range=30d`}
-                onClick={() => onServerHistoricalDownload('csv', '30d')}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
-                download
-              >
-                CSV (30 {language === 'es' ? 'días' : 'days'})
-              </a>
-              <a
-                href={`${BASE_URL}/api/historical-data.csv?range=90d`}
-                onClick={() => onServerHistoricalDownload('csv', '90d')}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
-                download
-              >
-                CSV (90 {language === 'es' ? 'días' : 'days'})
-              </a>
-              <a
-                href={`${BASE_URL}/api/historical-data.csv?range=1y`}
-                onClick={() => onServerHistoricalDownload('csv', '1y')}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
-                download
-              >
-                CSV (1 {language === 'es' ? 'año' : 'year'})
-              </a>
-              <a
-                href={`${BASE_URL}/api/historical-data.csv?range=all`}
-                onClick={() => onServerHistoricalDownload('csv', 'all')}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
-                download
-              >
-                CSV (all)
-              </a>
-              <a
-                href={`${BASE_URL}/api/historical-data.json?range=30d`}
-                onClick={() => onServerHistoricalDownload('json', '30d')}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors"
-                download
-              >
-                JSON (30 {language === 'es' ? 'días' : 'days'})
-              </a>
-              <a
-                href={`${BASE_URL}/api/historical-data.json?range=all`}
-                onClick={() => onServerHistoricalDownload('json', 'all')}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors"
-                download
-              >
-                JSON (all)
-              </a>
-            </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">
-              {language === 'es' ? 'Fuente de datos: Bolivia Blue con Paz (boliviablue.com)' : 'Data source: Bolivia Blue con Paz (boliviablue.com)'}
-            </p>
-          </div>
-
-          <div className="bg-white dark:bg-gray-700 rounded-lg p-4">
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-              {language === 'es' ? 'Formato CSV (período seleccionado en la página)' : 'CSV (selected period on this page)'}
-            </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
-              {language === 'es'
-                ? 'Datos en formato CSV con columnas: Fecha, Compra, Venta, Promedio'
-                : 'Data in CSV format with columns: Date, Buy, Sell, Average'}
-            </p>
-            <button
-              onClick={() => {
-                if (historyData && historyData.history) {
-                  trackHistoricalDownloadCsv({
-                    language,
-                    range: selectedRange,
-                    source: 'client_generated',
-                  });
-                  const csv = [
-                    ['Fecha', 'Compra', 'Venta', 'Promedio'],
-                    ...historyData.history.map(e => [
-                      new Date(e.timestamp).toISOString(),
-                      e.buy.toFixed(2),
-                      e.sell.toFixed(2),
-                      ((e.buy + e.sell) / 2).toFixed(2)
-                    ])
-                  ].map(row => row.join(',')).join('\n');
-                  
-                  const blob = new Blob([csv], { type: 'text/csv' });
-                  const url = window.URL.createObjectURL(blob);
-                  const a = document.createElement('a');
-                  a.href = url;
-                  a.download = `dolar-blue-bolivia-${selectedRange}-${new Date().toISOString().split('T')[0]}.csv`;
-                  a.click();
-                  window.URL.revokeObjectURL(url);
-                }
-              }}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition-colors"
-              disabled={!historyData || !historyData.history}
-            >
-              {language === 'es' ? 'Descargar CSV' : 'Download CSV'}
-            </button>
-          </div>
-        </div>
-
-        {/* Usage Guidelines */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            {language === 'es' ? '📋 Guía de Uso' : '📋 Usage Guidelines'}
-          </h2>
-          <div className="space-y-4 text-gray-700 dark:text-gray-300">
-            <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-                {language === 'es' ? 'Para Investigadores y Analistas' : 'For Researchers and Analysts'}
-              </h3>
-              <p>
-                {language === 'es'
-                  ? 'Los datos históricos están disponibles bajo licencia Creative Commons. Puedes usar estos datos para análisis, investigaciones y reportes. Por favor, incluye una atribución a boliviablue.com cuando uses estos datos.'
-                  : 'Historical data is available under Creative Commons license. You can use this data for analysis, research and reports. Please include attribution to boliviablue.com when using this data.'}
-              </p>
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-                {language === 'es' ? 'Para Desarrolladores' : 'For Developers'}
-              </h3>
-              <p>
-                {language === 'es'
-                  ? 'Si necesitas acceso programático a estos datos, consulta nuestra documentación de API o contáctanos para discutir opciones de integración.'
-                  : 'If you need programmatic access to this data, check our API documentation or contact us to discuss integration options.'}
-              </p>
-              <Link
-                to="/api-docs"
-                className="inline-block mt-2 text-blue-600 dark:text-blue-400 hover:underline font-medium"
-              >
-                {language === 'es' ? 'Ver Documentación API →' : 'View API Documentation →'}
-              </Link>
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-                {language === 'es' ? 'Para Medios de Comunicación' : 'For Media'}
-              </h3>
-              <p>
-                {language === 'es'
-                  ? 'Los datos están disponibles para uso en artículos y reportes. Por favor, menciona "boliviablue.com" como fuente cuando cites nuestros datos.'
-                  : 'Data is available for use in articles and reports. Please mention "boliviablue.com" as the source when citing our data.'}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Related Links */}
-        <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-            {language === 'es' ? '🔗 Páginas Relacionadas' : '🔗 Related Pages'}
-          </h3>
-          <div className="flex flex-wrap gap-4">
-            <Link
-              to="/bolivian-blue"
-              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
-            >
-              {language === 'es' ? '📈 Gráficos Históricos' : '📈 Historical Charts'}
-            </Link>
-            <Link
-              to="/fuente-de-datos"
-              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
-            >
-              {language === 'es' ? '📊 Fuente de Datos' : '📊 Data Source'}
-            </Link>
-            <Link
-              to="/acerca-de"
-              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
-            >
-              {language === 'es' ? 'ℹ️ Metodología' : 'ℹ️ Methodology'}
-            </Link>
-          </div>
-        </div>
+        </details>
       </main>
 
       <Footer />

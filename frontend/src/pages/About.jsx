@@ -5,9 +5,9 @@ import Navigation from '../components/Navigation';
 import BlueRateCards from '../components/BlueRateCards';
 import Footer from '../components/Footer';
 import Breadcrumbs from '../components/Breadcrumbs';
-import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
+import { getBreadcrumbList } from '../utils/seoSchema';
 
 function About() {
   // Signal to AdSense that this page has sufficient content
@@ -17,6 +17,12 @@ function About() {
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
   const [showOfficial, setShowOfficial] = useState(false);
+
+  const breadcrumbs = [
+    { name: language === 'es' ? 'Inicio' : 'Home', url: '/' },
+    { name: language === 'es' ? 'Acerca de' : 'About', url: '/acerca-de' },
+  ];
+  const breadcrumbSchema = getBreadcrumbList(breadcrumbs);
 
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">

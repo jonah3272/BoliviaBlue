@@ -40,6 +40,11 @@ import {
   getChatStats
 } from './db-chat.js';
 import { startScheduler, cache } from './scheduler-supabase.js';
+import {
+  signDataExportToken,
+  verifyDataExportToken,
+  isExportTokenSigningConfigured
+} from './dataExportToken.js';
 
 console.log('✅ Imports loaded successfully');
 
@@ -153,6 +158,16 @@ const apiLimiter = rateLimit({
     }
     return false;
   }
+});
+
+// Stricter limit for historical extended export lead capture
+const dataExportRegisterLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 20,
+  message: { error: 'Too many requests', message: 'Please try again in an hour.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: (req) => req.method === 'OPTIONS'
 });
 
 // Apply rate limiting to API routes (but OPTIONS are already handled above)
@@ -345,6 +360,14 @@ app.get('/api/blue-history', async (req, res) => {
 const EXPORT_MAX_ROWS = 50000;
 const EXPORT_DEFAULT_RANGE = '30d';
 const EXPORT_CACHE_MAX_AGE = 300; // 5 minutes
+/** Ranges that require a signed token (email lead on /datos-historicos). */
+const EXTENDED_EXPORT_RANGES = new Set(['90d', '1y', 'all']);
+/** Max rows for anonymous 30d exports (SEO sample; full series still fits ~15m cadence). */
+const FREE_PUBLIC_MAX_ROWS = 4000;
+
+if (process.env.NODE_ENV === 'production' && !isExportTokenSigningConfigured()) {
+  console.warn('⚠️ DATA_EXPORT_HMAC_SECRET is not set (min 24 chars). Extended CSV/JSON exports (90d/1y/all) will return 503 until configured.');
+}
 
 /**
  * Parse range query and fetch rates for export. Returns { rows, range, startDate }.
@@ -390,13 +413,47 @@ async function getHistoricalExportRows(rangeParam, limitParam) {
 }
 
 /**
+ * Resolve row limit and auth for historical export URLs.
+ */
+function resolveHistoricalExportAccess(query) {
+  const range = (query.range || EXPORT_DEFAULT_RANGE).toLowerCase();
+  const token = query.token;
+  const claims = token ? verifyDataExportToken(token) : null;
+
+  if (EXTENDED_EXPORT_RANGES.has(range)) {
+    if (!isExportTokenSigningConfigured()) {
+      const err = new Error('Extended export signing is not configured');
+      err.statusCode = 503;
+      throw err;
+    }
+    if (!claims) {
+      const err = new Error('EXTENDED_EXPORT_AUTH_REQUIRED');
+      err.statusCode = 403;
+      throw err;
+    }
+  }
+
+  let effectiveLimit = EXPORT_MAX_ROWS;
+  const parsedLimit = parseInt(query.limit, 10);
+  if (Number.isFinite(parsedLimit) && parsedLimit > 0) {
+    effectiveLimit = Math.min(parsedLimit, EXPORT_MAX_ROWS);
+  }
+  if (range === '30d' && !claims) {
+    effectiveLimit = Math.min(effectiveLimit, FREE_PUBLIC_MAX_ROWS);
+  }
+
+  return { range, effectiveLimit };
+}
+
+/**
  * GET /api/historical-data.csv
- * Query: range=30d|90d|1y|all (default 30d), limit= (max rows, cap 50000)
+ * Query: range=30d|90d|1y|all (default 30d), limit= (max rows, cap 50000), token= (required for 90d, 1y, all)
  * Columns: timestamp,buy,sell,mid,official_buy,official_sell,official_mid
  */
 app.get('/api/historical-data.csv', async (req, res) => {
   try {
-    const { rows, range } = await getHistoricalExportRows(req.query.range, req.query.limit);
+    const { range, effectiveLimit } = resolveHistoricalExportAccess(req.query);
+    const { rows } = await getHistoricalExportRows(range, String(effectiveLimit));
 
     const BOM = '\uFEFF';
     const header = 'timestamp,buy,sell,mid,official_buy,official_sell,official_mid';
@@ -423,6 +480,19 @@ app.get('/api/historical-data.csv', async (req, res) => {
     if (error.message && error.message.startsWith('Invalid range')) {
       return res.status(400).json({ error: error.message });
     }
+    if (error.message === 'EXTENDED_EXPORT_AUTH_REQUIRED') {
+      return res.status(403).json({
+        error: 'extended_export_requires_token',
+        message:
+          'Extended ranges (90d, 1y, all) require a free email unlock. See https://boliviablue.com/datos-historicos'
+      });
+    }
+    if (error.statusCode === 503) {
+      return res.status(503).json({
+        error: 'service_unavailable',
+        message: error.message
+      });
+    }
     console.error('Error exporting historical CSV:', error);
     res.status(500).json({ error: 'Internal server error', message: error.message });
   }
@@ -430,11 +500,12 @@ app.get('/api/historical-data.csv', async (req, res) => {
 
 /**
  * GET /api/historical-data.json
- * Query: range=30d|90d|1y|all (default 30d), limit= (max rows, cap 50000)
+ * Query: range=30d|90d|1y|all (default 30d), limit= (max rows, cap 50000), token= (required for 90d, 1y, all)
  */
 app.get('/api/historical-data.json', async (req, res) => {
   try {
-    const { rows, range, startDate } = await getHistoricalExportRows(req.query.range, req.query.limit);
+    const { range, effectiveLimit } = resolveHistoricalExportAccess(req.query);
+    const { rows, startDate } = await getHistoricalExportRows(range, String(effectiveLimit));
 
     const data = rows.map(row => ({
       timestamp: row.t,
@@ -469,8 +540,110 @@ app.get('/api/historical-data.json', async (req, res) => {
     if (error.message && error.message.startsWith('Invalid range')) {
       return res.status(400).json({ error: error.message });
     }
+    if (error.message === 'EXTENDED_EXPORT_AUTH_REQUIRED') {
+      return res.status(403).json({
+        error: 'extended_export_requires_token',
+        message:
+          'Extended ranges (90d, 1y, all) require a free email unlock. See https://boliviablue.com/datos-historicos'
+      });
+    }
+    if (error.statusCode === 503) {
+      return res.status(503).json({
+        error: 'service_unavailable',
+        message: error.message
+      });
+    }
     console.error('Error exporting historical JSON:', error);
     res.status(500).json({ error: 'Internal server error', message: error.message });
+  }
+});
+
+/**
+ * OPTIONS /api/data-export/register
+ */
+app.options('/api/data-export/register', (req, res) => {
+  const origin = req.headers.origin;
+  const headers = {
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept, Origin',
+    'Access-Control-Max-Age': '86400'
+  };
+  if (origin) {
+    headers['Access-Control-Allow-Origin'] = origin;
+    headers['Access-Control-Allow-Credentials'] = 'true';
+  } else {
+    headers['Access-Control-Allow-Origin'] = '*';
+  }
+  res.writeHead(200, headers);
+  res.end();
+});
+
+/**
+ * POST /api/data-export/register
+ * Body: { email, language?, consent: true } — subscribes to newsletter (source: historical_extended_download) and returns a short-lived export token.
+ */
+app.post('/api/data-export/register', dataExportRegisterLimiter, async (req, res) => {
+  const origin = req.headers.origin;
+  if (origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+
+  try {
+    if (!isExportTokenSigningConfigured()) {
+      return res.status(503).json({
+        error: 'not_configured',
+        message: 'Extended export unlock is not available. Please try again later.'
+      });
+    }
+
+    const { email, language = 'es', consent } = req.body || {};
+    if (!consent) {
+      return res.status(400).json({
+        error: 'consent_required',
+        message: 'You must agree to receive occasional updates and the data export terms.'
+      });
+    }
+    if (!email) {
+      return res.status(400).json({ error: 'Missing email', message: 'Email is required' });
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        error: 'Invalid email',
+        message: 'Please provide a valid email address'
+      });
+    }
+
+    await subscribeToNewsletter(email, language, 'historical_extended_download');
+
+    const token = signDataExportToken(email);
+    if (!token) {
+      return res.status(503).json({
+        error: 'token_error',
+        message: 'Could not issue export token. Please try again later.'
+      });
+    }
+
+    res.json({
+      success: true,
+      token,
+      expires_in_days: 7,
+      message:
+        language === 'es'
+          ? 'Listo. Ya puedes descargar los archivos extendidos (90d, 1y, todo). El enlace es válido varios días en este navegador.'
+          : 'Done. You can download extended files (90d, 1y, all). Your unlock works for several days in this browser.'
+    });
+  } catch (error) {
+    console.error('Error in data-export/register:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: error.message
+    });
   }
 });
 

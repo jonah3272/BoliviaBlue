@@ -122,3 +122,38 @@ export function trackOutboundSourceClicked({ language, destination, link_label }
     link_label: link_label || destination,
   }));
 }
+
+/** Historical data monetization funnel — see SEO_DATA_MONETIZATION_NOTES.md */
+export function trackFreeDownloadClicked({ language, format, range }) {
+  trackEvent('free_download_clicked', baseParams({
+    language,
+    page_type: 'historical',
+    format,
+    range_selected: range,
+  }));
+}
+
+export function trackExtendedDownloadStarted({ language }) {
+  trackEvent('extended_download_started', baseParams({ language, page_type: 'historical' }));
+}
+
+export function trackExtendedDownloadUnlocked({ language }) {
+  trackEvent('extended_download_unlocked', baseParams({ language, page_type: 'historical' }));
+}
+
+export function trackExportLeadSubmitted({ language, source }) {
+  trackEvent('export_lead_submitted', baseParams({
+    language,
+    page_type: 'historical',
+    source: source || 'historical_extended_form',
+  }));
+}
+
+export function trackCommercialAccessClicked({ language, destination, link_label }) {
+  trackEvent('commercial_access_clicked', baseParams({
+    language,
+    page_type: 'historical',
+    destination,
+    link_label,
+  }));
+}

@@ -1,6 +1,7 @@
 import fetch from 'node-fetch';
 
-const BCB_API_URL = 'https://www.bcb.gob.bo/librerias/indicadores/ufv/gestion.php';
+// New BCB homepage where the "Valor referencial del dólar estadounidense" widget lives
+const BCB_HOME_URL = 'https://www.bcb.gob.bo/';
 const FALLBACK_API_URL = 'https://api.exchangerate-api.com/v4/latest/USD';
 const REQUEST_TIMEOUT = 10000;
 
@@ -50,9 +51,8 @@ async function fetchFromBCB() {
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
 
   try {
-    // BCB's official rate is typically 6.86-6.96 BOB per USD (fixed)
-    // This is a simplified fetch - in production you'd parse their actual API/page
-    const response = await fetch(BCB_API_URL, {
+    // Fetch BCB homepage HTML where the "Valor referencial del dólar estadounidense" block appears
+    const response = await fetch(BCB_HOME_URL, {
       signal: controller.signal,
       headers: {
         'User-Agent': 'Mozilla/5.0 (compatible; BoliviaBlueBot/1.0)'
@@ -65,13 +65,48 @@ async function fetchFromBCB() {
       throw new Error(`HTTP ${response.status}`);
     }
 
-    // BCB typically maintains a fixed rate around 6.86
-    // In a real implementation, you'd parse their response
-    // For now, using the known official fixed rate
-    return {
-      buy: 6.96, // Official buy rate (banks sell USD)
-      sell: 6.86 // Official sell rate (banks buy USD)
+    const html = await response.text();
+
+    // Convert HTML to a rough text stream so we can regex around the "Valor referencial" block
+    const text = html
+      .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+      .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/&nbsp;/gi, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    // Locate the "Valor referencial del dólar estadounidense" section in the plain text
+    const marker = 'Valor referencial del dólar estadounidense';
+    const idx = text.indexOf(marker);
+    if (idx === -1) {
+      throw new Error('Valor referencial block not found in BCB homepage');
+    }
+
+    const slice = text.slice(idx, idx + 400); // small window around the marker
+
+    // Regex: look for "Compra <number>" and "Venta <number>" within that slice
+    const compraMatch = slice.match(/Compra\s+([\d.,]+)/i);
+    const ventaMatch = slice.match(/Venta\s+([\d.,]+)/i);
+
+    if (!compraMatch || !ventaMatch) {
+      throw new Error('Could not parse Compra/Venta from Valor referencial block');
+    }
+
+    // Convert Spanish decimal format (e.g. 8,96) to JS float
+    const parseBolivianNumber = (str) => {
+      const normalized = str.replace(/\./g, '').replace(',', '.').trim();
+      const value = parseFloat(normalized);
+      if (!Number.isFinite(value)) {
+        throw new Error(`Invalid numeric value from BCB: "${str}"`);
+      }
+      return value;
     };
+
+    const buy = parseBolivianNumber(compraMatch[1]);
+    const sell = parseBolivianNumber(ventaMatch[1]);
+
+    return { buy, sell };
 
   } catch (error) {
     clearTimeout(timeout);

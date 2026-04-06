@@ -281,6 +281,10 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
         </div>
       </div>
 
+      <p className="mt-3 text-center text-xs leading-relaxed text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+        {t('officialRateDescription')}
+      </p>
+
       {/* Rate Cards - Show based on toggle */}
       {!effectiveShowOfficial ? (
         // Blue Market Rates

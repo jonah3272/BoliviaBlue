@@ -18,7 +18,9 @@ export const translations = {
     stale: 'Desactualizado',
     change24h: '24h',
     blueMarketTitle: 'Mercado Paralelo (Dólar Blue) - Binance P2P',
-    officialRateTitle: 'Tipo de Cambio Oficial - Banco Central de Bolivia',
+    officialRateTitle: 'Valor referencial del dólar estadounidense (BCB)',
+    officialRateDescription:
+      'Valor referencial del dólar estadounidense (BCB): tasa de referencia publicada por el Banco Central de Bolivia. Se actualiza diariamente (Compra/Venta).',
     
     // Chart
     chartTitle: 'Histórico del Dólar Blue',
@@ -354,7 +356,9 @@ export const translations = {
     stale: 'Stale',
     change24h: '24h',
     blueMarketTitle: 'Parallel Market (Blue Dollar) - Binance P2P',
-    officialRateTitle: 'Official Exchange Rate - Central Bank of Bolivia',
+    officialRateTitle: 'US Dollar reference rate (BCB)',
+    officialRateDescription:
+      'US Dollar reference rate (BCB): benchmark published by the Central Bank of Bolivia. Updated daily (buy/sell).',
     
     // Chart
     chartTitle: 'Blue Dollar History',

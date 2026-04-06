@@ -86,11 +86,40 @@ function Comparison() {
   const spreadPct = (spreadBob != null && officialMid > 0) ? (spreadBob / officialMid) * 100 : null;
 
   const faqItems = [
-    { q: language === 'es' ? '¿Qué es el tipo de cambio oficial en Bolivia?' : 'What is the official exchange rate in Bolivia?', a: language === 'es' ? 'El tipo de cambio oficial lo fija el Banco Central de Bolivia (BCB) y es el que usan los bancos para operaciones reguladas. Suele ser fijo o con ajustes poco frecuentes.' : 'The official rate is set by the Central Bank of Bolivia (BCB) and is used by banks for regulated operations. It is usually fixed or adjusted infrequently.' },
+    {
+      q:
+        language === 'es'
+          ? '¿Qué es el valor referencial del dólar estadounidense (BCB)?'
+          : 'What is the US Dollar reference rate (BCB)?',
+      a:
+        language === 'es'
+          ? 'El Banco Central de Bolivia (BCB) publica diariamente el valor referencial del dólar estadounidense (compra/venta) como referencia del sistema formal. En esta página lo mostramos junto al dólar blue.'
+          : 'The Central Bank of Bolivia (BCB) publishes daily the US Dollar reference rate (buy/sell) as a benchmark for the formal system. On this page we show it alongside the blue dollar.',
+    },
     { q: language === 'es' ? '¿Qué es el dólar blue?' : 'What is the blue dollar?', a: language === 'es' ? 'El dólar blue es el tipo de cambio del mercado paralelo: el precio al que se compra y vende el dólar fuera del sistema bancario oficial (por ejemplo en plataformas P2P como Binance). Refleja la oferta y la demanda real.' : 'The blue dollar is the parallel market exchange rate: the price at which the dollar is bought and sold outside the official banking system (e.g. on P2P platforms like Binance). It reflects real supply and demand.' },
-    { q: language === 'es' ? '¿Por qué hay diferencia entre el blue y el oficial?' : 'Why is there a difference between blue and official?', a: language === 'es' ? 'El oficial lo fija el BCB; el blue lo determina el mercado. Cuando hay restricciones o escasez de dólares en el sistema formal, el blue suele subir por encima del oficial. La diferencia en BOB y en % varía con el tiempo.' : 'The official rate is set by the BCB; the blue is set by the market. When there are restrictions or dollar scarcity in the formal system, the blue often rises above the official rate. The difference in BOB and % varies over time.' }
+    {
+      q:
+        language === 'es'
+          ? '¿Por qué hay diferencia entre el blue y el valor referencial?'
+          : 'Why is there a difference between blue and the reference rate?',
+      a:
+        language === 'es'
+          ? 'El valor referencial lo publica el BCB; el blue lo determina el mercado. Cuando hay restricciones o escasez de dólares en el sistema formal, el blue suele subir por encima del valor referencial. La diferencia en BOB y en % varía con el tiempo.'
+          : 'The reference rate is published by the BCB; the blue is set by the market. When there are restrictions or dollar scarcity in the formal system, the blue often rises above the reference rate. The difference in BOB and % varies over time.',
+    }
   ];
-  const webPageSchema = getWebPage({ name: language === 'es' ? 'Dólar blue vs oficial Bolivia | Comparación' : 'Blue dollar vs official Bolivia | Comparison', description: language === 'es' ? 'Comparación dólar blue y tipo de cambio oficial en Bolivia. Diferencia en BOB y %.' : 'Compare blue dollar and official exchange rate in Bolivia. Difference in BOB and %.', url: '/comparacion', inLanguage: language === 'es' ? 'es-BO' : 'en-US' });
+  const webPageSchema = getWebPage({
+    name:
+      language === 'es'
+        ? 'Dólar blue vs valor referencial (BCB) Bolivia | Comparación'
+        : 'Blue dollar vs US Dollar reference rate (BCB) Bolivia | Comparison',
+    description:
+      language === 'es'
+        ? 'Comparación dólar blue y valor referencial del dólar estadounidense (BCB) en Bolivia. Diferencia en BOB y %. Qué es cada uno y por qué difieren.'
+        : 'Compare blue dollar and the US Dollar reference rate (BCB) in Bolivia. Difference in BOB and %. What each is and why they differ.',
+    url: '/comparacion',
+    inLanguage: language === 'es' ? 'es-BO' : 'en-US',
+  });
   const breadcrumbSchema = getBreadcrumbList(breadcrumbs);
   const faqSchema = getFAQPage(faqItems.map(({ q, a }) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })));
 
@@ -161,14 +190,14 @@ function Comparison() {
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
         title={language === 'es'
-          ? 'Dólar blue vs oficial Bolivia | Diferencia y comparación'
-          : 'Blue dollar vs official Bolivia | Difference and comparison'}
+          ? 'Dólar blue vs valor referencial (BCB) Bolivia | Diferencia y comparación'
+          : 'Blue dollar vs US Dollar reference rate (BCB) Bolivia | Difference and comparison'}
         description={language === 'es'
-          ? 'Comparación dólar blue y tipo de cambio oficial en Bolivia. Diferencia en BOB y %. Qué es cada uno, por qué difieren y cómo no confundirlos.'
-          : 'Compare blue dollar and official exchange rate in Bolivia. Difference in BOB and %. What each is, why they differ, and how not to confuse them.'}
+          ? 'Comparación dólar blue y valor referencial del dólar estadounidense (BCB) en Bolivia. Diferencia en BOB y %. Qué es cada uno, por qué difieren y cómo no confundirlos.'
+          : 'Compare blue dollar and the US Dollar reference rate (BCB) in Bolivia. Difference in BOB and %. What each is, why they differ, and how not to confuse them.'}
         keywords={language === 'es'
-          ? 'dólar blue vs oficial Bolivia, diferencia dólar blue y oficial, tipo cambio paralelo vs oficial Bolivia, blue dollar vs official'
-          : 'blue dollar vs official Bolivia, difference blue and official rate, parallel vs official exchange rate Bolivia'}
+          ? 'dólar blue vs valor referencial BCB, diferencia dólar blue y valor referencial, valor referencial del dólar estadounidense BCB Bolivia, blue dollar vs US dollar reference rate (BCB)'
+          : 'blue dollar vs US dollar reference rate (BCB), difference blue and reference rate, US dollar reference rate (BCB) Bolivia'}
         canonical="/comparacion"
         structuredData={[webPageSchema, breadcrumbSchema, faqSchema]}
       />
@@ -183,19 +212,19 @@ function Comparison() {
 
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-2 text-center">
           {language === 'es'
-            ? 'Dólar blue vs tipo de cambio oficial'
-            : 'Blue dollar vs official exchange rate'}
+            ? 'Dólar blue vs valor referencial del dólar estadounidense (BCB)'
+            : 'Blue dollar vs US Dollar reference rate (BCB)'}
         </h1>
         <p className="text-center text-lg text-gray-600 dark:text-gray-400 mb-6 max-w-2xl mx-auto">
           {language === 'es'
-            ? 'Comparación entre el dólar blue (mercado paralelo) y el tipo de cambio oficial del Banco Central de Bolivia. Diferencia actual en BOB y en porcentaje.'
-            : 'Comparison between the blue dollar (parallel market) and the official exchange rate of the Central Bank of Bolivia. Current difference in BOB and percentage.'}
+            ? 'Comparación entre el dólar blue (mercado paralelo) y el valor referencial del dólar estadounidense (BCB). Diferencia actual en BOB y en porcentaje.'
+            : 'Comparison between the blue dollar (parallel market) and the US Dollar reference rate (BCB). Current difference in BOB and percentage.'}
         </p>
 
         {/* Blue vs official – current metrics */}
         <section className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 sm:p-8 mb-8" aria-labelledby="blue-vs-oficial-heading">
           <h2 id="blue-vs-oficial-heading" className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-            {language === 'es' ? 'Cotización actual: blue vs oficial' : 'Current quote: blue vs official'}
+            {language === 'es' ? 'Cotización actual: blue vs valor referencial (BCB)' : 'Current quote: blue vs reference rate (BCB)'}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
@@ -206,7 +235,9 @@ function Comparison() {
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{language === 'es' ? 'Fuente: Binance P2P' : 'Source: Binance P2P'}</p>
             </div>
             <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">{language === 'es' ? 'Tipo oficial (compra/venta)' : 'Official rate (buy/sell)'}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                {language === 'es' ? 'Valor referencial (BCB) (compra/venta)' : 'US Dollar reference rate (BCB) (buy/sell)'}
+              </p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 {hasOfficial ? `${Number(currentRate.official_buy).toFixed(2)} / ${Number(currentRate.official_sell).toFixed(2)} BOB` : '—'}
               </p>
@@ -224,7 +255,9 @@ function Comparison() {
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 {spreadPct != null ? `${spreadPct >= 0 ? '+' : ''}${spreadPct.toFixed(1)}%` : '—'}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{language === 'es' ? 'Sobre el tipo oficial' : 'Over official rate'}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                {language === 'es' ? 'Sobre el valor referencial (BCB)' : 'Over the reference rate (BCB)'}
+              </p>
             </div>
           </div>
           {avgSpread != null && (
@@ -250,8 +283,8 @@ function Comparison() {
           </h2>
           <p className="text-gray-700 dark:text-gray-300 mb-2">
             {language === 'es'
-              ? 'El tipo oficial lo fija el Banco Central de Bolivia y lo usan los bancos. El dólar blue es el precio en el mercado paralelo (P2P) y refleja la oferta y demanda real. No deben confundirse: muchas operaciones (remesas, importadores, casas de cambio) usan el blue como referencia.'
-              : 'The official rate is set by the Central Bank of Bolivia and used by banks. The blue dollar is the price in the parallel (P2P) market and reflects real supply and demand. They should not be confused: many operations (remittances, importers, exchange houses) use the blue as reference.'}
+              ? 'El valor referencial del dólar estadounidense lo publica el Banco Central de Bolivia (BCB) y lo usan los bancos como referencia. El dólar blue es el precio en el mercado paralelo (P2P) y refleja la oferta y demanda real. No deben confundirse: muchas operaciones (remesas, importadores, casas de cambio) usan el blue como referencia.'
+              : 'The US Dollar reference rate is published by the Central Bank of Bolivia (BCB) and used by banks as a benchmark. The blue dollar is the price in the parallel (P2P) market and reflects real supply and demand. They should not be confused: many operations (remittances, importers, exchange houses) use the blue as reference.'}
           </p>
           <p className="text-sm text-gray-600 dark:text-gray-400">
             {language === 'es' ? 'Metodología: ' : 'Methodology: '}
@@ -282,7 +315,7 @@ function Comparison() {
         {/* FAQ – blue vs official */}
         <section className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 sm:p-8 mb-8" id="faq">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-            {language === 'es' ? 'Preguntas frecuentes: blue vs oficial' : 'FAQ: blue vs official'}
+            {language === 'es' ? 'Preguntas frecuentes: blue vs valor referencial' : 'FAQ: blue vs reference rate'}
           </h2>
           <div className="space-y-4">
             {faqItems.map(({ q, a }, i) => (

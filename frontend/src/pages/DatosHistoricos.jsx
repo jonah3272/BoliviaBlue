@@ -198,7 +198,9 @@ function DatosHistoricos() {
 
   const webPageSchema = getWebPage({
     name: language === 'es' ? 'Datos Históricos del Dólar Blue' : 'Historical Blue Dollar Data',
-    description: language === 'es' ? 'Archivo de cotizaciones pasadas para analizar tendencias. Datos desde 2024; la fuente se actualiza cada 15 min.' : 'Archive of past quotes to analyze trends. Data from 2024; source updates every 15 min.',
+    description: language === 'es'
+      ? 'Archivo de cotizaciones pasadas del dólar blue en Bolivia. Incluye el Valor referencial del dólar estadounidense (BCB) para comparación. Datos desde 2024; la fuente se actualiza cada 15 min.'
+      : 'Archive of past quotes in Bolivia. Includes the US Dollar reference rate (BCB) for comparison. Data from 2024; source updates every 15 min.',
     url: '/datos-historicos',
     dateModified: new Date().toISOString().split('T')[0],
     inLanguage: language === 'es' ? 'es-BO' : 'en-US'
@@ -235,6 +237,20 @@ function DatosHistoricos() {
               : 'Yes: public docs at /api-docs and commercial contact at /contacto for volume, licensing, or custom integration.',
         },
       },
+      {
+        '@type': 'Question',
+        name:
+          language === 'es'
+            ? '¿Qué es el valor referencial del dólar estadounidense (BCB)?'
+            : 'What is the US Dollar reference rate (BCB)?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text:
+            language === 'es'
+              ? 'El Banco Central de Bolivia (BCB) publica diariamente el valor referencial del dólar estadounidense (Compra/Venta) como referencia del sistema formal. En esta página lo mostramos junto al dólar blue para comparación.'
+              : 'The Central Bank of Bolivia (BCB) publishes daily the US Dollar reference rate (buy/sell) as a benchmark for the formal system. On this page we display it alongside the blue dollar for comparison.',
+        },
+      },
     ],
   };
 
@@ -263,11 +279,11 @@ function DatosHistoricos() {
           ? 'Datos Históricos Dólar Blue Bolivia | Archivo 2024-2025'
           : 'Blue Dollar Bolivia Historical Data | Archive 2024-2025'}
         description={language === 'es'
-          ? 'Archivo de datos históricos del dólar blue en Bolivia. Promedios, máximos, mínimos y tendencias desde 2024. Descarga disponible.'
-          : 'Historical blue dollar data archive in Bolivia. Averages, highs, lows and trends since 2024. Download available.'}
+          ? 'Archivo de datos históricos del dólar blue en Bolivia. Promedios, máximos, mínimos y tendencias desde 2024. Incluye el Valor referencial del dólar estadounidense (BCB) para comparación. Descarga disponible.'
+          : 'Historical blue dollar data archive in Bolivia. Averages, highs, lows and trends since 2024. Includes the US Dollar reference rate (BCB) for comparison. Download available.'}
         keywords={language === 'es'
-          ? 'dólar blue bolivia histórico, datos históricos dólar blue, tipo cambio histórico bolivia, estadísticas dólar blue, promedio mensual dólar blue, máximo mínimo dólar blue bolivia'
-          : 'blue dollar bolivia historical, historical blue dollar data, bolivia exchange rate history, blue dollar statistics, monthly average blue dollar, high low blue dollar bolivia'}
+          ? 'dólar blue bolivia histórico, datos históricos dólar blue, tipo cambio histórico bolivia, estadísticas dólar blue, valor referencial dólar estadounidense BCB, valor referencial dolar Bolivia, tipo de cambio referencial, promedio mensual dólar blue, máximo mínimo dólar blue bolivia'
+          : 'blue dollar bolivia historical, historical blue dollar data, bolivia exchange rate history, blue dollar statistics, US dollar reference rate (BCB), reference rate Bolivia, high low blue dollar bolivia'}
         canonical="/datos-historicos"
         structuredData={[webPageSchema, breadcrumbSchema, datasetSchema, faqSchema]}
       />
@@ -418,7 +434,7 @@ function DatosHistoricos() {
                 onChange={(e) => setShowOfficial(e.target.checked)}
                 className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
               />
-              {language === 'es' ? 'Incluir tipo oficial' : 'Include official rate'}
+              {language === 'es' ? 'Incluir valor referencial (BCB)' : 'Include US Dollar reference (BCB)'}
             </label>
           </div>
           <div className="overflow-hidden rounded-xl border border-gray-100 bg-gray-50/30 dark:border-gray-600 dark:bg-gray-900/30">
@@ -441,8 +457,8 @@ function DatosHistoricos() {
           </div>
           <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">
             {language === 'es'
-              ? 'Rangos del gráfico (1D, 1W…) son independientes del período de la tabla.'
-              : 'Chart ranges (1D, 1W…) are independent from the table period below.'}
+              ? 'El Valor referencial del dólar estadounidense (BCB) se actualiza diariamente. Los rangos del gráfico (1D, 1W…) son independientes del período de la tabla.'
+              : 'The US Dollar reference rate (BCB) is updated daily. Chart ranges (1D, 1W…) are independent from the table period below.'}
           </p>
         </section>
 

@@ -126,15 +126,9 @@ const pages = [
     lastmod: currentDate
   },
   {
-    path: '/blue-dollar-bolivia', // Main canonical English page
-    changefreq: 'hourly',
-    priority: '0.9',
-    lastmod: currentDate
-  },
-  {
     path: '/cotiza-dolar-paralelo',
     changefreq: 'hourly',
-    priority: '0.85',
+    priority: '0.9',
     lastmod: currentDate
   },
   {
@@ -144,25 +138,6 @@ const pages = [
     lastmod: currentDate
   },
   
-  // City-specific pages
-  {
-    path: '/dolar-blue-la-paz',
-    changefreq: 'daily',
-    priority: '0.85',
-    lastmod: currentDate
-  },
-  {
-    path: '/dolar-blue-santa-cruz',
-    changefreq: 'daily',
-    priority: '0.85',
-    lastmod: currentDate
-  },
-  {
-    path: '/dolar-blue-cochabamba',
-    changefreq: 'daily',
-    priority: '0.85',
-    lastmod: currentDate
-  },
   {
     path: '/dolar-blue-hoy',
     changefreq: 'hourly',
@@ -175,12 +150,6 @@ const pages = [
     path: '/que-es-dolar-blue',
     changefreq: 'weekly',
     priority: '0.85',
-    lastmod: currentDate
-  },
-  {
-    path: '/cuanto-esta-dolar-bolivia',
-    changefreq: 'hourly',
-    priority: '0.9',
     lastmod: currentDate
   },
   

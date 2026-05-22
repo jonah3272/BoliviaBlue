@@ -1,4 +1,11 @@
 {
+  "redirects": [
+    {
+      "source": "/blue-dollar-bolivia",
+      "destination": "/bolivian-blue",
+      "permanent": true
+    }
+  ],
   "buildCommand": "cd frontend && npm install && npm run build",
   "outputDirectory": "frontend/dist",
   "installCommand": "npm --version",
@@ -30,6 +37,14 @@
     {
       "source": "/datos-historicos",
       "destination": "/datos-historicos/index.html"
+    },
+    {
+      "source": "/cotiza-dolar-paralelo",
+      "destination": "/cotiza-dolar-paralelo/index.html"
+    },
+    {
+      "source": "/preguntas-frecuentes",
+      "destination": "/preguntas-frecuentes/index.html"
     },
     {
       "source": "/(.*)",

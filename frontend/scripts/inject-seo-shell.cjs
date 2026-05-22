@@ -65,7 +65,11 @@ const DATASET_DATOS = {
   temporalCoverage: '2024-01-01/..',
   variableMeasured: { '@type': 'PropertyValue', name: 'USD/BOB blue dollar exchange rate' },
   creator: { '@type': 'Organization', name: 'Bolivia Blue con Paz', url: BASE_URL },
-  publisher: { '@type': 'Organization', name: 'Bolivia Blue con Paz', url: BASE_URL }
+  publisher: { '@type': 'Organization', name: 'Bolivia Blue con Paz', url: BASE_URL },
+  distribution: [
+    { '@type': 'DataDownload', contentUrl: BASE_URL + '/api/historical-data.csv?range=30d', encodingFormat: 'text/csv', name: 'CSV últimos 30 días' },
+    { '@type': 'DataDownload', contentUrl: BASE_URL + '/api/historical-data.json?range=30d', encodingFormat: 'application/json', name: 'JSON últimos 30 días' }
+  ]
 };
 
 /** Route config: path -> { title, description, canonical, shell, getJsonLd } */
@@ -192,6 +196,55 @@ const ROUTES = {
   </div>
 </main>`.replace(/\n/g, '').trim(),
     getJsonLd: () => buildStaticJsonLd('/datos-historicos', 'Datos Históricos', 'Datos Históricos del Dólar Blue', 'Archivo de cotizaciones pasadas para analizar tendencias. El gráfico y la tabla muestran compra, venta y promedio por período. Misma fuente que la cotización en vivo (cada 15 min).', [DATASET_DATOS])
+  },
+  '/cotiza-dolar-paralelo': {
+    title: 'Cotiza el Dólar Paralelo en Bolivia | Cotización en Tiempo Real',
+    description: 'Cotiza el dólar paralelo en Bolivia con datos cada 15 min. Cotización del dólar blue, tipo de cambio paralelo y precio actual. Gratis y sin registro.',
+    canonical: BASE_URL + '/cotiza-dolar-paralelo',
+    shell: `
+<main class="max-w-7xl mx-auto px-4 py-8" data-seo-shell="cotiza-dolar-paralelo">
+  <div class="text-center space-y-4 mb-8">
+    <h1 class="text-3xl sm:text-5xl font-bold text-gray-900">Cotiza el Dólar Paralelo en Bolivia</h1>
+    <p class="text-base text-gray-600">Cotización del dólar paralelo (dólar blue) actualizada cada 15 minutos con datos de Binance P2P.</p>
+    <nav class="flex flex-wrap justify-center gap-3 mt-4" aria-label="Enlaces relacionados">
+      <a href="/" class="text-blue-600 font-medium">Inicio</a>
+      <a href="/dolar-blue-hoy" class="text-blue-600 font-medium">Dólar blue hoy</a>
+      <a href="/dolar-paralelo-bolivia-en-vivo" class="text-blue-600 font-medium">Dólar paralelo en vivo</a>
+      <a href="/calculadora" class="text-blue-600 font-medium">Calculadora</a>
+    </nav>
+  </div>
+</main>`.replace(/\n/g, '').trim(),
+    getJsonLd: () => buildStaticJsonLd('/cotiza-dolar-paralelo', 'Cotiza Dólar Paralelo', 'Cotiza el Dólar Paralelo en Bolivia', 'Cotización del dólar paralelo (dólar blue) actualizada cada 15 minutos con datos de Binance P2P.', [])
+  },
+  '/preguntas-frecuentes': {
+    title: 'Preguntas Frecuentes Dólar Blue Bolivia | FAQ Tipo de Cambio',
+    description: 'Preguntas frecuentes sobre el dólar blue en Bolivia. Qué es, cómo funciona, Binance P2P, diferencia con el oficial y más. Guía actualizada.',
+    canonical: BASE_URL + '/preguntas-frecuentes',
+    shell: `
+<main class="max-w-4xl mx-auto px-4 py-8" data-seo-shell="preguntas-frecuentes">
+  <div class="text-center space-y-4 mb-8">
+    <h1 class="text-3xl sm:text-5xl font-bold text-gray-900">Preguntas Frecuentes sobre el Dólar Blue</h1>
+    <p class="text-base text-gray-600">Respuestas claras sobre el tipo de cambio paralelo en Bolivia: qué es el dólar blue, cómo se calcula y dónde ver la cotización actual.</p>
+    <nav class="flex flex-wrap justify-center gap-3 mt-4" aria-label="Enlaces relacionados">
+      <a href="/" class="text-blue-600 font-medium">Cotización actual</a>
+      <a href="/que-es-dolar-blue" class="text-blue-600 font-medium">¿Qué es el dólar blue?</a>
+      <a href="/dolar-blue-hoy" class="text-blue-600 font-medium">Dólar blue hoy</a>
+      <a href="/calculadora" class="text-blue-600 font-medium">Calculadora</a>
+    </nav>
+  </div>
+</main>`.replace(/\n/g, '').trim(),
+    getJsonLd: () => {
+      const faq = {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: [
+          { '@type': 'Question', name: '¿Qué es el dólar blue en Bolivia?', acceptedAnswer: { '@type': 'Answer', text: 'El dólar blue es el tipo de cambio del dólar estadounidense en el mercado paralelo boliviano, fuera del tipo oficial del Banco Central.' } },
+          { '@type': 'Question', name: '¿Cada cuánto se actualiza la cotización?', acceptedAnswer: { '@type': 'Answer', text: 'En Bolivia Blue la cotización se actualiza cada 15 minutos con datos de ofertas públicas en Binance P2P (USDT/BOB).' } },
+          { '@type': 'Question', name: '¿De dónde salen los datos?', acceptedAnswer: { '@type': 'Answer', text: 'Procesamos ofertas de compra y venta en Binance P2P y calculamos la mediana para estimar el precio del mercado paralelo.' } }
+        ]
+      };
+      return buildStaticJsonLd('/preguntas-frecuentes', 'Preguntas Frecuentes', 'Preguntas Frecuentes sobre el Dólar Blue', 'Respuestas claras sobre el tipo de cambio paralelo en Bolivia.', [faq]);
+    }
   }
 };
 
@@ -254,7 +307,9 @@ function main() {
     '/cuanto-esta-dolar-bolivia',
     '/bolivian-blue',
     '/que-es-dolar-blue',
-    '/datos-historicos'
+    '/datos-historicos',
+    '/cotiza-dolar-paralelo',
+    '/preguntas-frecuentes'
   ];
   for (const routePath of otherPaths) {
     const r = ROUTES[routePath];

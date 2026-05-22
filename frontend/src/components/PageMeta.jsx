@@ -69,7 +69,7 @@ export default function PageMeta({
 
       {/* Open Graph / Facebook */}
       <meta property="og:type" content={ogType} />
-      <meta property="og:url" href={fullCanonical} />
+      <meta property="og:url" content={fullCanonical} />
       <meta property="og:title" content={title} />
       {description && <meta property="og:description" content={description} />}
       <meta property="og:image" content={fullOgImage} />

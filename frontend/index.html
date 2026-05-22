@@ -22,10 +22,6 @@
     <!-- Web manifest -->
     <link rel="manifest" href="/site.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="0" />
-    
     <!-- Primary Meta Tags (static fallback for crawlers; React Helmet overrides on load for /) -->
     <title>Dólar Blue Bolivia en Tiempo Real | Cotización Cada 15 Min</title>
     <meta name="title" content="Dólar Blue Bolivia en Tiempo Real | Cotización Cada 15 Min" />
@@ -113,6 +109,23 @@
 
     
     <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Bolivia Blue con Paz",
+      "alternateName": ["Bolivia Blue", "Bolivian Blue"],
+      "url": "https://boliviablue.com",
+      "description": "Cotización del dólar blue en Bolivia actualizada cada 15 minutos",
+      "inLanguage": ["es-BO", "en-US"],
+      "publisher": { "@type": "Organization", "name": "Bolivia Blue con Paz", "url": "https://boliviablue.com" },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://boliviablue.com/?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",

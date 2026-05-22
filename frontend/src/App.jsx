@@ -36,7 +36,6 @@ const News = lazy(() => import('./pages/News'));
     const RealToBoliviano = lazy(() => import('./pages/RealToBoliviano'));
     const BolivianBlue = lazy(() => import('./pages/BolivianBlue'));
     const BlueDolarBolivia = lazy(() => import('./pages/BlueDolarBolivia'));
-    const BlueDollarBolivia = lazy(() => import('./pages/BlueDollarBolivia'));
     const BlueRateBolivia = lazy(() => import('./pages/BlueRateBolivia'));
     const CambioBlueBolivia = lazy(() => import('./pages/CambioBlueBolivia'));
     const Unsubscribe = lazy(() => import('./pages/Unsubscribe'));
@@ -115,7 +114,7 @@ function AppContent() {
           <Route path="/tipo-cambio-blue-bolivia" element={<Redirect to="/bolivian-blue" />} />
           
           {/* Canonical: /blue-dollar-bolivia (main English page) */}
-          <Route path="/blue-dollar-bolivia" element={<BlueDollarBolivia />} />
+          <Route path="/blue-dollar-bolivia" element={<Redirect to="/bolivian-blue" />} />
           
           {/* Canonical: /cuanto-esta-dolar-bolivia (redirect duplicate) */}
           <Route path="/cuanto-esta-dolar-bolivia" element={<CuantoEstaDolarBolivia />} />

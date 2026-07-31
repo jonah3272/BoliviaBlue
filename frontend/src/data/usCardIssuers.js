@@ -8,6 +8,15 @@
 
 export const US_CARD_ISSUERS = [
   {
+    id: 'bcb-bank',
+    network: 'bcb',
+    feePct: 0,
+    labelEs: 'BCB / banco (referencia)',
+    labelEn: 'BCB / bank (reference)',
+    blurbEs: 'Tipo de cambio oficial BCB — referencia bancaria real en Bolivia',
+    blurbEn: 'BCB official rate — real bank reference in Bolivia'
+  },
+  {
     id: 'capital-one',
     network: 'mastercard',
     feePct: 0,
@@ -76,7 +85,10 @@ export function getIssuerById(id) {
   return US_CARD_ISSUERS.find((i) => i.id === id) || US_CARD_ISSUERS[0];
 }
 
-export function networkBobPerUsd(cardRates, network) {
+export function networkBobPerUsd(cardRates, network, officialBobPerUsd = null) {
+  if (network === 'bcb') {
+    return Number.isFinite(officialBobPerUsd) ? officialBobPerUsd : null;
+  }
   if (!cardRates) return null;
   if (network === 'visa') return cardRates.visa_bob_per_usd ?? null;
   if (network === 'mastercard') return cardRates.mastercard_bob_per_usd ?? null;
@@ -98,5 +110,6 @@ export function networkLabel(network) {
   if (network === 'visa') return 'Visa';
   if (network === 'mastercard') return 'Mastercard';
   if (network === 'amex') return 'Amex';
+  if (network === 'bcb') return 'BCB';
   return network;
 }

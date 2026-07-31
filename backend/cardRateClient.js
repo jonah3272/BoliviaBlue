@@ -184,6 +184,7 @@ async function fetchMidMarketBobPerUsd() {
 
 /**
  * Fetch all three network rates. Never fabricates Amex from Visa/MC.
+ * Prefer: HTTP converters → browser scrape (CI) → mid-market proxy (labeled).
  */
 export async function getCardNetworkRates() {
   const notes = [];
@@ -200,30 +201,52 @@ export async function getCardNetworkRates() {
   let amex = settled[2].status === 'fulfilled' ? settled[2].value : null;
 
   if (settled[0].status === 'rejected') {
-    notes.push(`visa: ${settled[0].reason?.message || 'failed'}`);
+    notes.push(`visa-http: ${settled[0].reason?.message || 'failed'}`);
   }
   if (settled[1].status === 'rejected') {
-    notes.push(`mastercard: ${settled[1].reason?.message || 'failed'}`);
+    notes.push(`mastercard-http: ${settled[1].reason?.message || 'failed'}`);
   }
   if (settled[2].status === 'rejected') {
-    notes.push(`amex: ${settled[2].reason?.message || 'failed'}`);
+    notes.push(`amex-http: ${settled[2].reason?.message || 'failed'}`);
   }
 
-  if (!visa || !mc) {
+  const wantBrowser =
+    process.env.CARD_RATE_BROWSER === '1' ||
+    process.env.CARD_RATE_BROWSER === 'true' ||
+    !visa ||
+    !mc;
+
+  if (wantBrowser && (!visa || !mc)) {
     try {
-      const mid = await fetchMidMarketBobPerUsd();
-      if (!visa) {
-        visa = mid;
-        notes.push('visa using mid-market proxy (network converter blocked)');
-      }
+      const { scrapeMastercardBobPerUsd, scrapeVisaBobPerUsd } = await import(
+        './cardRateBrowser.js'
+      );
       if (!mc) {
-        mc = mid;
-        notes.push('mastercard using mid-market proxy (network converter blocked)');
+        try {
+          mc = await scrapeMastercardBobPerUsd();
+          notes.push('mastercard via browser scrape');
+        } catch (err) {
+          notes.push(`mastercard-browser: ${err.message}`);
+        }
+      }
+      if (!visa) {
+        try {
+          visa = await scrapeVisaBobPerUsd();
+          notes.push('visa via browser scrape');
+        } catch (err) {
+          notes.push(`visa-browser: ${err.message}`);
+        }
       }
     } catch (err) {
-      notes.push(`mid-market proxy failed: ${err.message}`);
+      notes.push(`browser-scrape unavailable: ${err.message}`);
     }
   }
+
+  // Do NOT invent Visa/MC from mid-market — leave null so UI shows unavailable.
+  // Browser scrape in CI may still succeed from a different IP.
+  if (!visa) notes.push('visa unavailable (no network rate)');
+  if (!mc) notes.push('mastercard unavailable (no network rate)');
+  if (!amex) notes.push('amex unavailable (no network rate)');
 
   if (visa) sources.push(visa.source);
   if (mc) sources.push(mc.source);

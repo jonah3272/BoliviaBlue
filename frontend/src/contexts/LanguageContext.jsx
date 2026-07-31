@@ -24,11 +24,15 @@ export const translations = {
       'Valor referencial del dólar estadounidense (BCB): tasa de referencia publicada por el Banco Central de Bolivia. Se actualiza diariamente (Compra/Venta).',
     cardRateDescription:
       'Tasas indicativas de red Visa/Mastercard/Amex (BOB por USD). El emisor puede sumar comisión FX. Excluye DCC del comercio. Verifica tu tarjeta.',
+    cardRateEstimateNote:
+      'Estimación mid-market (las calculadoras Visa/MC bloquearon el acceso). Se actualizará a tasa de red cuando el scrape en CI funcione.',
+    cardRateNetworkNote:
+      'Tasa de red Visa/Mastercard (indicativa).',
     cardRateEffective: 'Tasa efectiva',
     cardRateNetworkLine: 'Red',
     cardRateFee: 'Comisión FX',
     cardRateVsBlue: 'vs paralelo',
-    cardRateUnavailable: 'Tasa de red no disponible aún',
+    cardRateUnavailable: 'Tasa de red Visa/MC/Amex aún no disponible (bloqueada por las redes). Usa BCB/banco mientras tanto.',
     cardRateSelectIssuer: 'Elige emisor',
     cardRateBetter: 'mejor',
     cardRateWorse: 'peor',
@@ -379,11 +383,15 @@ export const translations = {
       'US Dollar reference rate (BCB): benchmark published by the Central Bank of Bolivia. Updated daily (buy/sell).',
     cardRateDescription:
       'Indicative Visa/Mastercard/Amex network rates (BOB per USD). Your issuer may add an FX fee. Excludes merchant DCC. Check your card.',
+    cardRateEstimateNote:
+      'Mid-market estimate (Visa/MC calculators blocked access). Will switch to network rates when CI scrape succeeds.',
+    cardRateNetworkNote:
+      'Visa/Mastercard network rate (indicative).',
     cardRateEffective: 'Effective rate',
     cardRateNetworkLine: 'Network',
     cardRateFee: 'FX fee',
     cardRateVsBlue: 'vs parallel',
-    cardRateUnavailable: 'Network rate not available yet',
+    cardRateUnavailable: 'Visa/MC/Amex network rate not available yet (blocked by networks). Use BCB/bank for now.',
     cardRateSelectIssuer: 'Choose issuer',
     cardRateBetter: 'better',
     cardRateWorse: 'worse',

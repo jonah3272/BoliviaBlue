@@ -120,7 +120,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
   const [cardError, setCardError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [issuerId, setIssuerId] = useState('capital-one');
+  const [issuerId, setIssuerId] = useState('bcb-bank');
   
   const [internalShowOfficial, setInternalShowOfficial] = useState(false);
   const effectiveShowOfficial = setShowOfficial !== undefined ? showOfficial : internalShowOfficial;
@@ -233,9 +233,10 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
   const sellChange = data?.sell_change_24h;
 
   const issuer = useMemo(() => getIssuerById(issuerId), [issuerId]);
+  const officialBob = data?.official_buy ?? data?.official_mid ?? null;
   const networkRate = useMemo(
-    () => networkBobPerUsd(cardRates, issuer.network),
-    [cardRates, issuer.network]
+    () => networkBobPerUsd(cardRates, issuer.network, officialBob),
+    [cardRates, issuer.network, officialBob]
   );
   const effectiveRate = useMemo(
     () => effectiveBobPerUsd(networkRate, issuer.feePct),
@@ -442,11 +443,6 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
             ) : effectiveRate == null ? (
               <div className="text-sm text-gray-600 dark:text-gray-400">
                 {cardError || t('cardRateUnavailable')}
-                <div className="mt-2 text-xs">
-                  {language === 'es'
-                    ? 'Ejecuta backend/supabase-card-rates.sql y el job de rates para poblar datos.'
-                    : 'Run backend/supabase-card-rates.sql and the rates job to populate data.'}
-                </div>
               </div>
             ) : (
               <>
@@ -464,6 +460,9 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
                     {t('cardRateFee')}: {(issuer.feePct * 100).toFixed(issuer.feePct ? 1 : 0)}%
                   </div>
                   <div>{language === 'es' ? issuer.blurbEs : issuer.blurbEn}</div>
+                  {issuer.network !== 'bcb' && cardRates?.source && !String(cardRates.source).includes('mid-market') && cardRates.source !== 'none' && (
+                    <div className="text-emerald-700 dark:text-emerald-300">{t('cardRateNetworkNote')}</div>
+                  )}
                   {vsBluePct != null && (
                     <div>
                       {t('cardRateVsBlue')}:{' '}

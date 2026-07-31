@@ -7,12 +7,25 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { trackRateCardView, trackOfficialRateToggle, trackRateUpdate } from '../utils/analytics';
 import {
-  US_CARD_ISSUERS,
-  getIssuerById,
-  networkBobPerUsd,
-  effectiveBobPerUsd,
-  networkLabel
+  effectiveBobPerUsd
 } from '../data/usCardIssuers';
+
+/** Only fee % matters while Visa/MC/Amex share the same Wise proxy rate. */
+const CARD_FEE_OPTIONS = [
+  { id: '0', feePct: 0, labelEs: '0% FX', labelEn: '0% FX' },
+  { id: '2.7', feePct: 0.027, labelEs: '2.7% FX', labelEn: '2.7% FX' },
+  { id: '3', feePct: 0.03, labelEs: '3% FX', labelEn: '3% FX' }
+];
+
+function sharedCardBobPerUsd(cardRates) {
+  if (!cardRates) return null;
+  const rate =
+    cardRates.visa_bob_per_usd ??
+    cardRates.mastercard_bob_per_usd ??
+    cardRates.amex_bob_per_usd ??
+    null;
+  return Number.isFinite(rate) ? rate : null;
+}
 
 const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, isLoading, error, dailyChange, isOfficial, currency, language, showTimestampInCards = true }) {
   const languageContext = useLanguage();
@@ -120,7 +133,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
   const [cardError, setCardError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [issuerId, setIssuerId] = useState('bcb-bank');
+  const [issuerId, setIssuerId] = useState('0');
   
   const [internalShowOfficial, setInternalShowOfficial] = useState(false);
   const effectiveShowOfficial = setShowOfficial !== undefined ? showOfficial : internalShowOfficial;
@@ -232,15 +245,14 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
   const buyChange = data?.buy_change_24h;
   const sellChange = data?.sell_change_24h;
 
-  const issuer = useMemo(() => getIssuerById(issuerId), [issuerId]);
-  const officialBob = data?.official_buy ?? data?.official_mid ?? null;
-  const networkRate = useMemo(
-    () => networkBobPerUsd(cardRates, issuer.network, officialBob),
-    [cardRates, issuer.network, officialBob]
+  const feeOption = useMemo(
+    () => CARD_FEE_OPTIONS.find((o) => o.id === issuerId) || CARD_FEE_OPTIONS[0],
+    [issuerId]
   );
+  const networkRate = useMemo(() => sharedCardBobPerUsd(cardRates), [cardRates]);
   const effectiveRate = useMemo(
-    () => effectiveBobPerUsd(networkRate, issuer.feePct),
-    [networkRate, issuer.feePct]
+    () => effectiveBobPerUsd(networkRate, feeOption.feePct),
+    [networkRate, feeOption.feePct]
   );
   const blueMid = useMemo(() => {
     const buy = data?.buy ?? data?.buy_bob_per_usd;
@@ -404,8 +416,8 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
             </p>
           )}
 
-          <div className="flex flex-wrap justify-center gap-2" role="listbox" aria-label={t('cardRateSelectIssuer')}>
-            {US_CARD_ISSUERS.map((item) => {
+          <div className="flex flex-wrap justify-center gap-2" role="listbox" aria-label={t('cardRateSelectFee')}>
+            {CARD_FEE_OPTIONS.map((item) => {
               const active = item.id === issuerId;
               const label = language === 'es' ? item.labelEs : item.labelEn;
               return (
@@ -454,17 +466,14 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
                 </div>
                 <div className="mt-3 text-xs text-gray-600 dark:text-gray-400 space-y-1">
                   <div>
-                    {t('cardRateNetworkLine')}: {networkLabel(issuer.network)}{' '}
-                    {networkRate != null ? formatRate(networkRate, 'USD') : '—'}
+                    {t('cardRateBase')}: {networkRate != null ? formatRate(networkRate, 'USD') : '—'}
                     {' · '}
-                    {t('cardRateFee')}: {(issuer.feePct * 100).toFixed(issuer.feePct ? 1 : 0)}%
+                    {t('cardRateFee')}: {(feeOption.feePct * 100).toFixed(feeOption.feePct ? 1 : 0)}%
                   </div>
-                  <div>{language === 'es' ? issuer.blurbEs : issuer.blurbEn}</div>
-                  {issuer.network !== 'bcb' && String(cardRates?.source || '').includes('wise') && (
+                  {String(cardRates?.source || '').includes('wise') && (
                     <div className="text-amber-700 dark:text-amber-300">{t('cardRateEstimateNote')}</div>
                   )}
-                  {issuer.network !== 'bcb' &&
-                    cardRates?.source &&
+                  {cardRates?.source &&
                     !String(cardRates.source).includes('wise') &&
                     !String(cardRates.source).includes('mid-market') &&
                     cardRates.source !== 'none' && (

@@ -19,21 +19,23 @@ export const translations = {
     change24h: '24h',
     blueMarketTitle: 'Mercado Paralelo (Dólar Blue) - Binance P2P',
     officialRateTitle: 'Valor referencial del dólar estadounidense (BCB)',
-    cardRateTitle: 'Tarjeta US (Visa / MC / Amex)',
+    cardRateTitle: 'Tarjeta US',
     officialRateDescription:
       'Valor referencial del dólar estadounidense (BCB): tasa de referencia publicada por el Banco Central de Bolivia. Se actualiza diariamente (Compra/Venta).',
     cardRateDescription:
-      'Estimación con tasa Wise (USD→BOB) más comisión FX típica del emisor. No es la tasa oficial de Visa/MC/Amex; la usamos mientras no haya acceso a las redes. Excluye DCC. Verifica tu tarjeta.',
+      'Estimación con tasa Wise (USD→BOB) más la comisión FX de tu emisor (0% / 2.7% / 3%). No es la tasa oficial de Visa/MC/Amex. Excluye DCC. Verifica tu tarjeta.',
     cardRateEstimateNote:
       'Proxy Wise (remesas) — no es tasa de liquidación Visa/MC/Amex. Se reemplazará cuando haya feed de red.',
     cardRateNetworkNote:
-      'Tasa de red Visa/Mastercard (indicativa).',
+      'Tasa de red (indicativa).',
     cardRateEffective: 'Tasa efectiva',
+    cardRateBase: 'Tasa base',
     cardRateNetworkLine: 'Red',
     cardRateFee: 'Comisión FX',
     cardRateVsBlue: 'vs paralelo',
     cardRateUnavailable: 'Tasa de tarjeta aún no disponible. Usa BCB/banco mientras tanto.',
     cardRateSelectIssuer: 'Elige emisor',
+    cardRateSelectFee: 'Elige comisión FX',
     cardRateBetter: 'mejor',
     cardRateWorse: 'peor',
     blueMarketShort: 'Paralelo',
@@ -378,21 +380,23 @@ export const translations = {
     change24h: '24h',
     blueMarketTitle: 'Parallel Market (Blue Dollar) - Binance P2P',
     officialRateTitle: 'US Dollar reference rate (BCB)',
-    cardRateTitle: 'US Card (Visa / MC / Amex)',
+    cardRateTitle: 'US Card',
     officialRateDescription:
       'US Dollar reference rate (BCB): benchmark published by the Central Bank of Bolivia. Updated daily (buy/sell).',
     cardRateDescription:
-      'Estimate using Wise USD→BOB plus your issuer’s typical FX fee. Not the official Visa/MC/Amex settlement rate — used until network feeds are available. Excludes DCC. Check your card.',
+      'Estimate using Wise USD→BOB plus your issuer FX fee (0% / 2.7% / 3%). Not the official Visa/MC/Amex settlement rate. Excludes DCC. Check your card.',
     cardRateEstimateNote:
       'Wise remittance proxy — not Visa/MC/Amex settlement. Will switch when a network feed is available.',
     cardRateNetworkNote:
-      'Visa/Mastercard network rate (indicative).',
+      'Network rate (indicative).',
     cardRateEffective: 'Effective rate',
+    cardRateBase: 'Base rate',
     cardRateNetworkLine: 'Network',
     cardRateFee: 'FX fee',
     cardRateVsBlue: 'vs parallel',
     cardRateUnavailable: 'Card rate not available yet. Use BCB/bank for now.',
     cardRateSelectIssuer: 'Choose issuer',
+    cardRateSelectFee: 'Choose FX fee',
     cardRateBetter: 'better',
     cardRateWorse: 'worse',
     blueMarketShort: 'Parallel',

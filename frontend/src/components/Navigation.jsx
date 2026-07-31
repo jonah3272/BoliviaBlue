@@ -33,16 +33,15 @@ function Navigation() {
   
   // Secondary navigation (in "More" dropdown on desktop)
   const secondaryNavItems = [
+    { path: '/dolar-blue-hoy', key: 'navDolarHoy', icon: 'dashboard' },
+    { path: '/dolar-paralelo-bolivia-en-vivo', key: 'navEnVivo', icon: 'dashboard' },
+    { path: '/datos-historicos', key: 'navHistoricos', icon: 'dashboard' },
     { path: '/plataformas', key: 'navPlataformas', icon: 'platform' },
     { path: '/bancos', key: 'navBancos', icon: 'bank' },
     { path: '/acerca-de', key: 'navAbout', icon: 'about' },
-    { path: '/equipo', key: 'navEquipo', icon: 'team' },
     { path: '/contacto', key: 'navContact', icon: 'contact' },
     { path: '/preguntas-frecuentes', key: 'navFAQ', icon: 'faq' },
     { path: '/politica-de-privacidad', key: 'navPrivacy', icon: 'privacy' },
-    { path: '/terminos', key: 'navTerms', icon: 'terms' },
-    { path: '/correcciones', key: 'navCorrections', icon: 'corrections' },
-    { path: '/politica-editorial', key: 'navEditorial', icon: 'editorial' },
     { path: '/rodrigo-paz', key: 'navRodrigoPaz', icon: 'rodrigo' }
   ];
 

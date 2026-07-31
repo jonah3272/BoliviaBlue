@@ -75,15 +75,15 @@ const DATASET_DATOS = {
 /** Route config: path -> { title, description, canonical, shell, getJsonLd } */
 const ROUTES = {
   '/': {
-    title: 'Dólar Blue Bolivia en Tiempo Real | Cotización Cada 15 Min',
-    description: 'Cotización del dólar blue en Bolivia actualizada cada 15 min. Gráficos históricos, calculadora y alertas. Sin registro. Datos de Binance P2P.',
+    title: 'Dólar Blue Bolivia Hoy | Cotización en Vivo Cada 15 Min',
+    description: 'Dólar blue Bolivia hoy: compra y venta actualizadas cada 15 min desde Binance P2P. Gráficos, calculadora y noticias. Gratis, sin registro.',
     canonical: BASE_URL + '/',
     shell: SHELL_HOME,
-    getJsonLd: () => buildStaticJsonLd('/', 'Inicio', 'Dólar Blue Bolivia – Cotización en Tiempo Real', 'Tu fuente principal para el dólar blue en Bolivia: cotización cada 15 min, gráficos históricos, calculadora y noticias.', [])
+    getJsonLd: () => buildStaticJsonLd('/', 'Inicio', 'Dólar Blue Bolivia Hoy – Cotización en Vivo', 'Dólar blue Bolivia hoy: compra y venta actualizadas cada 15 min desde Binance P2P.', [])
   },
   '/dolar-blue-hoy': {
-    title: 'Dólar Blue Hoy Bolivia | Cotización Actual Cada 15 Min',
-    description: 'Cotización del dólar blue hoy en Bolivia. Precio actual actualizado cada 15 min. Mercado paralelo. Gratis y sin registro.',
+    title: 'Dólar Blue Hoy Bolivia | Precio Actualizado Ahora',
+    description: 'Dólar blue hoy en Bolivia: precio de compra y venta actualizado cada 15 min. Cotización del mercado paralelo, gratis y sin registro.',
     canonical: BASE_URL + '/dolar-blue-hoy',
     shell: `
 <main class="max-w-7xl mx-auto px-4 py-8" data-seo-shell="dolar-blue-hoy">
@@ -101,8 +101,8 @@ const ROUTES = {
     getJsonLd: () => buildStaticJsonLd('/dolar-blue-hoy', 'Dólar Blue Hoy', 'Cotización del Dólar Blue Hoy – Bolivia', 'Esta es la cotización del dólar blue hoy en Bolivia, actualizada cada 15 minutos.', [])
   },
   '/dolar-paralelo-bolivia-en-vivo': {
-    title: 'Dólar Paralelo Bolivia EN VIVO | Cotización en Tiempo Real',
-    description: 'Dólar paralelo Bolivia EN VIVO. Cotización en tiempo real cada 15 min. Mercado cambiario boliviano. Ver precio ahora.',
+    title: 'Dólar Paralelo Bolivia EN VIVO | Cotización Ahora',
+    description: 'Dólar paralelo Bolivia EN VIVO: cotización del mercado cambiario actualizada cada 15 min. Ver precio de compra y venta ahora.',
     canonical: BASE_URL + '/dolar-paralelo-bolivia-en-vivo',
     shell: `
 <main class="max-w-7xl mx-auto px-4 py-8" data-seo-shell="dolar-paralelo-bolivia-en-vivo">
@@ -121,8 +121,8 @@ const ROUTES = {
     getJsonLd: () => buildStaticJsonLd('/dolar-paralelo-bolivia-en-vivo', 'Dólar Paralelo Bolivia EN VIVO', 'Dólar Paralelo Bolivia EN VIVO', 'Cotización del dólar paralelo Bolivia EN VIVO. Actualizamos cada 15 minutos con datos de Binance P2P.', [])
   },
   '/cuanto-esta-dolar-bolivia': {
-    title: '¿Cuánto Está el Dólar en Bolivia? Precio Actual 2025',
-    description: '¿Cuánto está el dólar en Bolivia? Precio actual del dólar blue. Cotización cada 15 min. Gráficos históricos y calculadora. Gratis.',
+    title: '¿Cuánto Está el Dólar en Bolivia Hoy? Precio Actual',
+    description: '¿Cuánto está el dólar en Bolivia hoy? Precio actual del dólar blue (paralelo), actualizado cada 15 min. Calculadora y gráficos incluidos.',
     canonical: BASE_URL + '/cuanto-esta-dolar-bolivia',
     shell: `
 <main class="max-w-7xl mx-auto px-4 py-8" data-seo-shell="cuanto-esta-dolar-bolivia">

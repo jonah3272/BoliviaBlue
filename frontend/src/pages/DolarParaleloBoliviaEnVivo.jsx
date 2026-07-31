@@ -77,11 +77,11 @@ function DolarParaleloBoliviaEnVivo() {
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900">
       <PageMeta
         title={language === 'es'
-          ? '🔴 Dólar Paralelo Bolivia EN VIVO | Cotización en Tiempo Real'
-          : '🔴 Bolivia Parallel Dollar LIVE | Real-Time Quote'}
+          ? 'Dólar Paralelo Bolivia EN VIVO | Cotización Ahora'
+          : 'Bolivia Parallel Dollar LIVE | Quote Now'}
         description={language === 'es'
-          ? 'Dólar paralelo Bolivia EN VIVO. Cotización en tiempo real cada 15 min. Mercado cambiario boliviano. Ver precio ahora.'
-          : 'Bolivia parallel dollar LIVE. Real-time quote every 15 min. Exchange market. Check price now.'}
+          ? 'Dólar paralelo Bolivia EN VIVO: cotización del mercado cambiario actualizada cada 15 min. Ver precio de compra y venta ahora.'
+          : 'Bolivia parallel dollar LIVE: exchange-market quote updated every 15 min. See buy and sell price now.'}
         keywords="dolar blue en vivo, dolar paralelo bolivia en vivo, dolar blue bolivia en vivo, dolar paralelo bolivia, tipo cambio bolivia en vivo, cotizacion dolar blue bolivia, bolivia blue en vivo, precio dolar paralelo bolivia"
         canonical="/dolar-paralelo-bolivia-en-vivo"
         structuredData={structuredData}

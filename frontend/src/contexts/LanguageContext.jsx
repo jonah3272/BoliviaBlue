@@ -223,6 +223,9 @@ export const translations = {
     navTerms: 'Términos',
     navCorrections: 'Correcciones',
     navEditorial: 'Política Editorial',
+    navDolarHoy: 'Dólar blue hoy',
+    navEnVivo: 'Paralelo en vivo',
+    navHistoricos: 'Datos históricos',
     learnMore: 'Saber Más',
     
     // Twitter/X Section
@@ -559,6 +562,9 @@ export const translations = {
     navTerms: 'Terms',
     navCorrections: 'Corrections',
     navEditorial: 'Editorial Policy',
+    navDolarHoy: 'Blue dollar today',
+    navEnVivo: 'Parallel live',
+    navHistoricos: 'Historical data',
     learnMore: 'Learn More',
     
     // Twitter/X Section

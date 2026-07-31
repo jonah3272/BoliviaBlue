@@ -8,11 +8,15 @@
   ],
   "buildCommand": "cd frontend && npm install && npm run build",
   "outputDirectory": "frontend/dist",
-  "installCommand": "npm --version",
+  "installCommand": "npm install && cd frontend && npm install",
   "rewrites": [
     {
-      "source": "/api/:path*",
-      "destination": "https://boliviablue-production.up.railway.app/api/:path*"
+      "source": "/api/historical-data.csv",
+      "destination": "/api/historical-data?format=csv"
+    },
+    {
+      "source": "/api/historical-data.json",
+      "destination": "/api/historical-data?format=json"
     },
     {
       "source": "/dolar-blue-hoy",

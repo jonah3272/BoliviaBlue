@@ -1,12 +1,8 @@
 {
-  "name": "bolivia-blue-con-paz",
-  "version": "1.0.0",
-  "description": "Bolivia Blue con Paz - Exchange rate tracker",
-  "scripts": {
-    "start": "cd backend && npm start",
-    "install:all": "cd backend && npm install"
-  },
-  "engines": {
-    "node": ">=20.0.0"
+  "name": "bolivia-blue",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
   }
 }

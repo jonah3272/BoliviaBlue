@@ -8,18 +8,18 @@ function Footer() {
 
   // Essential footer links with trust signals
   const footerLinks = [
+    { path: '/dolar-blue-hoy', label: language === 'es' ? 'Dólar blue hoy' : 'Blue dollar today' },
+    { path: '/dolar-paralelo-bolivia-en-vivo', label: language === 'es' ? 'En vivo' : 'Live' },
+    { path: '/cuanto-esta-dolar-bolivia', label: language === 'es' ? '¿Cuánto está?' : 'How much?' },
+    { path: '/datos-historicos', label: language === 'es' ? 'Datos históricos' : 'Historical data' },
     { path: '/calculadora', label: language === 'es' ? 'Calculadora' : 'Calculator' },
     { path: '/noticias', label: language === 'es' ? 'Noticias' : 'News' },
     { path: '/blog', label: 'Blog' },
-    { path: '/bancos', label: language === 'es' ? 'Bancos' : 'Banks' },
+    { path: '/preguntas-frecuentes', label: 'FAQ' },
+    { path: '/fuente-de-datos', label: language === 'es' ? 'Fuente de datos' : 'Data source' },
     { path: '/acerca-de', label: language === 'es' ? 'Acerca de' : 'About' },
     { path: '/contacto', label: language === 'es' ? 'Contacto' : 'Contact' },
-    { path: '/preguntas-frecuentes', label: 'FAQ' },
-    { path: '/equipo', label: language === 'es' ? 'Equipo' : 'Team' },
     { path: '/politica-de-privacidad', label: language === 'es' ? 'Privacidad' : 'Privacy' },
-    { path: '/terminos', label: language === 'es' ? 'Términos' : 'Terms' },
-    { path: '/correcciones', label: language === 'es' ? 'Correcciones' : 'Corrections' },
-    { path: '/politica-editorial', label: language === 'es' ? 'Política Editorial' : 'Editorial Policy' }
   ];
 
   return (
@@ -40,7 +40,7 @@ function Footer() {
         
         {/* Copyright */}
         <div className="text-center text-xs text-gray-500 dark:text-gray-500">
-          <p>&copy; 2025 Bolivia Blue Rate con Paz</p>
+          <p>&copy; 2026 Bolivia Blue Rate con Paz</p>
           <p className="mt-2">{language === 'es' ? 'Hecho con datos abiertos para transparencia.' : 'Made with open data for transparency.'}</p>
         </div>
       </div>

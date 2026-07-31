@@ -12,7 +12,8 @@
     "test": "node --test tests/*.test.js",
     "setup:blog": "node setup-blog-articles.js",
     "refresh-rates": "node scripts/refresh-rates-once.js",
-    "refresh-news": "node scripts/refresh-news-once.js"
+    "refresh-news": "node scripts/refresh-news-once.js",
+    "generate-daily-articles": "node scripts/generate-daily-articles-once.js"
   },
   "keywords": [
     "bolivia",

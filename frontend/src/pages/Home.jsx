@@ -305,11 +305,11 @@ function Home() {
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
         title={language === 'es' 
-          ? 'Dólar Blue Bolivia en Tiempo Real | Cotización Cada 15 Min'
-          : 'Blue Dollar Bolivia Live | Quote Every 15 Min'}
+          ? 'Dólar Blue Bolivia Hoy | Cotización en Vivo Cada 15 Min'
+          : 'Bolivia Blue Dollar Today | Live Quote Every 15 Min'}
         description={language === 'es' 
-          ? "Cotización del dólar blue en Bolivia actualizada cada 15 min. Gráficos históricos, calculadora y alertas. Sin registro. Datos de Binance P2P."
-          : "Bolivia blue dollar quote updated every 15 min. Historical charts, calculator and alerts. No signup. Binance P2P data."}
+          ? "Dólar blue Bolivia hoy: compra y venta actualizadas cada 15 min desde Binance P2P. Gráficos, calculadora y noticias. Gratis, sin registro."
+          : "Bolivia blue dollar today: buy/sell updated every 15 min from Binance P2P. Charts, calculator and news. Free, no signup."}
         keywords={language === 'es'
           ? "cuanto esta el dolar en bolivia hoy, cuanto esta el dolar blue en bolivia, precio del dolar en bolivia hoy, a cuanto esta el dolar en bolivia, cambio de dolar en bolivia hoy, cotizacion dolar bolivia hoy, dolar paralelo bolivia hoy, bolivia blue rate, bolivia blue exchange rate, dólar bolivia, tipo de cambio bolivia, boliviano dólar, blue bolivia, dólar blue bolivia, tipo cambio bolivia, cambio dólar bolivia, mercado paralelo bolivia, dólar paralelo, Rodrigo Paz, BCB, banco central bolivia, binance bolivia, usdt bob, usdt a bob, boliviano a dólar, dólar a boliviano, cotización dólar bolivia, precio dólar bolivia, tasa cambio bolivia, bolivian blue, bolivianblue, mejor que bolivianblue.net"
           : "how much is the dollar in bolivia today, what is the blue dollar rate in bolivia, bolivia dollar price today, what is the dollar rate in bolivia, dollar exchange in bolivia today, bolivia dollar quote today, bolivia parallel dollar today, bolivia blue rate, bolivia blue exchange rate, bolivia dollar, exchange rate bolivia, boliviano dollar, blue dollar bolivia, bolivia blue dollar, bolivia exchange rate, bolivia currency, parallel market bolivia, bolivia parallel dollar, Rodrigo Paz, BCB, central bank bolivia, binance bolivia, usdt bob, usdt to bob, boliviano to dollar, dollar to boliviano, bolivia dollar rate, bolivia dollar price, bolivia exchange rate, bolivian blue, bolivianblue, better than bolivianblue.net, bolivia blue market, bolivia dollar calculator"}
@@ -331,8 +331,8 @@ function Home() {
         <div className="text-center space-y-6 mb-8">
           <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-gray-900 dark:text-white leading-tight">
             {language === 'es' 
-              ? 'Dólar Blue Bolivia – Cotización en Tiempo Real y Herramientas'
-              : 'Bolivia Blue Dollar – Live Rate & Tools'}
+              ? 'Dólar Blue Bolivia Hoy – Cotización en Vivo'
+              : 'Bolivia Blue Dollar Today – Live Quote'}
           </h1>
           
           {/* Key Features - Visual Badges */}
@@ -876,8 +876,8 @@ function Home() {
               </p>
               <p className="text-gray-700 dark:text-gray-300 mb-4">
                 {language === 'es'
-                  ? <>Nuestra plataforma rastrea el <strong>Bolivian Blue</strong> en tiempo real utilizando datos de Binance P2P, actualizando el <strong>bolivian blue rate</strong> cada 15 minutos para brindarte la información más precisa y actualizada. Esto nos diferencia de otros sitios como bolivianblue.net que actualizan con menor frecuencia. <Link to="/bolivia-blue-rate" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Aprende más sobre el Bolivian Blue</Link>, <Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">consulta el dólar blue hoy</Link>, <Link to="/que-es-dolar-blue" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">qué es el dólar blue</Link>, <Link to="/cuanto-esta-dolar-bolivia" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">cuánto está el dólar</Link>, <Link to="/dolar-blue-la-paz" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">dólar blue La Paz</Link>, <Link to="/binance-p2p-bolivia" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Binance P2P Bolivia</Link>, <Link to="/plataformas" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">compara plataformas</Link>, <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">usa nuestra calculadora</Link> para convertir divisas, o <Link to="/comparacion" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">compara con otros sitios</Link>.</>
-                  : <>Our platform tracks the <strong>Bolivian Blue</strong> in real-time using Binance P2P data, updating the <strong>bolivian blue rate</strong> every 15 minutes to provide you with the most accurate and up-to-date information. This differentiates us from other sites like bolivianblue.net that update less frequently. <Link to="/bolivia-blue-rate" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Learn more about Bolivian Blue</Link>, <Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">check the blue dollar today</Link>, <Link to="/que-es-dolar-blue" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">what is blue dollar</Link>, <Link to="/cuanto-esta-dolar-bolivia" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">how much is the dollar</Link>, <Link to="/dolar-blue-la-paz" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">blue dollar La Paz</Link>, <Link to="/binance-p2p-bolivia" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Binance P2P Bolivia</Link>, <Link to="/plataformas" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">compare platforms</Link>, <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">use our calculator</Link> to convert currencies, or <Link to="/comparacion" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">compare with other sites</Link>.</>}
+                  ? <>Nuestra plataforma rastrea el <strong>Bolivian Blue</strong> en tiempo real utilizando datos de Binance P2P, actualizando el <strong>bolivian blue rate</strong> cada 15 minutos para brindarte la información más precisa y actualizada. Esto nos diferencia de otros sitios como bolivianblue.net que actualizan con menor frecuencia. <Link to="/bolivian-blue" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Aprende más sobre el Bolivian Blue</Link>, <Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">consulta el dólar blue hoy</Link>, <Link to="/que-es-dolar-blue" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">qué es el dólar blue</Link>, <Link to="/cuanto-esta-dolar-bolivia" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">cuánto está el dólar</Link>, <Link to="/dolar-paralelo-bolivia-en-vivo" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">dólar blue La Paz</Link>, <Link to="/binance-p2p-bolivia" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Binance P2P Bolivia</Link>, <Link to="/plataformas" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">compara plataformas</Link>, <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">usa nuestra calculadora</Link> para convertir divisas, o <Link to="/comparacion" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">compara con otros sitios</Link>.</>
+                  : <>Our platform tracks the <strong>Bolivian Blue</strong> in real-time using Binance P2P data, updating the <strong>bolivian blue rate</strong> every 15 minutes to provide you with the most accurate and up-to-date information. This differentiates us from other sites like bolivianblue.net that update less frequently. <Link to="/bolivian-blue" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Learn more about Bolivian Blue</Link>, <Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">check the blue dollar today</Link>, <Link to="/que-es-dolar-blue" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">what is blue dollar</Link>, <Link to="/cuanto-esta-dolar-bolivia" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">how much is the dollar</Link>, <Link to="/dolar-paralelo-bolivia-en-vivo" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">blue dollar La Paz</Link>, <Link to="/binance-p2p-bolivia" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Binance P2P Bolivia</Link>, <Link to="/plataformas" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">compare platforms</Link>, <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">use our calculator</Link> to convert currencies, or <Link to="/comparacion" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">compare with other sites</Link>.</>}
               </p>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
                 {language === 'es' ? '¿Por qué es importante el Bolivia Blue Rate?' : 'Why is Bolivia Blue Rate Important?'}
@@ -963,38 +963,50 @@ function Home() {
             </Link>
 
             <Link
-              to="/dolar-blue-la-paz"
+              to="/dolar-paralelo-bolivia-en-vivo"
               className="group bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 rounded-xl p-4 transition-all duration-200 hover:shadow-md hover:scale-105 border border-gray-200 dark:border-gray-700"
             >
               <div className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
-                La Paz
+                {language === 'es' ? 'En vivo' : 'Live'}
               </div>
               <div className="text-xs text-gray-600 dark:text-gray-400">
-                {language === 'es' ? 'Precios locales' : 'Local prices'}
+                {language === 'es' ? 'Dólar paralelo' : 'Parallel dollar'}
               </div>
             </Link>
 
             <Link
-              to="/dolar-blue-santa-cruz"
+              to="/cuanto-esta-dolar-bolivia"
               className="group bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 rounded-xl p-4 transition-all duration-200 hover:shadow-md hover:scale-105 border border-gray-200 dark:border-gray-700"
             >
               <div className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
-                Santa Cruz
+                {language === 'es' ? '¿Cuánto está?' : 'How much?'}
               </div>
               <div className="text-xs text-gray-600 dark:text-gray-400">
-                {language === 'es' ? 'Precios locales' : 'Local prices'}
+                {language === 'es' ? 'Precio actual' : 'Current price'}
               </div>
             </Link>
 
             <Link
-              to="/dolar-blue-cochabamba"
+              to="/datos-historicos"
               className="group bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 rounded-xl p-4 transition-all duration-200 hover:shadow-md hover:scale-105 border border-gray-200 dark:border-gray-700"
             >
               <div className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
-                Cochabamba
+                {language === 'es' ? 'Histórico' : 'History'}
               </div>
               <div className="text-xs text-gray-600 dark:text-gray-400">
-                {language === 'es' ? 'Precios locales' : 'Local prices'}
+                {language === 'es' ? 'Datos y descargas' : 'Data & downloads'}
+              </div>
+            </Link>
+
+            <Link
+              to="/cotiza-dolar-paralelo"
+              className="group bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 rounded-xl p-4 transition-all duration-200 hover:shadow-md hover:scale-105 border border-gray-200 dark:border-gray-700"
+            >
+              <div className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
+                {language === 'es' ? 'Cotiza' : 'Quote'}
+              </div>
+              <div className="text-xs text-gray-600 dark:text-gray-400">
+                {language === 'es' ? 'Paralelo ahora' : 'Parallel now'}
               </div>
             </Link>
 

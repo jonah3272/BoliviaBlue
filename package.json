@@ -1,7 +1,6 @@
 {
   "name": "bolivia-blue",
   "private": true,
-  "type": "module",
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0"
   }

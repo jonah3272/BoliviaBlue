@@ -1,6 +1,6 @@
-import { createClient } from '@supabase/supabase-js';
+const { createClient } = require('@supabase/supabase-js');
 
-export function getSupabase() {
+function getSupabase() {
   const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
   const key =
     process.env.SUPABASE_SERVICE_KEY ||
@@ -14,7 +14,7 @@ export function getSupabase() {
   return createClient(url, key);
 }
 
-export function cors(res, origin) {
+function cors(res, origin) {
   res.setHeader('Access-Control-Allow-Origin', origin || '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
   res.setHeader(
@@ -23,3 +23,5 @@ export function cors(res, origin) {
   );
   if (origin) res.setHeader('Access-Control-Allow-Credentials', 'true');
 }
+
+module.exports = { getSupabase, cors };

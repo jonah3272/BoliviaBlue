@@ -1,4 +1,4 @@
-import { getSupabase, cors } from '../_lib/supabase.js';
+const { getSupabase, cors } = require('../_lib/supabase');
 
 const RANGE_MS = {
   '30d': 30 * 24 * 60 * 60 * 1000,
@@ -10,7 +10,6 @@ const ANON_MAX_ROWS = 4000;
 
 async function fetchRates(supabase, range) {
   if (range === 'all') {
-    // Public sample only without token auth on Vercel — cap for safety
     const { data, error } = await supabase
       .from('rates')
       .select('t,buy,sell,mid,official_buy,official_sell,official_mid')
@@ -32,28 +31,26 @@ async function fetchRates(supabase, range) {
   return data || [];
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   cors(res, req.headers.origin);
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
     const range = String(req.query.range || '30d').toLowerCase();
-    // Extended ranges require Railway/token flow; keep free public 30d on Vercel
-    if (range !== '30d' && range !== 'all') {
-      // Allow 30d freely; for others still serve capped public sample for SEO Dataset links
-    }
-
     const supabase = getSupabase();
-    const rows = await fetchRates(supabase, range === '90d' || range === '1y' ? '30d' : range);
+    const effectiveRange = range === '90d' || range === '1y' ? '30d' : range;
+    const rows = await fetchRates(supabase, effectiveRange);
 
-    const format = req.query.format === 'json' || req.url?.includes('.json') ? 'json' : 'csv';
+    const wantJson =
+      req.query.format === 'json' ||
+      (req.url && req.url.includes('.json'));
 
-    if (format === 'json') {
+    if (wantJson) {
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
-      res.setHeader('Content-Disposition', `attachment; filename="bolivia-blue-${range}.json"`);
+      res.setHeader('Content-Disposition', `attachment; filename="bolivia-blue-${effectiveRange}.json"`);
       return res.status(200).json({
-        range: range === '90d' || range === '1y' ? '30d' : range,
+        range: effectiveRange,
         count: rows.length,
         points: rows
       });
@@ -67,9 +64,9 @@ export default async function handler(req, res) {
       )
       .join('\n');
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-    res.setHeader('Content-Disposition', `attachment; filename="bolivia-blue-${range}.csv"`);
+    res.setHeader('Content-Disposition', `attachment; filename="bolivia-blue-${effectiveRange}.csv"`);
     return res.status(200).send(header + body + '\n');
   } catch (err) {
     return res.status(500).json({ error: 'Internal server error', message: err.message });
   }
-}
+};

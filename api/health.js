@@ -1,6 +1,6 @@
-import { getSupabase, cors } from '../_lib/supabase.js';
+const { getSupabase, cors } = require('../_lib/supabase');
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   cors(res, req.headers.origin);
   if (req.method === 'OPTIONS') return res.status(200).end();
 
@@ -27,4 +27,4 @@ export default async function handler(req, res) {
   } catch (err) {
     return res.status(500).json({ ok: false, error: err.message });
   }
-}
+};

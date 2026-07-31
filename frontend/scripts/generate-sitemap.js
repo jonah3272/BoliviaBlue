@@ -117,6 +117,18 @@ const pages = [
     priority: '0.8',
     lastmod: currentDate
   },
+  {
+    path: '/widget',
+    changefreq: 'monthly',
+    priority: '0.9',
+    lastmod: currentDate
+  },
+  {
+    path: '/prensa',
+    changefreq: 'monthly',
+    priority: '0.85',
+    lastmod: currentDate
+  },
   
   // Blue rate pages (canonical only - redirect pages removed)
   {

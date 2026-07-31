@@ -12,14 +12,14 @@ function Footer() {
     { path: '/dolar-paralelo-bolivia-en-vivo', label: language === 'es' ? 'En vivo' : 'Live' },
     { path: '/cuanto-esta-dolar-bolivia', label: language === 'es' ? '¿Cuánto está?' : 'How much?' },
     { path: '/datos-historicos', label: language === 'es' ? 'Datos históricos' : 'Historical data' },
+    { path: '/widget', label: 'Widget' },
+    { path: '/prensa', label: language === 'es' ? 'Prensa' : 'Press' },
     { path: '/calculadora', label: language === 'es' ? 'Calculadora' : 'Calculator' },
     { path: '/noticias', label: language === 'es' ? 'Noticias' : 'News' },
     { path: '/blog', label: 'Blog' },
+    { path: '/api-docs', label: 'API' },
     { path: '/preguntas-frecuentes', label: 'FAQ' },
-    { path: '/fuente-de-datos', label: language === 'es' ? 'Fuente de datos' : 'Data source' },
-    { path: '/acerca-de', label: language === 'es' ? 'Acerca de' : 'About' },
     { path: '/contacto', label: language === 'es' ? 'Contacto' : 'Contact' },
-    { path: '/politica-de-privacidad', label: language === 'es' ? 'Privacidad' : 'Privacy' },
   ];
 
   return (

@@ -19,6 +19,18 @@
       "destination": "/api/historical-data?format=json"
     },
     {
+      "source": "/blog/rss.xml",
+      "destination": "/api/rss-blog"
+    },
+    {
+      "source": "/noticias/rss.xml",
+      "destination": "/api/rss-news"
+    },
+    {
+      "source": "/feed.xml",
+      "destination": "/api/rss-blog"
+    },
+    {
       "source": "/dolar-blue-hoy",
       "destination": "/dolar-blue-hoy/index.html"
     },

@@ -924,6 +924,38 @@ function Home() {
           </div>
         </section>
 
+        {/* Link magnets for media / partners */}
+        <section className="mt-10 rounded-2xl border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/30 p-5 sm:p-6">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+            {language === 'es' ? 'Para medios y sitios web' : 'For media and websites'}
+          </h2>
+          <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+            {language === 'es'
+              ? 'Usá nuestro widget gratis, citá los datos o descargá el CSV. Cada mención con enlace ayuda a que Bolivia Blue sea la referencia #1.'
+              : 'Use our free widget, cite the data, or download CSV. Every linked mention helps Bolivia Blue become the #1 reference.'}
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              to="/widget"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700"
+            >
+              Widget
+            </Link>
+            <Link
+              to="/prensa"
+              className="px-4 py-2 bg-white dark:bg-gray-800 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-700 rounded-lg text-sm font-semibold"
+            >
+              {language === 'es' ? 'Kit de prensa' : 'Press kit'}
+            </Link>
+            <Link
+              to="/datos-historicos"
+              className="px-4 py-2 bg-white dark:bg-gray-800 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-700 rounded-lg text-sm font-semibold"
+            >
+              CSV / JSON
+            </Link>
+          </div>
+        </section>
+
         {/* Modern Quick Access Links - Clean Design */}
         <section className="mt-12">
           <div className="text-center mb-6">

@@ -13,6 +13,10 @@ Allow: /
 # Sitemap location
 Sitemap: https://boliviablue.com/sitemap.xml
 
+# Content feeds (aggregators / backlink discovery)
+# Blog: https://boliviablue.com/blog/rss.xml
+# News: https://boliviablue.com/noticias/rss.xml
+
 # Crawl delay (optional, be nice to servers)
 Crawl-delay: 1
 

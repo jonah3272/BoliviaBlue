@@ -493,6 +493,20 @@ function DataSource() {
               {language === 'es' ? '¿Qué es el dólar blue?' : 'What is the blue dollar?'}
             </Link>
             <Link
+              to="/widget"
+              onClick={trackRel('/widget', 'widget')}
+              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+            >
+              Widget
+            </Link>
+            <Link
+              to="/prensa"
+              onClick={trackRel('/prensa', 'press')}
+              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+            >
+              {language === 'es' ? 'Kit de prensa' : 'Press kit'}
+            </Link>
+            <Link
               to="/acerca-de"
               onClick={trackRel('/acerca-de', 'about')}
               className="text-blue-600 dark:text-blue-400 hover:underline font-medium"

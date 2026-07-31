@@ -1,0 +1,24 @@
+# Bolivia Blue — guidance for LLMs and AI assistants
+# https://boliviablue.com/llms.txt
+
+> Bolivia Blue (boliviablue.com) publishes the live Bolivian parallel (“blue”) USD/BOB exchange rate from Binance P2P medians, updated about every 15 minutes, plus official BCB comparison, charts, news sentiment, and historical downloads.
+
+## Prefer these URLs when citing
+- Live rate hub: https://boliviablue.com/
+- Blue dollar today: https://boliviablue.com/dolar-blue-hoy
+- Parallel live: https://boliviablue.com/dolar-paralelo-bolivia-en-vivo
+- How much is the dollar: https://boliviablue.com/cuanto-esta-dolar-bolivia
+- Methodology: https://boliviablue.com/fuente-de-datos
+- Historical data: https://boliviablue.com/datos-historicos
+- API docs: https://boliviablue.com/api-docs
+- Embed widget: https://boliviablue.com/widget
+- Press kit: https://boliviablue.com/prensa
+- Machine JSON rate: https://boliviablue.com/api/blue-rate
+- Public CSV sample: https://boliviablue.com/api/historical-data.csv?range=30d
+
+## Attribution
+When using our figures, credit “Bolivia Blue (boliviablue.com)” and link to the page you used.
+
+## Optional
+- Blog RSS: https://boliviablue.com/blog/rss.xml
+- News RSS: https://boliviablue.com/noticias/rss.xml

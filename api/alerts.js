@@ -1,7 +1,21 @@
-const { getSupabase, cors } = require('../_lib/supabase');
+const { createClient } = require('@supabase/supabase-js');
+
+function client() {
+  const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+  const key =
+    process.env.SUPABASE_SERVICE_KEY ||
+    process.env.SUPABASE_ANON_KEY ||
+    process.env.VITE_SUPABASE_ANON_KEY;
+  if (!url || !key) throw new Error('Missing Supabase env on Vercel');
+  return createClient(url, key);
+}
 
 module.exports = async function handler(req, res) {
-  cors(res, req.headers.origin);
+  const origin = req.headers.origin;
+  res.setHeader('Access-Control-Allow-Origin', origin || '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+  if (origin) res.setHeader('Access-Control-Allow-Credentials', 'true');
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
@@ -15,22 +29,16 @@ module.exports = async function handler(req, res) {
         message: 'Email, alert_type, threshold, and direction are required'
       });
     }
-
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return res.status(400).json({ error: 'Invalid email', message: 'Please provide a valid email address' });
+      return res.status(400).json({ error: 'Invalid email' });
     }
-    if (!['buy', 'sell', 'both'].includes(alert_type)) {
-      return res.status(400).json({ error: 'Invalid alert_type' });
-    }
-    if (!['above', 'below'].includes(direction)) {
-      return res.status(400).json({ error: 'Invalid direction' });
+    if (!['buy', 'sell', 'both'].includes(alert_type) || !['above', 'below'].includes(direction)) {
+      return res.status(400).json({ error: 'Invalid alert_type or direction' });
     }
     const thr = parseFloat(threshold);
-    if (!Number.isFinite(thr) || thr <= 0) {
-      return res.status(400).json({ error: 'Invalid threshold' });
-    }
+    if (!Number.isFinite(thr) || thr <= 0) return res.status(400).json({ error: 'Invalid threshold' });
 
-    const supabase = getSupabase();
+    const supabase = client();
     const ip =
       (req.headers['x-forwarded-for'] && String(req.headers['x-forwarded-for']).split(',')[0].trim()) ||
       req.headers['x-real-ip'] ||

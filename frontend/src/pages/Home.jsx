@@ -326,10 +326,10 @@ function Home() {
       <AdSenseAutoAds />
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-8 md:py-12 space-y-6 sm:space-y-8 md:space-y-12">
+      <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-5 sm:py-8 md:py-10 space-y-6 sm:space-y-8 md:space-y-10 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
         {/* Hero Section - Clean & Modern (hub positioning) */}
         <div className="text-center space-y-6 mb-8">
-          <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-gray-900 dark:text-white leading-tight">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight px-1">
             {language === 'es' 
               ? 'Dólar Blue Bolivia Hoy – Cotización en Vivo'
               : 'Bolivia Blue Dollar Today – Live Quote'}

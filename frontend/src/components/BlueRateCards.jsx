@@ -31,7 +31,7 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
   if (isLoading) {
     // Reserve exact space to match final card dimensions (prevents layout shift)
     return (
-      <div className={`backdrop-blur-sm bg-white/50 dark:bg-gray-800/50 rounded-xl border-2 ${borderColor} p-4 shadow-lg min-h-[180px]`}>
+      <div className={`bg-white dark:bg-gray-800 rounded-xl border-2 ${borderColor} p-3 sm:p-4 shadow-md sm:shadow-lg min-h-[140px] sm:min-h-[160px]`}>
         <div className="skeleton h-4 w-20 mb-2"></div>
         <div className="skeleton h-12 w-28 mb-1"></div>
         <div className="skeleton h-3 w-32"></div>
@@ -55,24 +55,12 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
 
   return (
     <motion.div 
-      className={`bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-xl border-2 ${borderColor} p-4 shadow-2xl transition-all duration-300 ${
-        isBuy 
-          ? 'hover:shadow-blue-500/20 dark:hover:shadow-blue-500/30' 
-          : 'hover:shadow-pink-500/20 dark:hover:shadow-pink-500/30'
-      }`}
-      style={{
-        boxShadow: isBuy 
-          ? '0 10px 40px -10px rgba(59, 130, 246, 0.3)' 
-          : '0 10px 40px -10px rgba(236, 72, 153, 0.3)'
-      }}
-      initial={{ opacity: 0, y: 20 }}
+      className={`bg-white dark:bg-gray-800 rounded-xl border-2 ${borderColor} p-3 sm:p-5 shadow-md sm:shadow-lg transition-shadow duration-200`}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
       whileHover={{ 
-        y: -8,
-        boxShadow: isBuy
-          ? "0 25px 50px -12px rgba(59, 130, 246, 0.4)"
-          : "0 25px 50px -12px rgba(236, 72, 153, 0.4)",
+        y: -4,
         transition: { duration: 0.2 }
       }}
       role="region"
@@ -101,10 +89,10 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
         transition={{ duration: 0.3 }}
         key={rate}
       >
-        <div className="font-mono text-5xl sm:text-6xl md:text-7xl font-black text-gray-900 dark:text-white leading-none">
+        <div className="font-mono text-4xl sm:text-5xl md:text-6xl font-black text-gray-900 dark:text-white leading-none tracking-tight">
           {formatRate(rate, currency)}
         </div>
-        <div className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1 font-semibold">
+        <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1 font-medium">
           {language === 'es' ? `Bs. por ${currency}` : `Bs. per ${currency}`}
         </div>
       </motion.div>
@@ -253,7 +241,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
               effectiveSetShowOfficial(false);
               trackOfficialRateToggle(false);
             }}
-            className={`px-8 py-3 rounded-lg font-semibold text-sm transition-all duration-200 min-w-[200px] ${
+            className={`px-4 sm:px-8 py-2.5 sm:py-3 rounded-lg font-semibold text-sm transition-all duration-200 min-w-[140px] sm:min-w-[200px] touch-manipulation ${
               !effectiveShowOfficial
                 ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-md border-2 border-blue-200 dark:border-blue-600'
                 : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
@@ -268,7 +256,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
               effectiveSetShowOfficial(true);
               trackOfficialRateToggle(true);
             }}
-            className={`px-8 py-3 rounded-lg font-semibold text-sm transition-all duration-200 min-w-[200px] ${
+            className={`px-4 sm:px-8 py-2.5 sm:py-3 rounded-lg font-semibold text-sm transition-all duration-200 min-w-[140px] sm:min-w-[200px] touch-manipulation ${
               effectiveShowOfficial
                 ? 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 shadow-md border-2 border-gray-300 dark:border-gray-600'
                 : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'

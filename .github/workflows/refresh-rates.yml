@@ -1,0 +1,38 @@
+# Free rate updater (replaces Railway scheduler for blue rates).
+# Frontend reads from Supabase, so this is enough to keep quotes accurate.
+name: Refresh blue rates
+
+on:
+  schedule:
+    # ~every 15 minutes (GitHub can delay a few minutes under load)
+    - cron: '*/15 * * * *'
+  workflow_dispatch: # manual "Run workflow" button
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Refresh rates into Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          NODE_ENV: production
+        run: node scripts/refresh-rates-once.js

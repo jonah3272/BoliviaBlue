@@ -27,8 +27,9 @@ export const cache = {
 
 /**
  * Refresh blue market rate and official rate data
+ * Exported for one-shot runs (e.g. GitHub Actions free cron).
  */
-async function refreshBlueRate() {
+export async function refreshBlueRate() {
   try {
     console.log('Refreshing blue rate and official rate...');
     
@@ -81,6 +82,7 @@ async function refreshBlueRate() {
   } catch (error) {
     console.error('Failed to refresh rates:', error);
     cache.isHealthy = false;
+    throw error;
   }
 }
 

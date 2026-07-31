@@ -1,10 +1,10 @@
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import BlueRateCards from '../components/BlueRateCards';
-import BinanceBanner from '../components/BinanceBanner';
+import BuyFunnelCTA from '../components/BuyFunnelCTA';
 import SocialShare from '../components/SocialShare';
 import LazyErrorBoundary from '../components/LazyErrorBoundary';
-import { lazy, Suspense, useState, useEffect } from 'react';
+import { lazy, Suspense, useState, useEffect, useMemo } from 'react';
 
 // Lazy load heavy components for better performance
 const BlueChart = lazy(() => import('../components/BlueChart'));
@@ -48,8 +48,15 @@ function Home() {
   const [currentRate, setCurrentRate] = useState(null);
   const [isNewsExpanded, setIsNewsExpanded] = useState(false);
   const [isArticlesExpanded, setIsArticlesExpanded] = useState(false);
-  
-  // Load current rate for structured data
+
+  const midRate = useMemo(() => {
+    const buy = currentRate?.buy ?? currentRate?.buy_bob_per_usd;
+    const sell = currentRate?.sell ?? currentRate?.sell_bob_per_usd;
+    if (Number.isFinite(buy) && Number.isFinite(sell)) return (buy + sell) / 2;
+    if (Number.isFinite(buy)) return buy;
+    return null;
+  }, [currentRate]);
+
   useEffect(() => {
     const loadRate = async () => {
       try {
@@ -387,6 +394,11 @@ function Home() {
           <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} showTimestampInCards={false} />
         </section>
 
+        {/* Primary conversion: rate → buy dollars */}
+        <section>
+          <BuyFunnelCTA placement="home_after_rates" midRate={midRate} />
+        </section>
+
         {/* Combined Sentiment + News Card */}
         <section>
           <LazyErrorBoundary>
@@ -414,12 +426,6 @@ function Home() {
               <BlueChart showOfficial={showOfficial} />
             </Suspense>
           </LazyErrorBoundary>
-        </section>
-
-
-        {/* Binance Banner - Under Chart */}
-        <section>
-          <BinanceBanner />
         </section>
 
         {/* Rate Alerts Form */}

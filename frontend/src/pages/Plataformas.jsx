@@ -8,6 +8,9 @@ import { Link } from 'react-router-dom';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import { trackNavigation } from '../utils/analytics';
+import { trackReferralClicked } from '../utils/analyticsEvents';
+import { BINANCE_REFERRAL_LINK, AIRTM_REFERRAL_LINK, BINANCE_P2P_LINK } from '../config/referrals';
+import BuyFunnelCTA from '../components/BuyFunnelCTA';
 
 function Plataformas() {
   // Signal to AdSense that this page has sufficient content
@@ -52,8 +55,8 @@ function Plataformas() {
         'Can be complex for beginners'
       ],
       bestFor: language === 'es' ? 'Usuarios que buscan las mejores tasas y mayor seguridad' : 'Users seeking best rates and highest security',
-      link: 'https://www.binance.com/en/p2p',
-      referralLink: 'https://accounts.binance.com/register?ref=YOUR_REF_CODE',
+      link: BINANCE_P2P_LINK,
+      referralLink: BINANCE_REFERRAL_LINK,
       rate: language === 'es' ? 'Mejor tasa del mercado' : 'Best market rate',
       security: language === 'es' ? 'Muy alta' : 'Very high',
       speed: language === 'es' ? 'Rápido (5-15 min)' : 'Fast (5-15 min)',
@@ -88,7 +91,7 @@ function Plataformas() {
       ],
       bestFor: language === 'es' ? 'Usuarios que buscan facilidad de uso' : 'Users seeking ease of use',
       link: 'https://www.airtm.io',
-      referralLink: 'https://app.airtm.io/ivt/dasyl1sfs6fzr',
+      referralLink: AIRTM_REFERRAL_LINK,
       rate: language === 'es' ? 'Buena' : 'Good',
       security: language === 'es' ? 'Alta' : 'High',
       speed: language === 'es' ? 'Moderado (15-30 min)' : 'Moderate (15-30 min)',
@@ -275,6 +278,10 @@ function Plataformas() {
 
       <main className="max-w-7xl mx-auto px-4 py-8">
         <Breadcrumbs items={breadcrumbs} />
+
+        <div className="mb-8">
+          <BuyFunnelCTA placement="plataformas_top" />
+        </div>
 
         {/* Header */}
         <div className="text-center mb-12">
@@ -474,7 +481,20 @@ function Plataformas() {
                     href={platform.referralLink || platform.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    onClick={() => trackNavigation(platform.link, platform.name, 'external')}
+                    onClick={() => {
+                      const dest = platform.referralLink || platform.link;
+                      if (platform.id === 'binance' || platform.id === 'airtm') {
+                        trackReferralClicked({
+                          language,
+                          partner: platform.id,
+                          placement: 'plataformas',
+                          destination: dest,
+                          link_label: `plataformas_${platform.id}`,
+                        });
+                      } else {
+                        trackNavigation(platform.link, platform.name, 'external');
+                      }
+                    }}
                     className="block w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3 px-6 rounded-lg text-center transition-all transform hover:scale-105 shadow-lg"
                   >
                     {language === 'es' ? `Ir a ${platform.name}` : `Go to ${platform.name}`}

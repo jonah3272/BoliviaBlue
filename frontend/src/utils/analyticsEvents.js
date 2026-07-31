@@ -123,6 +123,48 @@ export function trackOutboundSourceClicked({ language, destination, link_label }
   }));
 }
 
+/**
+ * Primary monetization event — mark as GA4 key conversion.
+ * partner: binance | airtm | whatsapp
+ * placement: home_funnel | buy_page | banner | header | mobile_menu | plataformas | …
+ */
+export function trackReferralClicked({
+  language,
+  partner,
+  placement,
+  destination,
+  link_label,
+}) {
+  const params = baseParams({
+    language,
+    partner: partner || 'unknown',
+    placement: placement || 'unknown',
+    destination,
+    link_label: link_label || partner || destination,
+    page_type: 'referral',
+  });
+  trackEvent('referral_clicked', params);
+  // Keep legacy outbound event for historical reports
+  trackEvent('outbound_source_clicked', params);
+}
+
+export function trackBuyFunnelViewed({ language, placement }) {
+  trackEvent('buy_funnel_viewed', baseParams({
+    language,
+    placement: placement || 'unknown',
+    page_type: 'buy_funnel',
+  }));
+}
+
+export function trackWhatsAppShareClicked({ language, placement, has_rate }) {
+  trackEvent('whatsapp_share_clicked', baseParams({
+    language,
+    placement: placement || 'unknown',
+    has_rate: has_rate === true,
+    page_type: 'share',
+  }));
+}
+
 /** Historical data monetization funnel — see SEO_DATA_MONETIZATION_NOTES.md */
 export function trackFreeDownloadClicked({ language, format, range }) {
   trackEvent('free_download_clicked', baseParams({

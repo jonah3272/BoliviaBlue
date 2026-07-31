@@ -5,7 +5,7 @@ import LanguageToggle from './LanguageToggle';
 import CurrencyToggle from './CurrencyToggle';
 import MobileMenu from './MobileMenu';
 import { BINANCE_REFERRAL_LINK, AIRTM_REFERRAL_LINK } from '../config/referrals';
-import { trackOutboundSourceClicked } from '../utils/analyticsEvents';
+import { trackReferralClicked } from '../utils/analyticsEvents';
 
 function Header() {
   const languageContext = useLanguage();
@@ -56,8 +56,10 @@ function Header() {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() =>
-                trackOutboundSourceClicked({
+                trackReferralClicked({
                   language,
+                  partner: 'binance',
+                  placement: 'header',
                   destination: BINANCE_REFERRAL_LINK,
                   link_label: 'header_binance',
                 })
@@ -79,8 +81,10 @@ function Header() {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() =>
-                trackOutboundSourceClicked({
+                trackReferralClicked({
                   language,
+                  partner: 'airtm',
+                  placement: 'header',
                   destination: AIRTM_REFERRAL_LINK,
                   link_label: 'header_airtm',
                 })

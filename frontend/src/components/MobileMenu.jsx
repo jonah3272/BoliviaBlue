@@ -5,7 +5,7 @@ import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
 import CurrencyToggle from './CurrencyToggle';
 import { BINANCE_REFERRAL_LINK, AIRTM_REFERRAL_LINK } from '../config/referrals';
-import { trackOutboundSourceClicked } from '../utils/analyticsEvents';
+import { trackReferralClicked } from '../utils/analyticsEvents';
 
 function MobileMenu() {
   const [isOpen, setIsOpen] = useState(false);
@@ -249,8 +249,10 @@ function MobileMenu() {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() =>
-                trackOutboundSourceClicked({
+                trackReferralClicked({
                   language,
+                  partner: 'binance',
+                  placement: 'mobile_menu',
                   destination: BINANCE_REFERRAL_LINK,
                   link_label: 'mobile_menu_binance',
                 })
@@ -267,8 +269,10 @@ function MobileMenu() {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() =>
-                trackOutboundSourceClicked({
+                trackReferralClicked({
                   language,
+                  partner: 'airtm',
+                  placement: 'mobile_menu',
                   destination: AIRTM_REFERRAL_LINK,
                   link_label: 'mobile_menu_airtm',
                 })

@@ -6,9 +6,111 @@
 
 const fs = require('fs');
 const path = require('path');
+const https = require('https');
 
 const DIST = path.join(__dirname, '..', 'dist');
 const BASE_URL = 'https://boliviablue.com';
+const RATE_API = 'https://boliviablue.com/api/blue-rate';
+
+function fetchJson(url, timeoutMs = 8000) {
+  return new Promise((resolve, reject) => {
+    const req = https.get(url, { headers: { Accept: 'application/json' } }, (res) => {
+      if (res.statusCode && res.statusCode >= 400) {
+        reject(new Error(`HTTP ${res.statusCode}`));
+        res.resume();
+        return;
+      }
+      let body = '';
+      res.setEncoding('utf8');
+      res.on('data', (chunk) => { body += chunk; });
+      res.on('end', () => {
+        try {
+          resolve(JSON.parse(body));
+        } catch (e) {
+          reject(e);
+        }
+      });
+    });
+    req.on('error', reject);
+    req.setTimeout(timeoutMs, () => {
+      req.destroy(new Error('timeout'));
+    });
+  });
+}
+
+function fmtRate(n) {
+  const x = Number(n);
+  return Number.isFinite(x) ? x.toFixed(2) : null;
+}
+
+function formatSnippetTime(iso) {
+  if (!iso) return null;
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return null;
+  try {
+    return new Intl.DateTimeFormat('es-BO', {
+      day: 'numeric',
+      month: 'numeric',
+      year: '2-digit',
+      hour: 'numeric',
+      minute: '2-digit',
+    }).format(d);
+  } catch {
+    return null;
+  }
+}
+
+/** Apply live buy/sell into static meta + shell so crawlers see numbers without JS. */
+function applyLiveRatesToRoutes(buy, sell, updatedAt) {
+  const b = fmtRate(buy);
+  const s = fmtRate(sell);
+  if (!b || !s) return false;
+  const when = formatSnippetTime(updatedAt);
+  const whenBit = when ? `, lectura ${when}` : '';
+
+  const home = ROUTES['/'];
+  home.title = `Dólar Blue Bolivia Hoy: Compra ${b} · Venta ${s}`;
+  home.description = `El dólar paralelo (blue) en Bolivia cotiza hoy en Bs ${b} para la compra y Bs ${s} para la venta${whenBit}. Actualizado cada 15 min (Binance P2P).`;
+  home.shell = home.shell
+    .replace(
+      /Tu fuente principal para el dólar blue en Bolivia:[^<]*/,
+      `Cotización hoy: compra Bs ${b} · venta Bs ${s}. Actualizada cada 15 min desde Binance P2P.`
+    );
+
+  const hoy = ROUTES['/dolar-blue-hoy'];
+  if (hoy) {
+    hoy.title = `Dólar Blue Hoy Bolivia: Compra ${b} · Venta ${s}`;
+    hoy.description = `Dólar blue hoy en Bolivia: compra Bs ${b} y venta Bs ${s}${when ? ` (${when})` : ''}. Mercado paralelo actualizado cada 15 min.`;
+    hoy.shell = hoy.shell.replace(
+      /Esta es la cotización del dólar blue hoy en Bolivia[^<]*/,
+      `Cotización del dólar blue hoy: compra Bs ${b} · venta Bs ${s}. Actualizada cada 15 minutos.`
+    );
+  }
+
+  const vivo = ROUTES['/dolar-paralelo-bolivia-en-vivo'];
+  if (vivo) {
+    vivo.title = `Dólar Paralelo Bolivia EN VIVO: ${b} / ${s}`;
+    vivo.description = `Dólar paralelo Bolivia EN VIVO: compra Bs ${b} y venta Bs ${s}${when ? ` (${when})` : ''}. Cotización cada 15 min desde Binance P2P.`;
+    vivo.shell = vivo.shell.replace(
+      /Cotización del dólar paralelo Bolivia EN VIVO[^<]*/,
+      `EN VIVO: compra Bs ${b} · venta Bs ${s}. Actualizamos cada 15 minutos con datos de Binance P2P.`
+    );
+  }
+
+  const cuanto = ROUTES['/cuanto-esta-dolar-bolivia'];
+  if (cuanto) {
+    cuanto.title = `¿Cuánto está el dólar en Bolivia? Compra ${b} · Venta ${s}`;
+    cuanto.description = `¿Cuánto está el dólar en Bolivia hoy? Blue/paralelo: compra Bs ${b}, venta Bs ${s}${when ? ` (${when})` : ''}. Actualizado cada 15 min.`;
+  }
+
+  const cotiza = ROUTES['/cotiza-dolar-paralelo'];
+  if (cotiza) {
+    cotiza.title = `Cotiza el Dólar Paralelo: Compra ${b} · Venta ${s}`;
+    cotiza.description = `Cotiza el dólar paralelo en Bolivia: compra Bs ${b}, venta Bs ${s}${when ? ` (${when})` : ''}. Datos cada 15 min desde Binance P2P.`;
+  }
+
+  return true;
+}
 
 /** Helper: build minimal WebPage + BreadcrumbList for a route */
 function buildStaticJsonLd(routePath, routeName, pageName, pageDescription, extraSchemas = []) {
@@ -282,12 +384,28 @@ function injectStaticJsonLd(html, routePath) {
   return html.replace('</head>', '    <!-- SEO Phase 5: static JSON-LD for crawlability -->\n    ' + scripts + '\n  </head>');
 }
 
-function main() {
+async function main() {
   const indexPath = path.join(DIST, 'index.html');
   if (!fs.existsSync(indexPath)) {
     console.warn('[inject-seo-shell] dist/index.html not found; run vite build first.');
     process.exit(0);
     return;
+  }
+
+  try {
+    const rate = await fetchJson(RATE_API);
+    const ok = applyLiveRatesToRoutes(
+      rate.buy_bob_per_usd ?? rate.buy,
+      rate.sell_bob_per_usd ?? rate.sell,
+      rate.updated_at_iso
+    );
+    if (ok) {
+      console.log('[inject-seo-shell] Injected live buy/sell into SEO meta + shells');
+    } else {
+      console.warn('[inject-seo-shell] Rate payload missing buy/sell; using static meta');
+    }
+  } catch (err) {
+    console.warn('[inject-seo-shell] Could not fetch live rate (using static meta):', err.message);
   }
 
   const originalHtml = fs.readFileSync(indexPath, 'utf8');
@@ -325,4 +443,7 @@ function main() {
   }
 }
 
-main();
+main().catch((err) => {
+  console.error('[inject-seo-shell] Fatal:', err);
+  process.exit(1);
+});

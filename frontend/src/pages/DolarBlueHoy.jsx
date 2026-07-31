@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import { fetchBlueRate } from '../utils/api';
 import { formatDateTime } from '../utils/formatters';
 import { getWebPage, getBreadcrumbList } from '../utils/seoSchema';
+import { buildLiveRateSeoMeta, ratesFromBluePayload } from '../utils/seoRateMeta';
 import { lazy, Suspense } from 'react';
 const BlueChart = lazy(() => import('../components/BlueChart'));
 import Breadcrumbs from '../components/Breadcrumbs';
@@ -117,15 +118,17 @@ function DolarBlueHoy() {
     day: 'numeric' 
   });
 
+  const liveSeo = buildLiveRateSeoMeta({
+    ...ratesFromBluePayload(currentRate),
+    language,
+    page: 'dolar-blue-hoy',
+  });
+
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
-        title={language === 'es'
-          ? 'Dólar Blue Hoy Bolivia | Precio Actualizado Ahora'
-          : 'Blue Dollar Today Bolivia | Price Updated Now'}
-        description={language === 'es'
-          ? 'Dólar blue hoy en Bolivia: precio de compra y venta actualizado cada 15 min. Cotización del mercado paralelo, gratis y sin registro.'
-          : 'Blue dollar today in Bolivia: buy and sell price updated every 15 min. Parallel market quote, free, no signup.'}
+        title={liveSeo.title}
+        description={liveSeo.description}
         keywords={language === 'es'
           ? "dólar blue hoy, dólar blue hoy bolivia, dólar blue hoy en bolivia, cotización dólar blue hoy, precio dólar blue hoy, dólar blue hoy actual, dólar blue hoy la paz, tipo cambio hoy bolivia"
           : "blue dollar today, blue dollar today bolivia, blue dollar quote today, blue dollar price today, blue dollar current today, exchange rate today bolivia"}

@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import { fetchBlueRate } from '../utils/api';
 import { formatDateTime } from '../utils/formatters';
 import { getWebPage, getBreadcrumbList } from '../utils/seoSchema';
+import { buildLiveRateSeoMeta, ratesFromBluePayload } from '../utils/seoRateMeta';
 import { lazy, Suspense } from 'react';
 const BlueChart = lazy(() => import('../components/BlueChart'));
 import Breadcrumbs from '../components/Breadcrumbs';
@@ -126,15 +127,17 @@ function CuantoEstaDolarBolivia() {
     ]
   };
 
+  const liveSeo = buildLiveRateSeoMeta({
+    ...ratesFromBluePayload(currentRate),
+    language,
+    page: 'cuanto',
+  });
+
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
-        title={language === 'es'
-          ? '¿Cuánto Está el Dólar en Bolivia Hoy? Precio Actual'
-          : 'How Much Is the Dollar in Bolivia Today? Current Price'}
-        description={language === 'es'
-          ? '¿Cuánto está el dólar en Bolivia hoy? Precio actual del dólar blue (paralelo), actualizado cada 15 min. Calculadora y gráficos incluidos.'
-          : 'How much is the dollar in Bolivia today? Current blue (parallel) price, updated every 15 min. Calculator and charts included.'}
+        title={liveSeo.title}
+        description={liveSeo.description}
         keywords={language === 'es'
           ? "cuánto está el dólar en bolivia, cuánto vale el dólar en bolivia, precio dólar bolivia, cotización dólar bolivia, cuánto es el dólar en bolivia, precio dólar blue bolivia, cuánto cuesta el dólar en bolivia"
           : "how much is dollar in bolivia, dollar price bolivia, dollar quote bolivia, how much is dollar bolivia, blue dollar price bolivia, dollar cost bolivia"}

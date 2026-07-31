@@ -23,6 +23,7 @@ import { articlesEs, articlesEn } from '../data/blogArticles';
 import { fetchBlueRate } from '../utils/api';
 import { formatDateTime } from '../utils/formatters';
 import { BASE_URL, getWebPage, getBreadcrumbList, getDataFeedItem } from '../utils/seoSchema';
+import { buildLiveRateSeoMeta, ratesFromBluePayload } from '../utils/seoRateMeta';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import AdSenseAutoAds from '../components/AdSenseAutoAds';
 
@@ -307,16 +308,18 @@ function Home() {
   if (financialProductSchema) allStructuredData.push(financialProductSchema);
   allStructuredData.push(dataFeedSchema);
   allStructuredData.push(breadcrumbSchema);
+
+  const liveSeo = buildLiveRateSeoMeta({
+    ...ratesFromBluePayload(currentRate),
+    language,
+    page: 'home',
+  });
   
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
-        title={language === 'es' 
-          ? 'Dólar Blue Bolivia Hoy | Cotización en Vivo Cada 15 Min'
-          : 'Bolivia Blue Dollar Today | Live Quote Every 15 Min'}
-        description={language === 'es' 
-          ? "Dólar blue Bolivia hoy: compra y venta actualizadas cada 15 min desde Binance P2P. Gráficos, calculadora y noticias. Gratis, sin registro."
-          : "Bolivia blue dollar today: buy/sell updated every 15 min from Binance P2P. Charts, calculator and news. Free, no signup."}
+        title={liveSeo.title}
+        description={liveSeo.description}
         keywords={language === 'es'
           ? "cuanto esta el dolar en bolivia hoy, dolar blue bolivia, precio del dolar en bolivia hoy, cotizacion dolar bolivia hoy, dolar paralelo bolivia hoy, bolivia blue rate, tipo de cambio bolivia, dólar blue bolivia, mercado paralelo bolivia, binance bolivia, usdt bob, cotización dólar bolivia"
           : "how much is the dollar in bolivia today, blue dollar bolivia, bolivia dollar price today, bolivia parallel dollar today, bolivia blue rate, exchange rate bolivia, binance bolivia, usdt bob, bolivia dollar calculator"}

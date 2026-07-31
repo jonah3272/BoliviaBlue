@@ -334,70 +334,35 @@ function Home() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-5 sm:py-8 md:py-10 space-y-6 sm:space-y-8 md:space-y-10 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
-        {/* Hero Section - Clean & Modern (hub positioning) */}
-        <div className="text-center space-y-6 mb-8">
+        {/* Hero — title + one line only; rates are the product */}
+        <div className="text-center space-y-3 mb-2">
           <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight px-1">
             {language === 'es' 
-              ? 'Dólar Blue Bolivia Hoy – Cotización en Vivo'
-              : 'Bolivia Blue Dollar Today – Live Quote'}
+              ? 'Dólar Blue Bolivia Hoy'
+              : 'Bolivia Blue Dollar Today'}
           </h1>
-          
-          {/* Key Features - Visual Badges */}
-          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mb-4">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-semibold">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              {language === 'es' ? 'Actualizado cada 15 min' : 'Updated every 15 min'}
-            </div>
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full text-sm font-semibold">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              {language === 'es' ? 'Datos de Binance P2P' : 'Binance P2P Data'}
-            </div>
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-sm font-semibold">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              {language === 'es' ? '100% Gratis' : '100% Free'}
-            </div>
-          </div>
-
-          {/* Hub positioning: main source, not interchangeable with "today" or "live" subpages */}
-          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 max-w-xl mx-auto px-2">
             {language === 'es'
-              ? 'Tu fuente principal para el dólar blue en Bolivia: cotización cada 15 min, gráficos históricos, calculadora y noticias. Sin registro.'
-              : 'Your main source for the Bolivia blue dollar: quote every 15 min, historical charts, calculator and news. No signup.'}
+              ? 'Cotización en vivo cada 15 min · Binance P2P · Sin registro'
+              : 'Live quote every 15 min · Binance P2P · No signup'}
           </p>
-
-          <div className="flex justify-center">
-            <a
-              href="#price-alerts"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-white/90 dark:bg-gray-800 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700 rounded-full font-semibold shadow-sm hover:bg-blue-50 dark:hover:bg-gray-700 hover:shadow-md transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0a3 3 0 11-6 0h6z" />
-              </svg>
-              {language === 'es' ? 'Crear alerta de precio' : 'Set a price alert'}
-            </a>
-          </div>
         </div>
-        
-        {/* Blue Rate Cards - At the Top */}
-        <section>
-          {currentRate?.updated_at_iso && (
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-2 text-center">
-              {language === 'es' ? 'Datos actualizados' : 'Data updated'}: {formatDateTime(currentRate.updated_at_iso, language === 'es' ? 'es-BO' : 'en-US')}
-            </p>
-          )}
-          <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} showTimestampInCards={false} />
-        </section>
 
-        {/* Primary conversion: rate → buy dollars */}
-        <section>
-          <BuyFunnelCTA placement="home_after_rates" midRate={midRate} />
-        </section>
+        {/* Rates + buy CTA — first composition */}
+        <div className="relative rounded-2xl px-1 py-4 sm:px-4 sm:py-6 -mx-1 sm:mx-0 bg-gradient-to-b from-sky-50/90 via-transparent to-transparent dark:from-sky-950/40 dark:via-transparent">
+          <section>
+            {currentRate?.updated_at_iso && (
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-3 text-center">
+                {language === 'es' ? 'Actualizado' : 'Updated'}: {formatDateTime(currentRate.updated_at_iso, language === 'es' ? 'es-BO' : 'en-US')}
+              </p>
+            )}
+            <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} showTimestampInCards={false} />
+          </section>
+
+          <section className="mt-5 sm:mt-6">
+            <BuyFunnelCTA placement="home_after_rates" midRate={midRate} />
+          </section>
+        </div>
 
         {/* Combined Sentiment + News Card */}
         <section>
@@ -430,6 +395,16 @@ function Home() {
 
         {/* Rate Alerts Form */}
         <section id="price-alerts">
+          <div className="mb-3 text-center sm:text-left">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              {language === 'es' ? 'Alerta de precio' : 'Price alert'}
+            </h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              {language === 'es'
+                ? 'Avisanos a qué tasa querés que te avisemos.'
+                : 'Tell us which rate should trigger a notification.'}
+            </p>
+          </div>
           <LazyErrorBoundary>
             <Suspense fallback={<ComponentLoader />}>
               <RateAlertForm />
@@ -441,7 +416,7 @@ function Home() {
         <section className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-gray-800 dark:to-gray-900 rounded-xl sm:rounded-2xl p-4 sm:p-8 md:p-10 shadow-xl">
           <div className="text-center mb-4 sm:mb-8">
             <h2 className="text-2xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3">
-              🔍 {language === 'es' ? '¿Cómo Funciona?' : 'How Does It Work?'}
+              {language === 'es' ? 'Cómo funciona' : 'How it works'}
             </h2>
             <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               {language === 'es' 
@@ -495,9 +470,9 @@ function Home() {
 
             {/* Step 3 */}
             <div className="relative">
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg hover:shadow-2xl transition-all border-2 border-purple-200 dark:border-purple-800">
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg hover:shadow-2xl transition-all border-2 border-sky-200 dark:border-sky-900">
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <div className="w-12 h-12 bg-purple-600 text-white rounded-full flex items-center justify-center text-xl font-bold shadow-lg">
+                  <div className="w-12 h-12 bg-sky-700 text-white rounded-full flex items-center justify-center text-xl font-bold shadow-lg">
                     3
                   </div>
                 </div>
@@ -552,7 +527,7 @@ function Home() {
         <section className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl p-4 sm:p-8 md:p-10 shadow-lg">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">
-              {language === 'es' ? '💡 Cómo usar esta tasa' : '💡 How to use this rate'}
+              {language === 'es' ? 'Cómo usar esta tasa' : 'How to use this rate'}
             </h2>
             <div className="prose prose-lg dark:prose-invert max-w-none">
               <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
@@ -584,8 +559,8 @@ function Home() {
               </div>
               <p className="text-gray-700 dark:text-gray-300 text-sm">
                 {language === 'es'
-                  ? '💬 <strong>Consejo:</strong> Siempre verifica el precio exacto con tu cambista o en la plataforma antes de realizar la transacción. Nuestra tasa es una guía, no una garantía.'
-                  : '💬 <strong>Tip:</strong> Always verify the exact price with your exchanger or on the platform before making the transaction. Our rate is a guide, not a guarantee.'}
+                  ? <><strong>Consejo:</strong> Siempre verifica el precio exacto con tu cambista o en la plataforma antes de realizar la transacción. Nuestra tasa es una guía, no una garantía.</>
+                  : <><strong>Tip:</strong> Always verify the exact price with your exchanger or on the platform before making the transaction. Our rate is a guide, not a guarantee.</>}
               </p>
             </div>
           </div>
@@ -595,7 +570,7 @@ function Home() {
         <section className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 rounded-xl sm:rounded-2xl p-4 sm:p-8 md:p-10 shadow-lg">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">
-              {language === 'es' ? '⭐ Qué hace diferente a BoliviaBlue' : '⭐ What makes BoliviaBlue different'}
+              {language === 'es' ? 'Qué hace diferente a BoliviaBlue' : 'What makes BoliviaBlue different'}
             </h2>
             <div className="prose prose-lg dark:prose-invert max-w-none">
               <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
@@ -606,7 +581,7 @@ function Home() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div className="bg-white dark:bg-gray-800 rounded-lg p-4 sm:p-6 border border-indigo-200 dark:border-indigo-800">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                    {language === 'es' ? '🔍 Transparencia total' : '🔍 Total transparency'}
+                    {language === 'es' ? 'Transparencia total' : 'Total transparency'}
                   </h3>
                   <p className="text-gray-700 dark:text-gray-300 text-sm">
                     {language === 'es'
@@ -847,8 +822,8 @@ function Home() {
             <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
               <p className="text-sm text-gray-700 dark:text-gray-300">
                 {language === 'es'
-                  ? <>💡 <strong>Mejor que bolivianblue.net:</strong> Actualizaciones más frecuentes, interfaz moderna, más herramientas y URL más fácil de recordar. <Link to="/comparacion" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Ver comparación completa</Link></>
-                  : <>💡 <strong>Better than bolivianblue.net:</strong> More frequent updates, modern interface, more tools, and easier-to-remember URL. <Link to="/comparacion" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">See full comparison</Link></>}
+                  ? <><strong>Mejor que bolivianblue.net:</strong> Actualizaciones más frecuentes, interfaz moderna, más herramientas y URL más fácil de recordar. <Link to="/comparacion" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Ver comparación completa</Link></>
+                  : <><strong>Better than bolivianblue.net:</strong> More frequent updates, modern interface, more tools, and easier-to-remember URL. <Link to="/comparacion" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">See full comparison</Link></>}
               </p>
             </div>
           </div>

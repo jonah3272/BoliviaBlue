@@ -32,10 +32,13 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
   const t = languageContext?.t || ((key) => key || '');
   const isBuy = type === 'buy';
   const label = isBuy ? t('buy') : t('sell');
-  const borderColor = isOfficial 
-    ? (isBuy ? 'border-gray-400' : 'border-gray-500')
-    : (isBuy ? 'border-blue-500' : 'border-pink-500');
-  
+  const accent = isOfficial
+    ? (isBuy ? 'border-l-gray-400' : 'border-l-gray-500')
+    : (isBuy ? 'border-l-blue-500' : 'border-l-rose-500');
+  const labelColor = isOfficial
+    ? 'text-gray-600 dark:text-gray-400'
+    : (isBuy ? 'text-blue-700 dark:text-blue-400' : 'text-rose-700 dark:text-rose-400');
+
   const changeValue = dailyChange ? parseFloat(dailyChange) : null;
   const changeColor = changeValue > 0 ? 'text-green-600' : changeValue < 0 ? 'text-red-600' : 'text-gray-500';
   const changeIcon = changeValue > 0 ? '↑' : changeValue < 0 ? '↓' : '';
@@ -48,18 +51,18 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
 
   if (isLoading) {
     return (
-      <div className={`bg-white dark:bg-gray-800 rounded-xl border-2 ${borderColor} p-3 sm:p-4 shadow-md sm:shadow-lg min-h-[140px] sm:min-h-[160px]`}>
-        <div className="skeleton h-4 w-20 mb-2"></div>
-        <div className="skeleton h-12 w-28 mb-1"></div>
-        <div className="skeleton h-3 w-32"></div>
+      <div className={`bg-white/80 dark:bg-gray-800/80 rounded-xl border border-gray-200/80 dark:border-gray-700 border-l-4 ${accent} p-4 sm:p-6 min-h-[140px] sm:min-h-[168px]`}>
+        <div className="skeleton h-4 w-20 mb-3"></div>
+        <div className="skeleton h-14 w-36 mb-2"></div>
+        <div className="skeleton h-3 w-28"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className={`bg-white dark:bg-gray-800 rounded-xl border-2 ${borderColor} p-4 shadow-lg`}>
-        <div className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">{label}</div>
+      <div className={`bg-white/80 dark:bg-gray-800/80 rounded-xl border border-gray-200/80 dark:border-gray-700 border-l-4 ${accent} p-4 sm:p-6`}>
+        <div className={`text-xs font-semibold uppercase tracking-wider ${labelColor} mb-1`}>{label}</div>
         <div className="text-red-500 text-xs">{error}</div>
         {currency === 'BRL' && (
           <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
@@ -71,51 +74,47 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
   }
 
   return (
-    <motion.div 
-      className={`bg-white dark:bg-gray-800 rounded-xl border-2 ${borderColor} p-3 sm:p-5 shadow-md sm:shadow-lg transition-shadow duration-200`}
-      initial={{ opacity: 0, y: 12 }}
+    <motion.div
+      className={`bg-white/90 dark:bg-gray-800/90 rounded-xl border border-gray-200/70 dark:border-gray-700/80 border-l-4 ${accent} p-4 sm:p-6 transition-colors`}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, ease: "easeOut" }}
-      whileHover={{ 
-        y: -4,
-        transition: { duration: 0.2 }
-      }}
+      transition={{ duration: 0.35, ease: 'easeOut' }}
       role="region"
       aria-label={`${label} rate: ${formatRate(rate, currency)} bolivianos per ${currency}`}
     >
-      <div className="flex items-center justify-between mb-1">
-        <div className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">{label}</div>
+      <div className="flex items-center justify-between mb-2">
+        <div className={`text-xs font-semibold uppercase tracking-wider ${labelColor}`}>{label}</div>
         <div className="flex gap-1.5">
           {isStaleData && (
-            <span className="px-1.5 py-0.5 text-xs bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200 rounded-full">
+            <span className="px-1.5 py-0.5 text-xs bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200 rounded">
               {t('stale')}
             </span>
           )}
           {!isOfficial && changeValue !== null && (
-            <span className={`px-1.5 py-0.5 text-xs font-medium rounded-full ${changeColor}`}>
-              {changeIcon}{Math.abs(changeValue).toFixed(2)}% {t('change24h')}
+            <span className={`text-xs font-medium tabular-nums ${changeColor}`}>
+              {changeIcon}{Math.abs(changeValue).toFixed(2)}%
             </span>
           )}
         </div>
       </div>
-      
-      <motion.div 
+
+      <motion.div
         className="mb-1"
-        initial={{ scale: 1 }}
-        animate={{ scale: [1, 1.05, 1] }}
-        transition={{ duration: 0.3 }}
         key={rate}
+        initial={{ opacity: 0.55, y: 4 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25 }}
       >
-        <div className="font-mono text-4xl sm:text-5xl md:text-6xl font-black text-gray-900 dark:text-white leading-none tracking-tight">
+        <div className="font-mono text-5xl sm:text-6xl md:text-7xl font-bold text-gray-900 dark:text-white leading-none tracking-tight tabular-nums">
           {formatRate(rate, currency)}
         </div>
-        <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1 font-medium">
+        <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium">
           {language === 'es' ? `Bs. por ${currency}` : `Bs. per ${currency}`}
         </div>
       </motion.div>
-      
+
       {showTimestampInCards && timestamp && (
-        <div className="text-xs text-gray-600 dark:text-gray-400 mt-2 font-medium">
+        <div className="text-xs text-gray-500 dark:text-gray-400 mt-3">
           {t('updated')}: {formatDateTime(timestamp)}
         </div>
       )}
@@ -440,13 +439,13 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
           </div>
 
           <motion.div
-            className="bg-white dark:bg-gray-800 rounded-xl border-2 border-emerald-400 dark:border-emerald-600 p-4 sm:p-6 shadow-md sm:shadow-lg"
-            initial={{ opacity: 0, y: 12 }}
+            className="bg-white/90 dark:bg-gray-800/90 rounded-xl border border-emerald-300/70 dark:border-emerald-800 p-4 sm:p-6"
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, ease: 'easeOut' }}
             key={`${issuerId}-${effectiveRate}`}
           >
-            <div className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 uppercase tracking-wide mb-2">
+            <div className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 uppercase tracking-wider mb-2">
               {t('cardRateEffective')}
             </div>
 
@@ -458,7 +457,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
               </div>
             ) : (
               <>
-                <div className="font-mono text-4xl sm:text-5xl md:text-6xl font-black text-gray-900 dark:text-white leading-none tracking-tight">
+                <div className="font-mono text-5xl sm:text-6xl md:text-7xl font-bold text-gray-900 dark:text-white leading-none tracking-tight tabular-nums">
                   {formatRate(effectiveRate, 'USD')}
                 </div>
                 <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1 font-medium">

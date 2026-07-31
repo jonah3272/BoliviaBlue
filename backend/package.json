@@ -11,7 +11,8 @@
     "dev:supabase": "node --watch server-supabase.js",
     "test": "node --test tests/*.test.js",
     "setup:blog": "node setup-blog-articles.js",
-    "refresh-rates": "node scripts/refresh-rates-once.js"
+    "refresh-rates": "node scripts/refresh-rates-once.js",
+    "refresh-news": "node scripts/refresh-news-once.js"
   },
   "keywords": [
     "bolivia",

@@ -1,0 +1,37 @@
+# Free news + sentiment updater (replaces Railway news scheduler).
+# Pulls RSS, scores sentiment (OpenAI if key set, else keywords), writes to Supabase.
+name: Refresh news
+
+on:
+  schedule:
+    # ~every 30 minutes (GitHub may delay slightly)
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        working-directory: backend
+        run: npm install --omit=dev
+
+      - name: Refresh news into Supabase
+        working-directory: backend
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          NEWS_SOURCES: ${{ secrets.NEWS_SOURCES }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          NODE_ENV: production
+        run: node scripts/refresh-news-once.js

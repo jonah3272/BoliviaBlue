@@ -118,9 +118,10 @@ async function pruneOldNews() {
 
 /**
  * Refresh news data from RSS feeds and optionally Twitter
+ * Exported for one-shot runs (e.g. GitHub Actions free cron).
  * @param {boolean} includeTwitter - Whether to fetch from Twitter (to conserve API quota)
  */
-async function refreshNews(includeTwitter = false) {
+export async function refreshNews(includeTwitter = false) {
   try {
     console.log(`Refreshing news... ${includeTwitter ? '(including Twitter)' : '(RSS only)'}`);
     
@@ -187,6 +188,7 @@ async function refreshNews(includeTwitter = false) {
     
   } catch (error) {
     console.error('Failed to refresh news:', error);
+    throw error;
   }
 }
 

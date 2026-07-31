@@ -24,7 +24,6 @@ function Navigation() {
   // Primary navigation (always visible on desktop)
   const primaryNavItems = [
     { path: '/', key: 'navDashboard', shortKey: 'navDashboardShort', icon: 'dashboard' },
-    { path: '/comunidad', key: 'navCommunity', icon: 'community' },
     { path: '/calculadora', key: 'navCalculator', icon: 'calculator' },
     { path: '/comprar-dolares', key: 'navBuyDollars', icon: 'buy' },
     { path: '/noticias', key: 'navNews', icon: 'news' },
@@ -143,10 +142,7 @@ function Navigation() {
         <div className="flex items-center gap-1">
           {/* Primary Navigation Items */}
           {primaryNavItems.map((item) => {
-            // Check if active - handle multiple paths for community (chat, comentarios, comunidad)
-            const isActive = item.path === '/comunidad' 
-              ? ['/chat', '/comentarios', '/comunidad'].includes(location.pathname)
-              : location.pathname === item.path;
+            const isActive = location.pathname === item.path;
             return (
               <Link
                 key={item.path}

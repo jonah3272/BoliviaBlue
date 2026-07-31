@@ -47,7 +47,6 @@ function MobileMenu() {
     { path: '/dolar-blue-hoy', key: 'navDolarHoy', icon: 'dashboard' },
     { path: '/dolar-paralelo-bolivia-en-vivo', key: 'navEnVivo', icon: 'dashboard' },
     { path: '/datos-historicos', key: 'navHistoricos', icon: 'dashboard' },
-    { path: '/comunidad', key: 'navCommunity', icon: 'community' },
     { path: '/calculadora', key: 'navCalculator', icon: 'calculator' },
     { path: '/comprar-dolares', key: 'navBuyDollars', icon: 'buy' },
     { path: '/noticias', key: 'navNews', icon: 'news' },
@@ -200,10 +199,7 @@ function MobileMenu() {
           {/* Navigation Items */}
           <nav className="flex-1 overflow-y-auto py-4">
             {navItems.map((item) => {
-              // Check if active - handle multiple paths for community (chat, comentarios, comunidad)
-              const isActive = item.path === '/comunidad' 
-                ? ['/chat', '/comentarios', '/comunidad'].includes(location.pathname)
-                : location.pathname === item.path;
+              const isActive = location.pathname === item.path;
               return (
                 <Link
                   key={item.path}

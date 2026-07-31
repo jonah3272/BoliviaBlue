@@ -148,7 +148,14 @@ export async function getRatesInRange(startDate) {
     }
   }
 
-  return allData;
+  // Drop stuck linear-fill rows from Railway downtime backfill (ms === 350).
+  const gapStart = Date.parse('2026-06-30T19:27:00.000Z');
+  const gapEnd = Date.parse('2026-07-31T13:45:00.000Z');
+  return allData.filter((r) => {
+    const ms = Date.parse(r.t);
+    if (!Number.isFinite(ms) || ms < gapStart || ms >= gapEnd) return true;
+    return new Date(r.t).getUTCMilliseconds() !== 350;
+  });
 }
 
 /**
@@ -577,6 +584,60 @@ export async function getAllMonthlyReports(language = 'es', limit = 12) {
   }
 
   return data || [];
+}
+
+/**
+ * Upsert today's card network FX rates (one row per UTC date)
+ */
+export async function upsertCardRate(row) {
+  if (LOCAL_MODE) {
+    console.log(`[LOCAL MODE] Skipping card_rates upsert:`, row);
+    return null;
+  }
+  if (!supabase) {
+    throw new Error('Supabase client not initialized');
+  }
+
+  const { data, error } = await supabase
+    .from('card_rates')
+    .upsert(
+      {
+        t: row.t || new Date().toISOString(),
+        rate_date: row.rate_date,
+        visa_bob_per_usd: row.visa_bob_per_usd,
+        mastercard_bob_per_usd: row.mastercard_bob_per_usd,
+        amex_bob_per_usd: row.amex_bob_per_usd,
+        source: row.source,
+        notes: row.notes
+      },
+      { onConflict: 'rate_date' }
+    )
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(`Failed to upsert card rate: ${error.message}`);
+  }
+  return data;
+}
+
+/**
+ * Latest card network rates row
+ */
+export async function getLatestCardRate() {
+  if (!supabase) return null;
+
+  const { data, error } = await supabase
+    .from('card_rates')
+    .select('*')
+    .order('rate_date', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error && error.code !== 'PGRST116') {
+    throw new Error(`Failed to get latest card rate: ${error.message}`);
+  }
+  return data;
 }
 
 export default supabase;

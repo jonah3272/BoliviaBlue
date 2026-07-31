@@ -2,9 +2,9 @@
  * Backfill the Railway downtime gap so charts don't show a cliff.
  *
  * Gap found: 2026-06-30 ~19:27 UTC → 2026-07-31 ~13:45 UTC
- * We do NOT have real Binance P2P history for that window, so we insert
- * linear interpolations every 15 minutes between the last real point and
- * the first recovery point. Charts look continuous; treat as estimated.
+ * DEPRECATED: produced a fake linear ramp. Prefer:
+ *   node scripts/backfill-real-dph-gap.js
+ * and/or SQL: scripts/delete-interpolated-gap.sql
  *
  * Usage: node scripts/backfill-downtime-gap.js [--dry-run]
  */

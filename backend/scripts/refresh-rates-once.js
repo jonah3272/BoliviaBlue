@@ -1,16 +1,18 @@
 /**
- * One-shot blue + official rate refresh for free hosting (GitHub Actions).
+ * One-shot blue + official + card-network rate refresh for free hosting (GitHub Actions).
  * Writes to Supabase; frontend already reads rates from there.
  *
  * Required env:
  *   SUPABASE_URL
  *   SUPABASE_SERVICE_KEY (preferred) or SUPABASE_ANON_KEY with insert rights
+ *
+ * Also run once: backend/supabase-card-rates.sql (creates card_rates table).
  */
 import { refreshBlueRate } from '../scheduler-supabase.js';
 
 async function main() {
   console.log('[refresh-rates-once] Starting…');
-  await refreshBlueRate();
+  await refreshBlueRate(); // also refreshes card rates (best-effort)
   console.log('[refresh-rates-once] Done.');
 }
 

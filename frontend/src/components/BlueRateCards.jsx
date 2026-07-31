@@ -1,11 +1,18 @@
 import React, { useState, useEffect, memo, useCallback, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
-import { fetchBlueRate } from '../utils/api';
+import { fetchBlueRate, fetchCardRates } from '../utils/api';
 import { formatRate, formatDateTime, isStale } from '../utils/formatters';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { trackRateCardView, trackOfficialRateToggle, trackRateUpdate } from '../utils/analytics';
+import {
+  US_CARD_ISSUERS,
+  getIssuerById,
+  networkBobPerUsd,
+  effectiveBobPerUsd,
+  networkLabel
+} from '../data/usCardIssuers';
 
 const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, isLoading, error, dailyChange, isOfficial, currency, language, showTimestampInCards = true }) {
   const languageContext = useLanguage();
@@ -16,12 +23,10 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
     ? (isBuy ? 'border-gray-400' : 'border-gray-500')
     : (isBuy ? 'border-blue-500' : 'border-pink-500');
   
-  // Parse daily change
   const changeValue = dailyChange ? parseFloat(dailyChange) : null;
   const changeColor = changeValue > 0 ? 'text-green-600' : changeValue < 0 ? 'text-red-600' : 'text-gray-500';
   const changeIcon = changeValue > 0 ? '↑' : changeValue < 0 ? '↓' : '';
 
-  // Track rate card view when rate is displayed
   useEffect(() => {
     if (rate && !isLoading && !error) {
       trackRateCardView(type, rate, currency, isOfficial);
@@ -29,7 +34,6 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
   }, [rate, type, currency, isOfficial, isLoading, error]);
 
   if (isLoading) {
-    // Reserve exact space to match final card dimensions (prevents layout shift)
     return (
       <div className={`bg-white dark:bg-gray-800 rounded-xl border-2 ${borderColor} p-3 sm:p-4 shadow-md sm:shadow-lg min-h-[140px] sm:min-h-[160px]`}>
         <div className="skeleton h-4 w-20 mb-2"></div>
@@ -112,42 +116,71 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
   const language = languageContext?.language || 'es';
   const { currency } = useCurrency();
   const [data, setData] = useState(null);
+  const [cardRates, setCardRates] = useState(null);
+  const [cardError, setCardError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [issuerId, setIssuerId] = useState('capital-one');
   
-  // Fallback to internal state if props not provided (for backward compatibility)
   const [internalShowOfficial, setInternalShowOfficial] = useState(false);
   const effectiveShowOfficial = setShowOfficial !== undefined ? showOfficial : internalShowOfficial;
   const effectiveSetShowOfficial = setShowOfficial !== undefined ? setShowOfficial : setInternalShowOfficial;
 
-  // Use ref to track the current request and prevent race conditions
+  // rateMode: blue | official | card — card keeps chart on blue (showOfficial false)
+  const [rateMode, setRateMode] = useState(effectiveShowOfficial ? 'official' : 'blue');
+
+  useEffect(() => {
+    if (effectiveShowOfficial && rateMode !== 'official') {
+      setRateMode('official');
+    } else if (!effectiveShowOfficial && rateMode === 'official') {
+      setRateMode('blue');
+    }
+  }, [effectiveShowOfficial]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const setMode = useCallback((mode) => {
+    setRateMode(mode);
+    if (mode === 'official') {
+      effectiveSetShowOfficial(true);
+      trackOfficialRateToggle(true);
+    } else {
+      effectiveSetShowOfficial(false);
+      if (mode === 'blue') trackOfficialRateToggle(false);
+    }
+  }, [effectiveSetShowOfficial]);
+
   const abortControllerRef = React.useRef(null);
   const currentCurrencyRef = React.useRef(currency);
 
   const loadData = useCallback(async (targetCurrency) => {
-    // Cancel any in-flight request
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
 
-    // Create new AbortController for this request
     const abortController = new AbortController();
     abortControllerRef.current = abortController;
     currentCurrencyRef.current = targetCurrency;
 
-    // Reset loading state when currency changes
     setIsLoading(true);
     setError(null);
 
     try {
-      const result = await fetchBlueRate(targetCurrency);
+      const [result, cards] = await Promise.all([
+        fetchBlueRate(targetCurrency),
+        fetchCardRates().catch((err) => {
+          console.warn('Card rates fetch failed:', err.message);
+          setCardError(err.message);
+          return null;
+        })
+      ]);
       
-      // Only update state if this is still the current request
       if (!abortController.signal.aborted && currentCurrencyRef.current === targetCurrency) {
         setData(result);
         setError(null);
+        if (cards) {
+          setCardRates(cards);
+          setCardError(null);
+        }
         
-        // Track rate update
         if (result?.buy_bob_per_usd && result?.sell_bob_per_usd) {
           trackRateUpdate(
             result.buy_bob_per_usd,
@@ -158,18 +191,15 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
         }
       }
     } catch (err) {
-      // Ignore abort errors
       if (err.name === 'AbortError' || abortController.signal.aborted) {
         return;
       }
       
-      // Only set error if this is still the current request
       if (currentCurrencyRef.current === targetCurrency) {
         console.error('Error loading rate:', err);
         setError(err.message || t('error'));
       }
     } finally {
-      // Only update loading state if this is still the current request
       if (!abortController.signal.aborted && currentCurrencyRef.current === targetCurrency) {
         setIsLoading(false);
       }
@@ -177,12 +207,10 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
   }, [t]);
 
   useEffect(() => {
-    // Debounce rapid currency changes
     const timeoutId = setTimeout(() => {
       loadData(currency);
-    }, 100); // 100ms debounce
+    }, 100);
     
-    // Refresh every 60 seconds
     const interval = setInterval(() => {
       loadData(currency);
     }, 60000);
@@ -190,7 +218,6 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
     return () => {
       clearTimeout(timeoutId);
       clearInterval(interval);
-      // Cancel any in-flight request on unmount
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
@@ -202,11 +229,29 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
     [data?.updated_at_iso, data?.is_stale]
   );
 
-  // Use daily change from API
   const buyChange = data?.buy_change_24h;
   const sellChange = data?.sell_change_24h;
 
-  // Generate ExchangeRate structured data
+  const issuer = useMemo(() => getIssuerById(issuerId), [issuerId]);
+  const networkRate = useMemo(
+    () => networkBobPerUsd(cardRates, issuer.network),
+    [cardRates, issuer.network]
+  );
+  const effectiveRate = useMemo(
+    () => effectiveBobPerUsd(networkRate, issuer.feePct),
+    [networkRate, issuer.feePct]
+  );
+  const blueMid = useMemo(() => {
+    const buy = data?.buy ?? data?.buy_bob_per_usd;
+    const sell = data?.sell ?? data?.sell_bob_per_usd;
+    if (!Number.isFinite(buy) || !Number.isFinite(sell)) return null;
+    return (buy + sell) / 2;
+  }, [data]);
+  const vsBluePct = useMemo(() => {
+    if (!effectiveRate || !blueMid || blueMid <= 0) return null;
+    return ((effectiveRate - blueMid) / blueMid) * 100;
+  }, [effectiveRate, blueMid]);
+
   const exchangeRateSchema = useMemo(() => data && data.buy_bob_per_usd && data.sell_bob_per_usd ? {
     "@context": "https://schema.org",
     "@type": "ExchangeRateSpecification",
@@ -219,9 +264,35 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
       "unitCode": "USD"
     },
     "validFrom": data.updated_at_iso,
-    "rateType": effectiveShowOfficial ? "Official" : "Blue Market (Parallel)",
+    "rateType": rateMode === 'official' ? "Official" : rateMode === 'card' ? "US Card Network" : "Blue Market (Parallel)",
     "exchangeRateSpread": (data.sell_bob_per_usd - data.buy_bob_per_usd).toFixed(4)
-  } : null, [data, effectiveShowOfficial]);
+  } : null, [data, rateMode]);
+
+  const modeBtn = (mode, active, label, aria) => (
+    <button
+      key={mode}
+      type="button"
+      onClick={() => setMode(mode)}
+      className={`px-3 sm:px-5 py-2.5 sm:py-3 rounded-lg font-semibold text-xs sm:text-sm transition-all duration-200 min-w-[96px] sm:min-w-[140px] touch-manipulation ${
+        active
+          ? mode === 'blue'
+            ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-md border-2 border-blue-200 dark:border-blue-600'
+            : mode === 'card'
+              ? 'bg-white dark:bg-gray-700 text-emerald-700 dark:text-emerald-400 shadow-md border-2 border-emerald-200 dark:border-emerald-700'
+              : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 shadow-md border-2 border-gray-300 dark:border-gray-600'
+          : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+      }`}
+      aria-label={aria}
+      aria-pressed={active}
+    >
+      {label}
+    </button>
+  );
+
+  const description =
+    rateMode === 'card'
+      ? t('cardRateDescription')
+      : t('officialRateDescription');
 
   return (
     <div className="space-y-6">
@@ -233,49 +304,34 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
         </Helmet>
       )}
       
-      {/* Toggle Switch - Segmented Control Style */}
       <div className="flex items-center justify-center mb-6">
-        <div className="inline-flex items-center bg-gray-100 dark:bg-gray-800 rounded-xl p-1.5 shadow-inner border border-gray-200 dark:border-gray-700">
-          <button
-            onClick={() => {
-              effectiveSetShowOfficial(false);
-              trackOfficialRateToggle(false);
-            }}
-            className={`px-4 sm:px-8 py-2.5 sm:py-3 rounded-lg font-semibold text-sm transition-all duration-200 min-w-[140px] sm:min-w-[200px] touch-manipulation ${
-              !effectiveShowOfficial
-                ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-md border-2 border-blue-200 dark:border-blue-600'
-                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
-            }`}
-            aria-label={language === 'es' ? 'Mostrar tipo de cambio del mercado paralelo' : 'Show parallel market exchange rate'}
-            aria-pressed={!effectiveShowOfficial}
-          >
-            {t('blueMarketTitle')}
-          </button>
-          <button
-            onClick={() => {
-              effectiveSetShowOfficial(true);
-              trackOfficialRateToggle(true);
-            }}
-            className={`px-4 sm:px-8 py-2.5 sm:py-3 rounded-lg font-semibold text-sm transition-all duration-200 min-w-[140px] sm:min-w-[200px] touch-manipulation ${
-              effectiveShowOfficial
-                ? 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 shadow-md border-2 border-gray-300 dark:border-gray-600'
-                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
-            }`}
-            aria-label={language === 'es' ? 'Mostrar tipo de cambio oficial' : 'Show official exchange rate'}
-            aria-pressed={effectiveShowOfficial}
-          >
-            {t('officialRateTitle')}
-          </button>
+        <div className="inline-flex flex-wrap items-center justify-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-xl p-1.5 shadow-inner border border-gray-200 dark:border-gray-700">
+          {modeBtn(
+            'blue',
+            rateMode === 'blue',
+            t('blueMarketShort'),
+            language === 'es' ? 'Mostrar tipo de cambio del mercado paralelo' : 'Show parallel market exchange rate'
+          )}
+          {modeBtn(
+            'official',
+            rateMode === 'official',
+            t('officialRateShort'),
+            language === 'es' ? 'Mostrar tipo de cambio oficial' : 'Show official exchange rate'
+          )}
+          {modeBtn(
+            'card',
+            rateMode === 'card',
+            t('cardRateShort'),
+            language === 'es' ? 'Mostrar tasa de tarjeta US' : 'Show US card exchange rate'
+          )}
         </div>
       </div>
 
       <p className="mt-3 text-center text-xs leading-relaxed text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-        {t('officialRateDescription')}
+        {description}
       </p>
 
-      {/* Rate Cards - Show based on toggle */}
-      {!effectiveShowOfficial ? (
-        // Blue Market Rates
+      {rateMode === 'blue' && (
         <div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
             <RateCard
@@ -304,8 +360,9 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
             />
           </div>
         </div>
-      ) : (
-        // Official Rates
+      )}
+
+      {rateMode === 'official' && (
         <div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
             <RateCard
@@ -333,6 +390,100 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
               showTimestampInCards={showTimestampInCards}
             />
           </div>
+        </div>
+      )}
+
+      {rateMode === 'card' && (
+        <div className="max-w-4xl mx-auto space-y-4">
+          {currency !== 'USD' && (
+            <p className="text-center text-xs text-amber-700 dark:text-amber-300">
+              {language === 'es'
+                ? 'Las tasas de tarjeta US se muestran en BOB por USD.'
+                : 'US card rates are shown as BOB per USD.'}
+            </p>
+          )}
+
+          <div className="flex flex-wrap justify-center gap-2" role="listbox" aria-label={t('cardRateSelectIssuer')}>
+            {US_CARD_ISSUERS.map((item) => {
+              const active = item.id === issuerId;
+              const label = language === 'es' ? item.labelEs : item.labelEn;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  role="option"
+                  aria-selected={active}
+                  onClick={() => setIssuerId(item.id)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium touch-manipulation transition-colors border ${
+                    active
+                      ? 'bg-emerald-600 text-white border-emerald-600'
+                      : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:border-emerald-400'
+                  }`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+
+          <motion.div
+            className="bg-white dark:bg-gray-800 rounded-xl border-2 border-emerald-400 dark:border-emerald-600 p-4 sm:p-6 shadow-md sm:shadow-lg"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, ease: 'easeOut' }}
+            key={`${issuerId}-${effectiveRate}`}
+          >
+            <div className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 uppercase tracking-wide mb-2">
+              {t('cardRateEffective')}
+            </div>
+
+            {isLoading ? (
+              <div className="skeleton h-14 w-40 mb-2" />
+            ) : effectiveRate == null ? (
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                {cardError || t('cardRateUnavailable')}
+                <div className="mt-2 text-xs">
+                  {language === 'es'
+                    ? 'Ejecuta backend/supabase-card-rates.sql y el job de rates para poblar datos.'
+                    : 'Run backend/supabase-card-rates.sql and the rates job to populate data.'}
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="font-mono text-4xl sm:text-5xl md:text-6xl font-black text-gray-900 dark:text-white leading-none tracking-tight">
+                  {formatRate(effectiveRate, 'USD')}
+                </div>
+                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1 font-medium">
+                  {language === 'es' ? 'Bs. por USD' : 'Bs. per USD'}
+                </div>
+                <div className="mt-3 text-xs text-gray-600 dark:text-gray-400 space-y-1">
+                  <div>
+                    {t('cardRateNetworkLine')}: {networkLabel(issuer.network)}{' '}
+                    {networkRate != null ? formatRate(networkRate, 'USD') : '—'}
+                    {' · '}
+                    {t('cardRateFee')}: {(issuer.feePct * 100).toFixed(issuer.feePct ? 1 : 0)}%
+                  </div>
+                  <div>{language === 'es' ? issuer.blurbEs : issuer.blurbEn}</div>
+                  {vsBluePct != null && (
+                    <div>
+                      {t('cardRateVsBlue')}:{' '}
+                      <span className={vsBluePct >= 0 ? 'text-green-600' : 'text-red-600'}>
+                        {vsBluePct >= 0 ? '+' : ''}
+                        {vsBluePct.toFixed(2)}%{' '}
+                        ({vsBluePct >= 0 ? t('cardRateBetter') : t('cardRateWorse')})
+                      </span>
+                    </div>
+                  )}
+                  {showTimestampInCards && cardRates?.t && (
+                    <div>
+                      {t('updated')}: {formatDateTime(cardRates.t)}
+                      {cardRates.source ? ` · ${cardRates.source}` : ''}
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </motion.div>
         </div>
       )}
     </div>

@@ -2,13 +2,14 @@ import { getAllCurrentBlueRates } from './p2pClient.js';
 import { getOfficialRate, getStaticOfficialRate } from './officialRateClient.js';
 import { fetchNews } from './newsClient.js'; // Already has Bolivia filtering
 import { fetchTwitterNews } from './twitterClient.js'; // Twitter/X integration
-import { insertRate, insertNews, supabase } from './db-supabase.js';
+import { insertRate, insertNews, upsertCardRate, supabase } from './db-supabase.js';
 import { median } from './median.js';
 import { checkAlerts } from './alertChecker.js';
 import { generateDailyArticles } from './dailyArticleGenerator.js';
 import { sendWeeklyNewsletter } from './weeklyNewsletterGenerator.js';
 import { generatePreviousMonthReport } from './monthlyReportGenerator.js';
 import { evaluatePredictions } from './predictionFeedback.js';
+import { getCardNetworkRates } from './cardRateClient.js';
 
 const REFRESH_INTERVAL = 15 * 60 * 1000; // 15 minutes for rates
 const NEWS_REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes for RSS news
@@ -75,6 +76,13 @@ export async function refreshBlueRate() {
     
     console.log(`Blue rate: Buy ${blueRateData.buy_bob_per_usd}, Sell ${blueRateData.sell_bob_per_usd}`);
     console.log(`Official rate: Buy ${officialRateData.official_buy}, Sell ${officialRateData.official_sell}`);
+
+    // Card network FX (Visa / MC / Amex) — best-effort; never fail the blue refresh
+    try {
+      await refreshCardRates();
+    } catch (cardErr) {
+      console.warn('Card rate refresh failed:', cardErr.message);
+    }
     
     // Check alerts after updating rates
     await checkAlerts();
@@ -84,6 +92,20 @@ export async function refreshBlueRate() {
     cache.isHealthy = false;
     throw error;
   }
+}
+
+/**
+ * Fetch Visa / Mastercard / Amex indicative rates and upsert today's row.
+ */
+export async function refreshCardRates() {
+  console.log('Refreshing card network FX rates…');
+  const row = await getCardNetworkRates();
+  const saved = await upsertCardRate(row);
+  console.log(
+    `Card rates ${row.rate_date}: Visa ${row.visa_bob_per_usd}, MC ${row.mastercard_bob_per_usd}, Amex ${row.amex_bob_per_usd} [${row.source}]`
+  );
+  if (row.notes) console.log(`Card rate notes: ${row.notes}`);
+  return saved;
 }
 
 /**

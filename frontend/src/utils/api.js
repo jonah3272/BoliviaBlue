@@ -35,6 +35,22 @@ function withTimeout(promise, ms, message = 'Connection timed out. Please check 
   ]);
 }
 
+/** Railway-downtime linear fill used exact 350ms timestamps; drop those once real history exists. */
+const INTERP_GAP_START = Date.parse('2026-06-30T19:27:00.000Z');
+const INTERP_GAP_END = Date.parse('2026-07-31T13:45:00.000Z');
+
+function isInterpolatedGapPoint(point) {
+  if (!point?.t) return false;
+  const ms = Date.parse(point.t);
+  if (!Number.isFinite(ms) || ms < INTERP_GAP_START || ms >= INTERP_GAP_END) return false;
+  return new Date(point.t).getUTCMilliseconds() === 350;
+}
+
+function stripInterpolatedGapRates(points) {
+  if (!Array.isArray(points) || points.length === 0) return points;
+  return points.filter((p) => !isInterpolatedGapPoint(p));
+}
+
 /**
  * Fetch current blue market rate directly from Supabase with retry logic.
  * Uses a short in-memory cache (90s) to avoid duplicate calls on load (Home + BlueRateCards) and to ease free-tier latency.
@@ -405,6 +421,13 @@ export async function fetchBlueHistory(range = '1W', currency = 'USD') {
     }
     return point;
   }).filter(point => point.buy !== null && point.sell !== null); // Filter out null rates
+
+  // Hide stuck linear-fill rows (RLS blocks anon DELETE); real DPH backfill remains.
+  const beforeStrip = points.length;
+  points = stripInterpolatedGapRates(points);
+  if (points.length !== beforeStrip) {
+    logger.log(`[fetchBlueHistory] Stripped ${beforeStrip - points.length} interpolated downtime points`);
+  }
   
   // For ALL range, intelligently downsample to show representative markers
   // Goal: Show more data points for better granularity while maintaining performance
@@ -462,6 +485,27 @@ export async function fetchBlueHistory(range = '1W', currency = 'USD') {
   historyCache.set(cacheKey, { data: result, expiresAt: Date.now() + HISTORY_CACHE_TTL_MS });
   return result;
   })(), HISTORY_TIMEOUT_MS);
+}
+
+/**
+ * Latest Visa / Mastercard / Amex network FX row (BOB per USD).
+ */
+export async function fetchCardRates() {
+  const { data, error } = await supabase
+    .from('card_rates')
+    .select(
+      't, rate_date, visa_bob_per_usd, mastercard_bob_per_usd, amex_bob_per_usd, source, notes'
+    )
+    .order('rate_date', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    logger.error('Error fetching card rates from Supabase:', error);
+    throw new Error(`Failed to fetch card rates: ${error.message}`);
+  }
+
+  return data;
 }
 
 /**

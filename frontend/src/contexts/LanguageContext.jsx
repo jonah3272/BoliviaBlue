@@ -19,8 +19,22 @@ export const translations = {
     change24h: '24h',
     blueMarketTitle: 'Mercado Paralelo (Dólar Blue) - Binance P2P',
     officialRateTitle: 'Valor referencial del dólar estadounidense (BCB)',
+    cardRateTitle: 'Tarjeta US (Visa / MC / Amex)',
     officialRateDescription:
       'Valor referencial del dólar estadounidense (BCB): tasa de referencia publicada por el Banco Central de Bolivia. Se actualiza diariamente (Compra/Venta).',
+    cardRateDescription:
+      'Tasas indicativas de red Visa/Mastercard/Amex (BOB por USD). El emisor puede sumar comisión FX. Excluye DCC del comercio. Verifica tu tarjeta.',
+    cardRateEffective: 'Tasa efectiva',
+    cardRateNetworkLine: 'Red',
+    cardRateFee: 'Comisión FX',
+    cardRateVsBlue: 'vs paralelo',
+    cardRateUnavailable: 'Tasa de red no disponible aún',
+    cardRateSelectIssuer: 'Elige emisor',
+    cardRateBetter: 'mejor',
+    cardRateWorse: 'peor',
+    blueMarketShort: 'Paralelo',
+    officialRateShort: 'Oficial',
+    cardRateShort: 'Tarjeta',
     
     // Chart
     chartTitle: 'Histórico del Dólar Blue',
@@ -360,8 +374,22 @@ export const translations = {
     change24h: '24h',
     blueMarketTitle: 'Parallel Market (Blue Dollar) - Binance P2P',
     officialRateTitle: 'US Dollar reference rate (BCB)',
+    cardRateTitle: 'US Card (Visa / MC / Amex)',
     officialRateDescription:
       'US Dollar reference rate (BCB): benchmark published by the Central Bank of Bolivia. Updated daily (buy/sell).',
+    cardRateDescription:
+      'Indicative Visa/Mastercard/Amex network rates (BOB per USD). Your issuer may add an FX fee. Excludes merchant DCC. Check your card.',
+    cardRateEffective: 'Effective rate',
+    cardRateNetworkLine: 'Network',
+    cardRateFee: 'FX fee',
+    cardRateVsBlue: 'vs parallel',
+    cardRateUnavailable: 'Network rate not available yet',
+    cardRateSelectIssuer: 'Choose issuer',
+    cardRateBetter: 'better',
+    cardRateWorse: 'worse',
+    blueMarketShort: 'Parallel',
+    officialRateShort: 'Official',
+    cardRateShort: 'Card',
     
     // Chart
     chartTitle: 'Blue Dollar History',

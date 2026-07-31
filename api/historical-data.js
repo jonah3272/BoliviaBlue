@@ -6,6 +6,16 @@ const RANGE_MS = {
   '1y': 365 * 24 * 60 * 60 * 1000
 };
 const ANON_MAX_ROWS = 4000;
+const INTERP_GAP_START = Date.parse('2026-06-30T19:27:00.000Z');
+const INTERP_GAP_END = Date.parse('2026-07-31T13:45:00.000Z');
+
+function stripInterpolatedGapRates(rows) {
+  return (rows || []).filter((r) => {
+    const ms = Date.parse(r.t);
+    if (!Number.isFinite(ms) || ms < INTERP_GAP_START || ms >= INTERP_GAP_END) return true;
+    return new Date(r.t).getUTCMilliseconds() !== 350;
+  });
+}
 
 function client() {
   const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
@@ -25,7 +35,7 @@ async function fetchRates(supabase, range) {
       .order('t', { ascending: false })
       .limit(ANON_MAX_ROWS);
     if (error) throw error;
-    return (data || []).reverse();
+    return stripInterpolatedGapRates((data || []).reverse());
   }
   const ms = RANGE_MS[range] || RANGE_MS['30d'];
   const start = new Date(Date.now() - ms).toISOString();
@@ -36,7 +46,7 @@ async function fetchRates(supabase, range) {
     .order('t', { ascending: true })
     .limit(ANON_MAX_ROWS);
   if (error) throw error;
-  return data || [];
+  return stripInterpolatedGapRates(data || []);
 }
 
 module.exports = async function handler(req, res) {

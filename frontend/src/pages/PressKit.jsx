@@ -9,9 +9,11 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import { getWebPage, getBreadcrumbList } from '../utils/seoSchema';
 
-const CITE_HTML = `<p>Fuente: <a href="https://boliviablue.com/">Bolivia Blue</a> — cotización dólar blue Bolivia (Binance P2P, mediana, cada 15 min).</p>`;
+const CITE_HTML = `<p>Fuente: <a href="https://boliviablue.com/">Bolivia Blue</a> — cotización dólar blue Bolivia (Binance P2P, mediana, cada 15 min). Datos: <a href="https://boliviablue.com/datos-historicos">boliviablue.com/datos-historicos</a>.</p>`;
 
-const CITE_MD = `Fuente: [Bolivia Blue](https://boliviablue.com/) — cotización dólar blue Bolivia.`;
+const CITE_MD = `Fuente: [Bolivia Blue](https://boliviablue.com/) — cotización dólar blue Bolivia. Histórico: [datos-historicos](https://boliviablue.com/datos-historicos).`;
+
+const CITE_METHODOLOGY = `Metodología: https://boliviablue.com/fuente-de-datos — mediana Binance P2P USDT/BOB, actualización ~15 min.`;
 
 const BADGE_HTML = `<a href="https://boliviablue.com/?utm_source=badge" rel="noopener"><img src="https://boliviablue.com/badge.svg" alt="Bolivia Blue live rate" width="200" height="40" /></a>`;
 
@@ -134,6 +136,22 @@ function PressKit() {
             className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium"
           >
             {copied === 'md' ? (language === 'es' ? 'Copiado' : 'Copied') : 'Markdown'}
+          </button>
+          <pre className="bg-gray-900 text-gray-100 text-sm p-4 rounded-lg overflow-x-auto whitespace-pre-wrap mt-4">
+            {CITE_METHODOLOGY}
+          </pre>
+          <button
+            type="button"
+            onClick={() => copy(CITE_METHODOLOGY, 'method')}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium"
+          >
+            {copied === 'method'
+              ? language === 'es'
+                ? 'Copiado'
+                : 'Copied'
+              : language === 'es'
+                ? 'Copiar metodología'
+                : 'Copy methodology'}
           </button>
         </section>
 

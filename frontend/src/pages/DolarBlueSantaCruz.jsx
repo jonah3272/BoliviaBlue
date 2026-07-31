@@ -106,7 +106,7 @@ function DolarBlueSantaCruz() {
           ? 'Dólar blue Santa Cruz actualizado cada 15 minutos. Consulta la cotización del dólar blue en Santa Cruz, Bolivia. Tipo de cambio en tiempo real, gráficos históricos y dónde cambiar dólares en Santa Cruz. Gratis y sin registro.'
           : 'Blue dollar Santa Cruz updated every 15 minutes. Check the blue dollar quote in Santa Cruz, Bolivia. Real-time exchange rate, historical charts and where to exchange dollars in Santa Cruz. Free and no registration required.'}
         keywords={language === 'es'
-          ? "dólar blue santa cruz, dólar blue bolivia santa cruz, tipo cambio santa cruz, cotización dólar blue santa cruz, precio dólar blue santa cruz, dónde cambiar dólares santa cruz, cambio dólares santa cruz, dólar paralelo santa cruz, mejor que bolivianblue.net"
+          ? "dólar blue santa cruz, dólar blue bolivia santa cruz, tipo cambio santa cruz, cotización dólar blue santa cruz, precio dólar blue santa cruz, dónde cambiar dólares santa cruz, cambio dólares santa cruz, dólar paralelo santa cruz"
           : "blue dollar santa cruz, blue dollar bolivia santa cruz, exchange rate santa cruz, blue dollar quote santa cruz, blue dollar price santa cruz, where to exchange dollars santa cruz, exchange dollars santa cruz, parallel dollar santa cruz"}
         canonical="/dolar-blue-santa-cruz"
         noindex={true} // Keep noindexed - city pages are too similar to each other (AdSense risk)

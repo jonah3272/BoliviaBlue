@@ -127,7 +127,7 @@ function DolarBlueHoy() {
           ? 'Dólar blue hoy en Bolivia: precio de compra y venta actualizado cada 15 min. Cotización del mercado paralelo, gratis y sin registro.'
           : 'Blue dollar today in Bolivia: buy and sell price updated every 15 min. Parallel market quote, free, no signup.'}
         keywords={language === 'es'
-          ? "dólar blue hoy, dólar blue hoy bolivia, dólar blue hoy en bolivia, cotización dólar blue hoy, precio dólar blue hoy, dólar blue hoy actual, dólar blue hoy la paz, tipo cambio hoy bolivia, mejor que bolivianblue.net"
+          ? "dólar blue hoy, dólar blue hoy bolivia, dólar blue hoy en bolivia, cotización dólar blue hoy, precio dólar blue hoy, dólar blue hoy actual, dólar blue hoy la paz, tipo cambio hoy bolivia"
           : "blue dollar today, blue dollar today bolivia, blue dollar quote today, blue dollar price today, blue dollar current today, exchange rate today bolivia"}
         canonical="/dolar-blue-hoy"
         structuredData={[webPageSchema, breadcrumbSchema, articleSchema, faqSchema]}

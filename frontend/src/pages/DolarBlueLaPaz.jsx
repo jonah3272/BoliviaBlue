@@ -123,7 +123,7 @@ function DolarBlueLaPaz() {
           ? 'Dólar blue La Paz actualizado cada 15 minutos. Consulta la cotización del dólar blue en La Paz, Bolivia. Tipo de cambio en tiempo real, gráficos históricos y dónde cambiar dólares en La Paz. Gratis y sin registro.'
           : 'Blue dollar La Paz updated every 15 minutes. Check the blue dollar quote in La Paz, Bolivia. Real-time exchange rate, historical charts and where to exchange dollars in La Paz. Free and no registration required.'}
         keywords={language === 'es'
-          ? "dólar blue la paz, dólar blue bolivia la paz, dólar blue hoy bolivia la paz, tipo cambio la paz, cotización dólar blue la paz, precio dólar blue la paz, dónde cambiar dólares la paz, cambio dólares la paz, dólar paralelo la paz, mejor que bolivianblue.net"
+          ? "dólar blue la paz, dólar blue bolivia la paz, dólar blue hoy bolivia la paz, tipo cambio la paz, cotización dólar blue la paz, precio dólar blue la paz, dónde cambiar dólares la paz, cambio dólares la paz, dólar paralelo la paz"
           : "blue dollar la paz, blue dollar bolivia la paz, blue dollar today la paz, exchange rate la paz, blue dollar quote la paz, blue dollar price la paz, where to exchange dollars la paz, exchange dollars la paz, parallel dollar la paz"}
         canonical="/dolar-blue-la-paz"
         noindex={true} // Keep noindexed - city pages are too similar to each other (AdSense risk)

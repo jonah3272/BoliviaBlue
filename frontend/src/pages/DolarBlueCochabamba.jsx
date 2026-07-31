@@ -106,7 +106,7 @@ function DolarBlueCochabamba() {
           ? 'Dólar blue Cochabamba actualizado cada 15 minutos. Consulta la cotización del dólar blue en Cochabamba, Bolivia. Tipo de cambio en tiempo real, gráficos históricos y dónde cambiar dólares en Cochabamba. Gratis y sin registro.'
           : 'Blue dollar Cochabamba updated every 15 minutes. Check the blue dollar quote in Cochabamba, Bolivia. Real-time exchange rate, historical charts and where to exchange dollars in Cochabamba. Free and no registration required.'}
         keywords={language === 'es'
-          ? "dólar blue cochabamba, dólar blue bolivia cochabamba, tipo cambio cochabamba, cotización dólar blue cochabamba, precio dólar blue cochabamba, dónde cambiar dólares cochabamba, cambio dólares cochabamba, dólar paralelo cochabamba, mejor que bolivianblue.net"
+          ? "dólar blue cochabamba, dólar blue bolivia cochabamba, tipo cambio cochabamba, cotización dólar blue cochabamba, precio dólar blue cochabamba, dónde cambiar dólares cochabamba, cambio dólares cochabamba, dólar paralelo cochabamba"
           : "blue dollar cochabamba, blue dollar bolivia cochabamba, exchange rate cochabamba, blue dollar quote cochabamba, blue dollar price cochabamba, where to exchange dollars cochabamba, exchange dollars cochabamba, parallel dollar cochabamba"}
         canonical="/dolar-blue-cochabamba"
         noindex={true} // Keep noindexed - city pages are too similar to each other (AdSense risk)

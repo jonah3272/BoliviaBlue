@@ -142,7 +142,7 @@ export const translations = {
     aboutFooter: 'Bolivia Blue con Paz - Transparencia en el mercado cambiario boliviano',
     
     // FAQ Page
-    faqPageTitle: 'Preguntas Frecuentes - Bolivia Blue con Paz | Mejor que bolivianblue.net',
+    faqPageTitle: 'Preguntas Frecuentes - Bolivia Blue con Paz',
     faqPageSubtitle: 'Respuestas a las preguntas más comunes sobre el dólar blue en Bolivia',
     faqQ1: '¿Qué es el dólar blue en Bolivia?',
     faqA1: 'El dólar blue (o dólar paralelo) es el tipo de cambio del dólar estadounidense en el mercado informal de Bolivia. A diferencia del tipo de cambio oficial establecido por el Banco Central de Bolivia (BCB), el dólar blue se negocia libremente entre particulares y puede diferir significativamente del tipo oficial. Este mercado surge cuando hay restricciones cambiarias, escasez de divisas oficiales, o expectativas de devaluación.',
@@ -473,7 +473,7 @@ export const translations = {
     aboutLastUpdate: 'Last system update: November 2025',
     
     // About Page (Full)
-    aboutPageTitle: 'About - Bolivia Blue with Paz | Better than bolivianblue.net',
+    aboutPageTitle: 'About - Bolivia Blue with Paz',
     aboutMissionTitle: 'Our Mission',
     aboutMissionDesc: 'Bolivia Blue with Paz is an independent platform for real-time tracking of the blue dollar exchange rate in Bolivia. Our goal is to provide transparency and visibility into the informal exchange market during the presidency of Rodrigo Paz.',
     aboutMissionDesc2: 'We believe that access to accurate and up-to-date information about exchange rates is essential for Bolivians to make informed financial decisions.',
@@ -501,7 +501,7 @@ export const translations = {
     aboutFooter: 'Bolivia Blue with Paz - Transparency in the Bolivian exchange market',
     
     // FAQ Page
-    faqPageTitle: 'Frequently Asked Questions - Bolivia Blue with Paz | Better than bolivianblue.net',
+    faqPageTitle: 'Frequently Asked Questions - Bolivia Blue with Paz',
     faqPageSubtitle: 'Answers to the most common questions about the blue dollar in Bolivia',
     faqQ1: 'What is the blue dollar in Bolivia?',
     faqA1: 'The blue dollar (or parallel dollar) is the exchange rate of the US dollar in Bolivia\'s informal market. Unlike the official exchange rate set by the Central Bank of Bolivia (BCB), the blue dollar is freely traded between individuals and can differ significantly from the official rate. This market emerges when there are exchange restrictions, shortages of official foreign currency, or devaluation expectations.',

@@ -135,7 +135,7 @@ function EuroToBoliviano() {
           ? 'Convierte Euro a Boliviano (EUR a BOB) con el tipo de cambio actualizado cada 15 minutos. Calculadora gratuita, cotización en tiempo real y guía completa para cambiar euros a bolivianos en Bolivia. Gratis y sin registro.'
           : 'Convert Euro to Boliviano (EUR to BOB) with the exchange rate updated every 15 minutes. Free calculator, real-time quote and complete guide to exchange euros to bolivianos in Bolivia. Free and no registration required.'}
         keywords={language === 'es'
-          ? "euro a boliviano, eur a bob, convertir euro a boliviano, tipo de cambio euro boliviano, cambiar euros a bolivianos, euro bolivia, cotización euro boliviano, eur/bob, mejor que bolivianblue.net"
+          ? "euro a boliviano, eur a bob, convertir euro a boliviano, tipo de cambio euro boliviano, cambiar euros a bolivianos, euro bolivia, cotización euro boliviano, eur/bob"
           : "euro to boliviano, eur to bob, convert euro to boliviano, euro boliviano exchange rate, exchange euros to bolivianos, euro bolivia, euro boliviano quote, eur/bob"}
         canonical="/euro-a-boliviano"
         structuredData={[articleSchema, faqSchema]}

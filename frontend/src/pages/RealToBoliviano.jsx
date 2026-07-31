@@ -143,7 +143,7 @@ function RealToBoliviano() {
           ? 'Convierte Real Brasileño a Boliviano (BRL a BOB) con el tipo de cambio actualizado cada 15 minutos. Calculadora gratuita, cotización en tiempo real y guía completa para cambiar reales brasileños a bolivianos en Bolivia. Gratis y sin registro.'
           : 'Convert Brazilian Real to Boliviano (BRL to BOB) with the exchange rate updated every 15 minutes. Free calculator, real-time quote and complete guide to exchange Brazilian reais to bolivianos in Bolivia. Free and no registration required.'}
         keywords={language === 'es'
-          ? "real brasileño a boliviano, brl a bob, convertir real a boliviano, tipo de cambio real boliviano, cambiar reales a bolivianos, real bolivia, cotización real boliviano, brl/bob, real brasileño bolivia, mejor que bolivianblue.net"
+          ? "real brasileño a boliviano, brl a bob, convertir real a boliviano, tipo de cambio real boliviano, cambiar reales a bolivianos, real bolivia, cotización real boliviano, brl/bob, real brasileño bolivia"
           : "brazilian real to boliviano, brl to bob, convert real to boliviano, real boliviano exchange rate, exchange reais to bolivianos, real bolivia, real boliviano quote, brl/bob, brazilian real bolivia"}
         canonical="/real-a-boliviano"
         structuredData={[articleSchema, faqSchema]}

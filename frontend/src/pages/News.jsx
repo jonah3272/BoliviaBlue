@@ -158,8 +158,8 @@ function News() {
           ? "Noticias Dólar Blue Bolivia | Actualizado Cada 5 Min | Análisis IA"
           : "Bolivia Blue Dollar News | Updated Every 5 Min | AI Analysis"}
         description={language === 'es'
-          ? "Últimas noticias financieras y económicas de Bolivia relacionadas con el tipo de cambio del dólar blue. Actualizado cada 5 minutos. Análisis de sentimiento con IA. Gratis. Mejor que bolivianblue.net."
-          : "Latest financial and economic news from Bolivia related to the blue dollar exchange rate. Updated every 5 minutes. AI sentiment analysis. Free. Better than bolivianblue.net."}
+          ? "Últimas noticias financieras y económicas de Bolivia relacionadas con el tipo de cambio del dólar blue. Actualizado cada 5 minutos. Análisis de sentimiento con IA. Gratis."
+          : "Latest financial and economic news from Bolivia related to the blue dollar exchange rate. Updated every 5 minutes. AI sentiment analysis. Free."}
         keywords={language === 'es'
           ? "noticias bolivia, noticias económicas bolivia, noticias dólar blue, noticias rodrigo paz, economía bolivia, noticias tipo cambio bolivia, noticias mercado cambiario bolivia, análisis sentimiento dólar bolivia, noticias financieras bolivia, mejor fuente noticias bolivia"
           : "bolivia news, economic news bolivia, blue dollar news, rodrigo paz news, bolivia economy, bolivia exchange rate news, bolivia currency market news, bolivia dollar sentiment analysis, bolivia financial news, best bolivia news source"}

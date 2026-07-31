@@ -131,7 +131,7 @@ function CotizaDolarParalelo() {
           ? 'Cotiza el dólar paralelo en Bolivia con datos actualizados cada 15 minutos. Consulta la cotización del dólar blue, tipo de cambio paralelo, precio actual del dólar en el mercado informal. Gratis y sin registro.'
           : 'Quote the parallel dollar in Bolivia with data updated every 15 minutes. Check the blue dollar quote, parallel exchange rate, current dollar price in the informal market. Free and no registration required.'}
         keywords={language === 'es'
-          ? "cotiza el dólar paralelo, cotización dólar paralelo, cotizar dólar paralelo bolivia, cotiza dólar blue, cotización dólar blue bolivia, cotizar dólar blue, dólar paralelo cotización, cotización dólar paralelo hoy, cotizar dólar paralelo actual, precio dólar paralelo, cotización mercado paralelo, dólar blue cotización, cotizar dólar bolivia, cotización dólar bolivia paralelo, mejor que bolivianblue.net"
+          ? "cotiza el dólar paralelo, cotización dólar paralelo, cotizar dólar paralelo bolivia, cotiza dólar blue, cotización dólar blue bolivia, cotizar dólar blue, dólar paralelo cotización, cotización dólar paralelo hoy, cotizar dólar paralelo actual, precio dólar paralelo, cotización mercado paralelo, dólar blue cotización, cotizar dólar bolivia, cotización dólar bolivia paralelo"
           : "quote parallel dollar, parallel dollar quote, quote blue dollar bolivia, parallel dollar price, blue dollar quote, quote dollar bolivia, parallel market quote, bolivia parallel dollar"}
         canonical="/cotiza-dolar-paralelo"
         structuredData={[articleSchema, faqSchema]}

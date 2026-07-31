@@ -136,7 +136,7 @@ function CuantoEstaDolarBolivia() {
           ? '¿Cuánto está el dólar en Bolivia hoy? Precio actual del dólar blue (paralelo), actualizado cada 15 min. Calculadora y gráficos incluidos.'
           : 'How much is the dollar in Bolivia today? Current blue (parallel) price, updated every 15 min. Calculator and charts included.'}
         keywords={language === 'es'
-          ? "cuánto está el dólar en bolivia, cuánto vale el dólar en bolivia, precio dólar bolivia, cotización dólar bolivia, cuánto es el dólar en bolivia, precio dólar blue bolivia, cuánto cuesta el dólar en bolivia, mejor que bolivianblue.net"
+          ? "cuánto está el dólar en bolivia, cuánto vale el dólar en bolivia, precio dólar bolivia, cotización dólar bolivia, cuánto es el dólar en bolivia, precio dólar blue bolivia, cuánto cuesta el dólar en bolivia"
           : "how much is dollar in bolivia, dollar price bolivia, dollar quote bolivia, how much is dollar bolivia, blue dollar price bolivia, dollar cost bolivia"}
         canonical="/cuanto-esta-dolar-bolivia"
         structuredData={[webPageSchema, breadcrumbSchema, articleSchema, faqSchema]}

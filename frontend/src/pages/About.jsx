@@ -29,11 +29,11 @@ function About() {
       <PageMeta
         title={t('aboutPageTitle')}
         description={language === 'es'
-          ? "Conoce cómo funciona Bolivia Blue con Paz. Metodología transparente, fuentes de datos verificadas, análisis con IA en tiempo real, y actualizaciones cada 15 minutos. La plataforma más precisa del mercado paralelo boliviano. Mejor que bolivianblue.net."
-          : "Learn how Bolivia Blue with Paz works. Transparent methodology, verified data sources, real-time AI analysis, and updates every 15 minutes. The most accurate platform for the Bolivian parallel market. Better than bolivianblue.net."}
+          ? "Conoce cómo funciona Bolivia Blue con Paz. Metodología transparente, fuentes de datos verificadas, análisis con IA en tiempo real, y actualizaciones cada 15 minutos. La plataforma más precisa del mercado paralelo boliviano."
+          : "Learn how Bolivia Blue with Paz works. Transparent methodology, verified data sources, real-time AI analysis, and updates every 15 minutes. The most accurate platform for the Bolivian parallel market."}
         keywords={language === 'es'
-          ? "acerca de bolivia blue, metodología tipo cambio, cómo funciona dólar blue, transparencia bolivia, cómo se calcula dólar blue, fuente datos bolivia blue, metodología binance p2p, mejor que bolivianblue"
-          : "about bolivia blue, exchange rate methodology, how blue dollar works, bolivia transparency, how blue dollar calculated, bolivia blue data source, binance p2p methodology, better than bolivianblue"}
+          ? "acerca de bolivia blue, metodología tipo cambio, cómo funciona dólar blue, transparencia bolivia, cómo se calcula dólar blue, fuente datos bolivia blue, metodología binance p2p"
+          : "about bolivia blue, exchange rate methodology, how blue dollar works, bolivia transparency, how blue dollar calculated, bolivia blue data source, binance p2p methodology"}
         canonical="/acerca-de"
         structuredData={breadcrumbSchema}
       />

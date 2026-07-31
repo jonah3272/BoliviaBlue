@@ -144,8 +144,8 @@ function BolivianBlue() {
           ? 'Bolivian Blue: tipo de cambio del dólar blue en tiempo real. Actualizado cada 15 min. Gráficos, calculadora y noticias. Mercado paralelo boliviano.'
           : 'Bolivian Blue: real-time blue dollar exchange rate. Updated every 15 min. Charts, calculator and news. Bolivian parallel market.'}
         keywords={language === 'es'
-          ? "bolivian blue, bolivian blue rate, bolivian blue exchange rate, dólar blue bolivia, tipo de cambio bolivia, mercado paralelo bolivia, cotización dólar bolivia, precio dólar bolivia, mejor que bolivianblue.net"
-          : "bolivian blue, bolivian blue rate, bolivian blue exchange rate, blue dollar bolivia, exchange rate bolivia, parallel market bolivia, bolivia dollar rate, bolivia dollar price, better than bolivianblue.net"}
+          ? "bolivian blue, bolivian blue rate, bolivian blue exchange rate, dólar blue bolivia, tipo de cambio bolivia, mercado paralelo bolivia, cotización dólar bolivia, precio dólar bolivia"
+          : "bolivian blue, bolivian blue rate, bolivian blue exchange rate, blue dollar bolivia, exchange rate bolivia, parallel market bolivia, bolivia dollar rate, bolivia dollar price"}
         canonical="/bolivian-blue"
         structuredData={[webPageSchema, breadcrumbSchema, articleSchema, faqSchema]}
       />
@@ -248,8 +248,8 @@ function BolivianBlue() {
             </h2>
             <p className="text-gray-700 dark:text-gray-300 mb-6">
               {language === 'es'
-                ? <>Nuestra plataforma actualiza el <strong>Bolivian Blue</strong> cada 15 minutos utilizando datos en tiempo real de Binance P2P. Esto garantiza que siempre tengas acceso a la información más precisa y actualizada sobre el <strong>bolivian blue rate</strong>. Esta frecuencia de actualización es superior a la mayoría de otras plataformas, como bolivianblue.net, que actualizan con menor frecuencia.</>
-                : <>Our platform updates the <strong>Bolivian Blue</strong> every 15 minutes using real-time data from Binance P2P. This ensures you always have access to the most accurate and up-to-date information about the <strong>bolivian blue rate</strong>. This update frequency is higher than most other platforms, such as bolivianblue.net, which update less frequently.</>}
+                ? <>Nuestra plataforma actualiza el <strong>Bolivian Blue</strong> cada 15 minutos utilizando datos en tiempo real de Binance P2P. Así siempre tenés acceso a la información más precisa sobre el <strong>bolivian blue rate</strong>.</>
+                : <>Our platform updates the <strong>Bolivian Blue</strong> every 15 minutes using real-time Binance P2P data. That way you always have accurate information about the <strong>bolivian blue rate</strong>.</>}
             </p>
 
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6 mt-12">

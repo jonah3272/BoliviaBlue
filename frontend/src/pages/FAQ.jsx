@@ -172,11 +172,11 @@ function FAQ() {
       <PageMeta
         title={t('faqPageTitle')}
         description={language === 'es'
-          ? "Preguntas frecuentes sobre el dólar blue en Bolivia. Respuestas rápidas sobre tipo de cambio, cómo funciona, Binance P2P, y más. Guía completa y actualizada. Mejor que bolivianblue.net."
-          : "Frequently asked questions about the blue dollar in Bolivia. Quick answers about exchange rate, how it works, Binance P2P, and more. Complete and updated guide. Better than bolivianblue.net."}
+          ? "Preguntas frecuentes sobre el dólar blue en Bolivia. Respuestas rápidas sobre tipo de cambio, cómo funciona, Binance P2P, y más. Guía completa y actualizada."
+          : "Frequently asked questions about the blue dollar in Bolivia. Quick answers about exchange rate, how it works, Binance P2P, and more. Complete and updated guide."}
         keywords={language === 'es'
-          ? "preguntas frecuentes dólar blue, faq tipo cambio bolivia, dudas dólar paralelo, preguntas bolivia blue, qué es dólar blue, cómo funciona dólar blue, preguntas frecuentes bolivia blue, mejor que bolivianblue.net"
-          : "blue dollar faq, exchange rate questions bolivia, parallel dollar questions, bolivia blue faq, what is blue dollar, how blue dollar works, bolivia blue frequently asked questions, better than bolivianblue.net"}
+          ? "preguntas frecuentes dólar blue, faq tipo cambio bolivia, dudas dólar paralelo, preguntas bolivia blue, qué es dólar blue, cómo funciona dólar blue, preguntas frecuentes bolivia blue"
+          : "blue dollar faq, exchange rate questions bolivia, parallel dollar questions, bolivia blue faq, what is blue dollar, how blue dollar works, bolivia blue frequently asked questions"}
         canonical="/preguntas-frecuentes"
         structuredData={[faqSchema, howToSchema]}
       />

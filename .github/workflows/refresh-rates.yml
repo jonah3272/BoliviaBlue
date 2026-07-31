@@ -26,15 +26,10 @@ jobs:
         working-directory: backend
         run: npm install --omit=dev
 
-      - name: Install Playwright Chromium (for Visa/MC card FX when HTTP is blocked)
-        working-directory: backend
-        run: npx --yes playwright install chromium --with-deps
-
       - name: Refresh rates into Supabase
         working-directory: backend
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           NODE_ENV: production
-          CARD_RATE_BROWSER: '1'
         run: node scripts/refresh-rates-once.js

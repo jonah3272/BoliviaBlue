@@ -23,16 +23,16 @@ export const translations = {
     officialRateDescription:
       'Valor referencial del dólar estadounidense (BCB): tasa de referencia publicada por el Banco Central de Bolivia. Se actualiza diariamente (Compra/Venta).',
     cardRateDescription:
-      'Tasas indicativas de red Visa/Mastercard/Amex (BOB por USD). El emisor puede sumar comisión FX. Excluye DCC del comercio. Verifica tu tarjeta.',
+      'Estimación con tasa Wise (USD→BOB) más comisión FX típica del emisor. No es la tasa oficial de Visa/MC/Amex; la usamos mientras no haya acceso a las redes. Excluye DCC. Verifica tu tarjeta.',
     cardRateEstimateNote:
-      'Estimación mid-market (las calculadoras Visa/MC bloquearon el acceso). Se actualizará a tasa de red cuando el scrape en CI funcione.',
+      'Proxy Wise (remesas) — no es tasa de liquidación Visa/MC/Amex. Se reemplazará cuando haya feed de red.',
     cardRateNetworkNote:
       'Tasa de red Visa/Mastercard (indicativa).',
     cardRateEffective: 'Tasa efectiva',
     cardRateNetworkLine: 'Red',
     cardRateFee: 'Comisión FX',
     cardRateVsBlue: 'vs paralelo',
-    cardRateUnavailable: 'Tasa de red Visa/MC/Amex aún no disponible (bloqueada por las redes). Usa BCB/banco mientras tanto.',
+    cardRateUnavailable: 'Tasa de tarjeta aún no disponible. Usa BCB/banco mientras tanto.',
     cardRateSelectIssuer: 'Elige emisor',
     cardRateBetter: 'mejor',
     cardRateWorse: 'peor',
@@ -382,16 +382,16 @@ export const translations = {
     officialRateDescription:
       'US Dollar reference rate (BCB): benchmark published by the Central Bank of Bolivia. Updated daily (buy/sell).',
     cardRateDescription:
-      'Indicative Visa/Mastercard/Amex network rates (BOB per USD). Your issuer may add an FX fee. Excludes merchant DCC. Check your card.',
+      'Estimate using Wise USD→BOB plus your issuer’s typical FX fee. Not the official Visa/MC/Amex settlement rate — used until network feeds are available. Excludes DCC. Check your card.',
     cardRateEstimateNote:
-      'Mid-market estimate (Visa/MC calculators blocked access). Will switch to network rates when CI scrape succeeds.',
+      'Wise remittance proxy — not Visa/MC/Amex settlement. Will switch when a network feed is available.',
     cardRateNetworkNote:
       'Visa/Mastercard network rate (indicative).',
     cardRateEffective: 'Effective rate',
     cardRateNetworkLine: 'Network',
     cardRateFee: 'FX fee',
     cardRateVsBlue: 'vs parallel',
-    cardRateUnavailable: 'Visa/MC/Amex network rate not available yet (blocked by networks). Use BCB/bank for now.',
+    cardRateUnavailable: 'Card rate not available yet. Use BCB/bank for now.',
     cardRateSelectIssuer: 'Choose issuer',
     cardRateBetter: 'better',
     cardRateWorse: 'worse',

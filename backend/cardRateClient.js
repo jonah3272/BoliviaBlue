@@ -1,15 +1,22 @@
 /**
  * Fetch indicative US card-network FX rates for USD/BOB (BOB per 1 USD).
  *
- * Tries public Visa / Mastercard / Amex converters first. When bots are blocked
- * (common 403), falls back to a mid-market USD→BOB proxy for Visa + Mastercard
- * only (Amex stays null — do not invent Amex from Visa/MC).
+ * Prefer official Mastercard / public converters when available.
+ * Until Visa/MC production feeds work, fall back to Wise mid-market
+ * remittance rate (honest proxy — labeled in source/notes).
  */
 import fetch from 'node-fetch';
+import {
+  fetchMastercardOfficialBobPerUsd,
+  hasMastercardCredentials
+} from './mastercardRateClient.js';
 
 const TIMEOUT_MS = 12000;
 const BROWSER_UA =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
+/** Plausible BOB per USD band (rejects sandbox mocks / bad scrapes). */
+const BOB_PER_USD_MIN = 8;
+const BOB_PER_USD_MAX = 25;
 
 function round4(n) {
   return Math.round(Number(n) * 10000) / 10000;
@@ -17,6 +24,13 @@ function round4(n) {
 
 function todayUtcDate() {
   return new Date().toISOString().slice(0, 10);
+}
+
+function assertPlausibleBobPerUsd(bobPerUsd, label) {
+  if (!Number.isFinite(bobPerUsd) || bobPerUsd < BOB_PER_USD_MIN || bobPerUsd > BOB_PER_USD_MAX) {
+    throw new Error(`${label} rate ${bobPerUsd} outside plausible ${BOB_PER_USD_MIN}–${BOB_PER_USD_MAX} BOB/USD`);
+  }
+  return bobPerUsd;
 }
 
 async function fetchText(url, headers = {}) {
@@ -169,52 +183,95 @@ export async function fetchAmexBobPerUsd() {
   throw lastErr || new Error('Amex rate unavailable');
 }
 
-async function fetchMidMarketBobPerUsd() {
-  const data = await fetchJson('https://open.er-api.com/v6/latest/USD');
-  const bob = Number(data?.rates?.BOB);
-  if (!Number.isFinite(bob) || bob < 1 || bob > 100) {
-    throw new Error('Mid-market BOB rate invalid');
-  }
+/**
+ * Wise comparison quote (USD→BOB). Remittance mid-market, used as temporary
+ * stand-in for Visa/MC/Amex until network production APIs are available.
+ */
+export async function fetchWiseBobPerUsd() {
+  const url =
+    'https://wise.com/gateway/v3/comparisons?sourceCurrency=USD&targetCurrency=BOB&sendAmount=100';
+  const data = await fetchJson(url, {
+    Accept: 'application/json',
+    Referer: 'https://wise.com/',
+    Origin: 'https://wise.com'
+  });
+  const providers = Array.isArray(data?.providers) ? data.providers : [];
+  const wise =
+    providers.find(
+      (p) =>
+        String(p?.name || '').toLowerCase() === 'wise' ||
+        String(p?.alias || '').toLowerCase() === 'wise'
+    ) || providers[0];
+  const quote = wise?.quotes?.[0];
+  const rate = Number(quote?.rate);
+  assertPlausibleBobPerUsd(rate, 'Wise');
   return {
-    bobPerUsd: round4(bob),
-    raw: data,
-    source: 'mid-market-proxy'
+    bobPerUsd: round4(rate),
+    raw: { provider: wise?.name, quote },
+    source: 'wise-proxy'
   };
 }
 
+function acceptNetworkRate(result, label, notes) {
+  if (!result?.bobPerUsd) return null;
+  try {
+    assertPlausibleBobPerUsd(result.bobPerUsd, label);
+    return result;
+  } catch (err) {
+    notes.push(`${label}: ${err.message}`);
+    return null;
+  }
+}
+
 /**
- * Fetch all three network rates. Never fabricates Amex from Visa/MC.
- * Prefer: HTTP converters → browser scrape (CI) → mid-market proxy (labeled).
+ * Fetch all three network rates.
+ * Prefer: Mastercard official API → HTTP converters → browser scrape (CI) → Wise proxy.
  */
 export async function getCardNetworkRates() {
   const notes = [];
   const sources = [];
 
+  let visa = null;
+  let mc = null;
+  let amex = null;
+
+  if (hasMastercardCredentials()) {
+    try {
+      const official = await fetchMastercardOfficialBobPerUsd();
+      mc = acceptNetworkRate(official, 'mastercard-official', notes);
+      if (mc) notes.push('mastercard via official API');
+    } catch (err) {
+      notes.push(`mastercard-official: ${err.message}`);
+    }
+  }
+
   const settled = await Promise.allSettled([
     fetchVisaBobPerUsd(),
-    fetchMastercardBobPerUsd(),
+    mc ? Promise.resolve(mc) : fetchMastercardBobPerUsd(),
     fetchAmexBobPerUsd()
   ]);
 
-  let visa = settled[0].status === 'fulfilled' ? settled[0].value : null;
-  let mc = settled[1].status === 'fulfilled' ? settled[1].value : null;
-  let amex = settled[2].status === 'fulfilled' ? settled[2].value : null;
-
-  if (settled[0].status === 'rejected') {
+  if (!visa && settled[0].status === 'fulfilled') {
+    visa = acceptNetworkRate(settled[0].value, 'visa-http', notes);
+  } else if (settled[0].status === 'rejected') {
     notes.push(`visa-http: ${settled[0].reason?.message || 'failed'}`);
   }
-  if (settled[1].status === 'rejected') {
+
+  if (!mc && settled[1].status === 'fulfilled') {
+    mc = acceptNetworkRate(settled[1].value, 'mastercard-http', notes);
+  } else if (!mc && settled[1].status === 'rejected') {
     notes.push(`mastercard-http: ${settled[1].reason?.message || 'failed'}`);
   }
-  if (settled[2].status === 'rejected') {
+
+  if (settled[2].status === 'fulfilled') {
+    amex = acceptNetworkRate(settled[2].value, 'amex-http', notes);
+  } else {
     notes.push(`amex-http: ${settled[2].reason?.message || 'failed'}`);
   }
 
   const wantBrowser =
     process.env.CARD_RATE_BROWSER === '1' ||
-    process.env.CARD_RATE_BROWSER === 'true' ||
-    !visa ||
-    !mc;
+    process.env.CARD_RATE_BROWSER === 'true';
 
   if (wantBrowser && (!visa || !mc)) {
     try {
@@ -223,16 +280,16 @@ export async function getCardNetworkRates() {
       );
       if (!mc) {
         try {
-          mc = await scrapeMastercardBobPerUsd();
-          notes.push('mastercard via browser scrape');
+          mc = acceptNetworkRate(await scrapeMastercardBobPerUsd(), 'mastercard-browser', notes);
+          if (mc) notes.push('mastercard via browser scrape');
         } catch (err) {
           notes.push(`mastercard-browser: ${err.message}`);
         }
       }
       if (!visa) {
         try {
-          visa = await scrapeVisaBobPerUsd();
-          notes.push('visa via browser scrape');
+          visa = acceptNetworkRate(await scrapeVisaBobPerUsd(), 'visa-browser', notes);
+          if (visa) notes.push('visa via browser scrape');
         } catch (err) {
           notes.push(`visa-browser: ${err.message}`);
         }
@@ -242,11 +299,30 @@ export async function getCardNetworkRates() {
     }
   }
 
-  // Do NOT invent Visa/MC from mid-market — leave null so UI shows unavailable.
-  // Browser scrape in CI may still succeed from a different IP.
-  if (!visa) notes.push('visa unavailable (no network rate)');
-  if (!mc) notes.push('mastercard unavailable (no network rate)');
-  if (!amex) notes.push('amex unavailable (no network rate)');
+  // Temporary: fill missing networks with Wise remittance rate (labeled proxy).
+  if (!visa || !mc || !amex) {
+    try {
+      const wise = await fetchWiseBobPerUsd();
+      if (!visa) {
+        visa = wise;
+        notes.push('visa via Wise proxy (temporary)');
+      }
+      if (!mc) {
+        mc = wise;
+        notes.push('mastercard via Wise proxy (temporary)');
+      }
+      if (!amex) {
+        amex = wise;
+        notes.push('amex via Wise proxy (temporary)');
+      }
+    } catch (err) {
+      notes.push(`wise-proxy: ${err.message}`);
+    }
+  }
+
+  if (!visa) notes.push('visa unavailable');
+  if (!mc) notes.push('mastercard unavailable');
+  if (!amex) notes.push('amex unavailable');
 
   if (visa) sources.push(visa.source);
   if (mc) sources.push(mc.source);

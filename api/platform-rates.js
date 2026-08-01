@@ -1,19 +1,38 @@
 /**
  * GET /api/platform-rates
- * Live USDT/BOB compra/venta for platforms we can fetch directly.
+ * Live BOB compra/venta for recommended platforms:
  * - Binance P2P (adv search medians)
  * - El Dorado (public /api/prices)
- * Takenos / Airtm: no stable public quote API yet — returned without prices.
+ * - Airtm (public rates.airtm.io bob/usd)
+ * - Takenos (no first-party public quote API — market feed)
  */
 
 const BINANCE_P2P_URL = 'https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search';
 const ELDORADO_PRICES_URL = 'https://api.eldorado.io/api/prices';
+const AIRTM_RATES_URL = 'https://rates.airtm.io/';
+/** Takenos does not publish a stable public rate API; this feed is what public Bolivia rate boards use. */
+const TAKENOS_MARKET_URL = 'https://api.dolarbluebolivia.click/v1/takenos';
 
 function median(values) {
   const nums = values.filter((n) => Number.isFinite(n)).sort((a, b) => a - b);
   if (!nums.length) return null;
   const mid = Math.floor(nums.length / 2);
   return nums.length % 2 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
+}
+
+function pack(id, name, buy, sell, source) {
+  const b = Number.isFinite(buy) ? buy : null;
+  const s = Number.isFinite(sell) ? sell : null;
+  const mid = b != null && s != null ? (b + s) / 2 : b ?? s ?? null;
+  return {
+    id,
+    name,
+    buy: b,
+    sell: s,
+    mid,
+    live: b != null || s != null,
+    source,
+  };
 }
 
 async function fetchBinanceSide(tradeType) {
@@ -43,19 +62,7 @@ async function fetchBinance() {
     fetchBinanceSide('BUY'),
     fetchBinanceSide('SELL'),
   ]);
-  const mid =
-    Number.isFinite(buy) && Number.isFinite(sell)
-      ? (buy + sell) / 2
-      : buy ?? sell ?? null;
-  return {
-    id: 'binance',
-    name: 'Binance P2P',
-    buy,
-    sell,
-    mid,
-    live: Number.isFinite(buy) || Number.isFinite(sell),
-    source: 'binance-p2p',
-  };
+  return pack('binance', 'Binance P2P', buy, sell, 'binance-p2p');
 }
 
 async function fetchEldorado() {
@@ -66,31 +73,37 @@ async function fetchEldorado() {
   const data = await res.json();
   const buy = parseFloat(data?.BUY?.BOB?.price);
   const sell = parseFloat(data?.SELL?.BOB?.price);
-  const mid =
-    Number.isFinite(buy) && Number.isFinite(sell)
-      ? (buy + sell) / 2
-      : buy ?? sell ?? null;
-  return {
-    id: 'eldorado',
-    name: 'El Dorado',
-    buy: Number.isFinite(buy) ? buy : null,
-    sell: Number.isFinite(sell) ? sell : null,
-    mid,
-    live: Number.isFinite(buy) || Number.isFinite(sell),
-    source: 'eldorado-api',
-  };
+  return pack('eldorado', 'El Dorado', buy, sell, 'eldorado-api');
 }
 
-function staticPartner(id, name) {
-  return {
-    id,
-    name,
-    buy: null,
-    sell: null,
-    mid: null,
-    live: false,
-    source: null,
-  };
+async function fetchAirtm() {
+  const res = await fetch(AIRTM_RATES_URL, {
+    headers: { Accept: 'application/json' },
+  });
+  if (!res.ok) throw new Error(`Airtm HTTP ${res.status}`);
+  const data = await res.json();
+  const bob = data?.data?.['bob/usd'];
+  if (!bob) throw new Error('Airtm missing bob/usd');
+  // addValue ≈ compra (BOB per USD when adding funds)
+  // withdrawValue ≈ venta (BOB per USD when withdrawing)
+  const buy = parseFloat(bob.addValue);
+  const sell = parseFloat(bob.withdrawValue);
+  return pack('airtm', 'Airtm', buy, sell, 'rates.airtm.io');
+}
+
+async function fetchTakenos() {
+  const res = await fetch(TAKENOS_MARKET_URL, {
+    headers: { Accept: 'application/json', 'User-Agent': 'BoliviaBlue/1.0' },
+  });
+  if (!res.ok) throw new Error(`Takenos feed HTTP ${res.status}`);
+  const json = await res.json();
+  const row = json?.data || json;
+  const buy = parseFloat(row.buy);
+  const sell = parseFloat(row.sell);
+  if (!Number.isFinite(buy) && !Number.isFinite(sell)) {
+    throw new Error('Takenos feed empty');
+  }
+  return pack('takenos', 'Takenos', buy, sell, 'takenos-market-feed');
 }
 
 module.exports = async function handler(req, res) {
@@ -101,27 +114,48 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
-  const settled = await Promise.allSettled([fetchEldorado(), fetchBinance()]);
-  const platforms = [];
+  const settled = await Promise.allSettled([
+    fetchEldorado(),
+    fetchTakenos(),
+    fetchAirtm(),
+    fetchBinance(),
+  ]);
 
+  const platforms = [];
+  const errors = {};
   for (const result of settled) {
-    if (result.status === 'fulfilled') platforms.push(result.value);
+    if (result.status === 'fulfilled') {
+      platforms.push(result.value);
+    } else {
+      const msg = result.reason?.message || String(result.reason);
+      // best-effort id from message
+      if (/takenos/i.test(msg)) errors.takenos = msg;
+      else if (/airtm/i.test(msg)) errors.airtm = msg;
+      else if (/dorado/i.test(msg)) errors.eldorado = msg;
+      else if (/binance/i.test(msg)) errors.binance = msg;
+    }
   }
 
-  // Keep referral partners in the board even without a public rate API yet
-  const have = new Set(platforms.map((p) => p.id));
-  if (!have.has('takenos')) platforms.push(staticPartner('takenos', 'Takenos'));
-  if (!have.has('airtm')) platforms.push(staticPartner('airtm', 'Airtm'));
-
-  // Preferred display order (matches competitor “recomendadas”)
   const order = ['eldorado', 'takenos', 'airtm', 'binance'];
+  const names = {
+    eldorado: 'El Dorado',
+    takenos: 'Takenos',
+    airtm: 'Airtm',
+    binance: 'Binance P2P',
+  };
+  const have = new Set(platforms.map((p) => p.id));
+  for (const id of order) {
+    if (!have.has(id)) {
+      platforms.push(pack(id, names[id], null, null, null));
+    }
+  }
   platforms.sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
 
-  const verifiedAt = new Date().toISOString();
   return res.status(200).json({
-    verified_at: verifiedAt,
+    verified_at: new Date().toISOString(),
     asset: 'USDT',
     fiat: 'BOB',
     platforms,
+    ...(Object.keys(errors).length ? { partial_errors: errors } : {}),
   });
 };

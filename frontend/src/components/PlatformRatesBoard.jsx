@@ -239,8 +239,8 @@ export default function PlatformRatesBoard({ placement = 'buy_page_platforms' })
           </div>
           <p className="mt-4 text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed">
             {es
-              ? 'El Dorado y Binance se leen en vivo. Takenos y Airtm aún no publican una API de tasa estable — la cotización aparece al abrir la app. Las tasas son referenciales y pueden variar por monto y método.'
-              : 'El Dorado and Binance are read live. Takenos and Airtm do not publish a stable public rate API yet — the quote appears in-app. Rates are referential and can vary by amount and method.'}
+              ? 'Cotizaciones en vivo: El Dorado, Airtm, Binance P2P y Takenos. Se refrescan cada ~1 minuto. Son referenciales y pueden variar por monto y método de pago.'
+              : 'Live quotes: El Dorado, Airtm, Binance P2P, and Takenos. Refresh about every minute. Referential — may vary by amount and payment method.'}
           </p>
         </div>
       )}

@@ -5,6 +5,7 @@ import PageMeta from '../components/PageMeta';
 import Navigation from '../components/Navigation';
 import BlueRateCards from '../components/BlueRateCards';
 import PartnerAdCarousel from '../components/PartnerAdCarousel';
+import PlatformRatesBoard from '../components/PlatformRatesBoard';
 import Footer from '../components/Footer';
 import { Link } from 'react-router-dom';
 import { fetchBlueRate } from '../utils/api';
@@ -191,6 +192,10 @@ function BuyDollars() {
 
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
         <PartnerAdCarousel placement="buy_page_top" midRate={midRate} />
+      </section>
+
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-2">
+        <PlatformRatesBoard placement="buy_page_platforms" />
       </section>
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 space-y-16">

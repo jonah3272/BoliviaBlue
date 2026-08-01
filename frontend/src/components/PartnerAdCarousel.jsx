@@ -120,7 +120,6 @@ export default function PartnerAdCarousel({
   const viewed = useRef(new Set());
   const pausedRef = useRef(false);
   const touchX = useRef(null);
-  const barRef = useRef(null);
 
   const go = useCallback(
     (deltaOrIndex, absolute = false) => {
@@ -152,15 +151,6 @@ export default function PartnerAdCarousel({
     }, intervalMs);
     return () => window.clearInterval(id);
   }, [ads.length, intervalMs, go, index]);
-
-  useEffect(() => {
-    const el = barRef.current;
-    if (!el) return undefined;
-    el.style.animation = 'none';
-    void el.offsetWidth;
-    el.style.animation = `partnerBar ${intervalMs}ms linear forwards`;
-    return undefined;
-  }, [index, intervalMs]);
 
   const rateLabel =
     midRate != null && Number.isFinite(Number(midRate))
@@ -196,14 +186,12 @@ export default function PartnerAdCarousel({
       data-partner-carousel={placement}
       onMouseEnter={() => {
         pausedRef.current = true;
-        if (barRef.current) barRef.current.style.animationPlayState = 'paused';
       }}
       onMouseLeave={() => {
         pausedRef.current = false;
-        if (barRef.current) barRef.current.style.animationPlayState = 'running';
       }}
     >
-      {/* Entire creative is the hit target */}
+      {/* Entire creative is the hit target — rotates silently, no dots/arrows/chrome */}
       <a
         href={ad.href}
         target="_blank"
@@ -227,10 +215,6 @@ export default function PartnerAdCarousel({
         className={`group relative block overflow-hidden rounded-2xl border border-gray-200/80 dark:border-gray-700 shadow-[0_12px_40px_-16px_rgba(0,0,0,0.35)] outline-none transition ring-offset-2 focus-visible:ring-2 focus-visible:ring-sky-500 ${surfaceClass(ad)}`}
         aria-label={`${ad.brand}: ${ad.cta}`}
       >
-        <span className="pointer-events-none absolute inset-x-0 top-0 z-10 h-[3px] bg-black/5 dark:bg-white/10">
-          <span ref={barRef} className="block h-full origin-left bg-gray-900/70 dark:bg-white/80" />
-        </span>
-
         {isDark && (
           <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_85%_15%,rgba(0,200,255,0.25),transparent_55%)]" />
         )}
@@ -316,54 +300,7 @@ export default function PartnerAdCarousel({
         </span>
       </a>
 
-      {ads.length > 1 && (
-        <div className="mt-3 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            {ads.map((item, i) => (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => go(i, true)}
-                aria-label={item.brand}
-                aria-current={i === index ? 'true' : undefined}
-                className={`h-2.5 rounded-full transition-all duration-300 ${
-                  i === index
-                    ? 'w-8 bg-gray-900 dark:bg-white'
-                    : 'w-2.5 bg-gray-300 hover:bg-gray-400 dark:bg-gray-600'
-                }`}
-              />
-            ))}
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => go(-1)}
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-              aria-label={language === 'es' ? 'Anterior' : 'Previous'}
-            >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            <button
-              type="button"
-              onClick={() => go(1)}
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
-              aria-label={language === 'es' ? 'Siguiente' : 'Next'}
-            >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      )}
-
       <style>{`
-        @keyframes partnerBar {
-          from { transform: scaleX(0); }
-          to { transform: scaleX(1); }
-        }
         @keyframes partnerIn {
           from { opacity: 0; transform: translateX(var(--partner-from, 1.75rem)); }
           to { opacity: 1; transform: translateX(0); }

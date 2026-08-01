@@ -362,7 +362,7 @@ function Home() {
             <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} showTimestampInCards={false} />
           </section>
 
-          <section className="mt-5 sm:mt-6 min-h-[15.5rem] sm:min-h-[14.5rem]">
+          <section className="mt-5 sm:mt-6 min-h-[15rem] sm:min-h-[14rem]">
             <PartnerAdCarousel placement="home_after_rates" midRate={midRate} />
           </section>
         </div>

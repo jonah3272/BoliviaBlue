@@ -27,48 +27,64 @@ export function getPartnerAds(language = 'es') {
       partner: 'eldorado',
       href: ELDORADO_REFERRAL_LINK,
       brand: 'El Dorado',
+      highlight: es ? 'Cuenta en dólares' : 'USD account',
+      headlineRest: es ? 'en EE. UU.' : 'in the USA',
       headline: es ? 'Tu cuenta en dólares en EE. UU.' : 'Your USD account in the USA',
       sub: es
-        ? 'Recibí, enviá y pagá con saldo en dólares. Ideal si necesitás operar fuera del tipo oficial.'
-        : 'Receive, send and pay with a USD balance — useful when the official rate is not enough.',
+        ? 'Recibí ACH/wire, mové USDT y usá saldo en Bolivia — fuera del tipo oficial.'
+        : 'Get ACH/wire, move USDT, spend in Bolivia — outside the official rate.',
       cta: es ? 'Abrir El Dorado' : 'Open El Dorado',
       theme: 'eldorado',
+      surface: 'light',
+      showQr: true,
     },
     {
       id: 'takenos',
       partner: 'takenos',
       href: TAKENOS_REFERRAL_LINK,
       brand: 'Takenos',
+      highlight: es ? 'USD + EUR' : 'USD + EUR',
+      headlineRest: es ? 'en una sola app' : 'in one app',
       headline: es ? 'Recibí ingresos en USD y EUR' : 'Get paid in USD and EUR',
       sub: es
-        ? 'Cuenta multi-moneda + tarjeta. Cobrá del exterior y usá tu saldo en Bolivia.'
-        : 'Multi-currency account + card. Get paid abroad and spend locally in Bolivia.',
-      cta: es ? 'Probar Takenos' : 'Try Takenos',
+        ? 'Cobrá del exterior, tarjeta internacional, y usá tu saldo en Bolivia.'
+        : 'Get paid abroad, international card, spend your balance in Bolivia.',
+      cta: es ? 'Empezar en Takenos' : 'Start with Takenos',
       theme: 'takenos',
+      surface: 'light',
+      showQr: true,
     },
     {
       id: 'airtm',
       partner: 'airtm',
       href: AIRTM_REFERRAL_LINK,
       brand: 'Airtm',
+      highlight: es ? 'Tarjeta virtual' : 'Virtual card',
+      headlineRest: es ? 'en USD' : 'in USD',
       headline: es ? 'Tu tarjeta virtual en USD' : 'Your virtual USD card',
       sub: es
-        ? 'Pagá online en comercios internacionales con saldo Airtm.'
+        ? 'Pagá online en comercios internacionales con tu saldo Airtm.'
         : 'Pay online at international merchants with your Airtm balance.',
       cta: es ? 'Crear cuenta Airtm' : 'Create Airtm account',
       theme: 'airtm',
+      surface: 'dark',
+      showQr: false,
     },
     {
       id: 'binance',
       partner: 'binance',
       href: BINANCE_REFERRAL_LINK,
       brand: 'Binance',
+      highlight: es ? 'USDT al paralelo' : 'USDT at parallel',
+      headlineRest: es ? 'vía P2P' : 'via P2P',
       headline: es ? 'Comprá USDT al dólar paralelo' : 'Buy USDT at the parallel rate',
       sub: es
-        ? 'P2P con Binance: la vía más usada para acercarte a la cotización blue.'
-        : 'Binance P2P — the most used path to the blue/parallel market rate.',
+        ? 'La vía más usada en Bolivia para acercarte a la cotización blue.'
+        : 'The most used path in Bolivia to the blue market rate.',
       cta: es ? 'Crear cuenta Binance' : 'Create Binance account',
       theme: 'binance',
+      surface: 'light',
+      showQr: false,
     },
   ];
 }

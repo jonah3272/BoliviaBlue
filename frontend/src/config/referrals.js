@@ -37,6 +37,7 @@ export function getPartnerAds(language = 'es') {
       pathDesc: es
         ? 'Ideal si querés recibir transferencias ACH/wire y mover USDT con una cuenta en dólares.'
         : 'Best if you want ACH/wire deposits and USDT with a real USD account.',
+      bestFor: es ? 'Freelancers y remesas ACH' : 'Freelancers & ACH remittances',
       badge: es ? 'Recomendado' : 'Recommended',
       cta: es ? 'Abrir El Dorado' : 'Open El Dorado',
       theme: 'eldorado',
@@ -58,6 +59,7 @@ export function getPartnerAds(language = 'es') {
       pathDesc: es
         ? 'Cobrá en USD/EUR, tarjeta internacional, y gastá el saldo en Bolivia.'
         : 'Get paid in USD/EUR, international card, spend balance in Bolivia.',
+      bestFor: es ? 'Cobrar del exterior' : 'Getting paid abroad',
       badge: es ? 'Nuevo' : 'New',
       cta: es ? 'Empezar en Takenos' : 'Start with Takenos',
       theme: 'takenos',
@@ -79,6 +81,7 @@ export function getPartnerAds(language = 'es') {
       pathDesc: es
         ? 'Wallet simple para freelancers: recibir, convertir y pagar online en USD.'
         : 'Simple wallet for freelancers: receive, convert, and pay online in USD.',
+      bestFor: es ? 'Pagos online en USD' : 'Online USD payments',
       badge: null,
       cta: es ? 'Crear cuenta Airtm' : 'Create Airtm account',
       theme: 'airtm',
@@ -100,6 +103,7 @@ export function getPartnerAds(language = 'es') {
       pathDesc: es
         ? 'La vía más usada en Bolivia para comprar/vender USDT cerca del dólar blue.'
         : 'The most used path in Bolivia to buy/sell USDT near the blue rate.',
+      bestFor: es ? 'Comprar cerca del blue' : 'Buy near the blue rate',
       badge: es ? 'Más usado' : 'Most used',
       cta: es ? 'Crear cuenta Binance' : 'Create Binance account',
       theme: 'binance',

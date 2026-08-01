@@ -7,14 +7,14 @@ import { formatRate } from '../utils/formatters';
 const ROTATE_MS = 6000;
 
 function qrUrl(href) {
-  return `https://api.qrserver.com/v1/create-qr-code/?size=140x140&margin=6&data=${encodeURIComponent(href)}`;
+  return `https://api.qrserver.com/v1/create-qr-code/?size=148x148&margin=6&data=${encodeURIComponent(href)}`;
 }
 
 function BrandMark({ theme }) {
   if (theme === 'takenos') {
     return (
-      <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sky-500 text-white">
-        <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="currentColor" aria-hidden>
+      <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-sky-500 text-white shadow-sm">
+        <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden>
           <path d="M12 3c-2.8 2.2-4.5 4.8-4.5 7.6A4.5 4.5 0 0012 15a4.5 4.5 0 004.5-4.4C16.5 7.8 14.8 5.2 12 3z" />
         </svg>
       </span>
@@ -22,30 +22,30 @@ function BrandMark({ theme }) {
   }
   if (theme === 'airtm') {
     return (
-      <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-cyan-400 text-slate-950 text-[10px] font-black">
+      <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-cyan-400 text-slate-950 text-xs font-black shadow-sm">
         AT
       </span>
     );
   }
   if (theme === 'binance') {
     return (
-      <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#F0B90B] text-black text-sm font-black">
+      <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#F0B90B] text-black text-sm font-black shadow-sm">
         B
       </span>
     );
   }
   return (
-    <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[#F5C518] text-stone-950 text-sm font-black">
+    <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#F5C518] text-stone-950 text-sm font-black shadow-sm">
       ◆
     </span>
   );
 }
 
 function ctaTone(theme) {
-  if (theme === 'eldorado') return 'bg-stone-950 text-[#F5C518] hover:bg-stone-800';
-  if (theme === 'takenos') return 'bg-sky-500 text-white hover:bg-sky-400';
-  if (theme === 'airtm') return 'bg-cyan-400 text-slate-950 hover:bg-cyan-300';
-  return 'bg-[#F0B90B] text-stone-950 hover:bg-yellow-300';
+  if (theme === 'eldorado') return 'bg-stone-950 text-[#F5C518] group-hover:bg-stone-800';
+  if (theme === 'takenos') return 'bg-sky-500 text-white group-hover:bg-sky-400';
+  if (theme === 'airtm') return 'bg-cyan-400 text-slate-950 group-hover:bg-cyan-300';
+  return 'bg-[#F0B90B] text-stone-950 group-hover:bg-yellow-300';
 }
 
 function chipTone(theme) {
@@ -66,9 +66,47 @@ function surfaceClass(ad) {
   return 'bg-gradient-to-br from-amber-50/90 via-white to-stone-50 text-gray-900 dark:from-stone-900 dark:via-stone-900 dark:to-stone-800 dark:text-white';
 }
 
+function SlideArt({ theme, rateLabel }) {
+  if (theme === 'binance') {
+    return (
+      <div className="rounded-xl border border-[#F0B90B]/35 bg-stone-950 px-5 py-3.5 text-center shadow-lg">
+        <div className="text-[9px] uppercase tracking-wider text-amber-200/50">USDT/BOB</div>
+        <div className="font-mono text-2xl font-bold text-[#F0B90B] tabular-nums">{rateLabel || '—'}</div>
+      </div>
+    );
+  }
+  if (theme === 'takenos') {
+    return (
+      <div className="h-[7.5rem] w-[5rem] rounded-[1.15rem] border-[3px] border-slate-800 bg-slate-900 p-2.5 text-white shadow-xl">
+        <div className="text-[8px] font-semibold text-sky-300">Takenos</div>
+        <div className="mt-2 text-[8px] text-white/40">Balance</div>
+        <div className="font-mono text-sm font-bold">$1,289</div>
+        <div className="mt-3 h-1.5 w-4/5 rounded-full bg-sky-500/80" />
+      </div>
+    );
+  }
+  if (theme === 'airtm') {
+    return (
+      <div className="h-24 w-40 -rotate-3 rounded-xl bg-gradient-to-br from-white to-slate-200 p-3 text-slate-800 shadow-xl ring-1 ring-black/5">
+        <div className="flex justify-between text-[9px] font-bold">
+          <span>AIRTM</span>
+          <span className="italic text-blue-700">VISA</span>
+        </div>
+        <div className="mt-3 h-4 w-6 rounded bg-amber-300" />
+        <div className="mt-2 font-mono text-[10px] tracking-widest">•••• 4242</div>
+      </div>
+    );
+  }
+  return (
+    <div className="h-[7.25rem] w-[4.75rem] rounded-md border border-stone-300 bg-gradient-to-b from-stone-50 to-stone-300 shadow-xl">
+      <div className="mx-auto mt-3 h-8 w-8 rounded-full bg-stone-400/30" />
+      <div className="mt-4 text-center text-[9px] font-black tracking-widest text-stone-700">USD</div>
+    </div>
+  );
+}
+
 /**
- * Partner ads — one slide at a time, natural height (no clipping),
- * pause via refs (no touch setState that cancels the click).
+ * Whole banner is one link. Controls sit outside so they never steal the CTA.
  */
 export default function PartnerAdCarousel({
   placement = 'partner_carousel',
@@ -107,7 +145,6 @@ export default function PartnerAdCarousel({
     trackBuyFunnelViewed({ language, placement: `${placement}_${ad.partner}` });
   }, [ads, index, language, placement]);
 
-  // Autoplay — reads pausedRef so hover/touch never forces a React re-render
   useEffect(() => {
     if (ads.length < 2) return undefined;
     const id = window.setInterval(() => {
@@ -116,12 +153,10 @@ export default function PartnerAdCarousel({
     return () => window.clearInterval(id);
   }, [ads.length, intervalMs, go, index]);
 
-  // Restart progress bar without tying pause to React state
   useEffect(() => {
     const el = barRef.current;
     if (!el) return undefined;
     el.style.animation = 'none';
-    // force reflow
     void el.offsetWidth;
     el.style.animation = `partnerBar ${intervalMs}ms linear forwards`;
     return undefined;
@@ -144,7 +179,6 @@ export default function PartnerAdCarousel({
       : ad.sub;
 
   const openPartner = (e) => {
-    // Guaranteed navigation even if something interferes with default <a> behavior
     e.preventDefault();
     trackReferralClicked({
       language,
@@ -169,8 +203,12 @@ export default function PartnerAdCarousel({
         if (barRef.current) barRef.current.style.animationPlayState = 'running';
       }}
     >
-      <div
-        className={`relative overflow-hidden rounded-2xl border border-gray-200/80 dark:border-gray-700 shadow-[0_12px_40px_-16px_rgba(0,0,0,0.35)] ${surfaceClass(ad)}`}
+      {/* Entire creative is the hit target */}
+      <a
+        href={ad.href}
+        target="_blank"
+        rel="noopener noreferrer sponsored"
+        onClick={openPartner}
         onTouchStart={(e) => {
           touchX.current = e.touches[0].clientX;
           pausedRef.current = true;
@@ -181,43 +219,43 @@ export default function PartnerAdCarousel({
           pausedRef.current = false;
           if (start == null) return;
           const dx = e.changedTouches[0].clientX - start;
-          // Only treat as swipe when clearly intentional — don't steal taps
           if (Math.abs(dx) > 70) {
             e.preventDefault();
             go(dx < 0 ? 1 : -1);
           }
         }}
+        className={`group relative block overflow-hidden rounded-2xl border border-gray-200/80 dark:border-gray-700 shadow-[0_12px_40px_-16px_rgba(0,0,0,0.35)] outline-none transition ring-offset-2 focus-visible:ring-2 focus-visible:ring-sky-500 ${surfaceClass(ad)}`}
+        aria-label={`${ad.brand}: ${ad.cta}`}
       >
-        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-[3px] bg-black/5 dark:bg-white/10">
-          <div ref={barRef} className="h-full origin-left bg-gray-900/70 dark:bg-white/80" />
-        </div>
+        <span className="pointer-events-none absolute inset-x-0 top-0 z-10 h-[3px] bg-black/5 dark:bg-white/10">
+          <span ref={barRef} className="block h-full origin-left bg-gray-900/70 dark:bg-white/80" />
+        </span>
 
         {isDark && (
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_85%_15%,rgba(0,200,255,0.25),transparent_55%)]" />
+          <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_85%_15%,rgba(0,200,255,0.25),transparent_55%)]" />
         )}
 
-        {/* Single in-flow slide — height follows content, nothing clipped */}
-        <div
+        <span
           key={`${ad.id}-${index}`}
-          className="relative grid grid-cols-1 md:grid-cols-[1fr_auto] lg:grid-cols-[1fr_auto_auto] gap-4 p-5 sm:p-6"
+          className="relative grid grid-cols-1 items-center gap-5 p-6 sm:p-7 md:grid-cols-[minmax(0,1fr)_auto] lg:grid-cols-[minmax(0,1fr)_auto_auto] md:gap-6"
           style={{
             animation: `partnerIn 480ms cubic-bezier(0.22,1,0.36,1) both`,
             ['--partner-from']: slideDir >= 0 ? '1.75rem' : '-1.75rem',
           }}
         >
-          <div className="min-w-0 flex flex-col gap-2.5">
-            <div className="flex items-center gap-2">
+          <span className="flex min-w-0 flex-col gap-3">
+            <span className="flex items-center gap-2.5">
               <BrandMark theme={ad.theme} />
               <span
-                className={`text-[11px] font-bold uppercase tracking-[0.14em] ${
+                className={`text-[11px] font-bold uppercase tracking-[0.16em] ${
                   isDark ? 'text-white/55' : 'text-gray-500 dark:text-gray-400'
                 }`}
               >
                 {ad.brand}
               </span>
-            </div>
+            </span>
 
-            <h3 className="text-xl sm:text-2xl font-bold leading-snug tracking-tight">
+            <span className="block text-xl font-bold leading-snug tracking-tight sm:text-2xl">
               {ad.highlight ? (
                 <>
                   <span className={`inline px-1.5 py-0.5 ${chipTone(ad.theme)}`}>{ad.highlight}</span>{' '}
@@ -226,27 +264,22 @@ export default function PartnerAdCarousel({
               ) : (
                 ad.headline
               )}
-            </h3>
+            </span>
 
-            <p
-              className={`text-sm leading-relaxed ${
+            <span
+              className={`block text-sm leading-relaxed sm:text-[15px] ${
                 isDark ? 'text-white/65' : 'text-gray-600 dark:text-gray-300'
               }`}
             >
               {subText}
-            </p>
+            </span>
 
-            {/* Real <a> — large, always fully visible, not clipped */}
-            <a
-              href={ad.href}
-              target="_blank"
-              rel="noopener noreferrer sponsored"
-              onClick={openPartner}
-              className={`mt-1 inline-flex h-12 w-full sm:w-auto min-w-[14rem] items-center justify-center rounded-xl px-6 text-sm font-bold shadow-md transition active:scale-[0.98] ${ctaTone(ad.theme)}`}
+            <span
+              className={`mt-1 inline-flex h-12 w-full max-w-sm items-center justify-center rounded-xl px-6 text-sm font-bold shadow-md transition duration-200 group-hover:translate-x-0.5 group-active:scale-[0.98] sm:w-auto ${ctaTone(ad.theme)}`}
             >
               {ad.cta}
               <svg
-                className="ml-2 h-4 w-4 shrink-0"
+                className="ml-2 h-4 w-4 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -255,72 +288,33 @@ export default function PartnerAdCarousel({
               >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
               </svg>
-            </a>
-          </div>
+            </span>
+          </span>
 
-          {/* Compact art — md+ only, sized to not force overflow */}
-          <div className="hidden md:flex items-center justify-center self-center" aria-hidden>
-            {ad.theme === 'binance' ? (
-              <div className="rounded-xl border border-[#F0B90B]/35 bg-stone-950 px-5 py-3 text-center">
-                <div className="text-[9px] uppercase tracking-wider text-amber-200/50">USDT/BOB</div>
-                <div className="font-mono text-2xl font-bold text-[#F0B90B] tabular-nums">
-                  {rateLabel || '—'}
-                </div>
-              </div>
-            ) : ad.theme === 'takenos' ? (
-              <div className="h-28 w-[4.75rem] rounded-[1.1rem] border-[3px] border-slate-800 bg-slate-900 p-2 text-white shadow-lg">
-                <div className="text-[8px] text-sky-300 font-semibold">Takenos</div>
-                <div className="mt-2 text-[8px] text-white/40">Balance</div>
-                <div className="font-mono text-sm font-bold">$1,289</div>
-              </div>
-            ) : ad.theme === 'airtm' ? (
-              <div className="h-24 w-40 -rotate-3 rounded-xl bg-gradient-to-br from-white to-slate-200 p-3 text-slate-800 shadow-lg">
-                <div className="flex justify-between text-[9px] font-bold">
-                  <span>AIRTM</span>
-                  <span className="italic text-blue-700">VISA</span>
-                </div>
-                <div className="mt-3 h-4 w-6 rounded bg-amber-300" />
-                <div className="mt-2 font-mono text-[10px] tracking-widest">•••• 4242</div>
-              </div>
-            ) : (
-              <div className="flex items-end gap-2">
-                <div className="h-28 w-[4.5rem] rounded-md border border-stone-300 bg-gradient-to-b from-stone-50 to-stone-300 shadow-lg">
-                  <div className="mx-auto mt-3 h-8 w-8 rounded-full bg-stone-400/30" />
-                  <div className="mt-4 text-center text-[9px] font-black tracking-widest text-stone-700">
-                    USD
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
+          <span className="hidden self-center md:flex" aria-hidden>
+            <SlideArt theme={ad.theme} rateLabel={rateLabel} />
+          </span>
 
           {ad.showQr && (
-            <a
-              href={ad.href}
-              target="_blank"
-              rel="noopener noreferrer sponsored"
-              onClick={openPartner}
-              className="hidden lg:flex flex-col items-center justify-center gap-1 self-center"
-              aria-label={ad.cta}
-            >
-              <span className="block h-[6.5rem] w-[6.5rem] rounded-xl bg-white p-1.5 shadow-md ring-1 ring-black/5">
+            <span className="hidden flex-col items-center justify-center gap-1.5 self-center lg:flex">
+              <span className="block h-[6.75rem] w-[6.75rem] rounded-xl bg-white p-1.5 shadow-md ring-1 ring-black/5">
                 <img
                   src={qrUrl(ad.href)}
                   alt=""
-                  width={104}
-                  height={104}
+                  width={108}
+                  height={108}
                   className="h-full w-full"
                   loading="lazy"
                   decoding="async"
                 />
               </span>
               <span className={`text-[10px] ${isDark ? 'text-white/45' : 'text-gray-400'}`}>
-                {language === 'es' ? 'Escaneá' : 'Scan'}
+                {language === 'es' ? 'Escaneá para abrir' : 'Scan to open'}
               </span>
-            </a>
+            </span>
           )}
-        </div>
-      </div>
+        </span>
+      </a>
 
       {ads.length > 1 && (
         <div className="mt-3 flex items-center justify-between gap-3">

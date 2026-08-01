@@ -4,7 +4,7 @@ import Header from '../components/Header';
 import PageMeta from '../components/PageMeta';
 import Navigation from '../components/Navigation';
 import BlueRateCards from '../components/BlueRateCards';
-import BuyFunnelCTA from '../components/BuyFunnelCTA';
+import PartnerAdCarousel from '../components/PartnerAdCarousel';
 import Footer from '../components/Footer';
 import { Link } from 'react-router-dom';
 import { fetchBlueRate } from '../utils/api';
@@ -101,12 +101,8 @@ function BuyDollars() {
         <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} />
       </section>
 
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
-        <BuyFunnelCTA
-          placement="buy_page_top"
-          midRate={midRate}
-          showGuideLink={false}
-        />
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-4 min-h-[15.5rem]">
+        <PartnerAdCarousel placement="buy_page_top" midRate={midRate} />
       </section>
 
       <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">

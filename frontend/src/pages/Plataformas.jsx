@@ -10,7 +10,7 @@ import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import { trackNavigation } from '../utils/analytics';
 import { trackReferralClicked } from '../utils/analyticsEvents';
 import { BINANCE_REFERRAL_LINK, AIRTM_REFERRAL_LINK, BINANCE_P2P_LINK } from '../config/referrals';
-import BuyFunnelCTA from '../components/BuyFunnelCTA';
+import PartnerAdCarousel from '../components/PartnerAdCarousel';
 
 function Plataformas() {
   // Signal to AdSense that this page has sufficient content
@@ -279,8 +279,8 @@ function Plataformas() {
       <main className="max-w-7xl mx-auto px-4 py-8">
         <Breadcrumbs items={breadcrumbs} />
 
-        <div className="mb-8">
-          <BuyFunnelCTA placement="plataformas_top" />
+        <div className="mb-8 min-h-[15.5rem]">
+          <PartnerAdCarousel placement="plataformas_top" />
         </div>
 
         {/* Header */}

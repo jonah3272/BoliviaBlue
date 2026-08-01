@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import BuyFunnelCTA from './BuyFunnelCTA';
+import PartnerAdCarousel from './PartnerAdCarousel';
 import { fetchBlueRate } from '../utils/api';
 
 /**
- * Drop-in replacement for the old Binance-only banner.
- * Loads mid parallel rate when not passed, then renders BuyFunnelCTA.
+ * Sitewide monetization slot: rotating partner funnel
+ * (El Dorado → Takenos → Airtm → Binance).
  */
 function BinanceBanner({ placement: placementProp, midRate: midRateProp = null }) {
   const location = useLocation();
@@ -37,9 +37,7 @@ function BinanceBanner({ placement: placementProp, midRate: midRateProp = null }
     };
   }, [midRateProp]);
 
-  return (
-    <BuyFunnelCTA placement={placement} midRate={midRate} showGuideLink />
-  );
+  return <PartnerAdCarousel placement={placement} midRate={midRate} />;
 }
 
 export default BinanceBanner;

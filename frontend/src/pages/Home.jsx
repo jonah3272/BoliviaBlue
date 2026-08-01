@@ -1,7 +1,7 @@
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import BlueRateCards from '../components/BlueRateCards';
-import BuyFunnelCTA from '../components/BuyFunnelCTA';
+import PartnerAdCarousel from '../components/PartnerAdCarousel';
 import SocialShare from '../components/SocialShare';
 import LazyErrorBoundary from '../components/LazyErrorBoundary';
 import { lazy, Suspense, useState, useEffect, useMemo } from 'react';
@@ -362,8 +362,8 @@ function Home() {
             <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} showTimestampInCards={false} />
           </section>
 
-          <section className="mt-5 sm:mt-6">
-            <BuyFunnelCTA placement="home_after_rates" midRate={midRate} />
+          <section className="mt-5 sm:mt-6 min-h-[15.5rem] sm:min-h-[14.5rem]">
+            <PartnerAdCarousel placement="home_after_rates" midRate={midRate} />
           </section>
         </div>
 

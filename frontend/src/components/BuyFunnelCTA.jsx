@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import {
   AIRTM_REFERRAL_LINK,
+  ELDORADO_REFERRAL_LINK,
+  TAKENOS_REFERRAL_LINK,
   BUY_GUIDE_PATH,
   getWhatsAppRateShareUrl,
 } from '../config/referrals';
@@ -19,7 +21,8 @@ const quietBtn =
   'inline-flex items-center justify-center h-11 px-4 text-sm font-semibold rounded-lg border transition-colors whitespace-nowrap';
 
 /**
- * Primary monetization block: rate → Binance (loud) → quiet secondary actions.
+ * Compact monetization block (rate → Binance + partner chips).
+ * Prefer PartnerAdCarousel for the primary rotating funnel.
  */
 function BuyFunnelCTA({
   placement = 'unknown',
@@ -61,15 +64,14 @@ function BuyFunnelCTA({
           <p className="mt-1 text-sm text-gray-600 dark:text-gray-400 max-w-2xl min-h-[2.5rem]">
             {rateLabel
               ? language === 'es'
-                ? `Paralelo ~${rateLabel} Bs. Creá cuenta en Binance y operá en P2P a tasa de mercado.`
-                : `Parallel ~${rateLabel} Bs. Create a Binance account and trade P2P at market rate.`
+                ? `Paralelo ~${rateLabel} Bs. Elegí Binance P2P, El Dorado, Takenos o Airtm.`
+                : `Parallel ~${rateLabel} Bs. Choose Binance P2P, El Dorado, Takenos or Airtm.`
               : language === 'es'
-                ? 'Creá cuenta en Binance y comprá USDT en P2P a la tasa del paralelo.'
-                : 'Create a Binance account and buy USDT on P2P at the parallel rate.'}
+                ? 'Elegí Binance P2P, El Dorado, Takenos o Airtm según cómo quieras operar.'
+                : 'Choose Binance P2P, El Dorado, Takenos or Airtm based on how you want to operate.'}
           </p>
         </div>
 
-        {/* Primary */}
         <div className="flex justify-center md:justify-start">
           <BinanceButton
             size="md"
@@ -80,12 +82,45 @@ function BuyFunnelCTA({
           </BinanceButton>
         </div>
 
-        {/* Secondary — quieter, same height */}
         <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
+          <a
+            href={ELDORADO_REFERRAL_LINK}
+            target="_blank"
+            rel="noopener noreferrer sponsored"
+            onClick={() =>
+              trackReferralClicked({
+                language,
+                partner: 'eldorado',
+                placement,
+                destination: ELDORADO_REFERRAL_LINK,
+                link_label: 'eldorado_quiet',
+              })
+            }
+            className={`${quietBtn} border-amber-500/50 text-amber-800 dark:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-950/40`}
+          >
+            El Dorado
+          </a>
+          <a
+            href={TAKENOS_REFERRAL_LINK}
+            target="_blank"
+            rel="noopener noreferrer sponsored"
+            onClick={() =>
+              trackReferralClicked({
+                language,
+                partner: 'takenos',
+                placement,
+                destination: TAKENOS_REFERRAL_LINK,
+                link_label: 'takenos_quiet',
+              })
+            }
+            className={`${quietBtn} border-sky-500/50 text-sky-800 dark:text-sky-300 hover:bg-sky-50 dark:hover:bg-sky-950/40`}
+          >
+            Takenos
+          </a>
           <a
             href={AIRTM_REFERRAL_LINK}
             target="_blank"
-            rel="noopener noreferrer"
+            rel="noopener noreferrer sponsored"
             onClick={() =>
               trackReferralClicked({
                 language,

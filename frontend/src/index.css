@@ -142,8 +142,16 @@ main > section {
   margin-bottom: 2rem;
 }
 
-/* Prevent vignette ads from causing layout issues */
-body > div[id*="google_ads"] {
-  position: fixed !important;
-  z-index: 10000 !important;
+/* Prevent vignette/anchor ads from covering the whole page hit-target.
+   Only known vignette containers should be high z-index — never all google_ads nodes. */
+body > div[id*="google_ads"][style*="z-index"],
+body > div[class*="google-vignette"] {
+  z-index: 10000;
+}
+
+/* Keep primary conversion UI above auto-placed ads */
+[data-partner-carousel] {
+  position: relative;
+  z-index: 20;
+  isolation: isolate;
 }

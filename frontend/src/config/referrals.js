@@ -33,6 +33,11 @@ export function getPartnerAds(language = 'es') {
       sub: es
         ? 'Recibí ACH/wire, mové USDT y usá saldo en Bolivia — fuera del tipo oficial.'
         : 'Get ACH/wire, move USDT, spend in Bolivia — outside the official rate.',
+      pathLabel: es ? 'Cuenta USD (EE. UU.)' : 'USD account (USA)',
+      pathDesc: es
+        ? 'Ideal si querés recibir transferencias ACH/wire y mover USDT con una cuenta en dólares.'
+        : 'Best if you want ACH/wire deposits and USDT with a real USD account.',
+      badge: es ? 'Recomendado' : 'Recommended',
       cta: es ? 'Abrir El Dorado' : 'Open El Dorado',
       theme: 'eldorado',
       surface: 'light',
@@ -49,6 +54,11 @@ export function getPartnerAds(language = 'es') {
       sub: es
         ? 'Cobrá del exterior, tarjeta internacional, y usá tu saldo en Bolivia.'
         : 'Get paid abroad, international card, spend your balance in Bolivia.',
+      pathLabel: es ? 'Multimoneda + tarjeta' : 'Multi-currency + card',
+      pathDesc: es
+        ? 'Cobrá en USD/EUR, tarjeta internacional, y gastá el saldo en Bolivia.'
+        : 'Get paid in USD/EUR, international card, spend balance in Bolivia.',
+      badge: es ? 'Nuevo' : 'New',
       cta: es ? 'Empezar en Takenos' : 'Start with Takenos',
       theme: 'takenos',
       surface: 'light',
@@ -65,6 +75,11 @@ export function getPartnerAds(language = 'es') {
       sub: es
         ? 'Pagá online en comercios internacionales con tu saldo Airtm.'
         : 'Pay online at international merchants with your Airtm balance.',
+      pathLabel: es ? 'Wallet + tarjeta virtual' : 'Wallet + virtual card',
+      pathDesc: es
+        ? 'Wallet simple para freelancers: recibir, convertir y pagar online en USD.'
+        : 'Simple wallet for freelancers: receive, convert, and pay online in USD.',
+      badge: null,
       cta: es ? 'Crear cuenta Airtm' : 'Create Airtm account',
       theme: 'airtm',
       surface: 'dark',
@@ -81,6 +96,11 @@ export function getPartnerAds(language = 'es') {
       sub: es
         ? 'La vía más usada en Bolivia para acercarte a la cotización blue.'
         : 'The most used path in Bolivia to the blue market rate.',
+      pathLabel: es ? 'P2P más líquido' : 'Most liquid P2P',
+      pathDesc: es
+        ? 'La vía más usada en Bolivia para comprar/vender USDT cerca del dólar blue.'
+        : 'The most used path in Bolivia to buy/sell USDT near the blue rate.',
+      badge: es ? 'Más usado' : 'Most used',
       cta: es ? 'Crear cuenta Binance' : 'Create Binance account',
       theme: 'binance',
       surface: 'light',

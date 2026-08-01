@@ -75,7 +75,7 @@ function Home() {
       }
     };
     loadRate();
-    const interval = setInterval(loadRate, 15 * 60 * 1000);
+    const interval = setInterval(loadRate, 5 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
   
@@ -337,26 +337,56 @@ function Home() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-5 sm:py-8 md:py-10 space-y-6 sm:space-y-8 md:space-y-10 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
-        {/* Hero — title + one line only; rates are the product */}
-        <div className="text-center space-y-3 mb-2">
-          <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight px-1">
-            {language === 'es' 
-              ? 'Dólar Blue Bolivia Hoy'
-              : 'Bolivia Blue Dollar Today'}
-          </h1>
-          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 max-w-xl mx-auto px-2">
-            {language === 'es'
-              ? 'Cotización en vivo cada 15 min · Binance P2P · Sin registro'
-              : 'Live quote every 15 min · Binance P2P · No signup'}
-          </p>
+        {/* Hero — brand + live signal; rates are the product */}
+        <div className="relative text-center mb-1 overflow-hidden rounded-3xl border border-sky-200/60 dark:border-sky-800/40 px-4 py-8 sm:px-8 sm:py-10">
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background:
+                'radial-gradient(ellipse 90% 70% at 50% -20%, rgba(56,189,248,0.22), transparent 55%), radial-gradient(ellipse 50% 40% at 100% 80%, rgba(245,197,24,0.12), transparent 50%)',
+            }}
+          />
+          <div className="relative space-y-4">
+            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+              </span>
+              {language === 'es' ? 'En vivo · Binance P2P' : 'Live · Binance P2P'}
+            </div>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight">
+              {language === 'es' ? 'Dólar Blue Bolivia Hoy' : 'Bolivia Blue Dollar Today'}
+            </h1>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 max-w-lg mx-auto">
+              {language === 'es'
+                ? 'Cotización paralelo actualizada cada pocos minutos. Sin registro.'
+                : 'Parallel quote updated every few minutes. No signup.'}
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
+              <Link
+                to="/comprar-dolares"
+                className="inline-flex h-11 items-center justify-center rounded-xl bg-sky-500 px-5 text-sm font-bold text-white shadow-md shadow-sky-500/25 transition hover:bg-sky-400"
+              >
+                {language === 'es' ? 'Cómo comprar dólares' : 'How to buy dollars'}
+              </Link>
+              <a
+                href="#price-alerts"
+                className="inline-flex h-11 items-center justify-center rounded-xl border border-gray-300 dark:border-gray-600 bg-white/70 dark:bg-gray-800/70 px-5 text-sm font-semibold text-gray-800 dark:text-gray-100 backdrop-blur transition hover:bg-white dark:hover:bg-gray-800"
+              >
+                {language === 'es' ? 'Crear alerta' : 'Set a price alert'}
+              </a>
+            </div>
+          </div>
         </div>
 
         {/* Rates + buy CTA — first composition */}
         <div className="relative rounded-2xl px-1 py-4 sm:px-4 sm:py-6 -mx-1 sm:mx-0 bg-gradient-to-b from-sky-50/90 via-transparent to-transparent dark:from-sky-950/40 dark:via-transparent">
           <section>
             {currentRate?.updated_at_iso && (
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-3 text-center">
-                {language === 'es' ? 'Actualizado' : 'Updated'}: {formatDateTime(currentRate.updated_at_iso, language === 'es' ? 'es-BO' : 'en-US')}
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-3 text-center flex items-center justify-center gap-2">
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden />
+                {language === 'es' ? 'Actualizado' : 'Updated'}:{' '}
+                {formatDateTime(currentRate.updated_at_iso, language === 'es' ? 'es-BO' : 'en-US')}
               </p>
             )}
             <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} showTimestampInCards={false} />

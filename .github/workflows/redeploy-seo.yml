@@ -1,0 +1,28 @@
+# Refresh static SEO shells with current rates (titles/descriptions in HTML).
+# Edge middleware already serves live meta to bots; this keeps CDN HTML warm too.
+#
+# Setup (one-time): Vercel → Project → Settings → Git → Deploy Hooks → Create hook
+# Add secret: VERCEL_DEPLOY_HOOK = that URL
+name: Redeploy SEO shells
+
+on:
+  schedule:
+    # Every 6 hours (UTC)
+    - cron: '20 */6 * * *'
+  workflow_dispatch:
+
+jobs:
+  redeploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Trigger Vercel deploy hook
+        env:
+          VERCEL_DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$VERCEL_DEPLOY_HOOK" ]; then
+            echo "VERCEL_DEPLOY_HOOK secret not set — skip. Add a Vercel Deploy Hook to enable."
+            exit 0
+          fi
+          curl -fsS -X POST "$VERCEL_DEPLOY_HOOK"
+          echo "Deploy hook triggered."

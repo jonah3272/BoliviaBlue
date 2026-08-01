@@ -8,6 +8,9 @@ export const BINANCE_P2P_LINK = 'https://www.binance.com/en/p2p';
 
 export const AIRTM_REFERRAL_LINK = 'https://app.airtm.io/ivt/dasyl1sfs6fzr';
 
+/** Paste invite URL when available, then wire BuyFunnelCTA / plataformas. */
+export const ELDORADO_REFERRAL_LINK = null;
+
 export const BUY_GUIDE_PATH = '/comprar-dolares';
 
 /**

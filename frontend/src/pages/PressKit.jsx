@@ -17,6 +17,40 @@ const CITE_METHODOLOGY = `Metodología: https://boliviablue.com/fuente-de-datos 
 
 const BADGE_HTML = `<a href="https://boliviablue.com/?utm_source=badge" rel="noopener"><img src="https://boliviablue.com/badge.svg" alt="Bolivia Blue live rate" width="200" height="40" /></a>`;
 
+const PITCH_EMAIL_ES = `Asunto: Datos actualizados del dólar paralelo en Bolivia (fuente gratuita)
+
+Hola,
+
+Soy de Bolivia Blue (https://boliviablue.com), un monitor del dólar blue / paralelo en Bolivia basado en Binance P2P (mediana, ~cada 15 min).
+
+Si les sirve para una nota o gráfico, pueden citarnos con este HTML:
+${CITE_HTML}
+
+Datos históricos (CSV 30 días, gratis): https://boliviablue.com/datos-historicos
+Metodología: https://boliviablue.com/fuente-de-datos
+Kit de prensa: https://boliviablue.com/prensa
+
+Quedo atento si necesitan una serie histórica más larga o una captura para publicación.
+
+Saludos`;
+
+const PITCH_EMAIL_EN = `Subject: Free Bolivia parallel (blue) dollar data for citation
+
+Hello,
+
+Bolivia Blue (https://boliviablue.com) tracks Bolivia’s parallel / blue dollar from Binance P2P (median, ~every 15 minutes).
+
+Ready-to-paste citation:
+${CITE_HTML}
+
+Historical CSV (30 days, free): https://boliviablue.com/datos-historicos
+Methodology: https://boliviablue.com/fuente-de-datos
+Press kit: https://boliviablue.com/prensa
+
+Happy to share a longer series or a chart for publication.
+
+Best regards`;
+
 const OUTREACH = [
   {
     es: 'Medios bolivianos (El Deber, Los Tiempos, Opinión, Eju): ofrece “datos + gráfico + atribución” para notas de economía.',
@@ -112,6 +146,33 @@ function PressKit() {
               : 'To win #1 you need linked mentions. Everything a journalist or creator needs to cite you in 30 seconds.'}
           </p>
         </header>
+
+        <section className="space-y-3">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            {language === 'es' ? 'Email listo para enviar' : 'Ready-to-send pitch email'}
+          </h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            {language === 'es'
+              ? 'Copiá y mandalo a redacción de economía (El Deber, Los Tiempos, Opinión, Eju, etc.).'
+              : 'Copy and send to economy desks.'}
+          </p>
+          <pre className="bg-gray-900 text-gray-100 text-sm p-4 rounded-lg overflow-x-auto whitespace-pre-wrap">
+            {language === 'es' ? PITCH_EMAIL_ES : PITCH_EMAIL_EN}
+          </pre>
+          <button
+            type="button"
+            onClick={() => copy(language === 'es' ? PITCH_EMAIL_ES : PITCH_EMAIL_EN, 'pitch')}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium"
+          >
+            {copied === 'pitch'
+              ? language === 'es'
+                ? 'Copiado'
+                : 'Copied'
+              : language === 'es'
+                ? 'Copiar email'
+                : 'Copy email'}
+          </button>
+        </section>
 
         <section className="space-y-3">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">

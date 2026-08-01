@@ -41,6 +41,12 @@ const EXCLUDED_ROUTES = [
   '/blue-rate-bolivia', // Redirects to /bolivian-blue
   '/cambio-blue-bolivia', // Redirects to /bolivian-blue
   '/bolivia-blue-rate', // Redirects to /bolivian-blue
+  // High-CLS conversion URLs: Auto Ads inject layout shifts; keep content ad-free
+  '/euro-a-boliviano',
+  '/real-a-boliviano',
+  '/usdt-bolivia',
+  '/usdt-en-bolivia',
+  '/calculadora',
 ];
 
 /**

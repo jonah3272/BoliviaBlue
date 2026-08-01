@@ -5,6 +5,7 @@ import Footer from '../components/Footer';
 import PageMeta from '../components/PageMeta';
 import Navigation from '../components/Navigation';
 import BinanceBanner from '../components/BinanceBanner';
+import CurrencyRateSnapshot, { CurrencyConversionList } from '../components/CurrencyRateSnapshot';
 import { Link } from 'react-router-dom';
 import { fetchBlueRate } from '../utils/api';
 import Breadcrumbs from '../components/Breadcrumbs';
@@ -19,22 +20,34 @@ function RealToBoliviano() {
 
   const language = languageContext?.language || 'es';
   const [currentRate, setCurrentRate] = useState(null);
-  const [lastUpdated, setLastUpdated] = useState(new Date());
+  const [rateError, setRateError] = useState(null);
+  const [isRateLoading, setIsRateLoading] = useState(true);
+  const [lastUpdated, setLastUpdated] = useState(null);
 
   useEffect(() => {
     const loadRate = async () => {
       try {
         const data = await fetchBlueRate('BRL');
         setCurrentRate(data);
-        setLastUpdated(new Date());
+        setRateError(null);
+        setLastUpdated(new Date(data?.updated_at_iso || Date.now()));
       } catch (err) {
         console.error('Error loading BRL rate:', err);
+        setRateError(err?.message || 'rate_error');
+      } finally {
+        setIsRateLoading(false);
       }
     };
     loadRate();
     const interval = setInterval(loadRate, 15 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
+
+  const buy = currentRate?.buy_bob_per_brl;
+  const sell = currentRate?.sell_bob_per_brl;
+  const buyStr = Number.isFinite(buy) ? buy.toFixed(2) : null;
+  const sellStr = Number.isFinite(sell) ? sell.toFixed(2) : null;
+  const hundredStr = Number.isFinite(buy) ? (buy * 100).toFixed(2) : null;
 
   const articleSchema = {
     "@context": "https://schema.org",
@@ -170,67 +183,51 @@ function RealToBoliviano() {
             ? 'Real Brasileño a Boliviano - Tipo de Cambio Actual'
             : 'Brazilian Real to Boliviano - Current Exchange Rate'}
         </h1>
-        <p className="text-center text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-3 sm:mb-6">
-          {language === 'es'
-            ? `Última actualización: ${lastUpdated.toLocaleString(language === 'es' ? 'es-BO' : 'en-US', { dateStyle: 'long', timeStyle: 'short' })}`
-            : `Last updated: ${lastUpdated.toLocaleString(language === 'es' ? 'es-BO' : 'en-US', { dateStyle: 'long', timeStyle: 'short' })}`}
+        <p className="text-center text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-3 sm:mb-6 min-h-[1.75rem]">
+          {lastUpdated
+            ? (language === 'es'
+              ? `Última actualización: ${lastUpdated.toLocaleString('es-BO', { dateStyle: 'long', timeStyle: 'short' })}`
+              : `Last updated: ${lastUpdated.toLocaleString('en-US', { dateStyle: 'long', timeStyle: 'short' })}`)
+            : '\u00a0'}
         </p>
 
-        {/* Quick Answer Section */}
-        {currentRate && (
-          <section className="bg-gradient-to-br from-green-50 to-yellow-50 dark:from-gray-800 dark:to-gray-900 rounded-xl p-6 sm:p-8 border-2 border-green-200 dark:border-green-800">
-            <div className="max-w-3xl mx-auto text-center">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                {language === 'es' 
-                  ? 'Tipo de Cambio Actual: Real Brasileño a Boliviano'
-                  : 'Current Exchange Rate: Brazilian Real to Boliviano'}
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md">
-                  <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                    {language === 'es' ? '1 BRL =' : '1 BRL ='}
-                  </div>
-                  <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                    {currentRate.buy_bob_per_brl?.toFixed(2) || '2.10'} BOB
-                  </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                    {language === 'es' ? 'Compra' : 'Buy'}
-                  </div>
-                </div>
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md">
-                  <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                    {language === 'es' ? '1 BRL =' : '1 BRL ='}
-                  </div>
-                  <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
-                    {currentRate.sell_bob_per_brl?.toFixed(2) || '2.15'} BOB
-                  </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                    {language === 'es' ? 'Venta' : 'Sell'}
-                  </div>
-                </div>
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md">
-                  <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                    {language === 'es' ? '100 BRL =' : '100 BRL ='}
-                  </div>
-                  <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                    {((currentRate.buy_bob_per_brl || 2.10) * 100).toFixed(2)} BOB
-                  </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                    {language === 'es' ? 'Aproximadamente' : 'Approximately'}
-                  </div>
-                </div>
-              </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                {language === 'es'
-                  ? 'Tipo de cambio actualizado cada 15 minutos con datos en tiempo real de Binance P2P'
-                  : 'Exchange rate updated every 15 minutes with real-time data from Binance P2P'}
-              </p>
-            </div>
-          </section>
-        )}
+        <CurrencyRateSnapshot
+          language={language}
+          accent="green"
+          title={language === 'es'
+            ? 'Tipo de Cambio Actual: Real Brasileño a Boliviano'
+            : 'Current Exchange Rate: Brazilian Real to Boliviano'}
+          cards={[
+            {
+              topLabel: '1 BRL =',
+              valueDisplay: buyStr,
+              bottomLabel: language === 'es' ? 'Compra' : 'Buy',
+              tone: 'buy',
+            },
+            {
+              topLabel: '1 BRL =',
+              valueDisplay: sellStr,
+              bottomLabel: language === 'es' ? 'Venta' : 'Sell',
+              tone: 'sell',
+            },
+            {
+              topLabel: '100 BRL =',
+              valueDisplay: hundredStr,
+              bottomLabel: language === 'es' ? 'Aproximadamente' : 'Approximately',
+              tone: 'tertiary',
+            },
+          ]}
+          isLoading={isRateLoading}
+          errorMessage={rateError
+            ? (language === 'es' ? 'No se pudo cargar la cotización. Reintentando…' : 'Could not load the quote. Retrying…')
+            : null}
+          footnote={language === 'es'
+            ? 'Tipo de cambio actualizado cada 15 minutos con datos en tiempo real de Binance P2P'
+            : 'Exchange rate updated every 15 minutes with real-time data from Binance P2P'}
+        />
 
         {/* Binance Banner */}
-        <section>
+        <section className="min-h-[12rem] sm:min-h-[11rem]">
           <BinanceBanner />
         </section>
 
@@ -255,31 +252,11 @@ function RealToBoliviano() {
                   ? 'Conversiones Comunes: Real Brasileño a Boliviano'
                   : 'Common Conversions: Brazilian Real to Boliviano'}
               </h3>
-              {currentRate && (
-                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-6">
-                  <ul className="space-y-2 text-gray-700 dark:text-gray-300">
-                    {language === 'es' ? (
-                      <>
-                        <li><strong>1 BRL</strong> = {currentRate.buy_bob_per_brl?.toFixed(2) || '2.10'} BOB</li>
-                        <li><strong>10 BRL</strong> = {((currentRate.buy_bob_per_brl || 2.10) * 10).toFixed(2)} BOB</li>
-                        <li><strong>50 BRL</strong> = {((currentRate.buy_bob_per_brl || 2.10) * 50).toFixed(2)} BOB</li>
-                        <li><strong>100 BRL</strong> = {((currentRate.buy_bob_per_brl || 2.10) * 100).toFixed(2)} BOB</li>
-                        <li><strong>500 BRL</strong> = {((currentRate.buy_bob_per_brl || 2.10) * 500).toFixed(2)} BOB</li>
-                        <li><strong>1000 BRL</strong> = {((currentRate.buy_bob_per_brl || 2.10) * 1000).toFixed(2)} BOB</li>
-                      </>
-                    ) : (
-                      <>
-                        <li><strong>1 BRL</strong> = {currentRate.buy_bob_per_brl?.toFixed(2) || '2.10'} BOB</li>
-                        <li><strong>10 BRL</strong> = {((currentRate.buy_bob_per_brl || 2.10) * 10).toFixed(2)} BOB</li>
-                        <li><strong>50 BRL</strong> = {((currentRate.buy_bob_per_brl || 2.10) * 50).toFixed(2)} BOB</li>
-                        <li><strong>100 BRL</strong> = {((currentRate.buy_bob_per_brl || 2.10) * 100).toFixed(2)} BOB</li>
-                        <li><strong>500 BRL</strong> = {((currentRate.buy_bob_per_brl || 2.10) * 500).toFixed(2)} BOB</li>
-                        <li><strong>1000 BRL</strong> = {((currentRate.buy_bob_per_brl || 2.10) * 1000).toFixed(2)} BOB</li>
-                      </>
-                    )}
-                  </ul>
-                </div>
-              )}
+              <CurrencyConversionList
+                fromCode="BRL"
+                rate={buy}
+                isLoading={isRateLoading}
+              />
 
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
                 {language === 'es' 

@@ -370,32 +370,38 @@ function CurrencyCalculator() {
               </label>
             </div>
 
-            {/* Exchange Rate Display */}
-            {!isLoading && rateData && (
-              <div className="bg-gradient-to-r from-white to-blue-50 dark:from-gray-700 dark:to-gray-800 rounded-xl p-6 shadow-lg border border-blue-100 dark:border-gray-600">
-                <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-4 text-center">
-                  {t('exchangeRates')}
-                </h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-3 bg-white dark:bg-gray-800 rounded-lg">
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                      {useOfficial ? t('official') : t('unofficial')}
-                    </div>
-                    <div className={`text-xl font-mono font-bold ${useOfficial ? 'text-pink-600 dark:text-pink-400' : 'text-blue-600 dark:text-blue-400'}`}>
-                      1 {selectedCurrency} = {(getRate()).toFixed(4)} BOB
-                    </div>
+            {/* Exchange Rate Display — always reserved to avoid CLS when rates load */}
+            <div className="bg-gradient-to-r from-white to-blue-50 dark:from-gray-700 dark:to-gray-800 rounded-xl p-6 shadow-lg border border-blue-100 dark:border-gray-600 min-h-[8.5rem]">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-4 text-center">
+                {t('exchangeRates')}
+              </h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-center p-3 bg-white dark:bg-gray-800 rounded-lg min-h-[4.5rem]">
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                    {useOfficial ? t('official') : t('unofficial')}
                   </div>
-                  <div className="text-center p-3 bg-white dark:bg-gray-800 rounded-lg">
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                      {t('inverse')}
-                    </div>
-                    <div className={`text-xl font-mono font-bold ${!useOfficial ? 'text-blue-600 dark:text-blue-400' : 'text-pink-600 dark:text-pink-400'}`}>
-                      1 BOB = {(1 / getRate()).toFixed(6)} {selectedCurrency}
-                    </div>
+                  <div className={`text-xl font-mono font-bold tabular-nums min-h-[1.75rem] ${useOfficial ? 'text-pink-600 dark:text-pink-400' : 'text-blue-600 dark:text-blue-400'}`}>
+                    {isLoading || !rateData ? (
+                      <span className="inline-block skeleton h-6 w-36 mx-auto" aria-hidden="true" />
+                    ) : (
+                      <>1 {selectedCurrency} = {(getRate()).toFixed(4)} BOB</>
+                    )}
+                  </div>
+                </div>
+                <div className="text-center p-3 bg-white dark:bg-gray-800 rounded-lg min-h-[4.5rem]">
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                    {t('inverse')}
+                  </div>
+                  <div className={`text-xl font-mono font-bold tabular-nums min-h-[1.75rem] ${!useOfficial ? 'text-blue-600 dark:text-blue-400' : 'text-pink-600 dark:text-pink-400'}`}>
+                    {isLoading || !rateData ? (
+                      <span className="inline-block skeleton h-6 w-36 mx-auto" aria-hidden="true" />
+                    ) : (
+                      <>1 BOB = {(1 / getRate()).toFixed(6)} {selectedCurrency}</>
+                    )}
                   </div>
                 </div>
               </div>
-            )}
+            </div>
 
             {/* Comparison Mode */}
             {comparisonMode && !isLoading && rateData && (
@@ -441,16 +447,6 @@ function CurrencyCalculator() {
                     );
                   })}
                 </div>
-              </div>
-            )}
-
-            {/* Loading State */}
-            {isLoading && (
-              <div className="text-center py-8">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-300 border-t-blue-600"></div>
-                <p className="mt-2 text-gray-600 dark:text-gray-400">
-                  {t('loadingRates')}
-                </p>
               </div>
             )}
           </div>

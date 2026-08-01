@@ -729,10 +729,34 @@ export const translations = {
 
 export function LanguageProvider({ children }) {
   const [language, setLanguage] = useState(() => {
-    // Default to Spanish
-    const saved = localStorage.getItem('language');
-    return saved || 'es';
+    if (typeof window !== 'undefined') {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const langParam = params.get('lang');
+        if (langParam === 'en' || langParam === 'es') return langParam;
+      } catch {
+        /* ignore */
+      }
+      const saved = localStorage.getItem('language');
+      if (saved === 'en' || saved === 'es') return saved;
+    }
+    return 'es';
   });
+
+  // Keep URL ?lang= in sync on first paint / navigation without waiting for a toggle
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const langParam = params.get('lang');
+      if ((langParam === 'en' || langParam === 'es') && langParam !== language) {
+        setLanguage(langParam);
+      }
+    } catch {
+      /* ignore */
+    }
+    // Only on mount — intentional
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('language', language);

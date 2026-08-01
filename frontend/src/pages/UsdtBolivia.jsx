@@ -6,6 +6,7 @@ import PageMeta from '../components/PageMeta';
 import Navigation from '../components/Navigation';
 import BlueRateCards from '../components/BlueRateCards';
 import BinanceBanner from '../components/BinanceBanner';
+import CurrencyRateSnapshot from '../components/CurrencyRateSnapshot';
 import { Link } from 'react-router-dom';
 import { fetchBlueRate } from '../utils/api';
 import Breadcrumbs from '../components/Breadcrumbs';
@@ -21,20 +22,31 @@ function UsdtBolivia() {
   const language = languageContext?.language || 'es';
   const [showOfficial, setShowOfficial] = useState(false);
   const [currentRate, setCurrentRate] = useState(null);
+  const [isRateLoading, setIsRateLoading] = useState(true);
+  const [rateError, setRateError] = useState(null);
 
   useEffect(() => {
     const loadRate = async () => {
       try {
         const data = await fetchBlueRate();
         setCurrentRate(data);
+        setRateError(null);
       } catch (err) {
         console.error('Error loading rate:', err);
+        setRateError(err?.message || 'rate_error');
+      } finally {
+        setIsRateLoading(false);
       }
     };
     loadRate();
     const interval = setInterval(loadRate, 15 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
+
+  const buy = currentRate?.buy_bob_per_usd ?? currentRate?.buy;
+  const buyStr = Number.isFinite(buy) ? Number(buy).toFixed(2) : null;
+  const tenStr = Number.isFinite(buy) ? (Number(buy) * 10).toFixed(2) : null;
+  const hundredStr = Number.isFinite(buy) ? (Number(buy) * 100).toFixed(2) : null;
 
   const articleSchema = {
     "@context": "https://schema.org",
@@ -160,57 +172,31 @@ function UsdtBolivia() {
             : 'Everything you need to know about USDT (Tether) in Bolivia: how to convert, where to buy and current exchange rate'}
         </p>
 
-        {/* Rate Cards */}
+        {/* Rate Cards — BlueRateCards already reserves skeleton height */}
         <section>
           <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} />
         </section>
 
-        {/* USDT to BOB Conversion */}
-        {currentRate && (
-          <section className="bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 rounded-xl p-6 sm:p-8 border-2 border-purple-200 dark:border-purple-800">
-            <div className="max-w-3xl mx-auto text-center">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                {language === 'es' 
-                  ? 'Conversión USDT a BOB'
-                  : 'USDT to BOB Conversion'}
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md">
-                  <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                    {language === 'es' ? '1 USDT =' : '1 USDT ='}
-                  </div>
-                  <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                    {currentRate.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB
-                  </div>
-                </div>
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md">
-                  <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                    {language === 'es' ? '10 USDT =' : '10 USDT ='}
-                  </div>
-                  <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                    {((currentRate.buy_bob_per_usd || 10.50) * 10).toFixed(2)} BOB
-                  </div>
-                </div>
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md">
-                  <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                    {language === 'es' ? '100 USDT =' : '100 USDT ='}
-                  </div>
-                  <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                    {((currentRate.buy_bob_per_usd || 10.50) * 100).toFixed(2)} BOB
-                  </div>
-                </div>
-              </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-4">
-                {language === 'es'
-                  ? 'Tipo de cambio actualizado cada 15 minutos'
-                  : 'Exchange rate updated every 15 minutes'}
-              </p>
-            </div>
-          </section>
-        )}
+        <CurrencyRateSnapshot
+          language={language}
+          accent="purple"
+          title={language === 'es' ? 'Conversión USDT a BOB' : 'USDT to BOB Conversion'}
+          cards={[
+            { topLabel: '1 USDT =', valueDisplay: buyStr, tone: 'buy' },
+            { topLabel: '10 USDT =', valueDisplay: tenStr, tone: 'sell' },
+            { topLabel: '100 USDT =', valueDisplay: hundredStr, tone: 'tertiary' },
+          ]}
+          isLoading={isRateLoading}
+          errorMessage={rateError
+            ? (language === 'es' ? 'No se pudo cargar la cotización. Reintentando…' : 'Could not load the quote. Retrying…')
+            : null}
+          footnote={language === 'es'
+            ? 'Tipo de cambio actualizado cada 15 minutos'
+            : 'Exchange rate updated every 15 minutes'}
+        />
 
         {/* Binance Banner */}
-        <section>
+        <section className="min-h-[12rem] sm:min-h-[11rem]">
           <BinanceBanner />
         </section>
 

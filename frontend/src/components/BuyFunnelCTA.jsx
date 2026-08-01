@@ -1,6 +1,5 @@
 import { useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { useLanguage } from '../contexts/LanguageContext';
 import {
   AIRTM_REFERRAL_LINK,
@@ -46,14 +45,11 @@ function BuyFunnelCTA({
       : null;
 
   return (
-    <motion.div
+    <div
       className={`relative overflow-hidden rounded-xl border border-amber-200/60 dark:border-amber-900/40 bg-white/95 dark:bg-gray-800/95 ${
         compact ? 'p-4 sm:p-5' : 'p-5 sm:p-6'
       }`}
       data-buy-funnel={placement}
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: 'easeOut', delay: 0.05 }}
     >
       <div className="absolute top-0 left-0 right-0 h-0.5 bg-amber-400/80" />
 
@@ -62,7 +58,7 @@ function BuyFunnelCTA({
           <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
             {language === 'es' ? '¿Necesitás dólares ahora?' : 'Need dollars now?'}
           </h3>
-          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400 max-w-2xl">
+          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400 max-w-2xl min-h-[2.5rem]">
             {rateLabel
               ? language === 'es'
                 ? `Paralelo ~${rateLabel} Bs. Creá cuenta en Binance y operá en P2P a tasa de mercado.`
@@ -139,7 +135,7 @@ function BuyFunnelCTA({
           </a>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 

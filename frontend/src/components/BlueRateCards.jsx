@@ -51,17 +51,21 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
 
   if (isLoading) {
     return (
-      <div className={`bg-white/80 dark:bg-gray-800/80 rounded-xl border border-gray-200/80 dark:border-gray-700 border-l-4 ${accent} p-4 sm:p-6 min-h-[140px] sm:min-h-[168px]`}>
-        <div className="skeleton h-4 w-20 mb-3"></div>
-        <div className="skeleton h-14 w-36 mb-2"></div>
-        <div className="skeleton h-3 w-28"></div>
+      <div className={`bg-white/80 dark:bg-gray-800/80 rounded-xl border border-gray-200/80 dark:border-gray-700 border-l-4 ${accent} p-4 sm:p-6 min-h-[168px] sm:min-h-[196px]`}>
+        <div className="flex items-center justify-between mb-2 min-h-[1.25rem]">
+          <div className="skeleton h-3 w-16" />
+          <div className="skeleton h-3 w-12" />
+        </div>
+        <div className="skeleton h-12 sm:h-14 w-36 mb-2" />
+        <div className="skeleton h-3 w-24 mt-2" />
+        <div className="skeleton h-3 w-40 mt-3" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className={`bg-white/80 dark:bg-gray-800/80 rounded-xl border border-gray-200/80 dark:border-gray-700 border-l-4 ${accent} p-4 sm:p-6`}>
+      <div className={`bg-white/80 dark:bg-gray-800/80 rounded-xl border border-gray-200/80 dark:border-gray-700 border-l-4 ${accent} p-4 sm:p-6 min-h-[168px] sm:min-h-[196px]`}>
         <div className={`text-xs font-semibold uppercase tracking-wider ${labelColor} mb-1`}>{label}</div>
         <div className="text-red-500 text-xs">{error}</div>
         {currency === 'BRL' && (
@@ -74,17 +78,14 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
   }
 
   return (
-    <motion.div
-      className={`bg-white/90 dark:bg-gray-800/90 rounded-xl border border-gray-200/70 dark:border-gray-700/80 border-l-4 ${accent} p-4 sm:p-6 transition-colors`}
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, ease: 'easeOut' }}
+    <div
+      className={`bg-white/90 dark:bg-gray-800/90 rounded-xl border border-gray-200/70 dark:border-gray-700/80 border-l-4 ${accent} p-4 sm:p-6 transition-colors min-h-[168px] sm:min-h-[196px]`}
       role="region"
       aria-label={`${label} rate: ${formatRate(rate, currency)} bolivianos per ${currency}`}
     >
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between mb-2 min-h-[1.25rem]">
         <div className={`text-xs font-semibold uppercase tracking-wider ${labelColor}`}>{label}</div>
-        <div className="flex gap-1.5">
+        <div className="flex gap-1.5 min-h-[1.25rem]">
           {isStaleData && (
             <span className="px-1.5 py-0.5 text-xs bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200 rounded">
               {t('stale')}
@@ -98,27 +99,21 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
         </div>
       </div>
 
-      <motion.div
-        className="mb-1"
-        key={rate}
-        initial={{ opacity: 0.55, y: 4 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.25 }}
-      >
-        <div className="font-mono text-5xl sm:text-6xl md:text-7xl font-bold text-gray-900 dark:text-white leading-none tracking-tight tabular-nums">
+      <div className="mb-1">
+        <div className="font-mono text-5xl sm:text-6xl md:text-7xl font-bold text-gray-900 dark:text-white leading-none tracking-tight tabular-nums min-h-[3rem] sm:min-h-[3.75rem] md:min-h-[4.5rem]">
           {formatRate(rate, currency)}
         </div>
-        <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium">
+        <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium min-h-[1.25rem]">
           {language === 'es' ? `Bs. por ${currency}` : `Bs. per ${currency}`}
         </div>
-      </motion.div>
+      </div>
 
-      {showTimestampInCards && timestamp && (
-        <div className="text-xs text-gray-500 dark:text-gray-400 mt-3">
-          {t('updated')}: {formatDateTime(timestamp)}
-        </div>
-      )}
-    </motion.div>
+      <div className="text-xs text-gray-500 dark:text-gray-400 mt-3 min-h-[1rem]">
+        {showTimestampInCards && timestamp
+          ? `${t('updated')}: ${formatDateTime(timestamp)}`
+          : '\u00a0'}
+      </div>
+    </div>
   );
 });
 
@@ -304,7 +299,9 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
   const description =
     rateMode === 'card'
       ? t('cardRateDescription')
-      : t('officialRateDescription');
+      : rateMode === 'official'
+        ? t('officialRateDescription')
+        : t('blueMarketTitle');
 
   return (
     <div className="space-y-6">
@@ -316,7 +313,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
         </Helmet>
       )}
       
-      <div className="flex items-center justify-center mb-6">
+      <div className="flex items-center justify-center mb-6 min-h-[3.25rem]">
         <div className="inline-flex flex-wrap items-center justify-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-xl p-1.5 shadow-inner border border-gray-200 dark:border-gray-700">
           {modeBtn(
             'blue',
@@ -339,7 +336,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
         </div>
       </div>
 
-      <p className="mt-3 text-center text-xs leading-relaxed text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+      <p className="mt-3 text-center text-xs leading-relaxed text-gray-600 dark:text-gray-400 max-w-3xl mx-auto min-h-[2.5rem]">
         {description}
       </p>
 

@@ -14,8 +14,12 @@ import { useAdsenseReady } from '../hooks/useAdsenseReady';
 const CurrencyCalculator = lazy(() => import('../components/CurrencyCalculator'));
 
 const ComponentLoader = () => (
-  <div className="flex items-center justify-center py-12">
-    <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-blue-600"></div>
+  <div
+    className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 sm:p-8 min-h-[28rem] sm:min-h-[32rem] flex items-center justify-center"
+    aria-busy="true"
+    aria-label="Loading calculator"
+  >
+    <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-blue-600" />
   </div>
 );
 
@@ -127,12 +131,12 @@ function Calculator() {
         </section>
 
         {/* Binance Banner - Above Calculator */}
-        <section>
+        <section className="min-h-[12rem] sm:min-h-[11rem]">
           <BinanceBanner />
         </section>
 
-        {/* Calculator */}
-        <section>
+        {/* Calculator — Suspense fallback matches approximate calculator height */}
+        <section className="min-h-[28rem] sm:min-h-[32rem]">
           <Suspense fallback={<ComponentLoader />}>
             <CurrencyCalculator />
           </Suspense>

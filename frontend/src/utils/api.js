@@ -307,14 +307,15 @@ export async function fetchBlueHistory(range = '1W', currency = 'USD') {
       }
     }
   } else {
-    // For ranges that might have many data points (1M, 1Y), use pagination
-    // Supabase default limit is 1000 rows, but 30 days of 15-min intervals = ~2880 points
-    const needsPagination = range === '1M' || range === '1Y';
+    // Paginate any range that can exceed Supabase's default 1000-row cap.
+    // At ~5-min refresh: 1D ≈ 288, 1W ≈ 2016, 1M ≈ 8640 — so 1W+ must paginate
+    // or the chart only gets the oldest 1000 points and ends days behind live rates.
+    const needsPagination = range === '1W' || range === '1M' || range === '1Y';
     const startDateISO = startDate.toISOString();
     logger.log(`[fetchBlueHistory] Fetching ${range} range: from ${startDateISO} to now${needsPagination ? ' (with pagination)' : ''}`);
     
     if (needsPagination) {
-      // Use cursor-based pagination for 1M and 1Y ranges
+      // Use cursor-based pagination for dense ranges
       const batchSize = 1000; // Supabase recommended batch size
       let lastTimestamp = null;
       let hasMore = true;
@@ -361,12 +362,13 @@ export async function fetchBlueHistory(range = '1W', currency = 'USD') {
       
       logger.log(`[fetchBlueHistory] ${range} range pagination complete: ${points.length} total points in ${batchCount} batches`);
     } else {
-      // For 1D and 1W, use simple query (should be well under 1000 rows)
+      // 1D (~288 pts at 5-min) stays under the default limit
       const { data, error } = await supabase
         .from('rates')
         .select(selectFields)
         .gte('t', startDateISO)
-        .order('t', { ascending: true });
+        .order('t', { ascending: true })
+        .limit(1000);
       
       if (error) {
         logger.error('Error fetching history from Supabase:', error);

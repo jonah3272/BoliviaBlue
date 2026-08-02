@@ -347,6 +347,105 @@ const ROUTES = {
       };
       return buildStaticJsonLd('/preguntas-frecuentes', 'Preguntas Frecuentes', 'Preguntas Frecuentes sobre el Dólar Blue', 'Respuestas claras sobre el tipo de cambio paralelo en Bolivia.', [faq]);
     }
+  },
+  '/comparacion': {
+    title: 'Dólar Blue vs. Dólar Oficial en Bolivia',
+    description: 'Compara el dólar blue con el tipo de cambio oficial del BCB y consulta las diferencias entre ambas cotizaciones en Bolivia.',
+    canonical: BASE_URL + '/comparacion',
+    shell: `
+<main class="max-w-7xl mx-auto px-4 py-8" data-seo-shell="comparacion">
+  <div class="text-center space-y-4 mb-8">
+    <h1 class="text-3xl sm:text-5xl font-bold text-gray-900">Dólar Blue vs. Dólar Oficial</h1>
+    <p class="text-base text-gray-600 max-w-2xl mx-auto">Compara el dólar blue (mercado paralelo) con el tipo de cambio oficial del Banco Central de Bolivia (BCB) y entiende la diferencia entre ambas cotizaciones.</p>
+    <nav class="flex flex-wrap justify-center gap-3 mt-4" aria-label="Enlaces relacionados">
+      <a href="/" class="text-blue-600 font-medium">Inicio</a>
+      <a href="/calculadora" class="text-blue-600 font-medium">Calculadora</a>
+      <a href="/datos-historicos" class="text-blue-600 font-medium">Datos históricos</a>
+      <a href="/fuente-de-datos" class="text-blue-600 font-medium">Metodología</a>
+    </nav>
+  </div>
+</main>`.replace(/\n/g, '').trim(),
+    getJsonLd: () => buildStaticJsonLd(
+      '/comparacion',
+      'Comparación',
+      'Dólar Blue vs. Dólar Oficial',
+      'Compara el dólar blue con el tipo de cambio oficial del BCB y consulta las diferencias entre ambas cotizaciones en Bolivia.',
+      []
+    )
+  },
+  '/calculadora': {
+    title: 'Calculadora de Dólares a Bolivianos | BoliviaBlue',
+    description: 'Convierte dólares a bolivianos y bolivianos a dólares utilizando las cotizaciones disponibles del mercado paralelo y oficial.',
+    canonical: BASE_URL + '/calculadora',
+    shell: `
+<main class="max-w-7xl mx-auto px-4 py-8" data-seo-shell="calculadora">
+  <div class="text-center space-y-4 mb-8">
+    <h1 class="text-3xl sm:text-5xl font-bold text-gray-900">Calculadora de Dólares a Bolivianos</h1>
+    <p class="text-base text-gray-600 max-w-2xl mx-auto">Convierte entre dólares estadounidenses (USD) y bolivianos (BOB) usando las cotizaciones de referencia del mercado paralelo y oficial disponibles en la plataforma.</p>
+    <nav class="flex flex-wrap justify-center gap-3 mt-4" aria-label="Enlaces relacionados">
+      <a href="/" class="text-blue-600 font-medium">Inicio</a>
+      <a href="/comparacion" class="text-blue-600 font-medium">Comparación</a>
+      <a href="/datos-historicos" class="text-blue-600 font-medium">Datos históricos</a>
+    </nav>
+  </div>
+</main>`.replace(/\n/g, '').trim(),
+    getJsonLd: () => buildStaticJsonLd(
+      '/calculadora',
+      'Calculadora',
+      'Calculadora de Dólares a Bolivianos',
+      'Convierte dólares a bolivianos y bolivianos a dólares utilizando las cotizaciones disponibles del mercado paralelo y oficial.',
+      []
+    )
+  },
+  '/blog': {
+    title: 'Guías y Análisis del Dólar en Bolivia | BoliviaBlue',
+    description: 'Consulta guías, análisis y explicaciones sobre el dólar blue, el tipo de cambio y el mercado cambiario en Bolivia.',
+    canonical: BASE_URL + '/blog',
+    shell: `
+<main class="max-w-7xl mx-auto px-4 py-8" data-seo-shell="blog">
+  <div class="text-center space-y-4 mb-8">
+    <h1 class="text-3xl sm:text-5xl font-bold text-gray-900">Guías y Análisis</h1>
+    <p class="text-base text-gray-600 max-w-2xl mx-auto">Guías y análisis sobre el dólar blue, el tipo de cambio y el mercado cambiario en Bolivia.</p>
+    <nav class="flex flex-wrap justify-center gap-3 mt-4" aria-label="Enlaces relacionados">
+      <a href="/" class="text-blue-600 font-medium">Inicio</a>
+      <a href="/noticias" class="text-blue-600 font-medium">Noticias</a>
+      <a href="/comparacion" class="text-blue-600 font-medium">Comparación</a>
+      <a href="/datos-historicos" class="text-blue-600 font-medium">Datos históricos</a>
+    </nav>
+  </div>
+</main>`.replace(/\n/g, '').trim(),
+    getJsonLd: () => buildStaticJsonLd(
+      '/blog',
+      'Blog',
+      'Guías y Análisis',
+      'Consulta guías, análisis y explicaciones sobre el dólar blue, el tipo de cambio y el mercado cambiario en Bolivia.',
+      []
+    )
+  },
+  '/noticias': {
+    title: 'Noticias del Dólar y Tipo de Cambio en Bolivia',
+    description: 'Consulta noticias y actualizaciones sobre el dólar, el tipo de cambio y el mercado cambiario en Bolivia.',
+    canonical: BASE_URL + '/noticias',
+    shell: `
+<main class="max-w-7xl mx-auto px-4 py-8" data-seo-shell="noticias">
+  <div class="text-center space-y-4 mb-8">
+    <h1 class="text-3xl sm:text-5xl font-bold text-gray-900">Noticias del Dólar en Bolivia</h1>
+    <p class="text-base text-gray-600 max-w-2xl mx-auto">Noticias y actualizaciones sobre el dólar, el tipo de cambio y el mercado cambiario en Bolivia.</p>
+    <nav class="flex flex-wrap justify-center gap-3 mt-4" aria-label="Enlaces relacionados">
+      <a href="/" class="text-blue-600 font-medium">Inicio</a>
+      <a href="/blog" class="text-blue-600 font-medium">Blog</a>
+      <a href="/comparacion" class="text-blue-600 font-medium">Comparación</a>
+      <a href="/datos-historicos" class="text-blue-600 font-medium">Datos históricos</a>
+    </nav>
+  </div>
+</main>`.replace(/\n/g, '').trim(),
+    getJsonLd: () => buildStaticJsonLd(
+      '/noticias',
+      'Noticias',
+      'Noticias del Dólar en Bolivia',
+      'Consulta noticias y actualizaciones sobre el dólar, el tipo de cambio y el mercado cambiario en Bolivia.',
+      []
+    )
   }
 };
 
@@ -427,7 +526,11 @@ async function main() {
     '/que-es-dolar-blue',
     '/datos-historicos',
     '/cotiza-dolar-paralelo',
-    '/preguntas-frecuentes'
+    '/preguntas-frecuentes',
+    '/comparacion',
+    '/calculadora',
+    '/blog',
+    '/noticias'
   ];
   for (const routePath of otherPaths) {
     const r = ROUTES[routePath];
@@ -443,7 +546,19 @@ async function main() {
   }
 }
 
-main().catch((err) => {
-  console.error('[inject-seo-shell] Fatal:', err);
-  process.exit(1);
-});
+module.exports = {
+  BASE_URL,
+  ROUTES,
+  replaceMeta,
+  injectRootShell,
+  injectStaticJsonLd,
+  buildStaticJsonLd,
+  main
+};
+
+if (require.main === module) {
+  main().catch((err) => {
+    console.error('[inject-seo-shell] Fatal:', err);
+    process.exit(1);
+  });
+}

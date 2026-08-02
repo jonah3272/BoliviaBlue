@@ -63,6 +63,22 @@
       "destination": "/preguntas-frecuentes/index.html"
     },
     {
+      "source": "/comparacion",
+      "destination": "/comparacion/index.html"
+    },
+    {
+      "source": "/calculadora",
+      "destination": "/calculadora/index.html"
+    },
+    {
+      "source": "/blog",
+      "destination": "/blog/index.html"
+    },
+    {
+      "source": "/noticias",
+      "destination": "/noticias/index.html"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

@@ -5,6 +5,7 @@ import {
   AIRTM_REFERRAL_LINK,
   ELDORADO_REFERRAL_LINK,
   TAKENOS_REFERRAL_LINK,
+  MERU_REFERRAL_LINK,
   BUY_GUIDE_PATH,
   getWhatsAppRateShareUrl,
 } from '../config/referrals';
@@ -64,11 +65,11 @@ function BuyFunnelCTA({
           <p className="mt-1 text-sm text-gray-600 dark:text-gray-400 max-w-2xl min-h-[2.5rem]">
             {rateLabel
               ? language === 'es'
-                ? `Paralelo ~${rateLabel} Bs. Elegí Binance P2P, El Dorado, Takenos o Airtm.`
-                : `Parallel ~${rateLabel} Bs. Choose Binance P2P, El Dorado, Takenos or Airtm.`
+                ? `Paralelo ~${rateLabel} Bs. Elegí Binance P2P, El Dorado, Takenos, Meru o Airtm.`
+                : `Parallel ~${rateLabel} Bs. Choose Binance P2P, El Dorado, Takenos, Meru or Airtm.`
               : language === 'es'
-                ? 'Elegí Binance P2P, El Dorado, Takenos o Airtm según cómo quieras operar.'
-                : 'Choose Binance P2P, El Dorado, Takenos or Airtm based on how you want to operate.'}
+                ? 'Elegí Binance P2P, El Dorado, Takenos, Meru o Airtm según cómo quieras operar.'
+                : 'Choose Binance P2P, El Dorado, Takenos, Meru or Airtm based on how you want to operate.'}
           </p>
         </div>
 
@@ -116,6 +117,23 @@ function BuyFunnelCTA({
             className={`${quietBtn} border-sky-500/50 text-sky-800 dark:text-sky-300 hover:bg-sky-50 dark:hover:bg-sky-950/40`}
           >
             Takenos
+          </a>
+          <a
+            href={MERU_REFERRAL_LINK}
+            target="_blank"
+            rel="noopener noreferrer sponsored"
+            onClick={() =>
+              trackReferralClicked({
+                language,
+                partner: 'meru',
+                placement,
+                destination: MERU_REFERRAL_LINK,
+                link_label: 'meru_quiet',
+              })
+            }
+            className={`${quietBtn} border-indigo-500/50 text-indigo-800 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/40`}
+          >
+            Meru
           </a>
           <a
             href={AIRTM_REFERRAL_LINK}

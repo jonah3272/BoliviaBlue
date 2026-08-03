@@ -125,7 +125,7 @@ export function trackOutboundSourceClicked({ language, destination, link_label }
 
 /**
  * Primary monetization event — mark as GA4 key conversion.
- * partner: binance | airtm | eldorado | takenos | whatsapp
+ * partner: binance | airtm | eldorado | takenos | meru | whatsapp
  * placement: home_funnel | buy_page | banner | header | mobile_menu | plataformas | …
  */
 export function trackReferralClicked({

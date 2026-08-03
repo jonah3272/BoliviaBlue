@@ -32,6 +32,13 @@ function brandMark(theme) {
       </span>
     );
   }
+  if (theme === 'meru') {
+    return (
+      <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-600 text-white text-sm font-black shadow-md">
+        M
+      </span>
+    );
+  }
   if (theme === 'binance') {
     return (
       <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#F0B90B] text-black text-lg font-black shadow-md">
@@ -50,6 +57,7 @@ function pathGlow(theme) {
   if (theme === 'eldorado') return 'hover:border-amber-400/70 hover:shadow-[0_0_0_1px_rgba(245,197,24,0.25)]';
   if (theme === 'takenos') return 'hover:border-sky-400/70 hover:shadow-[0_0_0_1px_rgba(56,189,248,0.25)]';
   if (theme === 'airtm') return 'hover:border-cyan-400/70 hover:shadow-[0_0_0_1px_rgba(34,211,238,0.25)]';
+  if (theme === 'meru') return 'hover:border-indigo-400/70 hover:shadow-[0_0_0_1px_rgba(99,102,241,0.25)]';
   return 'hover:border-yellow-400/70 hover:shadow-[0_0_0_1px_rgba(240,185,11,0.25)]';
 }
 
@@ -57,6 +65,7 @@ function pathCta(theme) {
   if (theme === 'eldorado') return 'bg-stone-950 text-[#F5C518] dark:bg-[#F5C518] dark:text-stone-950';
   if (theme === 'takenos') return 'bg-sky-500 text-white';
   if (theme === 'airtm') return 'bg-cyan-400 text-slate-950';
+  if (theme === 'meru') return 'bg-indigo-600 text-white';
   return 'bg-[#F0B90B] text-stone-950';
 }
 
@@ -105,8 +114,8 @@ function BuyDollars() {
     '@type': 'HowTo',
     name: es ? 'Cómo comprar dólares en Bolivia' : 'How to buy dollars in Bolivia',
     description: es
-      ? 'Guía para comprar dólares en Bolivia con Binance P2P, El Dorado, Takenos y Airtm.'
-      : 'Guide to buy dollars in Bolivia with Binance P2P, El Dorado, Takenos, and Airtm.',
+      ? 'Guía para comprar dólares en Bolivia con Binance P2P, El Dorado, Takenos, Meru y Airtm.'
+      : 'Guide to buy dollars in Bolivia with Binance P2P, El Dorado, Takenos, Meru, and Airtm.',
     step: steps.map((s, i) => ({
       '@type': 'HowToStep',
       position: i + 1,
@@ -132,18 +141,18 @@ function BuyDollars() {
       <PageMeta
         title={
           es
-            ? 'Cómo Comprar Dólares en Bolivia - Binance, El Dorado, Takenos - Bolivia Blue con Paz'
-            : 'How to Buy Dollars in Bolivia - Binance, El Dorado, Takenos - Bolivia Blue with Paz'
+            ? 'Cómo Comprar Dólares en Bolivia - Binance, El Dorado, Takenos, Meru - Bolivia Blue con Paz'
+            : 'How to Buy Dollars in Bolivia - Binance, El Dorado, Takenos, Meru - Bolivia Blue with Paz'
         }
         description={
           es
-            ? 'Elegí cómo comprar dólares en Bolivia: Binance P2P, El Dorado, Takenos o Airtm. Tasa paralelo en vivo y guía paso a paso.'
-            : 'Choose how to buy dollars in Bolivia: Binance P2P, El Dorado, Takenos, or Airtm. Live parallel rate and step-by-step guide.'
+            ? 'Elegí cómo comprar dólares en Bolivia: Binance P2P, El Dorado, Takenos, Meru o Airtm. Tasa paralelo en vivo y guía paso a paso.'
+            : 'Choose how to buy dollars in Bolivia: Binance P2P, El Dorado, Takenos, Meru, or Airtm. Live parallel rate and step-by-step guide.'
         }
         keywords={
           es
-            ? 'comprar dólares bolivia, binance p2p bolivia, el dorado bolivia, takenos bolivia, airtm bolivia, dólar blue bolivia'
-            : 'buy dollars bolivia, binance p2p bolivia, el dorado bolivia, takenos bolivia, airtm bolivia, blue dollar bolivia'
+            ? 'comprar dólares bolivia, binance p2p bolivia, el dorado bolivia, takenos bolivia, meru bolivia, airtm bolivia, dólar blue bolivia'
+            : 'buy dollars bolivia, binance p2p bolivia, el dorado bolivia, takenos bolivia, meru bolivia, airtm bolivia, blue dollar bolivia'
         }
         canonical="/comprar-dolares"
         structuredData={howToSchema}

@@ -13,6 +13,11 @@ export const ELDORADO_REFERRAL_LINK = 'https://link.eldorado.io/MMLGEZcDf5b';
 export const TAKENOS_REFERRAL_LINK =
   'https://takenos.go.link/?adj_t=1ptq1hru&adj_label=rjhasnoemail';
 
+/** Meru referral — $5 credit with code NGPFPG */
+export const MERU_REFERRAL_CODE = 'NGPFPG';
+export const MERU_REFERRAL_LINK =
+  `https://getmeru.com/referrals/?referralCode=${MERU_REFERRAL_CODE}`;
+
 export const BUY_GUIDE_PATH = '/comprar-dolares';
 
 /**
@@ -63,6 +68,30 @@ export function getPartnerAds(language = 'es') {
       badge: es ? 'Nuevo' : 'New',
       cta: es ? 'Empezar en Takenos' : 'Start with Takenos',
       theme: 'takenos',
+      surface: 'light',
+      showQr: true,
+    },
+    {
+      id: 'meru',
+      partner: 'meru',
+      href: MERU_REFERRAL_LINK,
+      brand: 'Meru',
+      highlight: es ? '$5 de crédito' : '$5 credit',
+      headlineRest: es ? `con código ${MERU_REFERRAL_CODE}` : `with code ${MERU_REFERRAL_CODE}`,
+      headline: es
+        ? `Cuenta en dólares + $5 con código ${MERU_REFERRAL_CODE}`
+        : `USD account + $5 with code ${MERU_REFERRAL_CODE}`,
+      sub: es
+        ? `Abrí tu cuenta Meru en EE. UU., recibí ACH/wire y usá el código ${MERU_REFERRAL_CODE} para $5 de crédito.`
+        : `Open a Meru USD account, get ACH/wire, and use code ${MERU_REFERRAL_CODE} for a $5 credit.`,
+      pathLabel: es ? 'Cuenta USD + bono' : 'USD account + bonus',
+      pathDesc: es
+        ? `Cuenta en dólares y tarjeta internacional. Código ${MERU_REFERRAL_CODE}: $5 de crédito.`
+        : `USD account and international card. Code ${MERU_REFERRAL_CODE}: $5 credit.`,
+      bestFor: es ? 'Cuenta USD + bienvenida' : 'USD account + welcome bonus',
+      badge: es ? '$5 crédito' : '$5 credit',
+      cta: es ? 'Abrir Meru' : 'Open Meru',
+      theme: 'meru',
       surface: 'light',
       showQr: true,
     },

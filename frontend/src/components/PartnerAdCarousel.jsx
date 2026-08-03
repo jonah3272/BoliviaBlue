@@ -27,6 +27,13 @@ function BrandMark({ theme }) {
       </span>
     );
   }
+  if (theme === 'meru') {
+    return (
+      <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-600 text-white text-xs font-black shadow-sm">
+        M
+      </span>
+    );
+  }
   if (theme === 'binance') {
     return (
       <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#F0B90B] text-black text-sm font-black shadow-sm">
@@ -45,6 +52,7 @@ function ctaTone(theme) {
   if (theme === 'eldorado') return 'bg-stone-950 text-[#F5C518] group-hover:bg-stone-800';
   if (theme === 'takenos') return 'bg-sky-500 text-white group-hover:bg-sky-400';
   if (theme === 'airtm') return 'bg-cyan-400 text-slate-950 group-hover:bg-cyan-300';
+  if (theme === 'meru') return 'bg-indigo-600 text-white group-hover:bg-indigo-500';
   return 'bg-[#F0B90B] text-stone-950 group-hover:bg-yellow-300';
 }
 
@@ -52,6 +60,7 @@ function chipTone(theme) {
   if (theme === 'eldorado') return 'bg-[#F5C518] text-stone-950';
   if (theme === 'takenos') return 'bg-sky-400 text-slate-950';
   if (theme === 'airtm') return 'bg-cyan-400 text-slate-950';
+  if (theme === 'meru') return 'bg-indigo-500 text-white';
   return 'bg-[#F0B90B] text-stone-950';
 }
 
@@ -59,6 +68,9 @@ function surfaceClass(ad) {
   if (ad.surface === 'dark') return 'bg-[#061018] text-white';
   if (ad.theme === 'takenos') {
     return 'bg-gradient-to-br from-sky-50 via-white to-blue-50 text-gray-900 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 dark:text-white';
+  }
+  if (ad.theme === 'meru') {
+    return 'bg-gradient-to-br from-indigo-50 via-white to-violet-50 text-gray-900 dark:from-indigo-950 dark:via-slate-900 dark:to-slate-900 dark:text-white';
   }
   if (ad.theme === 'binance') {
     return 'bg-gradient-to-br from-amber-50 via-white to-yellow-50 text-gray-900 dark:from-stone-900 dark:via-stone-900 dark:to-stone-800 dark:text-white';
@@ -94,6 +106,15 @@ function SlideArt({ theme, rateLabel }) {
         </div>
         <div className="mt-3 h-4 w-6 rounded bg-amber-300" />
         <div className="mt-2 font-mono text-[10px] tracking-widest">•••• 4242</div>
+      </div>
+    );
+  }
+  if (theme === 'meru') {
+    return (
+      <div className="rounded-xl border border-indigo-400/40 bg-indigo-950 px-4 py-3 text-center shadow-lg text-white">
+        <div className="text-[9px] uppercase tracking-wider text-indigo-200/70">Meru</div>
+        <div className="mt-1 font-mono text-xl font-bold text-indigo-200">+$5</div>
+        <div className="mt-1 text-[10px] font-semibold tracking-wide text-white/80">NGPFPG</div>
       </div>
     );
   }

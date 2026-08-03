@@ -136,10 +136,11 @@ module.exports = async function handler(req, res) {
     }
   }
 
-  const order = ['eldorado', 'takenos', 'airtm', 'binance'];
+  const order = ['eldorado', 'takenos', 'meru', 'airtm', 'binance'];
   const names = {
     eldorado: 'El Dorado',
     takenos: 'Takenos',
+    meru: 'Meru',
     airtm: 'Airtm',
     binance: 'Binance P2P',
   };

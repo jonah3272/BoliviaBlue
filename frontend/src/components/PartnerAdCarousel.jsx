@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { getPartnerAds } from '../config/referrals';
 import { trackReferralClicked, trackBuyFunnelViewed } from '../utils/analyticsEvents';
@@ -133,14 +133,29 @@ export default function PartnerAdCarousel({
   placement = 'partner_carousel',
   midRate = null,
   intervalMs = ROTATE_MS,
+  /** Start on a different partner so duplicate carousels don't show the same slide. */
+  startOffset = 0,
+  /** Reverse partner order for alternate placements. */
+  reverse = false,
 }) {
   const language = useLanguage()?.language || 'es';
-  const ads = getPartnerAds(language);
+  const ads = useMemo(() => {
+    const list = getPartnerAds(language);
+    return reverse ? [...list].reverse() : list;
+  }, [language, reverse]);
   const [index, setIndex] = useState(0);
   const [slideDir, setSlideDir] = useState(1);
   const viewed = useRef(new Set());
   const pausedRef = useRef(false);
   const touchX = useRef(null);
+  const startApplied = useRef(false);
+
+  // Apply startOffset once ads are ready (supports reverse order).
+  useEffect(() => {
+    if (!ads.length || startApplied.current) return;
+    startApplied.current = true;
+    setIndex(((startOffset % ads.length) + ads.length) % ads.length);
+  }, [ads, startOffset]);
 
   const go = useCallback(
     (deltaOrIndex, absolute = false) => {

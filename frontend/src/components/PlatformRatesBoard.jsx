@@ -5,6 +5,8 @@ import {
   TAKENOS_REFERRAL_LINK,
   AIRTM_REFERRAL_LINK,
   BINANCE_REFERRAL_LINK,
+  MERU_REFERRAL_LINK,
+  MERU_REFERRAL_CODE,
 } from '../config/referrals';
 import { trackReferralClicked } from '../utils/analyticsEvents';
 import { formatRate } from '../utils/formatters';
@@ -27,6 +29,18 @@ const META = {
     btnSecondary: 'border-violet-400/50 text-violet-200 hover:bg-violet-500/10',
     cta: { es: 'Conocer más', en: 'Learn more' },
     cta2: { es: 'Abrir Takenos', en: 'Open Takenos' },
+  },
+  meru: {
+    href: MERU_REFERRAL_LINK,
+    theme: 'meru',
+    accent: 'from-indigo-500/20 via-transparent to-transparent border-indigo-400/40',
+    btn: 'bg-indigo-600 text-white hover:bg-indigo-500',
+    btnSecondary: 'border-indigo-400/50 text-indigo-200 hover:bg-indigo-500/10',
+    cta: { es: 'Abrir Meru', en: 'Open Meru' },
+    cta2: {
+      es: `$5 con código ${MERU_REFERRAL_CODE}`,
+      en: `$5 with code ${MERU_REFERRAL_CODE}`,
+    },
   },
   airtm: {
     href: AIRTM_REFERRAL_LINK,
@@ -149,11 +163,19 @@ export default function PlatformRatesBoard({ placement = 'buy_page_platforms' })
           <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400 mb-3">
             {es ? 'Plataformas recomendadas' : 'Recommended platforms'}
           </p>
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
             {platforms.map((p) => {
               const meta = META[p.id];
               if (!meta) return null;
               const mid = p.mid ?? (Number.isFinite(p.buy) && Number.isFinite(p.sell) ? (p.buy + p.sell) / 2 : null);
+              const offlineHint =
+                p.id === 'meru'
+                  ? es
+                    ? `$5 de crédito · código ${MERU_REFERRAL_CODE}`
+                    : `$5 credit · code ${MERU_REFERRAL_CODE}`
+                  : es
+                    ? 'Abrí la app para la tasa'
+                    : 'Open app for live rate';
               return (
                 <article
                   key={p.id}
@@ -167,14 +189,17 @@ export default function PlatformRatesBoard({ placement = 'buy_page_platforms' })
                           ? es
                             ? 'Cotización en vivo'
                             : 'Live quote'
-                          : es
-                            ? 'Abrí la app para la tasa'
-                            : 'Open app for live rate'}
+                          : offlineHint}
                       </p>
                     </div>
                     {p.live && (
                       <span className="rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold uppercase px-2 py-0.5">
                         Live
+                      </span>
+                    )}
+                    {!p.live && p.id === 'meru' && (
+                      <span className="rounded-full bg-indigo-500/15 text-indigo-600 dark:text-indigo-300 text-[10px] font-bold uppercase px-2 py-0.5">
+                        {es ? 'Bono' : 'Bonus'}
                       </span>
                     )}
                   </div>
@@ -239,8 +264,8 @@ export default function PlatformRatesBoard({ placement = 'buy_page_platforms' })
           </div>
           <p className="mt-4 text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed">
             {es
-              ? 'Cotizaciones en vivo: El Dorado, Airtm, Binance P2P y Takenos. Se refrescan cada ~1 minuto. Son referenciales y pueden variar por monto y método de pago.'
-              : 'Live quotes: El Dorado, Airtm, Binance P2P, and Takenos. Refresh about every minute. Referential — may vary by amount and payment method.'}
+              ? 'Cotizaciones en vivo: El Dorado, Airtm, Binance P2P y Takenos. Meru es referral (sin cotización pública BOB). Se refrescan cada ~1 minuto. Son referenciales y pueden variar por monto y método de pago.'
+              : 'Live quotes: El Dorado, Airtm, Binance P2P, and Takenos. Meru is referral-only (no public BOB quote). Refresh about every minute. Referential — may vary by amount and payment method.'}
           </p>
         </div>
       )}

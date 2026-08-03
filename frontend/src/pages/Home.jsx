@@ -426,6 +426,17 @@ function Home() {
           </LazyErrorBoundary>
         </section>
 
+        {/* Second partner rotation — offset so Meru / later partners get more views */}
+        <section>
+          <PartnerAdCarousel
+            placement="home_after_chart"
+            midRate={midRate}
+            intervalMs={7500}
+            startOffset={2}
+            reverse
+          />
+        </section>
+
         {/* Rate Alerts Form */}
         <section id="price-alerts">
           <div className="mb-3 text-center sm:text-left">

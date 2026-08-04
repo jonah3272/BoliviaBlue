@@ -50,10 +50,13 @@ jobs:
             echo "CRON_SECRET not set — skip Vercel backup refresh"
             exit 0
           fi
-          curl -fsS -X POST "https://boliviablue.com/api/refresh-rates" \
+          # Use www (apex 307s) and -L so POST follows the redirect if any.
+          # -w fails the step on non-2xx so we don't print OK on a bare 307 body.
+          body="$(curl -fsSL -X POST "https://www.boliviablue.com/api/refresh-rates" \
             -H "Authorization: Bearer ${CRON_SECRET}" \
-            -H "Accept: application/json"
-          echo
+            -H "Accept: application/json" \
+            -w "\nHTTP:%{http_code}")"
+          echo "$body"
           echo "Vercel backup refresh OK"
 
       - name: Ping sitemap

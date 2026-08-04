@@ -65,7 +65,7 @@ export async function fetchBlueRate(currency = 'USD') {
   const result = await withTimeout(
     retryWithDelay(async () => {
     // Get the latest rate
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from('rates')
       .select('*')
       .order('t', { ascending: false })
@@ -79,6 +79,45 @@ export async function fetchBlueRate(currency = 'USD') {
     
     if (!data) {
       throw new Error('No rate data available');
+    }
+
+    // When GHA cron drifts, /api/blue-rate self-heals from Binance then returns fresh data.
+    const STALE_HEAL_MS = 20 * 60 * 1000;
+    const ageMs = Date.now() - new Date(data.t).getTime();
+    if (Number.isFinite(ageMs) && ageMs > STALE_HEAL_MS) {
+      try {
+        const healRes = await fetch('/api/blue-rate', { headers: { Accept: 'application/json' } });
+        if (healRes.ok) {
+          const fresh = await healRes.json();
+          if (fresh?.updated_at_iso && fresh.buy_bob_per_usd != null && fresh.sell_bob_per_usd != null) {
+            const buy = fresh.buy_bob_per_usd;
+            const sell = fresh.sell_bob_per_usd;
+            data = {
+              ...data,
+              t: fresh.updated_at_iso,
+              buy,
+              sell,
+              mid: (buy + sell) / 2,
+              official_buy: fresh.official_buy ?? data.official_buy,
+              official_sell: fresh.official_sell ?? data.official_sell,
+              buy_bob_per_brl: fresh.buy_bob_per_brl ?? data.buy_bob_per_brl,
+              sell_bob_per_brl: fresh.sell_bob_per_brl ?? data.sell_bob_per_brl,
+              mid_bob_per_brl:
+                fresh.buy_bob_per_brl != null && fresh.sell_bob_per_brl != null
+                  ? (fresh.buy_bob_per_brl + fresh.sell_bob_per_brl) / 2
+                  : data.mid_bob_per_brl,
+              buy_bob_per_eur: fresh.buy_bob_per_eur ?? data.buy_bob_per_eur,
+              sell_bob_per_eur: fresh.sell_bob_per_eur ?? data.sell_bob_per_eur,
+              mid_bob_per_eur:
+                fresh.buy_bob_per_eur != null && fresh.sell_bob_per_eur != null
+                  ? (fresh.buy_bob_per_eur + fresh.sell_bob_per_eur) / 2
+                  : data.mid_bob_per_eur,
+            };
+          }
+        }
+      } catch (healErr) {
+        logger.warn('Stale rate self-heal via /api/blue-rate failed:', healErr?.message || healErr);
+      }
     }
     
     // Determine which rate fields to use based on currency

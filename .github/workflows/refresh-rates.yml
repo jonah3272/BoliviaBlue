@@ -1,9 +1,11 @@
 # Free rate updater (replaces Railway scheduler for blue rates).
 # Frontend reads from Supabase, so this is enough to keep quotes accurate.
 #
-# NOTE: GitHub Actions "*/15" cron often drifts 1–3h on free repos under load.
-# We schedule every 5 minutes AND hit the Vercel /api/refresh-rates backup when
-# CRON_SECRET is configured — whichever succeeds keeps rates fresh.
+# NOTE: GitHub Actions cron often drifts AND hosted runners can fail to
+# acquire ("job was not acquired…"). We run two independent jobs:
+#   1) Thin Vercel API backup (no checkout/npm) — fastest to start
+#   2) Full Binance+BCB refresh in the backend
+# Site traffic also self-heals via GET /api/blue-rate when data is >20m old.
 name: Refresh blue rates
 
 on:
@@ -12,11 +14,37 @@ on:
     - cron: '*/5 * * * *'
   workflow_dispatch: # manual "Run workflow" button
 
+# Don't pile up when runners are scarce — newest run wins.
+concurrency:
+  group: refresh-blue-rates
+  cancel-in-progress: true
+
 jobs:
-  refresh:
+  # Lightweight path: only needs curl + CRON_SECRET. Survives better when
+  # GitHub is short on runners (no npm install / cold cache).
+  vercel-backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Refresh via Vercel API
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$CRON_SECRET" ]; then
+            echo "CRON_SECRET not set — skip Vercel backup refresh"
+            exit 0
+          fi
+          body="$(curl -fsSL -X POST "https://www.boliviablue.com/api/refresh-rates" \
+            -H "Authorization: Bearer ${CRON_SECRET}" \
+            -H "Accept: application/json" \
+            -w "\nHTTP:%{http_code}")"
+          echo "$body"
+          echo "Vercel backup refresh OK"
+
+  # Full path: Binance + BCB official + card rates + alerts.
+  gha-refresh:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -31,33 +59,12 @@ jobs:
         run: npm install --omit=dev
 
       - name: Refresh rates into Supabase
-        id: gha_refresh
         working-directory: backend
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           NODE_ENV: production
         run: node scripts/refresh-rates-once.js
-
-      # Backup path: Vercel serverless refresh (same Binance → Supabase write).
-      # Add GitHub secret CRON_SECRET matching Vercel env CRON_SECRET.
-      - name: Backup refresh via Vercel API
-        if: ${{ always() }}
-        env:
-          CRON_SECRET: ${{ secrets.CRON_SECRET }}
-        run: |
-          if [ -z "$CRON_SECRET" ]; then
-            echo "CRON_SECRET not set — skip Vercel backup refresh"
-            exit 0
-          fi
-          # Use www (apex 307s) and -L so POST follows the redirect if any.
-          # -w fails the step on non-2xx so we don't print OK on a bare 307 body.
-          body="$(curl -fsSL -X POST "https://www.boliviablue.com/api/refresh-rates" \
-            -H "Authorization: Bearer ${CRON_SECRET}" \
-            -H "Accept: application/json" \
-            -w "\nHTTP:%{http_code}")"
-          echo "$body"
-          echo "Vercel backup refresh OK"
 
       - name: Ping sitemap
         continue-on-error: true

@@ -11,12 +11,16 @@ export const config = {
     '/',
     '/index.html',
     '/dolar-blue-hoy',
+    '/dolar-blue-hoy/',
     '/dolar-blue-hoy/index.html',
     '/dolar-paralelo-bolivia-en-vivo',
+    '/dolar-paralelo-bolivia-en-vivo/',
     '/dolar-paralelo-bolivia-en-vivo/index.html',
     '/cuanto-esta-dolar-bolivia',
+    '/cuanto-esta-dolar-bolivia/',
     '/cuanto-esta-dolar-bolivia/index.html',
     '/cotiza-dolar-paralelo',
+    '/cotiza-dolar-paralelo/',
     '/cotiza-dolar-paralelo/index.html',
   ],
 };
@@ -28,9 +32,12 @@ const SKIP_HEADER = 'x-bb-skip-live-seo';
 const RATE_TIMEOUT_MS = 4000;
 const HTML_TIMEOUT_MS = 4000;
 
+/** Format a positive BOB rate for SEO. Rejects 0 / NaN so Google never sees Compra 0.00. */
 export function fmt(n) {
   const x = Number(n);
-  return Number.isFinite(x) ? x.toFixed(2) : null;
+  // Parallel USD/BOB is never near zero; treat junk as missing.
+  if (!Number.isFinite(x) || x < 1) return null;
+  return x.toFixed(2);
 }
 
 export function normalizePath(pathname) {

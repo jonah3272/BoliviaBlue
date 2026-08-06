@@ -84,6 +84,11 @@ describe('fmt', () => {
     assert.equal(fmt(12.345), '12.35');
     assert.equal(fmt('9'), '9.00');
     assert.equal(fmt(undefined), null);
+    assert.equal(fmt(0), null);
+    assert.equal(fmt(0.00), null);
+    assert.equal(fmt('0.00'), null);
+    assert.equal(normalizeRates({ buy: 0, sell: 0 }), null);
+    assert.equal(normalizeRates({ buy_bob_per_usd: 0, sell_bob_per_usd: 11 }), null);
   });
 });
 

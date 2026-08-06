@@ -276,31 +276,37 @@ export default function HistoricalAreaChart({
     };
   }, [height, width, timeframe]);
 
+  // Dedupe by second — Lightweight Charts throws on duplicate times (common when
+  // GHA + Vercel + self-heal insert multiple rows in the same second).
+  const toUniqueSeries = (points: TimeValuePoint[]) => {
+    const byTime = new Map<number, number>();
+    for (const point of points) {
+      if (!Number.isFinite(point.value) || point.value <= 0) continue;
+      const t = timeToUnixLocal(point.time);
+      if (!Number.isFinite(t)) continue;
+      byTime.set(t, point.value); // last write wins
+    }
+    return [...byTime.entries()]
+      .sort((a, b) => a[0] - b[0])
+      .map(([time, value]) => ({ time: time as Time, value }));
+  };
+
   // Update chart data when data props change
   useEffect(() => {
     if (!buySeriesRef.current || !sellSeriesRef.current) return;
 
-    // Convert and set buy data (use local time so x-axis matches "Actualizado" / tooltip)
-    if (buyData && buyData.length > 0) {
-      const buyChartData = buyData.map(point => ({
-        time: timeToUnixLocal(point.time) as Time,
-        value: point.value,
-      }));
-      buySeriesRef.current.setData(buyChartData);
-    }
-
-    // Convert and set sell data
-    if (sellData && sellData.length > 0) {
-      const sellChartData = sellData.map(point => ({
-        time: timeToUnixLocal(point.time) as Time,
-        value: point.value,
-      }));
-      sellSeriesRef.current.setData(sellChartData);
-    }
-
-    // Fit content to show all data
-    if (chartRef.current) {
-      chartRef.current.timeScale().fitContent();
+    try {
+      if (buyData && buyData.length > 0) {
+        buySeriesRef.current.setData(toUniqueSeries(buyData));
+      }
+      if (sellData && sellData.length > 0) {
+        sellSeriesRef.current.setData(toUniqueSeries(sellData));
+      }
+      if (chartRef.current) {
+        chartRef.current.timeScale().fitContent();
+      }
+    } catch (err) {
+      console.error('[HistoricalAreaChart] setData failed:', err);
     }
   }, [buyData, sellData]);
 

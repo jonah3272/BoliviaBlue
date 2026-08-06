@@ -89,7 +89,7 @@ export async function fetchBlueRate(currency = 'USD') {
         const healRes = await fetch('/api/blue-rate', { headers: { Accept: 'application/json' } });
         if (healRes.ok) {
           const fresh = await healRes.json();
-          if (fresh?.updated_at_iso && fresh.buy_bob_per_usd != null && fresh.sell_bob_per_usd != null) {
+          if (fresh?.updated_at_iso && Number(fresh.buy_bob_per_usd) >= 1 && Number(fresh.sell_bob_per_usd) >= 1) {
             const buy = fresh.buy_bob_per_usd;
             const sell = fresh.sell_bob_per_usd;
             data = {

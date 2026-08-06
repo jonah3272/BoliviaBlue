@@ -5,7 +5,9 @@
 
 function fmt(n) {
   const x = Number(n);
-  return Number.isFinite(x) ? x.toFixed(2) : null;
+  // Never emit Compra 0.00 / Venta 0.00 into titles Google indexes.
+  if (!Number.isFinite(x) || x < 1) return null;
+  return x.toFixed(2);
 }
 
 function formatSnippetTime(iso, language = 'es') {

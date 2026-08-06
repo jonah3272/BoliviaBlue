@@ -40,7 +40,9 @@ function fetchJson(url, timeoutMs = 8000) {
 
 function fmtRate(n) {
   const x = Number(n);
-  return Number.isFinite(x) ? x.toFixed(2) : null;
+  // Never bake Compra 0.00 into static shells for Google.
+  if (!Number.isFinite(x) || x < 1) return null;
+  return x.toFixed(2);
 }
 
 function formatSnippetTime(iso) {

@@ -227,16 +227,26 @@ export default function HistoricalCandlestickChart({
   useEffect(() => {
     if (!seriesRef.current || !data || data.length === 0) return;
 
-    // Convert to TradingView format, then adjust time so axis shows local not UTC
+    // Convert to TradingView format, then adjust time so axis shows local not UTC.
+    // Dedupe by second — Lightweight Charts rejects duplicate times.
     const raw = convertToTradingViewFormat(data);
-    const chartData = raw.map((d) => ({ ...d, time: d.time - tzOffsetSeconds }));
-    
-    // Set data
-    seriesRef.current.setData(chartData as any);
+    const byTime = new Map<number, (typeof raw)[number]>();
+    for (const d of raw) {
+      const t = d.time - tzOffsetSeconds;
+      if (!Number.isFinite(t)) continue;
+      byTime.set(t, { ...d, time: t });
+    }
+    const chartData = [...byTime.entries()]
+      .sort((a, b) => a[0] - b[0])
+      .map(([, candle]) => candle);
 
-    // Fit content to show all data
-    if (chartRef.current) {
-      chartRef.current.timeScale().fitContent();
+    try {
+      seriesRef.current.setData(chartData as any);
+      if (chartRef.current) {
+        chartRef.current.timeScale().fitContent();
+      }
+    } catch (err) {
+      console.error('[HistoricalCandlestickChart] setData failed:', err);
     }
   }, [data, tzOffsetSeconds]);
 

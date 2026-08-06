@@ -79,11 +79,18 @@ function BlueChart({ showOfficial = false }) {
         // Fetch the selected range only (1W default is fast; 1D loads full day's points when clicked)
         const result = await fetchBlueHistory(range, currency);
 
+        // Unlock range buttons from the data we already have (don't wait on ALL).
         let totalDataAge = 0;
-        if (range === 'ALL' && result.points.length > 0) {
+        if (result.points.length > 0) {
           const oldestPoint = new Date(result.points[0].t);
-          const now = new Date();
-          totalDataAge = Math.floor((now - oldestPoint) / (1000 * 60 * 60 * 24));
+          const newestPoint = new Date(result.points[result.points.length - 1].t);
+          totalDataAge = Math.max(
+            0,
+            Math.floor((newestPoint - oldestPoint) / (1000 * 60 * 60 * 24))
+          );
+          if (range === 'ALL') {
+            totalDataAge = Math.floor((Date.now() - oldestPoint.getTime()) / (1000 * 60 * 60 * 24));
+          }
         }
         setDataAge(totalDataAge);
 

@@ -85,13 +85,15 @@ export default function HistoricalAreaChart({
   }, []);
 
   const applySeriesData = () => {
-    if (!buySeriesRef.current || !sellSeriesRef.current) return;
+    if (!buySeriesRef.current || !sellSeriesRef.current || !chartRef.current) return;
     try {
       const buy = toUniqueSeries(buyDataRef.current);
       const sell = toUniqueSeries(sellDataRef.current);
       if (buy.length) buySeriesRef.current.setData(buy);
       if (sell.length) sellSeriesRef.current.setData(sell);
-      chartRef.current?.timeScale().fitContent();
+      // Refit both axes so 1D vs 1W vs 1M show that period's own movement
+      chartRef.current.priceScale('right').applyOptions({ autoScale: true });
+      chartRef.current.timeScale().fitContent();
     } catch (err) {
       console.error('[HistoricalAreaChart] setData failed:', err);
     }
@@ -143,7 +145,8 @@ export default function HistoricalAreaChart({
       },
       rightPriceScale: {
         borderColor: dark ? '#4B5563' : '#D1D5DB',
-        scaleMargins: { top: 0.1, bottom: 0.1 },
+        autoScale: true,
+        scaleMargins: { top: 0.08, bottom: 0.08 },
       },
       localization: {
         priceFormatter: (price: number) => `${price.toFixed(2)} Bs`,

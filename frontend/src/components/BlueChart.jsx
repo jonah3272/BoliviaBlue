@@ -20,7 +20,7 @@ function BlueChart({ showOfficial = false }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [dataAge, setDataAge] = useState(0);
-  const [stats, setStats] = useState({ latestBuy: 0, latestSell: 0, change: 0 });
+  const [stats, setStats] = useState({ latestBuy: 0, latestSell: 0, change: 0, high: 0, low: 0, points: 0 });
   const [uniqueDateIndices, setUniqueDateIndices] = useState([]); // For ALL range X-axis ticks
   const [chartType, setChartType] = useState('area'); // 'area' or 'candlestick'
   const rangeForAnalyticsRef = useRef('1W');
@@ -58,27 +58,27 @@ function BlueChart({ showOfficial = false }) {
       // Return default English labels as fallback
       return [
         { value: '1D', label: '1 Day', minDays: 0 },
-        { value: '1W', label: '1 Week', minDays: 7 },
-        { value: '1M', label: '1 Month', minDays: 30 },
-        { value: '1Y', label: '1 Year', minDays: 365 },
+        { value: '1W', label: '1 Week', minDays: 1 },
+        { value: '1M', label: '1 Month', minDays: 5 },
+        { value: '1Y', label: '1 Year', minDays: 30 },
         { value: 'ALL', label: 'All', minDays: 0 }
       ];
     }
     try {
       return [
         { value: '1D', label: t('timeRanges.1D'), minDays: 0 },
-        { value: '1W', label: t('timeRanges.1W'), minDays: 7 },
-        { value: '1M', label: t('timeRanges.1M'), minDays: 30 },
-        { value: '1Y', label: t('timeRanges.1Y'), minDays: 365 },
+        { value: '1W', label: t('timeRanges.1W'), minDays: 1 },
+        { value: '1M', label: t('timeRanges.1M'), minDays: 5 },
+        { value: '1Y', label: t('timeRanges.1Y'), minDays: 30 },
         { value: 'ALL', label: t('timeRanges.ALL'), minDays: 0 }
       ];
     } catch (err) {
       console.error('Error in TIME_RANGES translation:', err);
       return [
         { value: '1D', label: '1 Day', minDays: 0 },
-        { value: '1W', label: '1 Week', minDays: 7 },
-        { value: '1M', label: '1 Month', minDays: 30 },
-        { value: '1Y', label: '1 Year', minDays: 365 },
+        { value: '1W', label: '1 Week', minDays: 1 },
+        { value: '1M', label: '1 Month', minDays: 5 },
+        { value: '1Y', label: '1 Year', minDays: 30 },
         { value: 'ALL', label: 'All', minDays: 0 }
       ];
     }
@@ -91,39 +91,29 @@ function BlueChart({ showOfficial = false }) {
         // Fetch the selected range only (1W default is fast; 1D loads full day's points when clicked)
         const result = await fetchBlueHistory(range, currency);
 
-        // Unlock range buttons from the data we already have (don't wait on ALL).
-        let totalDataAge = 0;
-        if (result.points.length > 0) {
-          const oldestPoint = new Date(result.points[0].t);
-          const newestPoint = new Date(result.points[result.points.length - 1].t);
-          totalDataAge = Math.max(
-            0,
-            Math.floor((newestPoint - oldestPoint) / (1000 * 60 * 60 * 24))
-          );
-          if (range === 'ALL') {
-            totalDataAge = Math.floor((Date.now() - oldestPoint.getTime()) / (1000 * 60 * 60 * 24));
-          }
-        }
-        setDataAge(totalDataAge);
-
-        // Store raw data for candlestick transformation
+        // Store raw data for candlestick / area transforms
         setRawData(result.points);
         
-        // Calculate stats
+        // Period stats — use this range's own high/low/change so periods differ clearly
         if (result.points.length > 0) {
           const lastPoint = result.points[result.points.length - 1];
-          
-          // Calculate stats based on selected rate type
-          const firstBuy = showOfficial ? result.points[0].official_buy : result.points[0].buy;
-          const latestBuy = showOfficial ? lastPoint.official_buy : lastPoint.buy;
+          const priceOf = (p) => (showOfficial ? p.official_buy : p.buy);
+          const prices = result.points.map(priceOf).filter((n) => Number.isFinite(n) && n > 0);
+          const firstBuy = priceOf(result.points[0]);
+          const latestBuy = priceOf(lastPoint);
           const latestSell = showOfficial ? lastPoint.official_sell : lastPoint.sell;
-          const change = firstBuy ? ((latestBuy - firstBuy) / firstBuy * 100).toFixed(2) : '0';
+          const change = firstBuy ? ((latestBuy - firstBuy) / firstBuy * 100) : 0;
           
           setStats({
             latestBuy: latestBuy || 0,
             latestSell: latestSell || 0,
-            change: parseFloat(change)
+            change: Number.isFinite(change) ? change : 0,
+            high: prices.length ? Math.max(...prices) : 0,
+            low: prices.length ? Math.min(...prices) : 0,
+            points: result.points.length,
           });
+        } else {
+          setStats({ latestBuy: 0, latestSell: 0, change: 0, high: 0, low: 0, points: 0 });
         }
         
         // Transform data with better formatting
@@ -434,6 +424,12 @@ function BlueChart({ showOfficial = false }) {
                   ({range})
                 </span>
               </span>
+              {stats.high > 0 && stats.low > 0 && (
+                <span className="text-xs text-gray-500 dark:text-gray-400 font-mono">
+                  {language === 'es' ? 'Máx' : 'High'} {stats.high.toFixed(2)} · {language === 'es' ? 'Mín' : 'Low'} {stats.low.toFixed(2)}
+                  <span className="ml-1 opacity-70">Δ {(stats.high - stats.low).toFixed(2)}</span>
+                </span>
+              )}
             </div>
           )}
         </div>
@@ -463,24 +459,21 @@ function BlueChart({ showOfficial = false }) {
             </button>
           </div>
           
-          {TIME_RANGES.map(({ value, label, minDays }) => {
-            const isDisabled = minDays > 0 && dataAge < minDays;
+          {TIME_RANGES.map(({ value, label }) => {
+            // Always allow switching — each range fetches its own window.
+            // (Locking on current-span "dataAge" hid 1W/1M/1Y after viewing 1D.)
             return (
               <button
                 key={value}
-                onClick={() => selectRange(value, isDisabled)}
-                disabled={isDisabled}
-                title={isDisabled ? `Disponible después de ${minDays} días de datos` : ''}
+                onClick={() => selectRange(value, false)}
+                title={label}
                 className={`px-3 sm:px-4 py-1.5 sm:py-2 md:py-2.5 rounded-lg text-xs sm:text-sm font-semibold transition-all transform hover:scale-105 ${
                   range === value
                     ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30'
-                    : isDisabled
-                    ? 'bg-gray-50 dark:bg-gray-800 text-gray-300 dark:text-gray-600 cursor-not-allowed opacity-50'
                     : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer shadow-sm'
                 }`}
               >
                 {label}
-                {isDisabled && <span className="ml-1 text-xs">🔒</span>}
               </button>
             );
           })}

@@ -20,13 +20,34 @@ async function retryWithDelay(fn, retries = 3, delay = 1000) {
 }
 
 const RATE_TIMEOUT_MS = 18000;   // 18s so slow mobile networks don't spin forever
-const HISTORY_TIMEOUT_MS = 25000; // 25s for larger history fetches
+const HISTORY_TIMEOUT_MS = 45000; // long ranges paginate many Supabase pages
 
 // In-memory cache to reduce Supabase calls on free tier (slower). TTL short so data stays fresh.
 const RATE_CACHE_TTL_MS = 90 * 1000;   // 90s - rate updates ~every 15 min, so this is safe
 const HISTORY_CACHE_TTL_MS = 60 * 1000; // 60s - chart range toggles feel instant on repeat
 const rateCache = new Map(); // key = currency, value = { data, expiresAt }
 const historyCache = new Map(); // key = `${range}-${currency}`, value = { data, expiresAt }
+
+/**
+ * Keep the full time span but thin dense points so 1Y/ALL stay chartable.
+ * Always preserves first and last samples.
+ */
+function downsampleByInterval(points, intervalMs) {
+  if (!Array.isArray(points) || points.length <= 2 || !(intervalMs > 0)) return points;
+  const out = [points[0]];
+  let lastKept = Date.parse(points[0].t);
+  for (let i = 1; i < points.length - 1; i++) {
+    const ts = Date.parse(points[i].t);
+    if (!Number.isFinite(ts)) continue;
+    if (ts - lastKept >= intervalMs) {
+      out.push(points[i]);
+      lastKept = ts;
+    }
+  }
+  const last = points[points.length - 1];
+  if (out[out.length - 1]?.t !== last?.t) out.push(last);
+  return out;
+}
 
 function withTimeout(promise, ms, message = 'Connection timed out. Please check your network.') {
   return Promise.race([
@@ -469,55 +490,24 @@ export async function fetchBlueHistory(range = '1W', currency = 'USD') {
   if (points.length !== beforeStrip) {
     logger.log(`[fetchBlueHistory] Stripped ${beforeStrip - points.length} interpolated downtime points`);
   }
-  
-  // For ALL range, intelligently downsample to show representative markers
-  // Goal: Show more data points for better granularity while maintaining performance
-  if (range === 'ALL' && points.length > 0) {
-    const originalPointCount = points.length; // Store original count for logging
-    const targetPoints = 300; // Show ~300 points for better detail (was ~20)
-    const downsampled = [];
-    
-    // If we have fewer points than target, use all points
-    if (points.length <= targetPoints) {
-      points = points; // No downsampling needed
-      logger.log(`[Downsampling] ALL range: ${originalPointCount} points (no downsampling needed)`);
-    } else {
-      // Calculate step size for even sampling across the entire range
-      const step = Math.max(1, Math.floor(points.length / targetPoints));
-      
-      // Always include first point
-      downsampled.push(points[0]);
-      
-      // Sample points evenly across the range
-      for (let i = step; i < points.length - step; i += step) {
-        downsampled.push(points[i]);
-      }
-      
-      // Always include last point (most recent data)
-      const lastPoint = points[points.length - 1];
-      const lastDate = new Date(lastPoint.t);
-      
-      // Remove last sampled point if it's too close to the actual last point
-      if (downsampled.length > 1) {
-        const existingLast = downsampled[downsampled.length - 1];
-        const existingLastDate = new Date(existingLast.t);
-        const hoursDiff = (lastDate - existingLastDate) / (1000 * 60 * 60);
-        
-        // If existing last point is less than 2 hours from actual last, replace it
-        if (hoursDiff < 2) {
-          downsampled.pop();
-        }
-      }
-      
-      // Always add the actual last point
-      downsampled.push(lastPoint);
-      
-      points = downsampled;
-      logger.log(`[Downsampling] ALL range: ${originalPointCount} points → ${points.length} markers`);
-      logger.log(`[Downsampling] Date range: ${new Date(points[0].t).toLocaleDateString()} to ${new Date(points[points.length - 1].t).toLocaleDateString()}`);
-    }
+
+  // Thin long ranges after a full-span fetch so the chart keeps period differences
+  // (1Y must not stop on the oldest 1000 rows; ALL must not collapse to ~300 random samples).
+  if (range === '1M' && points.length > 1500) {
+    points = downsampleByInterval(points, 30 * 60 * 1000); // ~30 min
+  } else if (range === '1Y') {
+    points = downsampleByInterval(points, 2 * 60 * 60 * 1000); // ~2 hours
+  } else if (range === 'ALL') {
+    points = downsampleByInterval(points, 6 * 60 * 60 * 1000); // ~6 hours
   }
-  
+
+  if (points.length > 0) {
+    logger.log(
+      `[fetchBlueHistory] ${range}: ${points.length} chart points ` +
+        `(${points[0].t} → ${points[points.length - 1].t})`
+    );
+  }
+
   const result = {
     range,
     currency,
@@ -525,7 +515,7 @@ export async function fetchBlueHistory(range = '1W', currency = 'USD') {
   };
   historyCache.set(cacheKey, { data: result, expiresAt: Date.now() + HISTORY_CACHE_TTL_MS });
   return result;
-  })(), HISTORY_TIMEOUT_MS);
+  })(), range === '1Y' || range === 'ALL' ? HISTORY_TIMEOUT_MS : 25000);
 }
 
 /**

@@ -7,26 +7,27 @@ import { usePageTracking } from './hooks/usePageTracking';
 // Lazy load routes for code splitting
 const Calculator = lazy(() => import('./pages/Calculator'));
 const News = lazy(() => import('./pages/News'));
-    const About = lazy(() => import('./pages/About'));
-    const Contact = lazy(() => import('./pages/Contact'));
-    const FAQ = lazy(() => import('./pages/FAQ'));
-    const Privacy = lazy(() => import('./pages/Privacy'));
-    const Terminos = lazy(() => import('./pages/Terminos'));
-    const Correcciones = lazy(() => import('./pages/Correcciones'));
-    const PoliticaEditorial = lazy(() => import('./pages/PoliticaEditorial'));
-    const Equipo = lazy(() => import('./pages/Equipo'));
-    const RodrigoPaz = lazy(() => import('./pages/RodrigoPaz'));
-    const BuyDollars = lazy(() => import('./pages/BuyDollars'));
-    const Blog = lazy(() => import('./pages/Blog'));
-    const BoliviaBlueRate = lazy(() => import('./pages/BoliviaBlueRate'));
-    const CotizaDolarParalelo = lazy(() => import('./pages/CotizaDolarParalelo'));
-    const Comparison = lazy(() => import('./pages/Comparison'));
-    const Bancos = lazy(() => import('./pages/Bancos'));
-    const DolarBlueLaPaz = lazy(() => import('./pages/DolarBlueLaPaz'));
-    const DolarBlueSantaCruz = lazy(() => import('./pages/DolarBlueSantaCruz'));
-    const DolarBlueCochabamba = lazy(() => import('./pages/DolarBlueCochabamba'));
-    const DolarBlueHoy = lazy(() => import('./pages/DolarBlueHoy'));
-    const QueEsDolarBlue = lazy(() => import('./pages/QueEsDolarBlue'));
+const NewsArticle = lazy(() => import('./pages/NewsArticle'));
+const About = lazy(() => import('./pages/About'));
+const Contact = lazy(() => import('./pages/Contact'));
+const FAQ = lazy(() => import('./pages/FAQ'));
+const Privacy = lazy(() => import('./pages/Privacy'));
+const Terminos = lazy(() => import('./pages/Terminos'));
+const Correcciones = lazy(() => import('./pages/Correcciones'));
+const PoliticaEditorial = lazy(() => import('./pages/PoliticaEditorial'));
+const Equipo = lazy(() => import('./pages/Equipo'));
+const RodrigoPaz = lazy(() => import('./pages/RodrigoPaz'));
+const BuyDollars = lazy(() => import('./pages/BuyDollars'));
+const Blog = lazy(() => import('./pages/Blog'));
+const BoliviaBlueRate = lazy(() => import('./pages/BoliviaBlueRate'));
+const CotizaDolarParalelo = lazy(() => import('./pages/CotizaDolarParalelo'));
+const Comparison = lazy(() => import('./pages/Comparison'));
+const Bancos = lazy(() => import('./pages/Bancos'));
+const DolarBlueLaPaz = lazy(() => import('./pages/DolarBlueLaPaz'));
+const DolarBlueSantaCruz = lazy(() => import('./pages/DolarBlueSantaCruz'));
+const DolarBlueCochabamba = lazy(() => import('./pages/DolarBlueCochabamba'));
+const DolarBlueHoy = lazy(() => import('./pages/DolarBlueHoy'));
+const QueEsDolarBlue = lazy(() => import('./pages/QueEsDolarBlue'));
     const CuantoEstaDolarBolivia = lazy(() => import('./pages/CuantoEstaDolarBolivia'));
     const CuantoEstaDolarBoliviaHoy = lazy(() => import('./pages/CuantoEstaDolarBoliviaHoy'));
     const BinanceP2PBolivia = lazy(() => import('./pages/BinanceP2PBolivia'));
@@ -79,6 +80,7 @@ function AppContent() {
           {/* Spanish URL Aliases (Primary for SEO) */}
           <Route path="/calculadora" element={<Calculator />} />
           <Route path="/noticias" element={<News />} />
+          <Route path="/noticias/:slugParam" element={<NewsArticle />} />
           <Route path="/acerca-de" element={<About />} />
           <Route path="/contacto" element={<Contact />} />
           <Route path="/preguntas-frecuentes" element={<FAQ />} />

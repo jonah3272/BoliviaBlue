@@ -109,7 +109,7 @@ function DolarBlueSantaCruz() {
           ? "dólar blue santa cruz, dólar blue bolivia santa cruz, tipo cambio santa cruz, cotización dólar blue santa cruz, precio dólar blue santa cruz, dónde cambiar dólares santa cruz, cambio dólares santa cruz, dólar paralelo santa cruz"
           : "blue dollar santa cruz, blue dollar bolivia santa cruz, exchange rate santa cruz, blue dollar quote santa cruz, blue dollar price santa cruz, where to exchange dollars santa cruz, exchange dollars santa cruz, parallel dollar santa cruz"}
         canonical="/dolar-blue-santa-cruz"
-        noindex={true} // Keep noindexed - city pages are too similar to each other (AdSense risk)
+        noindex={false}
         structuredData={[articleSchema, faqSchema]}
       />
       
@@ -136,8 +136,8 @@ function DolarBlueSantaCruz() {
         </h1>
         <p className="text-center text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-3 sm:mb-6">
           {language === 'es'
-            ? 'Consulta la cotización del dólar blue en Santa Cruz actualizada cada 15 minutos con datos en tiempo real de Binance P2P'
-            : 'Check the blue dollar quote in Santa Cruz updated every 15 minutes with real-time data from Binance P2P'}
+            ? 'Referencia del paralelo para Santa Cruz (comercio, agro y Equipetrol): misma mediana nacional Binance P2P, con zonas locales donde la gente cambia dólares.'
+            : 'Parallel-market reference for Santa Cruz (trade, agribusiness, Equipetrol): the same national Binance P2P median, plus local areas where people exchange dollars.'}
         </p>
 
         <section>
@@ -170,8 +170,8 @@ function DolarBlueSantaCruz() {
             <div className="prose prose-lg dark:prose-invert max-w-none">
               <p className="text-gray-700 dark:text-gray-300 mb-4">
                 {language === 'es' 
-                  ? <>El <strong>dólar blue en Santa Cruz</strong> es el tipo de cambio del dólar estadounidense en el mercado paralelo de la ciudad más grande de Bolivia. La cotización del <strong>dólar blue Santa Cruz</strong> se actualiza cada 15 minutos en nuestra plataforma utilizando datos en tiempo real de Binance P2P, proporcionando la información más precisa sobre el <strong>tipo de cambio en Santa Cruz</strong>.</>
-                  : <>The <strong>blue dollar in Santa Cruz</strong> is the exchange rate of the US dollar in the parallel market of Bolivia's largest city. The <strong>blue dollar Santa Cruz</strong> quote is updated every 15 minutes on our platform using real-time data from Binance P2P, providing the most accurate information about the <strong>exchange rate in Santa Cruz</strong>.</>}
+                  ? <>En <strong>Santa Cruz de la Sierra</strong> el blue acompaña importadores, agroindustria y remesas alrededor de Plaza 24 de Septiembre, Monseñor Rivero y Equipetrol. Usamos la mediana nacional Binance P2P como referencia para comparar casas de cambio y P2P locales. Herramientas: <Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline">dólar blue hoy</Link>, <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline">calculadora</Link>, <Link to="/cuanto-esta-dolar-bolivia" className="text-blue-600 dark:text-blue-400 hover:underline">¿cuánto está el dólar?</Link>.</>
+                  : <>In <strong>Santa Cruz de la Sierra</strong>, blue rates matter for importers, agribusiness, and remittances around Plaza 24 de Septiembre, Monseñor Rivero, and Equipetrol. We use the national Binance P2P median as a benchmark before local exchange houses or P2P. Tools: <Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline">blue dollar today</Link>, <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline">calculator</Link>, <Link to="/cuanto-esta-dolar-bolivia" className="text-blue-600 dark:text-blue-400 hover:underline">how much is the dollar?</Link>.</>}
               </p>
 
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
@@ -333,7 +333,7 @@ function DolarBlueSantaCruz() {
           <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">
             {language === 'es' ? 'Páginas Relacionadas' : 'Related Pages'}
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             <Link
               to="/dolar-blue-hoy"
               className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
@@ -342,7 +342,18 @@ function DolarBlueSantaCruz() {
                 {language === 'es' ? 'Dólar Blue Hoy' : 'Blue Dollar Today'}
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-400">
-                {language === 'es' ? 'Cotización actual' : 'Current quote'}
+                {language === 'es' ? 'Cotización del día' : 'Today’s quote'}
+              </div>
+            </Link>
+            <Link
+              to="/dolar-paralelo-bolivia-en-vivo"
+              className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+            >
+              <div className="font-medium text-gray-900 dark:text-white mb-1">
+                {language === 'es' ? 'Paralelo EN VIVO' : 'Parallel LIVE'}
+              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                {language === 'es' ? 'Monitor continuo' : 'Continuous monitor'}
               </div>
             </Link>
             <Link

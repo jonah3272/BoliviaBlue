@@ -8,6 +8,7 @@ import Footer from '../components/Footer';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Link } from 'react-router-dom';
 import { fetchNews } from '../utils/api';
+import { newsArticlePath } from '../utils/newsSlug';
 import SentimentLegend from '../components/SentimentLegend';
 import { cleanSummary, cleanTitle } from '../utils/formatters';
 import { blockAdsOnThisPage } from '../utils/adsenseLoader';
@@ -62,7 +63,7 @@ function News() {
     "description": language === 'es'
       ? "Últimas noticias financieras y económicas de Bolivia relacionadas con el tipo de cambio del dólar blue"
       : "Latest financial and economic news from Bolivia related to the blue dollar exchange rate",
-    "url": "https://boliviablue.com/news",
+    "url": "https://boliviablue.com/noticias",
     "mainEntity": {
       "@type": "ItemList",
       "itemListElement": news.slice(0, 10).map((article, index) => ({
@@ -72,8 +73,8 @@ function News() {
           "@type": "NewsArticle",
           "headline": article.title,
           "description": article.summary || article.title,
-          "url": article.url,
-          "datePublished": article.published_at,
+          "url": `https://boliviablue.com${newsArticlePath(article)}`,
+          "datePublished": article.published_at_iso,
           "publisher": {
             "@type": "Organization",
             "name": article.source || "Bolivia Blue con Paz"
@@ -348,26 +349,25 @@ function News() {
                     <span>{formatDate(article.published_at_iso)}</span>
                   </div>
 
-                  {/* Read More Link */}
-                  <motion.a
-                    href={article.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-4 inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium"
-                    whileHover={{ x: 4 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    {language === 'es' ? 'Leer más' : 'Read more'}
-                    <motion.svg 
-                      className="w-4 h-4" 
-                      fill="none" 
-                      stroke="currentColor" 
-                      viewBox="0 0 24 24"
-                      whileHover={{ x: 2 }}
+                  {/* Internal article page (SEO) + external source */}
+                  <div className="mt-4 flex flex-wrap gap-3">
+                    <Link
+                      to={newsArticlePath(article)}
+                      className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium"
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </motion.svg>
-                  </motion.a>
+                      {language === 'es' ? 'Ver en Bolivia Blue' : 'View on Bolivia Blue'} →
+                    </Link>
+                    {article.url && (
+                      <a
+                        href={article.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 text-sm font-medium"
+                      >
+                        {language === 'es' ? 'Fuente' : 'Source'} ↗
+                      </a>
+                    )}
+                  </div>
                 </motion.article>
               );
             })}

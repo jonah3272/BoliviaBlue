@@ -9,9 +9,9 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import { getWebPage, getBreadcrumbList } from '../utils/seoSchema';
 
-const CITE_HTML = `<p>Fuente: <a href="https://boliviablue.com/">Bolivia Blue</a> — cotización dólar blue Bolivia (Binance P2P, mediana, cada 15 min). Datos: <a href="https://boliviablue.com/datos-historicos">boliviablue.com/datos-historicos</a>.</p>`;
+const CITE_HTML = `<p>Fuente: <a href="https://boliviablue.com/">Bolivia Blue</a> — dólar blue / paralelo Bolivia (Binance P2P, mediana). Histórico: <a href="https://boliviablue.com/datos-historicos">datos-historicos</a>. Widget: <a href="https://boliviablue.com/widget">boliviablue.com/widget</a>.</p>`;
 
-const CITE_MD = `Fuente: [Bolivia Blue](https://boliviablue.com/) — cotización dólar blue Bolivia. Histórico: [datos-historicos](https://boliviablue.com/datos-historicos).`;
+const CITE_MD = `Fuente: [Bolivia Blue](https://boliviablue.com/) — dólar blue / paralelo Bolivia (Binance P2P). Histórico: [datos-historicos](https://boliviablue.com/datos-historicos). Widget: [boliviablue.com/widget](https://boliviablue.com/widget).`;
 
 const CITE_METHODOLOGY = `Metodología: https://boliviablue.com/fuente-de-datos — mediana Binance P2P USDT/BOB, actualización ~15 min.`;
 
@@ -53,28 +53,40 @@ Best regards`;
 
 const OUTREACH = [
   {
-    es: 'Medios bolivianos (El Deber, Los Tiempos, Opinión, Eju): ofrece “datos + gráfico + atribución” para notas de economía.',
+    es: 'Red Uno / Unitel / ATB: ofrece “cierre del paralelo hoy + gráfico” con atribución a boliviablue.com (ya citan portales similares).',
+    en: 'National TV/news: offer “today’s parallel close + chart” attributed to boliviablue.com.'
+  },
+  {
+    es: 'Radio Fides / Erbol / RTP: pitch semanal de 30s con la cotización blue vs BCB y link a /dolar-blue-hoy.',
+    en: 'Radio networks: weekly 30s pitch with blue vs BCB and link to /dolar-blue-hoy.'
+  },
+  {
+    es: 'Medios bolivianos (El Deber, Los Tiempos, Opinión, Página Siete, La Razón, Eju): ofrece “datos + gráfico + atribución” para notas de economía.',
     en: 'Bolivian media: offer “data + chart + attribution” for economy stories.'
   },
   {
-    es: 'Grupos de Telegram / WhatsApp de dólares y USDT: comparte el widget o el link diario con la cotización.',
-    en: 'Telegram / WhatsApp dollar & USDT groups: share the widget or a daily rate link.'
+    es: 'Grupos de Telegram / WhatsApp de dólares y USDT: comparte el widget o el link diario /dolar-blue-hoy con la cotización.',
+    en: 'Telegram / WhatsApp dollar & USDT groups: share the widget or daily /dolar-blue-hoy link.'
   },
   {
-    es: 'YouTubers / TikTok de finanzas en Bolivia: dales el kit de prensa y piden “fuente boliviablue.com” en descripción.',
-    en: 'Finance creators: give them the press kit and ask for boliviablue.com in the description.'
+    es: 'YouTubers / TikTok / Instagram Reels de finanzas en Bolivia: kit de prensa + piden “fuente boliviablue.com” en descripción.',
+    en: 'Finance creators (YT/TikTok/Reels): press kit + ask for boliviablue.com in the description.'
   },
   {
-    es: 'Universidades / tesis: ofrece CSV histórico gratis a cambio de cita (página datos históricos).',
+    es: 'Universidades (UMSA, UAGRM, UMSS) / tesis de economía: CSV histórico gratis a cambio de cita (página datos históricos).',
     en: 'Universities / theses: free historical CSV in exchange for a citation.'
   },
   {
-    es: 'Directorios y “mejores tools”: Product Hunt alternatives, listas de APIs LatAm, Awesome lists en GitHub.',
-    en: 'Directories: LatAm API lists, GitHub awesome lists, finance tool roundups.'
+    es: 'Directorios y “mejores tools”: Product Hunt alternatives, listas de APIs LatAm, Awesome lists en GitHub, directorios de fintech Bolivia.',
+    en: 'Directories: LatAm API lists, GitHub awesome lists, Bolivia fintech roundups.'
   },
   {
-    es: 'Guest posts: “Cómo leer el dólar paralelo en Bolivia” con enlace a metodología + widget.',
-    en: 'Guest posts: “How to read Bolivia’s parallel dollar” linking methodology + widget.'
+    es: 'Guest posts / columnas: “Cómo leer el dólar paralelo en Bolivia” con enlace a metodología + widget + /prensa.',
+    en: 'Guest posts: “How to read Bolivia’s parallel dollar” linking methodology + widget + /prensa.'
+  },
+  {
+    es: 'Newsletters económicas y blogs de análisis (LatAm FX): ofrece embed del widget o CSV semanal con atribución.',
+    en: 'Economy newsletters / LatAm FX blogs: offer widget embed or weekly CSV with attribution.'
   }
 ];
 

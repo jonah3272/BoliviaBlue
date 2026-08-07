@@ -5,6 +5,7 @@ import Footer from '../components/Footer';
 import PageMeta from '../components/PageMeta';
 import Navigation from '../components/Navigation';
 import BlueRateCards from '../components/BlueRateCards';
+import RateTrioStrip from '../components/RateTrioStrip';
 import BinanceBanner from '../components/BinanceBanner';
 import { Link } from 'react-router-dom';
 import { fetchBlueRate } from '../utils/api';
@@ -157,14 +158,14 @@ function DolarBlueHoy() {
             {language === 'es' ? 'Hoy es' : 'Today is'} {today}
           </div>
           <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">
-            {language === 'es' 
-              ? 'Cotización del Dólar Blue Hoy – Bolivia'
-              : 'Blue Dollar Quote Today – Bolivia'}
+            {language === 'es'
+              ? `Dólar Blue Hoy ${today}: compra ${currentRate?.buy_bob_per_usd?.toFixed(2) || '—'} · venta ${currentRate?.sell_bob_per_usd?.toFixed(2) || '—'}`
+              : `Blue Dollar Today ${today}: buy ${currentRate?.buy_bob_per_usd?.toFixed(2) || '—'} · sell ${currentRate?.sell_bob_per_usd?.toFixed(2) || '—'}`}
           </h1>
           <p className="text-base text-gray-600 dark:text-gray-400 mb-1">
             {language === 'es'
-              ? 'Esta es la cotización del dólar blue hoy en Bolivia, actualizada cada 15 minutos.'
-              : 'This is today\'s blue dollar quote in Bolivia, updated every 15 minutes.'}
+              ? 'Foto del día con fecha: compra/venta blue de hoy, máximo/mínimo del gráfico y comparación vs BCB. Para el monitor continuo ve a paralelo EN VIVO; para convertir un monto, a ¿Cuánto está?'
+              : 'Dated daily snapshot: today’s blue buy/sell, chart high/low, and vs BCB. For continuous monitoring go to parallel LIVE; to convert an amount, How Much Is the Dollar?'}
           </p>
           <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">
             {language === 'es' ? 'Última actualización' : 'Last updated'}: {currentRate?.updated_at_iso
@@ -176,6 +177,16 @@ function DolarBlueHoy() {
         {/* Rate Cards */}
         <section>
           <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} />
+          <div className="mt-5 max-w-5xl mx-auto">
+            <RateTrioStrip
+              buy={currentRate?.buy_bob_per_usd}
+              sell={currentRate?.sell_bob_per_usd}
+              officialBuy={currentRate?.official_buy}
+              officialSell={currentRate?.official_sell}
+              language={language}
+              updatedAt={currentRate?.updated_at_iso}
+            />
+          </div>
         </section>
 
         {/* Today's Rate Highlight */}

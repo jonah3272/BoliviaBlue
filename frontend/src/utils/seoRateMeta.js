@@ -48,7 +48,14 @@ const PAGE_COPY = {
   },
   'dolar-blue-hoy': {
     es: {
-      titleWith: (b, s) => `Dólar Blue Hoy Bolivia: Compra ${b} · Venta ${s}`,
+      titleWith: (b, s) => {
+        const d = new Intl.DateTimeFormat('es-BO', {
+          day: 'numeric',
+          month: 'numeric',
+          year: 'numeric',
+        }).format(new Date());
+        return `Dólar Blue Hoy ${d}: Compra ${b} · Venta ${s}`;
+      },
       titleFallback: 'Dólar Blue Hoy Bolivia | Precio Actualizado Ahora',
       descWith: (b, s, when) =>
         `Dólar blue hoy en Bolivia: compra Bs ${b} y venta Bs ${s}${when ? ` (${when})` : ''}. Mercado paralelo actualizado cada 15 min.`,
@@ -56,7 +63,14 @@ const PAGE_COPY = {
         'Dólar blue hoy en Bolivia: precio de compra y venta actualizado cada 15 min. Cotización del mercado paralelo, gratis y sin registro.',
     },
     en: {
-      titleWith: (b, s) => `Blue Dollar Today Bolivia: Buy ${b} · Sell ${s}`,
+      titleWith: (b, s) => {
+        const d = new Intl.DateTimeFormat('en-US', {
+          day: 'numeric',
+          month: 'numeric',
+          year: 'numeric',
+        }).format(new Date());
+        return `Blue Dollar Today ${d}: Buy ${b} · Sell ${s}`;
+      },
       titleFallback: 'Blue Dollar Today Bolivia | Price Updated Now',
       descWith: (b, s, when) =>
         `Blue dollar today in Bolivia: buy Bs ${b}, sell Bs ${s}${when ? ` (${when})` : ''}. Parallel market, updated every 15 min.`,
@@ -66,20 +80,38 @@ const PAGE_COPY = {
   },
   'dolar-paralelo': {
     es: {
-      titleWith: (b, s) => `Dólar Paralelo Bolivia EN VIVO: ${b} / ${s}`,
-      titleFallback: 'Dólar Paralelo Bolivia EN VIVO | Cotización Ahora',
+      titleWith: (b, s) => `Dólar Paralelo / Blue Bolivia EN VIVO: ${b} / ${s}`,
+      titleFallback: 'Dólar Paralelo Bolivia EN VIVO | Cotización Blue Ahora',
       descWith: (b, s, when) =>
-        `Dólar paralelo Bolivia EN VIVO: compra Bs ${b} y venta Bs ${s}${when ? ` (${when})` : ''}. Cotización cada 15 min desde Binance P2P.`,
+        `Dólar paralelo (blue) Bolivia EN VIVO: compra Bs ${b} y venta Bs ${s}${when ? ` (${when})` : ''}. Cotización cada 15 min desde Binance P2P.`,
       descFallback:
-        'Dólar paralelo Bolivia EN VIVO: cotización del mercado cambiario actualizada cada 15 min. Ver precio de compra y venta ahora.',
+        'Dólar paralelo y dólar blue Bolivia EN VIVO: cotización del mercado cambiario actualizada cada 15 min. Ver compra y venta ahora.',
     },
     en: {
-      titleWith: (b, s) => `Bolivia Parallel Dollar LIVE: ${b} / ${s}`,
-      titleFallback: 'Bolivia Parallel Dollar LIVE | Quote Now',
+      titleWith: (b, s) => `Bolivia Parallel / Blue Dollar LIVE: ${b} / ${s}`,
+      titleFallback: 'Bolivia Parallel Dollar LIVE | Blue Quote Now',
       descWith: (b, s, when) =>
-        `Bolivia parallel dollar LIVE: buy Bs ${b}, sell Bs ${s}${when ? ` (${when})` : ''}. Updated every 15 min.`,
+        `Bolivia parallel / blue dollar LIVE: buy Bs ${b}, sell Bs ${s}${when ? ` (as of ${when})` : ''}. Updated every 15 min.`,
       descFallback:
-        'Bolivia parallel dollar LIVE: exchange-market quote updated every 15 min. See buy and sell price now.',
+        'Bolivia parallel / blue dollar LIVE: exchange-market quote updated every 15 min. See buy and sell now.',
+    },
+  },
+  cotiza: {
+    es: {
+      titleWith: (b, s) => `Cotiza el Dólar Paralelo: Compra ${b} · Venta ${s}`,
+      titleFallback: 'Cotiza el Dólar Paralelo en Bolivia | Guía y Precio',
+      descWith: (b, s, when) =>
+        `Cotiza el dólar paralelo (blue) en Bolivia: compra Bs ${b}, venta Bs ${s}${when ? ` (${when})` : ''}. Cómo leer la cotización y dónde operar.`,
+      descFallback:
+        'Cotiza el dólar paralelo / blue en Bolivia: guía para interpretar compra y venta, actualizada cada 15 min.',
+    },
+    en: {
+      titleWith: (b, s) => `Quote the Parallel Dollar: Buy ${b} · Sell ${s}`,
+      titleFallback: 'Quote Bolivia Parallel Dollar | Guide & Price',
+      descWith: (b, s, when) =>
+        `Quote Bolivia’s parallel (blue) dollar: buy Bs ${b}, sell Bs ${s}${when ? ` (${when})` : ''}. How to read the quote.`,
+      descFallback:
+        'Quote Bolivia’s parallel / blue dollar: how to read buy and sell, updated every 15 min.',
     },
   },
   cuanto: {

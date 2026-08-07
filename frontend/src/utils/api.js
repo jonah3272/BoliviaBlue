@@ -551,18 +551,18 @@ export async function fetchNews(category = null, limit = 10) {
     .eq('type', 'article') // Only articles, not tweets
     .order('published_at', { ascending: false })
     .limit(limit);
-  
+
   if (category && category !== 'all') {
     query = query.eq('category', category);
   }
-  
+
   const { data, error } = await query;
-  
+
   if (error) {
     logger.error('Error fetching news from Supabase:', error);
     throw new Error(`Failed to fetch news: ${error.message}`);
   }
-  
+
   // Format response to match expected structure
   return (data || []).map(item => ({
     id: item.id,
@@ -573,8 +573,38 @@ export async function fetchNews(category = null, limit = 10) {
     published_at_iso: item.published_at,
     sentiment: item.sentiment,
     category: item.category,
-    type: item.type
+    type: item.type,
+    sentiment_strength: item.sentiment_strength,
   }));
+}
+
+/** Single news row by id (for /noticias/:slug-id pages). */
+export async function fetchNewsById(id) {
+  if (!id) return null;
+  const { data, error } = await supabase
+    .from('news')
+    .select('*')
+    .eq('id', id)
+    .eq('type', 'article')
+    .maybeSingle();
+
+  if (error) {
+    logger.error('Error fetching news by id:', error);
+    throw new Error(`Failed to fetch news: ${error.message}`);
+  }
+  if (!data) return null;
+  return {
+    id: data.id,
+    source: data.source,
+    url: data.url,
+    title: data.title,
+    summary: data.summary,
+    published_at_iso: data.published_at,
+    sentiment: data.sentiment,
+    category: data.category,
+    type: data.type,
+    sentiment_strength: data.sentiment_strength,
+  };
 }
 
 /**

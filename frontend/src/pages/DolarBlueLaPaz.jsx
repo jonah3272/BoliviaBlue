@@ -126,7 +126,7 @@ function DolarBlueLaPaz() {
           ? "dólar blue la paz, dólar blue bolivia la paz, dólar blue hoy bolivia la paz, tipo cambio la paz, cotización dólar blue la paz, precio dólar blue la paz, dónde cambiar dólares la paz, cambio dólares la paz, dólar paralelo la paz"
           : "blue dollar la paz, blue dollar bolivia la paz, blue dollar today la paz, exchange rate la paz, blue dollar quote la paz, blue dollar price la paz, where to exchange dollars la paz, exchange dollars la paz, parallel dollar la paz"}
         canonical="/dolar-blue-la-paz"
-        noindex={true} // Keep noindexed - city pages are too similar to each other (AdSense risk)
+        noindex={false}
         structuredData={[articleSchema, faqSchema]}
       />
       
@@ -153,8 +153,8 @@ function DolarBlueLaPaz() {
         </h1>
         <p className="text-center text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-3 sm:mb-6">
           {language === 'es'
-            ? 'Consulta la cotización del dólar blue en La Paz actualizada cada 15 minutos con datos en tiempo real de Binance P2P'
-            : 'Check the blue dollar quote in La Paz updated every 15 minutes with real-time data from Binance P2P'}
+            ? 'Referencia del paralelo para La Paz (sede de gobierno, El Prado, Zona Sur): misma lectura nacional Binance P2P que usamos en todo el país, más contexto local de dónde cambiar.'
+            : 'Parallel-market reference for La Paz (government seat, El Prado, South Zone): the same national Binance P2P reading we use countrywide, plus local where-to-exchange context.'}
         </p>
 
         {/* Rate Cards */}
@@ -191,8 +191,8 @@ function DolarBlueLaPaz() {
             <div className="prose prose-lg dark:prose-invert max-w-none">
               <p className="text-gray-700 dark:text-gray-300 mb-4">
                 {language === 'es' 
-                  ? <>El <strong>dólar blue en La Paz</strong> es el tipo de cambio del dólar estadounidense en el mercado paralelo de la capital boliviana. La cotización del <strong>dólar blue La Paz</strong> se actualiza cada 15 minutos en nuestra plataforma utilizando datos en tiempo real de Binance P2P, proporcionando la información más precisa sobre el <strong>tipo de cambio en La Paz</strong>.</>
-                  : <>The <strong>blue dollar in La Paz</strong> is the exchange rate of the US dollar in the parallel market of Bolivia's capital. The <strong>blue dollar La Paz</strong> quote is updated every 15 minutes on our platform using real-time data from Binance P2P, providing the most accurate information about the <strong>exchange rate in La Paz</strong>.</>}
+                  ? <>En <strong>La Paz</strong> el dólar blue mueve turismo, embajadas y empleados públicos alrededor de Plaza Murillo, El Prado y Calacoto/Obrajes. La cotización que ves aquí es la mediana nacional Binance P2P (no una tasa por cuadra), útil para comparar antes de ir a una casa de cambio o a P2P. Herramientas: <Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline">dólar blue hoy</Link>, <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline">calculadora</Link>, <Link to="/dolar-paralelo-bolivia-en-vivo" className="text-blue-600 dark:text-blue-400 hover:underline">paralelo EN VIVO</Link>.</>
+                  : <>In <strong>La Paz</strong>, the blue dollar serves tourism, embassies, and public-sector demand around Plaza Murillo, El Prado, and Calacoto/Obrajes. The quote here is the national Binance P2P median (not a block-by-block rate)—use it to compare before an exchange house or P2P. Tools: <Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline">blue dollar today</Link>, <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline">calculator</Link>, <Link to="/dolar-paralelo-bolivia-en-vivo" className="text-blue-600 dark:text-blue-400 hover:underline">parallel LIVE</Link>.</>}
               </p>
 
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
@@ -371,7 +371,7 @@ function DolarBlueLaPaz() {
           <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">
             {language === 'es' ? 'Páginas Relacionadas' : 'Related Pages'}
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             <Link
               to="/dolar-blue-hoy"
               className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
@@ -380,7 +380,18 @@ function DolarBlueLaPaz() {
                 {language === 'es' ? 'Dólar Blue Hoy' : 'Blue Dollar Today'}
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-400">
-                {language === 'es' ? 'Cotización actual' : 'Current quote'}
+                {language === 'es' ? 'Cotización del día' : 'Today’s quote'}
+              </div>
+            </Link>
+            <Link
+              to="/dolar-paralelo-bolivia-en-vivo"
+              className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+            >
+              <div className="font-medium text-gray-900 dark:text-white mb-1">
+                {language === 'es' ? 'Paralelo EN VIVO' : 'Parallel LIVE'}
+              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                {language === 'es' ? 'Monitor continuo' : 'Continuous monitor'}
               </div>
             </Link>
             <Link

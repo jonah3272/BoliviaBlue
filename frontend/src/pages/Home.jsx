@@ -2,6 +2,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import BlueRateCards from '../components/BlueRateCards';
 import PartnerAdCarousel from '../components/PartnerAdCarousel';
+import RateTrioStrip from '../components/RateTrioStrip';
 import SocialShare from '../components/SocialShare';
 import LazyErrorBoundary from '../components/LazyErrorBoundary';
 import { lazy, Suspense, useState, useEffect, useMemo } from 'react';
@@ -167,7 +168,9 @@ function Home() {
         "name": "¿Cuánto es $100 USD en Bolivia?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Con el bolivia blue rate actual (aproximadamente 10.50 BOB por USD), $100 USD equivalen a aproximadamente 1,050 BOB. Con la tasa oficial (~9.00 BOB/USD) serían solo 900 BOB. La diferencia puede ser significativa, por eso es importante usar el bolivia blue exchange rate para obtener el mejor valor. Usa nuestra calculadora para obtener el cálculo exacto con la tasa actual."
+          "text": currentRate?.buy
+            ? `Con el bolivia blue rate actual (~${Number(currentRate.buy).toFixed(2)} BOB por USD), $100 USD equivalen a aproximadamente ${(Number(currentRate.buy) * 100).toFixed(0)} BOB. Usa nuestra calculadora para el valor exacto.`
+            : 'Usa nuestra calculadora con la tasa blue en vivo para convertir USD a BOB al tipo paralelo.'
         }
       },
       {
@@ -175,7 +178,9 @@ function Home() {
         "name": "¿Cuánto es 1 USD a 1 Boliviano?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "El bolivia blue exchange rate actualmente fluctúa entre 10.00 y 11.50 BOB por USD, con un promedio de aproximadamente 10.50 BOB por USD. Esto significa que 1 USD equivale a aproximadamente 10.50 BOB, mientras que 1 BOB equivale a aproximadamente 0.095 USD. El bolivia blue rate se actualiza cada 15 minutos en nuestra plataforma."
+          "text": currentRate?.buy
+            ? `El bolivia blue exchange rate hoy es aproximadamente ${Number(currentRate.buy).toFixed(2)} BOB por USD (compra) y ${Number(currentRate.sell || currentRate.buy).toFixed(2)} BOB (venta). 1 BOB ≈ ${(1 / Number(currentRate.buy)).toFixed(4)} USD. Se actualiza cada pocos minutos en nuestra plataforma.`
+            : 'El bolivia blue exchange rate (dólar paralelo) se actualiza en vivo en boliviablue.com con datos de Binance P2P.'
         }
       }
     ] : [
@@ -240,7 +245,9 @@ function Home() {
         "name": "How much is $100 US in Bolivia?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "With the current bolivia blue rate (approximately 10.50 BOB per USD), $100 USD equals approximately 1,050 BOB. With the official rate (~9.00 BOB/USD) it would only be 900 BOB. The difference can be significant, which is why it's important to use the bolivia blue exchange rate to get the best value. Use our calculator to get the exact calculation with the current rate."
+          "text": currentRate?.buy
+            ? `With the current bolivia blue rate (~${Number(currentRate.buy).toFixed(2)} BOB per USD), $100 USD equals approximately ${(Number(currentRate.buy) * 100).toFixed(0)} BOB. Use our calculator for the exact live value.`
+            : 'Use our calculator with the live blue rate to convert USD to BOB at the parallel market price.'
         }
       },
       {
@@ -248,7 +255,9 @@ function Home() {
         "name": "How much is 1 USD to 1 Boliviano?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "The bolivia blue exchange rate currently fluctuates between 10.00 and 11.50 BOB per USD, with an average of approximately 10.50 BOB per USD. This means 1 USD equals approximately 10.50 BOB, while 1 BOB equals approximately 0.095 USD. The bolivia blue rate is updated every 15 minutes on our platform."
+          "text": currentRate?.buy
+            ? `The bolivia blue exchange rate today is about ${Number(currentRate.buy).toFixed(2)} BOB per USD (buy) and ${Number(currentRate.sell || currentRate.buy).toFixed(2)} BOB (sell). 1 BOB ≈ ${(1 / Number(currentRate.buy)).toFixed(4)} USD. Updated every few minutes on our platform.`
+            : 'The bolivia blue (parallel) exchange rate is updated live on boliviablue.com from Binance P2P.'
         }
       }
     ]
@@ -390,6 +399,16 @@ function Home() {
               </p>
             )}
             <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} showTimestampInCards={false} />
+            <div className="mt-5 sm:mt-6 max-w-5xl mx-auto">
+              <RateTrioStrip
+                buy={currentRate?.buy ?? currentRate?.buy_bob_per_usd}
+                sell={currentRate?.sell ?? currentRate?.sell_bob_per_usd}
+                officialBuy={currentRate?.official_buy}
+                officialSell={currentRate?.official_sell}
+                language={language}
+                updatedAt={currentRate?.updated_at_iso}
+              />
+            </div>
           </section>
 
           <section className="mt-5 sm:mt-6">

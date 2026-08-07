@@ -115,8 +115,8 @@ function DolarParaleloBoliviaEnVivo() {
           
           <p className="text-lg sm:text-xl text-gray-700 dark:text-gray-200 mb-6">
             {language === 'es'
-              ? 'Cotización del dólar paralelo Bolivia EN VIVO. Aquí ves la cotización en tiempo real; actualizamos cada 15 minutos con datos de Binance P2P.'
-              : 'Bolivia parallel dollar LIVE. Real-time quote here; we update every 15 minutes with Binance P2P data.'}
+              ? 'Monitor EN VIVO del dólar paralelo (blue): compra y venta que se refrescan solos cada ~15 min desde Binance P2P. Ideal si quieres seguir el mercado ahora mismo, no solo una foto del día.'
+              : 'LIVE parallel (blue) dollar monitor: buy and sell that refresh every ~15 min from Binance P2P. Built for watching the market right now—not just today’s snapshot.'}
           </p>
 
           {/* Current Rate Display */}
@@ -141,8 +141,8 @@ function DolarParaleloBoliviaEnVivo() {
           <div className="prose dark:prose-invert max-w-none">
             <p className="text-gray-700 dark:text-gray-300 mb-4">
               {language === 'es'
-                ? 'El dólar paralelo Bolivia, también conocido como "dólar blue" o "dólar negro", es el tipo de cambio del dólar estadounidense que se negocia en el mercado informal boliviano. A diferencia del tipo de cambio oficial establecido por el Banco Central de Bolivia, el dólar paralelo refleja la verdadera oferta y demanda del mercado.'
-                : 'The Bolivia parallel dollar, also known as "blue dollar" or "black dollar", is the US dollar exchange rate traded in the Bolivian informal market. Unlike the official exchange rate set by the Central Bank of Bolivia, the parallel dollar reflects the true market supply and demand.'}
+                ? 'El dólar paralelo Bolivia (también “dólar blue”) es el precio que realmente se negocia fuera del circuito bancario oficial. Esta página es el tablero en vivo: misma fuente Binance P2P que en el resto del sitio, pero enfocada en la lectura continua del mercado paralelo frente al BCB. Si buscas el resumen del día con fecha, ve a Dólar Blue Hoy; si quieres convertir un monto, usa ¿Cuánto está el dólar?'
+                : 'Bolivia’s parallel dollar (also “blue dollar”) is the price actually traded outside the official banking channel. This page is the live board: same Binance P2P source as the rest of the site, focused on continuous parallel vs BCB reading. For a dated daily snapshot use Blue Dollar Today; to convert an amount use How Much Is the Dollar?'}
             </p>
             <p className="text-gray-700 dark:text-gray-300 mb-4">
               {language === 'es'
@@ -438,31 +438,37 @@ function DolarParaleloBoliviaEnVivo() {
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl p-6 sm:p-8 shadow-lg text-white text-center">
+        {/* CTA Section — live-monitor intent */}
+        <section className="bg-gradient-to-r from-blue-700 to-blue-500 rounded-xl p-6 sm:p-8 shadow-lg text-white text-center">
           <h2 className="text-2xl sm:text-3xl font-bold mb-4">
             {language === 'es'
-              ? '¿Necesitas más herramientas?'
-              : 'Need more tools?'}
+              ? 'Sigue el paralelo en vivo, o convierte un monto'
+              : 'Keep watching live, or convert an amount'}
           </h2>
           <p className="text-lg mb-6">
             {language === 'es'
-              ? 'Explora nuestra calculadora de divisas, gráficos históricos y alertas de precio'
-              : 'Explore our currency calculator, historical charts and price alerts'}
+              ? 'Esta página es el monitor continuo. Para el precio del día con fecha usa Dólar Blue Hoy; para armar un monto exacto, la calculadora.'
+              : 'This page is the continuous monitor. For today’s dated price use Blue Dollar Today; for an exact amount, the calculator.'}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a
-              href="/calculadora"
-              className="px-6 py-3 bg-white text-purple-600 rounded-lg font-bold hover:bg-gray-100 transition-colors"
+            <Link
+              to="/dolar-blue-hoy"
+              className="px-6 py-3 bg-white text-blue-700 rounded-lg font-bold hover:bg-gray-100 transition-colors"
             >
-              {language === 'es' ? '🧮 Calculadora' : '🧮 Calculator'}
-            </a>
-            <a
-              href="/"
+              {language === 'es' ? 'Dólar blue hoy' : 'Blue dollar today'}
+            </Link>
+            <Link
+              to="/calculadora"
               className="px-6 py-3 bg-transparent border-2 border-white text-white rounded-lg font-bold hover:bg-white/10 transition-colors"
             >
-              {language === 'es' ? '📊 Ver Gráficos' : '📊 View Charts'}
-            </a>
+              {language === 'es' ? 'Calculadora' : 'Calculator'}
+            </Link>
+            <Link
+              to="/cotiza-dolar-paralelo"
+              className="px-6 py-3 bg-transparent border-2 border-white text-white rounded-lg font-bold hover:bg-white/10 transition-colors"
+            >
+              {language === 'es' ? 'Cómo cotizar' : 'How to quote'}
+            </Link>
           </div>
         </section>
       </main>

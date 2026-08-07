@@ -1,284 +1,96 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { articlesEs } from '../src/data/blogArticles.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Get current date in ISO format
 const now = new Date();
 const currentDate = now.toISOString().split('T')[0] + 'T12:00:00+00:00';
-
-// Base URL
 const baseUrl = 'https://boliviablue.com';
 
-// Sitemap entries - ALL pages from App.jsx (Spanish URLs primary for SEO)
 const pages = [
-  // Core pages - Highest priority
-  {
-    path: '/',
-    changefreq: 'hourly',
-    priority: '1.0',
-    lastmod: currentDate
-  },
-  {
-    path: '/calculadora', // Spanish primary
-    changefreq: 'daily',
-    priority: '0.9',
-    lastmod: currentDate
-  },
-  {
-    path: '/cuanto-esta-dolar-bolivia',
-    changefreq: 'hourly',
-    priority: '0.9',
-    lastmod: currentDate
-  },
-  
-  // News & Info (Spanish URLs)
-  {
-    path: '/noticias', // Spanish primary
-    changefreq: 'hourly',
-    priority: '0.8',
-    lastmod: currentDate
-  },
-  {
-    path: '/rodrigo-paz',
-    changefreq: 'weekly',
-    priority: '0.9',
-    lastmod: currentDate
-  },
-  {
-    path: '/acerca-de', // Spanish primary
-    changefreq: 'monthly',
-    priority: '0.8',
-    lastmod: currentDate
-  },
-  {
-    path: '/contacto', // Spanish primary
-    changefreq: 'monthly',
-    priority: '0.7',
-    lastmod: currentDate
-  },
-  {
-    path: '/preguntas-frecuentes', // Spanish primary
-    changefreq: 'monthly',
-    priority: '0.9',
-    lastmod: currentDate
-  },
-  {
-    path: '/politica-de-privacidad', // Privacy policy
-    changefreq: 'monthly',
-    priority: '0.7',
-    lastmod: currentDate
-  },
-  
-  // Blog
-  {
-    path: '/blog',
-    changefreq: 'weekly',
-    priority: '0.8',
-    lastmod: currentDate
-  },
-  
-  // Comparison & Education
-  {
-    path: '/comparacion', // Spanish primary
-    changefreq: 'weekly',
-    priority: '0.8',
-    lastmod: currentDate
-  },
-  {
-    path: '/comprar-dolares', // Spanish primary (was buy-dollars)
-    changefreq: 'weekly',
-    priority: '0.8',
-    lastmod: currentDate
-  },
-  {
-    path: '/plataformas', // Platform comparison page
-    changefreq: 'weekly',
-    priority: '0.9',
-    lastmod: currentDate
-  },
-  {
-    path: '/fuente-de-datos', // Data source for media
-    changefreq: 'monthly',
-    priority: '0.7',
-    lastmod: currentDate
-  },
-  {
-    path: '/datos-historicos', // Historical data archive (linkable asset)
-    changefreq: 'daily',
-    priority: '0.9',
-    lastmod: currentDate
-  },
-  {
-    path: '/api-docs', // API documentation (linkable asset for developers)
-    changefreq: 'monthly',
-    priority: '0.8',
-    lastmod: currentDate
-  },
-  {
-    path: '/widget',
-    changefreq: 'monthly',
-    priority: '0.9',
-    lastmod: currentDate
-  },
-  {
-    path: '/prensa',
-    changefreq: 'monthly',
-    priority: '0.85',
-    lastmod: currentDate
-  },
-  
-  // Blue rate pages (canonical only - redirect pages removed)
-  {
-    path: '/bolivian-blue', // Main canonical Spanish page
-    changefreq: 'hourly',
-    priority: '0.95',
-    lastmod: currentDate
-  },
-  {
-    path: '/cotiza-dolar-paralelo',
-    changefreq: 'hourly',
-    priority: '0.9',
-    lastmod: currentDate
-  },
-  {
-    path: '/dolar-paralelo-bolivia-en-vivo',
-    changefreq: 'hourly',
-    priority: '0.95',
-    lastmod: currentDate
-  },
-  
-  {
-    path: '/dolar-blue-hoy',
-    changefreq: 'hourly',
-    priority: '0.95',
-    lastmod: currentDate
-  },
-  
-  // Educational/Guide pages
-  {
-    path: '/que-es-dolar-blue',
-    changefreq: 'weekly',
-    priority: '0.85',
-    lastmod: currentDate
-  },
-  
-  // Crypto pages
-  {
-    path: '/binance-p2p-bolivia',
-    changefreq: 'daily',
-    priority: '0.85',
-    lastmod: currentDate
-  },
-  {
-    path: '/usdt-bolivia',
-    changefreq: 'daily',
-    priority: '0.85',
-    lastmod: currentDate
-  },
-  
-  // Currency conversion pages
-  {
-    path: '/euro-a-boliviano',
-    changefreq: 'hourly',
-    priority: '0.9',
-    lastmod: currentDate
-  },
-  {
-    path: '/real-a-boliviano',
-    changefreq: 'hourly',
-    priority: '0.9',
-    lastmod: currentDate
-  },
-  
-  // Comparison & Banks
-  {
-    path: '/bancos',
-    changefreq: 'monthly',
-    priority: '0.8',
-    lastmod: currentDate
-  }
+  { path: '/', changefreq: 'hourly', priority: '1.0' },
+  { path: '/calculadora', changefreq: 'daily', priority: '0.9' },
+  { path: '/cuanto-esta-dolar-bolivia', changefreq: 'hourly', priority: '0.95' },
+  { path: '/dolar-blue-hoy', changefreq: 'hourly', priority: '0.95' },
+  { path: '/dolar-paralelo-bolivia-en-vivo', changefreq: 'hourly', priority: '0.95' },
+  { path: '/cotiza-dolar-paralelo', changefreq: 'hourly', priority: '0.9' },
+  { path: '/bolivian-blue', changefreq: 'hourly', priority: '0.9' },
+  { path: '/que-es-dolar-blue', changefreq: 'weekly', priority: '0.85' },
+  { path: '/dolar-blue-la-paz', changefreq: 'hourly', priority: '0.85' },
+  { path: '/dolar-blue-santa-cruz', changefreq: 'hourly', priority: '0.85' },
+  { path: '/dolar-blue-cochabamba', changefreq: 'hourly', priority: '0.85' },
+  { path: '/noticias', changefreq: 'hourly', priority: '0.85' },
+  { path: '/blog', changefreq: 'weekly', priority: '0.8' },
+  { path: '/datos-historicos', changefreq: 'daily', priority: '0.9' },
+  { path: '/comparacion', changefreq: 'weekly', priority: '0.8' },
+  { path: '/comprar-dolares', changefreq: 'weekly', priority: '0.85' },
+  { path: '/plataformas', changefreq: 'weekly', priority: '0.85' },
+  { path: '/binance-p2p-bolivia', changefreq: 'daily', priority: '0.85' },
+  { path: '/usdt-bolivia', changefreq: 'daily', priority: '0.85' },
+  { path: '/bancos', changefreq: 'monthly', priority: '0.75' },
+  { path: '/preguntas-frecuentes', changefreq: 'monthly', priority: '0.85' },
+  { path: '/fuente-de-datos', changefreq: 'monthly', priority: '0.75' },
+  { path: '/api-docs', changefreq: 'monthly', priority: '0.75' },
+  { path: '/widget', changefreq: 'monthly', priority: '0.9' },
+  { path: '/prensa', changefreq: 'monthly', priority: '0.9' },
+  { path: '/rodrigo-paz', changefreq: 'weekly', priority: '0.8' },
+  { path: '/acerca-de', changefreq: 'monthly', priority: '0.7' },
+  { path: '/contacto', changefreq: 'monthly', priority: '0.65' },
+  { path: '/politica-de-privacidad', changefreq: 'monthly', priority: '0.5' },
 ];
 
-// Blog articles (you can extend this to fetch from Supabase if needed)
-const blogArticles = [
-  {
-    slug: 'rodrigo-paz-impacto-mercado-cambiario',
-    lastmod: '2025-11-07T12:00:00+00:00'
-  },
-  {
-    slug: 'politicas-paz-tipo-cambio',
-    lastmod: '2025-11-06T12:00:00+00:00'
-  },
-  {
-    slug: 'dolar-blue-era-digital-binance',
-    lastmod: '2025-11-05T12:00:00+00:00'
-  },
-  {
-    slug: 'analisis-volatilidad-dolar-blue-paz',
-    lastmod: '2025-11-04T12:00:00+00:00'
-  },
-  {
-    slug: 'futuro-boliviano-perspectivas-paz',
-    lastmod: '2025-11-03T12:00:00+00:00'
-  }
-];
+function urlEntry(locPath, { lastmod = currentDate, changefreq = 'weekly', priority = '0.7' } = {}) {
+  return `  <url>
+    <loc>${baseUrl}${locPath}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>${changefreq}</changefreq>
+    <priority>${priority}</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="${baseUrl}${locPath}" />
+    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}${locPath}?lang=en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="${baseUrl}${locPath}" />
+  </url>
+`;
+}
 
-// Generate sitemap XML
 function generateSitemap() {
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml"
-        xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-  
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
 `;
 
-  // Add main pages
-  pages.forEach(page => {
-    xml += `  <!-- ${page.path === '/' ? 'Homepage / Dashboard' : page.path.charAt(1).toUpperCase() + page.path.slice(2) + ' Page'} -->\n`;
-    xml += `  <url>\n`;
-    xml += `    <loc>${baseUrl}${page.path}</loc>\n`;
-    xml += `    <lastmod>${page.lastmod}</lastmod>\n`;
-    xml += `    <changefreq>${page.changefreq}</changefreq>\n`;
-    xml += `    <priority>${page.priority}</priority>\n`;
-    xml += `    <xhtml:link rel="alternate" hreflang="es" href="${baseUrl}${page.path}" />\n`;
-    xml += `    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}${page.path}?lang=en" />\n`;
-    xml += `  </url>\n`;
-    xml += `  \n`;
-  });
+  for (const page of pages) {
+    xml += urlEntry(page.path, {
+      lastmod: currentDate,
+      changefreq: page.changefreq,
+      priority: page.priority,
+    });
+  }
 
-  // Add blog articles
-  blogArticles.forEach(article => {
-    const articleName = article.slug.split('-').map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1)
-    ).join(' ');
-    xml += `  <!-- Blog Article: ${articleName} -->\n`;
-    xml += `  <url>\n`;
-    xml += `    <loc>${baseUrl}/blog/${article.slug}</loc>\n`;
-    xml += `    <lastmod>${article.lastmod}</lastmod>\n`;
-    xml += `    <changefreq>monthly</changefreq>\n`;
-    xml += `    <priority>0.7</priority>\n`;
-    xml += `    <xhtml:link rel="alternate" hreflang="es" href="${baseUrl}/blog/${article.slug}" />\n`;
-    xml += `    <xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/blog/${article.slug}?lang=en" />\n`;
-    xml += `  </url>\n`;
-    xml += `  \n`;
-  });
+  const blogSlugs = (articlesEs || [])
+    .map((a) => ({
+      slug: a.slug,
+      lastmod: a.date ? `${a.date}T12:00:00+00:00` : currentDate,
+    }))
+    .filter((a) => a.slug);
+
+  for (const article of blogSlugs) {
+    xml += urlEntry(`/blog/${article.slug}`, {
+      lastmod: article.lastmod,
+      changefreq: 'monthly',
+      priority: '0.7',
+    });
+  }
 
   xml += `</urlset>\n`;
-
-  return xml;
+  return { xml, pageCount: pages.length, blogCount: blogSlugs.length };
 }
 
-// Write sitemap to public directory
+const { xml, pageCount, blogCount } = generateSitemap();
 const sitemapPath = path.join(__dirname, '../public/sitemap.xml');
-const sitemapContent = generateSitemap();
-
-fs.writeFileSync(sitemapPath, sitemapContent, 'utf8');
-console.log('✅ Sitemap generated successfully at:', sitemapPath);
-console.log(`📅 Generated on: ${currentDate}`);
-console.log(`📄 Total URLs: ${pages.length + blogArticles.length}`);
-
+fs.writeFileSync(sitemapPath, xml, 'utf8');
+console.log('✅ Sitemap generated at:', sitemapPath);
+console.log(`📅 ${currentDate} · pages=${pageCount} · blog=${blogCount} · total=${pageCount + blogCount}`);

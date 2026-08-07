@@ -168,8 +168,8 @@ function CuantoEstaDolarBolivia() {
         </h1>
         <p className="text-center text-base text-gray-600 dark:text-gray-400 mb-1">
           {language === 'es'
-            ? 'Respuesta directa: el precio actual del dólar blue está abajo; usa la calculadora para cualquier monto.'
-            : 'Direct answer: the current blue dollar price is below; use the calculator for any amount.'}
+            ? 'Respuesta directa al “¿cuánto está?”: precio blue compra/venta abajo, conversiones comunes ($1, $100, $1000) y calculadora para cualquier monto. No es el monitor EN VIVO ni la guía de cómo cotizar.'
+            : 'Direct answer to “how much is it?”: blue buy/sell below, common conversions ($1, $100, $1000), and a calculator for any amount. Not the LIVE monitor or the how-to-quote guide.'}
         </p>
         <p className="text-center text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-3 sm:mb-6">
           {language === 'es' ? 'Última actualización' : 'Last updated'}: {currentRate?.updated_at_iso
@@ -271,8 +271,8 @@ function CuantoEstaDolarBolivia() {
               
               <p className="text-gray-700 dark:text-gray-300 mb-6">
                 {language === 'es' 
-                  ? <>El precio del dólar en Bolivia varía según si hablamos del <strong>dólar oficial</strong> o del <strong>dólar blue</strong> (mercado paralelo). El dólar blue, que es el que mostramos en esta página, refleja el precio real del dólar en el mercado boliviano y se actualiza cada 15 minutos.</>
-                  : <>The dollar price in Bolivia varies depending on whether we're talking about the <strong>official dollar</strong> or the <strong>blue dollar</strong> (parallel market). The blue dollar, which is what we show on this page, reflects the real price of the dollar in the Bolivian market and is updated every 15 minutes.</>}
+                  ? <>Cuando alguien pregunta <strong>¿cuánto está el dólar en Bolivia?</strong>, casi siempre quiere un número usable ya: cuántos bolivianos recibe por USD al tipo <strong>blue / paralelo</strong> (no el BCB). Aquí mostramos compra y venta en vivo, tablas de conversión rápidas y enlace a la <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline">calculadora</Link>. Para seguir el mercado minuto a minuto usa <Link to="/dolar-paralelo-bolivia-en-vivo" className="text-blue-600 dark:text-blue-400 hover:underline">dólar paralelo EN VIVO</Link>; para el cierre del día con fecha, <Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline">dólar blue hoy</Link>.</>
+                  : <>When people ask <strong>how much is the dollar in Bolivia?</strong>, they usually want a usable number now: how many bolivianos per USD at the <strong>blue / parallel</strong> rate (not BCB). Here you’ll find live buy/sell, quick conversion tables, and the <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline">calculator</Link>. For minute-by-minute watching use <Link to="/dolar-paralelo-bolivia-en-vivo" className="text-blue-600 dark:text-blue-400 hover:underline">parallel dollar LIVE</Link>; for a dated daily close, <Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline">blue dollar today</Link>.</>}
               </p>
 
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">

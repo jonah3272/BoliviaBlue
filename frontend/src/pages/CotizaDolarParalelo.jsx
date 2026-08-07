@@ -12,6 +12,7 @@ import { lazy, Suspense } from 'react';
 const BlueChart = lazy(() => import('../components/BlueChart'));
 import Breadcrumbs from '../components/Breadcrumbs';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
+import { buildLiveRateSeoMeta, ratesFromBluePayload } from '../utils/seoRateMeta';
 
 function CotizaDolarParalelo() {
   // Signal to AdSense that this page has sufficient content
@@ -121,15 +122,17 @@ function CotizaDolarParalelo() {
     ]
   };
 
+  const liveSeo = buildLiveRateSeoMeta({
+    ...ratesFromBluePayload(currentRate),
+    language,
+    page: 'cotiza',
+  });
+
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
-        title={language === 'es'
-          ? 'Cotiza el Dólar Paralelo en Bolivia - Cotización en Tiempo Real | Actualizado Cada 15 Min'
-          : 'Quote the Parallel Dollar in Bolivia - Real-Time Quote | Updated Every 15 Min'}
-        description={language === 'es'
-          ? 'Cotiza el dólar paralelo en Bolivia con datos actualizados cada 15 minutos. Consulta la cotización del dólar blue, tipo de cambio paralelo, precio actual del dólar en el mercado informal. Gratis y sin registro.'
-          : 'Quote the parallel dollar in Bolivia with data updated every 15 minutes. Check the blue dollar quote, parallel exchange rate, current dollar price in the informal market. Free and no registration required.'}
+        title={liveSeo.title}
+        description={liveSeo.description}
         keywords={language === 'es'
           ? "cotiza el dólar paralelo, cotización dólar paralelo, cotizar dólar paralelo bolivia, cotiza dólar blue, cotización dólar blue bolivia, cotizar dólar blue, dólar paralelo cotización, cotización dólar paralelo hoy, cotizar dólar paralelo actual, precio dólar paralelo, cotización mercado paralelo, dólar blue cotización, cotizar dólar bolivia, cotización dólar bolivia paralelo"
           : "quote parallel dollar, parallel dollar quote, quote blue dollar bolivia, parallel dollar price, blue dollar quote, quote dollar bolivia, parallel market quote, bolivia parallel dollar"}
@@ -156,13 +159,13 @@ function CotizaDolarParalelo() {
         {/* H1 with Target Keyword */}
         <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2 text-center">
           {language === 'es' 
-            ? 'Cotiza el Dólar Paralelo en Bolivia - Cotización en Tiempo Real'
-            : 'Quote the Parallel Dollar in Bolivia - Real-Time Quote'}
+            ? 'Cotiza el Dólar Paralelo en Bolivia'
+            : 'Quote the Parallel Dollar in Bolivia'}
         </h1>
         <p className="text-center text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-3 sm:mb-6">
           {language === 'es'
-            ? 'Consulta la cotización del dólar paralelo (dólar blue) actualizada cada 15 minutos con datos en tiempo real de Binance P2P'
-            : 'Check the parallel dollar (blue dollar) quote updated every 15 minutes with real-time data from Binance P2P'}
+            ? 'Guía para cotizar: qué significa compra vs venta, cómo leer la brecha con el BCB y dónde operar. Incluye el precio paralelo actualizado cada 15 min.'
+            : 'How-to-quote guide: what buy vs sell means, how to read the gap vs BCB, and where to operate. Includes the parallel price updated every 15 min.'}
         </p>
 
         {/* Rate Cards */}
@@ -199,8 +202,8 @@ function CotizaDolarParalelo() {
             <div className="prose prose-lg dark:prose-invert max-w-none">
               <p className="text-gray-700 dark:text-gray-300 mb-4">
                 {language === 'es' 
-                  ? <>Para <strong>cotizar el dólar paralelo</strong> en Bolivia, nuestra plataforma te proporciona la <strong>cotización del dólar paralelo</strong> actualizada cada 15 minutos. El <strong>dólar paralelo</strong> (también conocido como <strong>dólar blue</strong>) es el tipo de cambio que se negocia en el mercado informal de Bolivia, fuera del sistema bancario oficial.</>
-                  : <>To <strong>quote the parallel dollar</strong> in Bolivia, our platform provides you with the <strong>parallel dollar quote</strong> updated every 15 minutes. The <strong>parallel dollar</strong> (also known as <strong>blue dollar</strong>) is the exchange rate traded in Bolivia's informal market, outside the official banking system.</>}
+                  ? <>Cotizar el <strong>dólar paralelo</strong> no es solo mirar un número: es entender compra (cuánto te pagan por tus dólares) vs venta (cuánto pagas por comprarlos), la diferencia frente al BCB y si conviene casa de cambio, P2P o particular. Esta página es la guía; el tablero en vivo está en <Link to="/dolar-paralelo-bolivia-en-vivo" className="text-blue-600 dark:text-blue-400 hover:underline">dólar paralelo EN VIVO</Link> y el resumen del día en <Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline">dólar blue hoy</Link>.</>
+                  : <>Quoting the <strong>parallel dollar</strong> isn’t just glancing at a number: it’s buy (what you get for selling USD) vs sell (what you pay to buy USD), the gap vs BCB, and whether an exchange house, P2P, or private counter fits. This page is the guide; the live board is <Link to="/dolar-paralelo-bolivia-en-vivo" className="text-blue-600 dark:text-blue-400 hover:underline">parallel dollar LIVE</Link> and the daily snapshot is <Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline">blue dollar today</Link>.</>}
               </p>
 
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
@@ -422,16 +425,38 @@ function CotizaDolarParalelo() {
           <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">
             {language === 'es' ? 'Páginas Relacionadas' : 'Related Pages'}
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             <Link
-              to="/bolivia-blue-rate-hoy"
+              to="/dolar-paralelo-bolivia-en-vivo"
               className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
             >
               <div className="font-medium text-gray-900 dark:text-white mb-1">
-                {language === 'es' ? 'Bolivia Blue Rate Hoy' : 'Bolivia Blue Rate Today'}
+                {language === 'es' ? 'Paralelo EN VIVO' : 'Parallel LIVE'}
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-400">
-                {language === 'es' ? 'Cotización actual' : 'Current quote'}
+                {language === 'es' ? 'Monitor continuo' : 'Continuous monitor'}
+              </div>
+            </Link>
+            <Link
+              to="/dolar-blue-hoy"
+              className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+            >
+              <div className="font-medium text-gray-900 dark:text-white mb-1">
+                {language === 'es' ? 'Dólar blue hoy' : 'Blue dollar today'}
+              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                {language === 'es' ? 'Resumen del día' : 'Today’s snapshot'}
+              </div>
+            </Link>
+            <Link
+              to="/cuanto-esta-dolar-bolivia"
+              className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+            >
+              <div className="font-medium text-gray-900 dark:text-white mb-1">
+                {language === 'es' ? '¿Cuánto está?' : 'How much is it?'}
+              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                {language === 'es' ? 'Conversiones rápidas' : 'Quick conversions'}
               </div>
             </Link>
             <Link
@@ -442,18 +467,7 @@ function CotizaDolarParalelo() {
                 {language === 'es' ? 'Calculadora' : 'Calculator'}
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-400">
-                {language === 'es' ? 'Convierte divisas' : 'Convert currencies'}
-              </div>
-            </Link>
-            <Link
-              to="/comprar-dolares"
-              className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
-            >
-              <div className="font-medium text-gray-900 dark:text-white mb-1">
-                {language === 'es' ? 'Comprar Dólares' : 'Buy Dollars'}
-              </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
-                {language === 'es' ? 'Guía completa' : 'Complete guide'}
+                {language === 'es' ? 'Convierte un monto' : 'Convert an amount'}
               </div>
             </Link>
           </div>

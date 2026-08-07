@@ -109,7 +109,7 @@ function DolarBlueCochabamba() {
           ? "dólar blue cochabamba, dólar blue bolivia cochabamba, tipo cambio cochabamba, cotización dólar blue cochabamba, precio dólar blue cochabamba, dónde cambiar dólares cochabamba, cambio dólares cochabamba, dólar paralelo cochabamba"
           : "blue dollar cochabamba, blue dollar bolivia cochabamba, exchange rate cochabamba, blue dollar quote cochabamba, blue dollar price cochabamba, where to exchange dollars cochabamba, exchange dollars cochabamba, parallel dollar cochabamba"}
         canonical="/dolar-blue-cochabamba"
-        noindex={true} // Keep noindexed - city pages are too similar to each other (AdSense risk)
+        noindex={false}
         structuredData={[articleSchema, faqSchema]}
       />
       
@@ -136,8 +136,8 @@ function DolarBlueCochabamba() {
         </h1>
         <p className="text-center text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-3 sm:mb-6">
           {language === 'es'
-            ? 'Consulta la cotización del dólar blue en Cochabamba actualizada cada 15 minutos con datos en tiempo real de Binance P2P'
-            : 'Check the blue dollar quote in Cochabamba updated every 15 minutes with real-time data from Binance P2P'}
+            ? 'Referencia del paralelo para Cochabamba (La Cancha, Heroínas, Queru Queru): mediana nacional Binance P2P más contexto del valle para comparar antes de cambiar.'
+            : 'Parallel-market reference for Cochabamba (La Cancha, Heroínas, Queru Queru): national Binance P2P median plus valley context to compare before you exchange.'}
         </p>
 
         <section>
@@ -170,8 +170,8 @@ function DolarBlueCochabamba() {
             <div className="prose prose-lg dark:prose-invert max-w-none">
               <p className="text-gray-700 dark:text-gray-300 mb-4">
                 {language === 'es' 
-                  ? <>El <strong>dólar blue en Cochabamba</strong> es el tipo de cambio del dólar estadounidense en el mercado paralelo de la tercera ciudad más grande de Bolivia. La cotización del <strong>dólar blue Cochabamba</strong> se actualiza cada 15 minutos en nuestra plataforma utilizando datos en tiempo real de Binance P2P, proporcionando la información más precisa sobre el <strong>tipo de cambio en Cochabamba</strong>.</>
-                  : <>The <strong>blue dollar in Cochabamba</strong> is the exchange rate of the US dollar in the parallel market of Bolivia's third largest city. The <strong>blue dollar Cochabamba</strong> quote is updated every 15 minutes on our platform using real-time data from Binance P2P, providing the most accurate information about the <strong>exchange rate in Cochabamba</strong>.</>}
+                  ? <>En <strong>Cochabamba</strong> el paralelo responde a comercio de La Cancha, manufactura del valle y remesas familiares cerca de Plaza 14 de Septiembre y Av. Heroínas. La cifra aquí es la mediana nacional Binance P2P—compárala con tu casa de cambio o P2P local. Herramientas: <Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline">dólar blue hoy</Link>, <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline">calculadora</Link>, <Link to="/cotiza-dolar-paralelo" className="text-blue-600 dark:text-blue-400 hover:underline">cómo cotizar</Link>.</>
+                  : <>In <strong>Cochabamba</strong>, parallel demand follows La Cancha trade, valley manufacturing, and family remittances near Plaza 14 de Septiembre and Av. Heroínas. The figure here is the national Binance P2P median—compare it with your local exchange house or P2P. Tools: <Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline">blue dollar today</Link>, <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline">calculator</Link>, <Link to="/cotiza-dolar-paralelo" className="text-blue-600 dark:text-blue-400 hover:underline">how to quote</Link>.</>}
               </p>
 
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
@@ -333,7 +333,7 @@ function DolarBlueCochabamba() {
           <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">
             {language === 'es' ? 'Páginas Relacionadas' : 'Related Pages'}
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             <Link
               to="/dolar-blue-hoy"
               className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
@@ -342,7 +342,18 @@ function DolarBlueCochabamba() {
                 {language === 'es' ? 'Dólar Blue Hoy' : 'Blue Dollar Today'}
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-400">
-                {language === 'es' ? 'Cotización actual' : 'Current quote'}
+                {language === 'es' ? 'Cotización del día' : 'Today’s quote'}
+              </div>
+            </Link>
+            <Link
+              to="/dolar-paralelo-bolivia-en-vivo"
+              className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+            >
+              <div className="font-medium text-gray-900 dark:text-white mb-1">
+                {language === 'es' ? 'Paralelo EN VIVO' : 'Parallel LIVE'}
+              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                {language === 'es' ? 'Monitor continuo' : 'Continuous monitor'}
               </div>
             </Link>
             <Link

@@ -1,57 +1,51 @@
 /**
- * Historical Area Chart Component
- * 
- * Professional dual area/line chart using TradingView Lightweight Charts
- * for displaying Buy and Sell price series over time.
- * 
- * Usage:
- *   <HistoricalAreaChart
- *     buyData={buyDataArray}
- *     sellData={sellDataArray}
- *     height={400}
- *     timeframe="1D"
- *   />
- * 
- * Data Format:
- *   buyData and sellData should be arrays of time-value pairs:
- *   [
- *     { time: '2025-12-07T10:00:00', value: 9.51 },
- *     { time: '2025-12-07T11:00:00', value: 9.52 },
- *     ...
- *   ]
- * 
- * The component automatically:
- * - Converts time strings to Unix timestamps
- * - Handles window resizing with ResizeObserver
- * - Applies dark theme styling
- * - Shows tooltip with Buy, Sell, and spread percentage on hover
- * - Uses two area series with subtle gradients for professional look
+ * Dual buy/sell area chart (TradingView Lightweight Charts).
+ * Uses real UTC timestamps (local labels via tickMarkFormatter) and dedupes
+ * same-second points so setData never throws.
  */
 
 import { useEffect, useRef, useState } from 'react';
 import { createChart, AreaSeries } from 'lightweight-charts';
-import type { IChartApi, ISeriesApi, Time } from 'lightweight-charts';
+import type { IChartApi, ISeriesApi, Time, UTCTimestamp } from 'lightweight-charts';
 
 export interface TimeValuePoint {
-  time: string | number; // ISO string or Unix timestamp
+  time: string | number;
   value: number;
 }
 
 export interface HistoricalAreaChartProps {
-  /** Array of Buy price data points */
   buyData: TimeValuePoint[];
-  /** Array of Sell price data points */
   sellData: TimeValuePoint[];
-  /** Chart height in pixels */
   height?: number;
-  /** Chart width (defaults to 100% of container) */
   width?: number;
-  /** Timeframe label for display (e.g., "1D", "1W", "ALL") */
   timeframe?: string;
-  /** Whether to show loading state */
   isLoading?: boolean;
-  /** Optional className for the container */
   className?: string;
+}
+
+function toUnixSeconds(time: string | number): number {
+  if (typeof time === 'number') return Math.floor(time);
+  const ms = Date.parse(String(time));
+  return Number.isFinite(ms) ? Math.floor(ms / 1000) : NaN;
+}
+
+/** Dedupe by UTC second — Lightweight Charts rejects duplicate times. */
+function toUniqueSeries(points: TimeValuePoint[] | undefined) {
+  const byTime = new Map<number, number>();
+  for (const point of points || []) {
+    if (!Number.isFinite(point.value) || point.value <= 0) continue;
+    const t = toUnixSeconds(point.time);
+    if (!Number.isFinite(t)) continue;
+    byTime.set(t, point.value);
+  }
+  return [...byTime.entries()]
+    .sort((a, b) => a[0] - b[0])
+    .map(([time, value]) => ({ time: time as UTCTimestamp, value }));
+}
+
+function readIsDark() {
+  if (typeof document === 'undefined') return false;
+  return document.documentElement.classList.contains('dark');
 }
 
 export default function HistoricalAreaChart({
@@ -67,7 +61,11 @@ export default function HistoricalAreaChart({
   const chartRef = useRef<IChartApi | null>(null);
   const buySeriesRef = useRef<ISeriesApi<'Area'> | null>(null);
   const sellSeriesRef = useRef<ISeriesApi<'Area'> | null>(null);
-  const resizeObserverRef = useRef<ResizeObserver | null>(null);
+  const buyDataRef = useRef(buyData);
+  const sellDataRef = useRef(sellData);
+  buyDataRef.current = buyData;
+  sellDataRef.current = sellData;
+
   const [tooltipData, setTooltipData] = useState<{
     time: string;
     buy: number;
@@ -75,108 +73,106 @@ export default function HistoricalAreaChart({
     spread: number;
     spreadPercent: number;
   } | null>(null);
+  const [isDark, setIsDark] = useState(readIsDark);
 
-  // Convert time string to Unix timestamp (seconds)
-  const timeToUnix = (time: string | number): number => {
-    if (typeof time === 'number') return time;
-    return Math.floor(new Date(time).getTime() / 1000);
-  };
-
-  // Chart library displays in UTC; convert so axis shows local time (e.g. 18:15 not 22:15)
-  const timeToUnixLocal = (time: string | number): number => {
-    const unix = timeToUnix(time);
-    return unix - new Date().getTimezoneOffset() * 60;
-  };
-
-  // Initialize chart
   useEffect(() => {
-    if (!chartContainerRef.current) return;
+    const root = document.documentElement;
+    const sync = () => setIsDark(root.classList.contains('dark'));
+    sync();
+    const obs = new MutationObserver(sync);
+    obs.observe(root, { attributes: true, attributeFilter: ['class'] });
+    return () => obs.disconnect();
+  }, []);
 
-    // Create chart with dark theme
-    const chart = createChart(chartContainerRef.current, {
+  const applySeriesData = () => {
+    if (!buySeriesRef.current || !sellSeriesRef.current) return;
+    try {
+      const buy = toUniqueSeries(buyDataRef.current);
+      const sell = toUniqueSeries(sellDataRef.current);
+      if (buy.length) buySeriesRef.current.setData(buy);
+      if (sell.length) sellSeriesRef.current.setData(sell);
+      chartRef.current?.timeScale().fitContent();
+    } catch (err) {
+      console.error('[HistoricalAreaChart] setData failed:', err);
+    }
+  };
+
+  // Keep the chart container mounted so init/resize always have a real node.
+  useEffect(() => {
+    const el = chartContainerRef.current;
+    if (!el) return;
+
+    const dark = readIsDark();
+    const initialWidth = Math.max(width || el.clientWidth || el.parentElement?.clientWidth || 320, 1);
+
+    const chart = createChart(el, {
       layout: {
-        background: { color: '#1F2937' }, // dark:bg-gray-800
-        textColor: '#D1D5DB', // dark:text-gray-300
+        background: { color: dark ? '#1F2937' : '#FFFFFF' },
+        textColor: dark ? '#D1D5DB' : '#374151',
       },
       grid: {
-        vertLines: {
-          color: '#374151', // dark:border-gray-700
-          style: 1, // Solid
-          visible: true,
-        },
-        horzLines: {
-          color: '#374151',
-          style: 1,
-          visible: true,
-        },
+        vertLines: { color: dark ? '#374151' : '#E5E7EB', style: 1, visible: true },
+        horzLines: { color: dark ? '#374151' : '#E5E7EB', style: 1, visible: true },
       },
-      width: width || chartContainerRef.current.clientWidth,
-      height: height,
+      width: initialWidth,
+      height,
       timeScale: {
-        timeVisible: true,
+        timeVisible: timeframe === '1D' || timeframe === '1W',
         secondsVisible: false,
-        borderColor: '#4B5563', // dark:border-gray-600
-        // 1D = time (hour:min), 1W/1M/1Y/ALL = date
-        ...(timeframe === '1D'
-          ? {
-              tickMarkFormatter: (time: number) => {
-                const date = new Date(time * 1000);
-                return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
-              }
-            }
-          : {
-              tickMarkFormatter: (time: number) => {
-                const date = new Date(time * 1000);
-                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-              }
-            }
-        ),
+        borderColor: dark ? '#4B5563' : '#D1D5DB',
+        tickMarkFormatter: (time: Time) => {
+          const date = new Date(Number(time) * 1000);
+          if (timeframe === '1D') {
+            return date.toLocaleTimeString(undefined, {
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false,
+            });
+          }
+          if (timeframe === '1W') {
+            return date.toLocaleString(undefined, {
+              month: 'short',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false,
+            });
+          }
+          return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+        },
       },
       rightPriceScale: {
-        borderColor: '#4B5563',
-        scaleMargins: {
-          top: 0.1,
-          bottom: 0.1,
-        },
+        borderColor: dark ? '#4B5563' : '#D1D5DB',
+        scaleMargins: { top: 0.1, bottom: 0.1 },
       },
       localization: {
-        priceFormatter: (price: number) => price.toFixed(2) + ' Bs',
+        priceFormatter: (price: number) => `${price.toFixed(2)} Bs`,
       },
       crosshair: {
-        mode: 1, // Normal crosshair
-        vertLine: {
-          color: '#6B7280',
-          width: 1,
-          style: 2, // Dashed
-        },
-        horzLine: {
-          color: '#6B7280',
-          width: 1,
-          style: 2, // Dashed
-        },
+        mode: 1,
+        vertLine: { color: '#9CA3AF', width: 1, style: 2 },
+        horzLine: { color: '#9CA3AF', width: 1, style: 2 },
       },
     });
 
-    // Add Buy area series (green)
     const buySeries = chart.addSeries(AreaSeries, {
-      lineColor: '#10B981', // green-500
-      topColor: 'rgba(16, 185, 129, 0.3)', // green-500 with opacity
-      bottomColor: 'rgba(16, 185, 129, 0.05)', // green-500 with low opacity
+      lineColor: '#10B981',
+      topColor: 'rgba(16, 185, 129, 0.28)',
+      bottomColor: 'rgba(16, 185, 129, 0.04)',
       lineWidth: 2,
       priceLineVisible: false,
-      lastValueVisible: false,
+      lastValueVisible: true,
       crosshairMarkerVisible: true,
       crosshairMarkerRadius: 4,
     });
 
-    // Add Sell area series (red)
     const sellSeries = chart.addSeries(AreaSeries, {
-      lineColor: '#EF4444', // red-500
-      topColor: 'rgba(239, 68, 68, 0.3)', // red-500 with opacity
-      bottomColor: 'rgba(239, 68, 68, 0.05)', // red-500 with low opacity
+      lineColor: '#EF4444',
+      topColor: 'rgba(239, 68, 68, 0.28)',
+      bottomColor: 'rgba(239, 68, 68, 0.04)',
       lineWidth: 2,
       priceLineVisible: false,
-      lastValueVisible: false,
+      lastValueVisible: true,
       crosshairMarkerVisible: true,
       crosshairMarkerRadius: 4,
     });
@@ -184,187 +180,130 @@ export default function HistoricalAreaChart({
     chartRef.current = chart;
     buySeriesRef.current = buySeries;
     sellSeriesRef.current = sellSeries;
+    applySeriesData();
 
-    // Handle resize with ResizeObserver for better container tracking
-    let handleResize: (() => void) | null = null;
-    
-    if (chartContainerRef.current && 'ResizeObserver' in window) {
-      resizeObserverRef.current = new ResizeObserver((entries) => {
-        for (const entry of entries) {
-          if (chartRef.current && entry.target === chartContainerRef.current) {
-            const { width: containerWidth, height: containerHeight } = entry.contentRect;
-            chartRef.current.applyOptions({
-              width: width || containerWidth,
-              height: height || containerHeight,
-            });
-          }
-        }
+    const resizeObserver = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (!entry || !chartRef.current) return;
+      const nextWidth = Math.round(entry.contentRect.width);
+      if (nextWidth < 2) return; // ignore collapsed/hidden layout frames
+      chartRef.current.applyOptions({
+        width: width || nextWidth,
+        height,
       });
-      resizeObserverRef.current.observe(chartContainerRef.current);
-    } else {
-      // Fallback to window resize for older browsers
-      handleResize = () => {
-        if (chartContainerRef.current && chartRef.current) {
-          chartRef.current.applyOptions({
-            width: width || chartContainerRef.current.clientWidth,
-            height: height,
-          });
-        }
-      };
-      window.addEventListener('resize', handleResize);
-    }
+    });
+    resizeObserver.observe(el);
 
-    // Handle crosshair move for tooltip
     chart.subscribeCrosshairMove((param) => {
-      if (param.point === undefined || !param.time || param.point.x < 0 || param.point.x > chartContainerRef.current!.clientWidth || param.point.y < 0 || param.point.y > chartContainerRef.current!.clientHeight) {
+      if (
+        param.point === undefined ||
+        !param.time ||
+        param.point.x < 0 ||
+        param.point.x > el.clientWidth ||
+        param.point.y < 0 ||
+        param.point.y > el.clientHeight
+      ) {
         setTooltipData(null);
         return;
       }
 
-      const buyDataPoint = param.seriesData.get(buySeries);
-      const sellDataPoint = param.seriesData.get(sellSeries);
-      
-      if (buyDataPoint && sellDataPoint && 'value' in buyDataPoint && 'value' in sellDataPoint) {
-        const buy = buyDataPoint.value as number;
-        const sell = sellDataPoint.value as number;
-        const spread = buy - sell;
-        const spreadPercent = (spread / sell) * 100;
-        
-        // param.time is in "display" (local) seconds; convert back for tooltip
-        const displayUnix = (param.time as number) * 1000;
-        const date = new Date(displayUnix + new Date().getTimezoneOffset() * 60 * 1000);
-        
-        // Format time based on timeframe
-        let timeString: string;
-        if (timeframe === '1D' || timeframe === '1W') {
-          timeString = date.toLocaleString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false,
-          });
-        } else {
-          timeString = date.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-          });
-        }
-        
-        setTooltipData({
-          time: timeString,
-          buy,
-          sell,
-          spread,
-          spreadPercent,
-        });
-      } else {
+      const buyPoint = param.seriesData.get(buySeries);
+      const sellPoint = param.seriesData.get(sellSeries);
+      if (
+        !buyPoint ||
+        !sellPoint ||
+        !('value' in buyPoint) ||
+        !('value' in sellPoint)
+      ) {
         setTooltipData(null);
+        return;
       }
+
+      const buy = buyPoint.value as number;
+      const sell = sellPoint.value as number;
+      const spread = buy - sell;
+      const spreadPercent = sell ? (spread / sell) * 100 : 0;
+      const date = new Date(Number(param.time) * 1000);
+      const timeString =
+        timeframe === '1D' || timeframe === '1W'
+          ? date.toLocaleString(undefined, {
+              month: 'short',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false,
+            })
+          : date.toLocaleDateString(undefined, {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+            });
+
+      setTooltipData({ time: timeString, buy, sell, spread, spreadPercent });
     });
 
     return () => {
-      if (resizeObserverRef.current && chartContainerRef.current) {
-        resizeObserverRef.current.unobserve(chartContainerRef.current);
-        resizeObserverRef.current.disconnect();
-      }
-      if (handleResize) {
-        window.removeEventListener('resize', handleResize);
-      }
+      resizeObserver.disconnect();
       chart.remove();
+      chartRef.current = null;
+      buySeriesRef.current = null;
+      sellSeriesRef.current = null;
     };
-  }, [height, width, timeframe]);
+  }, [height, width, timeframe, isDark]);
 
-  // Dedupe by second — Lightweight Charts throws on duplicate times (common when
-  // GHA + Vercel + self-heal insert multiple rows in the same second).
-  const toUniqueSeries = (points: TimeValuePoint[]) => {
-    const byTime = new Map<number, number>();
-    for (const point of points) {
-      if (!Number.isFinite(point.value) || point.value <= 0) continue;
-      const t = timeToUnixLocal(point.time);
-      if (!Number.isFinite(t)) continue;
-      byTime.set(t, point.value); // last write wins
-    }
-    return [...byTime.entries()]
-      .sort((a, b) => a[0] - b[0])
-      .map(([time, value]) => ({ time: time as Time, value }));
-  };
-
-  // Update chart data when data props change
   useEffect(() => {
-    if (!buySeriesRef.current || !sellSeriesRef.current) return;
-
-    try {
-      if (buyData && buyData.length > 0) {
-        buySeriesRef.current.setData(toUniqueSeries(buyData));
-      }
-      if (sellData && sellData.length > 0) {
-        sellSeriesRef.current.setData(toUniqueSeries(sellData));
-      }
-      if (chartRef.current) {
-        chartRef.current.timeScale().fitContent();
-      }
-    } catch (err) {
-      console.error('[HistoricalAreaChart] setData failed:', err);
-    }
+    applySeriesData();
   }, [buyData, sellData]);
 
-  if (isLoading) {
-    return (
-      <div className={`flex items-center justify-center ${className}`} style={{ height }}>
-        <div className="text-gray-400">Loading chart data...</div>
-      </div>
-    );
-  }
-
-  if ((!buyData || buyData.length === 0) && (!sellData || sellData.length === 0)) {
-    return (
-      <div className={`flex items-center justify-center ${className}`} style={{ height }}>
-        <div className="text-gray-400">No chart data available</div>
-      </div>
-    );
-  }
+  const empty = (!buyData || buyData.length === 0) && (!sellData || sellData.length === 0);
 
   return (
     <div className={`relative ${className}`}>
-      {/* Tooltip - positioned on left to avoid y-axis labels */}
-      {tooltipData && (
-        <div 
-          className="absolute z-10 bg-gray-800 border-2 border-gray-600 rounded-lg p-3 shadow-xl pointer-events-none"
-          style={{
-            top: '8px',
-            left: '8px',
-            maxWidth: '220px',
-          }}
+      {(isLoading || empty) && (
+        <div
+          className="absolute inset-0 z-10 flex items-center justify-center bg-white/80 dark:bg-gray-900/80 text-gray-500 dark:text-gray-400 text-sm"
+          style={{ height }}
         >
-          <div className="text-xs text-gray-400 mb-2 font-medium">{tooltipData.time}</div>
+          {isLoading ? 'Cargando datos...' : 'No chart data available'}
+        </div>
+      )}
+
+      {tooltipData && (
+        <div
+          className="absolute z-20 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg p-3 shadow-xl pointer-events-none"
+          style={{ top: 8, left: 8, maxWidth: 220 }}
+        >
+          <div className="text-xs text-gray-500 dark:text-gray-400 mb-2 font-medium">
+            {tooltipData.time}
+          </div>
           <div className="space-y-1.5 text-sm">
             <div className="flex justify-between gap-4">
-              <span className="text-gray-300">Buy:</span>
-              <span className="font-mono font-semibold text-green-400">{tooltipData.buy.toFixed(2)} Bs</span>
+              <span className="text-gray-600 dark:text-gray-300">Compra</span>
+              <span className="font-mono font-semibold text-emerald-600 dark:text-green-400">
+                {tooltipData.buy.toFixed(2)} Bs
+              </span>
             </div>
             <div className="flex justify-between gap-4">
-              <span className="text-gray-300">Sell:</span>
-              <span className="font-mono font-semibold text-red-400">{tooltipData.sell.toFixed(2)} Bs</span>
+              <span className="text-gray-600 dark:text-gray-300">Venta</span>
+              <span className="font-mono font-semibold text-rose-600 dark:text-red-400">
+                {tooltipData.sell.toFixed(2)} Bs
+              </span>
             </div>
-            <div className="flex justify-between gap-4 pt-1 border-t border-gray-700">
-              <span className="text-gray-300">Spread:</span>
-              <span className="font-mono font-semibold text-gray-200">
+            <div className="flex justify-between gap-4 pt-1 border-t border-gray-200 dark:border-gray-700">
+              <span className="text-gray-600 dark:text-gray-300">Spread</span>
+              <span className="font-mono font-semibold text-gray-800 dark:text-gray-200">
                 {tooltipData.spread.toFixed(2)} Bs ({tooltipData.spreadPercent.toFixed(2)}%)
               </span>
             </div>
           </div>
         </div>
       )}
-      
-      {/* Chart container */}
-      <div 
-        ref={chartContainerRef} 
+
+      <div
+        ref={chartContainerRef}
         className="w-full"
-        style={{ width: width || '100%', height, minHeight: height }} 
+        style={{ width: width || '100%', height, minHeight: height }}
       />
     </div>
   );
 }
-

@@ -145,7 +145,7 @@ export function convertToTradingViewFormat(ohlcData: OHLCDataPoint[]): Array<{
   close: number;
 }> {
   return ohlcData.map((point) => ({
-    time: new Date(point.time).getTime() / 1000, // Convert to Unix timestamp
+    time: Math.floor(new Date(point.time).getTime() / 1000), // UTC seconds (integer)
     open: point.open,
     high: point.high,
     low: point.low,

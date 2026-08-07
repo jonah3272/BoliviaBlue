@@ -25,6 +25,18 @@ function BlueChart({ showOfficial = false }) {
   const [chartType, setChartType] = useState('area'); // 'area' or 'candlestick'
   const rangeForAnalyticsRef = useRef('1W');
 
+  const [chartHeight, setChartHeight] = useState(320);
+
+  useEffect(() => {
+    const update = () => {
+      const w = window.innerWidth;
+      setChartHeight(w >= 768 ? 420 : w >= 640 ? 320 : 240);
+    };
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, []);
+
   const selectRange = (value, isDisabled) => {
     if (isDisabled) return;
     const prev = rangeForAnalyticsRef.current;
@@ -526,14 +538,12 @@ function BlueChart({ showOfficial = false }) {
             </div>
           </div>
           
-          <div className="h-[240px] sm:h-[320px] md:h-[420px]">
+          <div className="w-full" style={{ height: chartHeight }}>
             {chartType === 'area' ? (
               <HistoricalAreaChart
                 buyData={areaChartData.buyData}
                 sellData={areaChartData.sellData}
-                height={typeof window !== 'undefined' ? 
-                  (window.innerWidth >= 768 ? 420 : window.innerWidth >= 640 ? 320 : 240) : 
-                  320}
+                height={chartHeight}
                 timeframe={range}
                 isLoading={isLoading}
                 className="w-full"
@@ -541,9 +551,7 @@ function BlueChart({ showOfficial = false }) {
             ) : (
               <HistoricalCandlestickChart
                 data={candlestickData}
-                height={typeof window !== 'undefined' ? 
-                  (window.innerWidth >= 768 ? 420 : window.innerWidth >= 640 ? 320 : 240) : 
-                  320}
+                height={chartHeight}
                 timeframe={range}
                 isLoading={isLoading}
                 className="w-full"

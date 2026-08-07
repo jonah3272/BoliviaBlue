@@ -85,7 +85,7 @@ export default function HistoricalCandlestickChart({
           style: 1,
         },
       },
-      width: width || chartContainerRef.current.clientWidth,
+      width: Math.max(width || chartContainerRef.current.clientWidth || 320, 1),
       height: height,
       timeScale: {
         timeVisible: true,
@@ -141,10 +141,11 @@ export default function HistoricalCandlestickChart({
       resizeObserverRef.current = new ResizeObserver((entries) => {
         for (const entry of entries) {
           if (chartRef.current && entry.target === chartContainerRef.current) {
-            const { width: containerWidth, height: containerHeight } = entry.contentRect;
+            const { width: containerWidth } = entry.contentRect;
+            if (containerWidth < 2) return;
             chartRef.current.applyOptions({
               width: width || containerWidth,
-              height: height || containerHeight,
+              height,
             });
           }
         }
@@ -173,10 +174,7 @@ export default function HistoricalCandlestickChart({
       const data = param.seriesData.get(candlestickSeries);
       if (data && 'open' in data) {
         const candleData = data as CandlestickData;
-        // time is in "display" (local) seconds; add offset back for correct tooltip time
-        const displaySec = candleData.time as number;
-        const timestamp = (displaySec + new Date().getTimezoneOffset() * 60) * 1000;
-        const date = new Date(timestamp);
+        const date = new Date(Number(candleData.time) * 1000);
         
         // Format time based on timeframe
         let timeString: string;
@@ -220,21 +218,17 @@ export default function HistoricalCandlestickChart({
     };
   }, [height, width, timeframe]);
 
-  // Chart displays in UTC; convert so x-axis shows local time (match "Actualizado" / area chart)
-  const tzOffsetSeconds = new Date().getTimezoneOffset() * 60;
-
   // Update chart data when data prop changes
   useEffect(() => {
     if (!seriesRef.current || !data || data.length === 0) return;
 
-    // Convert to TradingView format, then adjust time so axis shows local not UTC.
-    // Dedupe by second — Lightweight Charts rejects duplicate times.
+    // Integer UTC seconds + dedupe — Lightweight Charts rejects duplicate times.
     const raw = convertToTradingViewFormat(data);
     const byTime = new Map<number, (typeof raw)[number]>();
-    for (const d of raw) {
-      const t = d.time - tzOffsetSeconds;
+    for (const candle of raw) {
+      const t = Math.floor(Number(candle.time));
       if (!Number.isFinite(t)) continue;
-      byTime.set(t, { ...d, time: t });
+      byTime.set(t, { ...candle, time: t });
     }
     const chartData = [...byTime.entries()]
       .sort((a, b) => a[0] - b[0])
@@ -242,13 +236,11 @@ export default function HistoricalCandlestickChart({
 
     try {
       seriesRef.current.setData(chartData as any);
-      if (chartRef.current) {
-        chartRef.current.timeScale().fitContent();
-      }
+      chartRef.current?.timeScale().fitContent();
     } catch (err) {
       console.error('[HistoricalCandlestickChart] setData failed:', err);
     }
-  }, [data, tzOffsetSeconds]);
+  }, [data]);
 
   if (isLoading) {
     return (

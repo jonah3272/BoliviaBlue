@@ -60,16 +60,17 @@ export function transformToAreaChartData(
     };
   }
 
-  // Use data directly
-  return {
-    buyData: data.map(point => ({
-      time: point.t,
-      value: showOfficial ? (point.official_buy || point.buy || 0) : (point.buy || 0),
-    })).filter(point => point.value > 0), // Filter out invalid data
-    sellData: data.map(point => ({
-      time: point.t,
-      value: showOfficial ? (point.official_sell || point.sell || 0) : (point.sell || 0),
-    })).filter(point => point.value > 0), // Filter out invalid data
-  };
+  // Use data directly (dedupe identical second-level stamps for the chart lib)
+  const buyData = data.map(point => ({
+    time: point.t,
+    value: showOfficial ? (point.official_buy || point.buy || 0) : (point.buy || 0),
+  })).filter(point => point.value > 0);
+
+  const sellData = data.map(point => ({
+    time: point.t,
+    value: showOfficial ? (point.official_sell || point.sell || 0) : (point.sell || 0),
+  })).filter(point => point.value > 0);
+
+  return { buyData, sellData };
 }
 

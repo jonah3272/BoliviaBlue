@@ -30,6 +30,8 @@ const pages = [
   { path: '/plataformas', changefreq: 'weekly', priority: '0.85' },
   { path: '/binance-p2p-bolivia', changefreq: 'daily', priority: '0.85' },
   { path: '/usdt-bolivia', changefreq: 'daily', priority: '0.85' },
+  { path: '/euro-a-boliviano', changefreq: 'hourly', priority: '0.95' },
+  { path: '/real-a-boliviano', changefreq: 'hourly', priority: '0.9' },
   { path: '/bancos', changefreq: 'monthly', priority: '0.75' },
   { path: '/preguntas-frecuentes', changefreq: 'monthly', priority: '0.85' },
   { path: '/fuente-de-datos', changefreq: 'monthly', priority: '0.75' },

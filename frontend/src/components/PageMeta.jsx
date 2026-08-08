@@ -27,21 +27,19 @@ export default function PageMeta({
   // Auto-add noindex for stage environment
   const shouldNoindex = noindex || isStage;
   
-  // Always use non-www version for canonical URLs (www redirects to non-www via vercel.json)
-  // This ensures consistent canonicalization and prevents duplicate content issues
+  // Always apex (non-www). Do not let ?lang= create a competing indexed URL:
+  // canonical is always the clean path; EN is announced only via hreflang.
   const baseUrl = isStage ? 'https://stage.boliviablue.com' : 'https://boliviablue.com';
-  
-  // Always use canonical path without query parameters for the canonical URL
-  // This ensures that ?lang=en pages canonicalize to the base URL
-  // Language variants are handled via hreflang tags, not separate canonical URLs
-  const canonicalPath = canonical || '/';
+
+  const canonicalPath = (canonical || '/').split('?')[0] || '/';
   const fullCanonical = `${baseUrl}${canonicalPath}`;
   const fullOgImage = ogImage.startsWith('http') ? ogImage : `${baseUrl}${ogImage}`;
 
-  // Generate hreflang tags - these point to language alternates
-  const currentPath = canonicalPath;
-  const alternateEs = `${baseUrl}${currentPath}`;
-  const alternateEn = `${baseUrl}${currentPath}${currentPath === '/' ? '?lang=en' : (currentPath.includes('?') ? '&lang=en' : '?lang=en')}`;
+  const alternateEs = `${baseUrl}${canonicalPath}`;
+  const alternateEn =
+    canonicalPath === '/'
+      ? `${baseUrl}/?lang=en`
+      : `${baseUrl}${canonicalPath}?lang=en`;
 
   return (
     <Helmet>
@@ -58,16 +56,17 @@ export default function PageMeta({
       <meta name="apple-mobile-web-app-title" content="Bolivia Blue" />
 
       {/* Language and Geo */}
+      <html lang={language === 'en' ? 'en' : 'es'} />
       <meta name="language" content={language === 'es' ? 'Spanish' : 'English'} />
       <meta name="geo.region" content="BO" />
       <meta name="geo.placename" content="Bolivia" />
 
-      {/* Hreflang Tags */}
-      <link rel="alternate" hreflang="es" href={alternateEs} />
-      <link rel="alternate" hreflang="en" href={alternateEn} />
-      <link rel="alternate" hreflang="x-default" href={alternateEs} />
+      {/* Hreflang: ES = clean path (x-default); EN = ?lang=en alternate only */}
+      <link rel="alternate" hrefLang="es" href={alternateEs} />
+      <link rel="alternate" hrefLang="en" href={alternateEn} />
+      <link rel="alternate" hrefLang="x-default" href={alternateEs} />
 
-      {/* Open Graph / Facebook */}
+      {/* Open Graph / Facebook — always point to clean canonical, never ?lang= */}
       <meta property="og:type" content={ogType} />
       <meta property="og:url" content={fullCanonical} />
       <meta property="og:title" content={title} />

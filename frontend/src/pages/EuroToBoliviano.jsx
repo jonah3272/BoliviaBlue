@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import { fetchBlueRate } from '../utils/api';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
+import { buildLiveRateSeoMeta } from '../utils/seoRateMeta';
 
 function EuroToBoliviano() {
   // Signal to AdSense that this page has sufficient content
@@ -49,15 +50,19 @@ function EuroToBoliviano() {
   const sellStr = Number.isFinite(sell) ? sell.toFixed(2) : null;
   const hundredStr = Number.isFinite(buy) ? (buy * 100).toFixed(2) : null;
 
+  const liveSeo = buildLiveRateSeoMeta({
+    buy,
+    sell,
+    updatedAt: currentRate?.updated_at_iso || null,
+    language,
+    page: 'euro',
+  });
+
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "Article",
-    "headline": language === 'es' 
-      ? "Euro a Boliviano - Tipo de Cambio Actual 2025 | Convertir EUR a BOB"
-      : "Euro to Boliviano - Current Exchange Rate 2025 | Convert EUR to BOB",
-    "description": language === 'es'
-      ? "Convierte Euro a Boliviano (EUR a BOB) con el tipo de cambio actualizado cada 15 minutos. Calculadora gratuita, cotización en tiempo real y guía completa para cambiar euros a bolivianos en Bolivia."
-      : "Convert Euro to Boliviano (EUR to BOB) with the exchange rate updated every 15 minutes. Free calculator, real-time quote and complete guide to exchange euros to bolivianos in Bolivia.",
+    "headline": liveSeo.title,
+    "description": liveSeo.description,
     "author": {
       "@type": "Organization",
       "name": "Bolivia Blue con Paz"
@@ -141,15 +146,11 @@ function EuroToBoliviano() {
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
-        title={language === 'es'
-          ? 'Euro a Boliviano - Tipo de Cambio Actual 2025 | Convertir EUR a BOB'
-          : 'Euro to Boliviano - Current Exchange Rate 2025 | Convert EUR to BOB'}
-        description={language === 'es'
-          ? 'Convierte Euro a Boliviano (EUR a BOB) con el tipo de cambio actualizado cada 15 minutos. Calculadora gratuita, cotización en tiempo real y guía completa para cambiar euros a bolivianos en Bolivia. Gratis y sin registro.'
-          : 'Convert Euro to Boliviano (EUR to BOB) with the exchange rate updated every 15 minutes. Free calculator, real-time quote and complete guide to exchange euros to bolivianos in Bolivia. Free and no registration required.'}
+        title={liveSeo.title}
+        description={liveSeo.description}
         keywords={language === 'es'
-          ? "euro a boliviano, eur a bob, convertir euro a boliviano, tipo de cambio euro boliviano, cambiar euros a bolivianos, euro bolivia, cotización euro boliviano, eur/bob"
-          : "euro to boliviano, eur to bob, convert euro to boliviano, euro boliviano exchange rate, exchange euros to bolivianos, euro bolivia, euro boliviano quote, eur/bob"}
+          ? "euro blue bolivia, euro a boliviano blue, precio del euro mercado negro bolivia, euro paralelo bolivia, eur a bob, convertir euro a boliviano, cotización euro boliviano, binance p2p euro"
+          : "euro blue bolivia, parallel euro bolivia, euro black market bolivia, eur to bob, convert euro to boliviano, euro boliviano exchange rate, binance p2p euro"}
         canonical="/euro-a-boliviano"
         structuredData={[articleSchema, faqSchema]}
       />
@@ -171,9 +172,9 @@ function EuroToBoliviano() {
         />
 
         <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2 text-center">
-          {language === 'es' 
-            ? 'Euro a Boliviano - Tipo de Cambio Actual'
-            : 'Euro to Boliviano - Current Exchange Rate'}
+          {language === 'es'
+            ? 'Euro Blue Bolivia – EUR a BOB (Mercado Paralelo)'
+            : 'Euro Blue Bolivia – EUR to BOB (Parallel Market)'}
         </h1>
         <p className="text-center text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-3 sm:mb-6 min-h-[1.75rem]">
           {lastUpdated
@@ -228,19 +229,25 @@ function EuroToBoliviano() {
           <div className="max-w-4xl mx-auto">
             <div className="prose prose-lg dark:prose-invert max-w-none">
               <h2 className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
-                {language === 'es' 
-                  ? 'Convertir Euro a Boliviano (EUR a BOB)'
-                  : 'Convert Euro to Boliviano (EUR to BOB)'}
+                {language === 'es'
+                  ? 'Euro blue / mercado negro: EUR a BOB en Bolivia'
+                  : 'Euro blue / parallel market: EUR to BOB in Bolivia'}
               </h2>
-              
+
+              <p className="text-gray-700 dark:text-gray-300 mb-4">
+                {language === 'es'
+                  ? <>El <strong>euro blue</strong> (también llamado euro paralelo o precio del euro en el <strong>mercado negro</strong> de Bolivia) es la cotización EUR/BOB que realmente usan casas de cambio informales y plataformas P2P. No es el tipo oficial del Banco Central: suele estar más cerca del <Link to="/" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">dólar blue</Link> y de lo que ves en <Link to="/binance-p2p-bolivia" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Binance P2P</Link>.</>
+                  : <>The <strong>euro blue</strong> (parallel euro / informal-market EUR price in Bolivia) is the EUR/BOB quote people actually trade on P2P and informal desks. It is not the Central Bank official rate: it tracks closer to the <Link to="/" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">blue dollar</Link> and what you see on <Link to="/binance-p2p-bolivia" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Binance P2P</Link>.</>}
+              </p>
+
               <p className="text-gray-700 dark:text-gray-300 mb-6">
-                {language === 'es' 
-                  ? <>Si necesitas <strong>convertir Euros a Bolivianos</strong>, estás en el lugar correcto. Ofrecemos el <strong>tipo de cambio actualizado</strong> del Euro al Boliviano basado en el mercado paralelo en Bolivia. Esta cotización se actualiza cada 15 minutos y refleja el precio real del Euro en el mercado boliviano.</>
-                  : <>If you need to <strong>convert Euros to Bolivianos</strong>, you're in the right place. We offer the <strong>current exchange rate</strong> from Euro to Boliviano based on the parallel market in Bolivia. This quote is updated every 15 minutes and reflects the real price of the Euro in the Bolivian market.</>}
+                {language === 'es'
+                  ? <>Aquí mostramos el <strong>euro a boliviano blue</strong> actualizado cada 15 minutos (vía USDT en Binance P2P): útil si buscas “precio del euro mercado negro Bolivia”, “euro paralelo” o simplemente convertir EUR a BOB al valor de mercado. Para el dólar, usa también <Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">dólar blue hoy</Link> y la <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">calculadora</Link>.</>
+                  : <>We show the live <strong>euro-to-boliviano blue</strong> rate every 15 minutes (via USDT on Binance P2P)—useful for parallel/black-market EUR queries or converting EUR to BOB at the market price. For USD, see <Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">blue dollar today</Link> and the <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">calculator</Link>.</>}
               </p>
 
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
-                {language === 'es' 
+                {language === 'es'
                   ? 'Conversiones Comunes: Euro a Boliviano'
                   : 'Common Conversions: Euro to Boliviano'}
               </h3>
@@ -412,6 +419,28 @@ function EuroToBoliviano() {
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-400">
                 {language === 'es' ? 'Tipo de cambio USD/BOB' : 'USD/BOB exchange rate'}
+              </div>
+            </Link>
+            <Link
+              to="/binance-p2p-bolivia"
+              className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+            >
+              <div className="font-medium text-gray-900 dark:text-white mb-1">
+                Binance P2P
+              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                {language === 'es' ? 'Cómo operar el paralelo' : 'How to trade the parallel rate'}
+              </div>
+            </Link>
+            <Link
+              to="/dolar-blue-hoy"
+              className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+            >
+              <div className="font-medium text-gray-900 dark:text-white mb-1">
+                {language === 'es' ? 'Dólar blue hoy' : 'Blue dollar today'}
+              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                {language === 'es' ? 'Cotización USD paralelo' : 'USD parallel quote'}
               </div>
             </Link>
           </div>

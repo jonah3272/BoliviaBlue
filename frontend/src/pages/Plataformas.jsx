@@ -238,8 +238,8 @@ function Plataformas() {
     "@context": "https://schema.org",
     "@type": "ComparisonPage",
     "name": language === 'es' 
-      ? "Mejores Plataformas para Comprar Dólares en Bolivia 2025"
-      : "Best Platforms to Buy Dollars in Bolivia 2025",
+      ? "Mejores Plataformas para Comprar Dólares en Bolivia 2026"
+      : "Best Platforms to Buy Dollars in Bolivia 2026",
     "description": language === 'es'
       ? "Comparación completa de las mejores plataformas P2P para comprar y vender dólares en Bolivia: Binance, Airtm, Wallbit, ElDorado P2P, Bitget y Bybit."
       : "Complete comparison of the best P2P platforms to buy and sell dollars in Bolivia: Binance, Airtm, Wallbit, ElDorado P2P, Bitget and Bybit.",
@@ -261,8 +261,8 @@ function Plataformas() {
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
         title={language === 'es' 
-          ? 'Mejores Plataformas para Comprar Dólares en Bolivia 2025 | Comparación Completa'
-          : 'Best Platforms to Buy Dollars in Bolivia 2025 | Complete Comparison'}
+          ? 'Mejores Plataformas para Comprar Dólares en Bolivia 2026 | Comparación Completa'
+          : 'Best Platforms to Buy Dollars in Bolivia 2026 | Complete Comparison'}
         description={language === 'es'
           ? 'Comparación completa de las mejores plataformas P2P para comprar dólares en Bolivia: Binance P2P, Airtm, Wallbit, ElDorado P2P, Bitget y Bybit. Tasas, seguridad, velocidad y más.'
           : 'Complete comparison of the best P2P platforms to buy dollars in Bolivia: Binance P2P, Airtm, Wallbit, ElDorado P2P, Bitget and Bybit. Rates, security, speed and more.'}

@@ -111,7 +111,7 @@ export const translations = {
     aboutCaveatsDesc: 'Los tipos de cambio del mercado paralelo pueden variar significativamente del tipo de cambio oficial del Banco Central de Bolivia. La diferencia (spread) entre ambos indica la presión del mercado y puede reflejar escasez de divisas, expectativas de devaluación, o restricciones cambiarias. Use esta información únicamente como referencia. No nos hacemos responsables de decisiones financieras tomadas con base en estos datos.',
     aboutTransparency: 'Transparencia',
     aboutTransparencyDesc: 'Este es un proyecto de código abierto creado para proporcionar visibilidad sobre el mercado cambiario boliviano durante la presidencia de Rodrigo Paz. El código fuente está disponible públicamente para revisión y auditoría.',
-    aboutLastUpdate: 'Última actualización del sistema: Noviembre 2025',
+    aboutLastUpdate: 'Última actualización del sistema: Agosto 2026',
     
     // About Page (Full)
     aboutPageTitle: 'Acerca de - Bolivia Blue con Paz',
@@ -470,7 +470,7 @@ export const translations = {
     aboutCaveatsDesc: 'Parallel market exchange rates may vary significantly from the official exchange rate of the Central Bank of Bolivia. The difference (spread) between both indicates market pressure and may reflect foreign currency shortages, devaluation expectations, or exchange restrictions. Use this information only as a reference. We are not responsible for financial decisions made based on this data.',
     aboutTransparency: 'Transparency',
     aboutTransparencyDesc: 'This is an open source project created to provide visibility into the Bolivian exchange market during the presidency of Rodrigo Paz.',
-    aboutLastUpdate: 'Last system update: November 2025',
+    aboutLastUpdate: 'Last system update: August 2026',
     
     // About Page (Full)
     aboutPageTitle: 'About - Bolivia Blue with Paz',
@@ -751,6 +751,13 @@ export function LanguageProvider({ children }) {
       if ((langParam === 'en' || langParam === 'es') && langParam !== language) {
         setLanguage(langParam);
       }
+      // Strip redundant ?lang=es so Spanish never competes as a query-param URL
+      if (langParam === 'es') {
+        params.delete('lang');
+        const qs = params.toString();
+        const next = `${window.location.pathname}${qs ? `?${qs}` : ''}${window.location.hash || ''}`;
+        window.history.replaceState({}, '', next);
+      }
     } catch {
       /* ignore */
     }
@@ -774,6 +781,19 @@ export function LanguageProvider({ children }) {
       const newLang = prev === 'es' ? 'en' : 'es';
       // Track language switch
       trackLanguageSwitched({ from_language: prev, to_language: newLang });
+      // Keep shareable EN links via ?lang=en; ES stays on the clean canonical path
+      try {
+        const url = new URL(window.location.href);
+        if (newLang === 'en') {
+          url.searchParams.set('lang', 'en');
+        } else {
+          url.searchParams.delete('lang');
+        }
+        const qs = url.searchParams.toString();
+        window.history.replaceState({}, '', url.pathname + (qs ? `?${qs}` : '') + url.hash);
+      } catch {
+        /* ignore */
+      }
       return newLang;
     });
   };

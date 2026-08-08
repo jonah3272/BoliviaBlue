@@ -42,8 +42,8 @@ function QueEsDolarBlue() {
     "@context": "https://schema.org",
     "@type": "Article",
     "headline": language === 'es' 
-      ? "¿Qué es el Dólar Blue? Guía 2025 – En Bolivia y Latinoamérica | Bolivia Blue"
-      : "What Is the Dollar Blue? Guide 2025 – Bolivia & Latin America | Bolivia Blue",
+      ? "¿Qué es el Dólar Blue? Guía 2026 – En Bolivia y Latinoamérica | Bolivia Blue"
+      : "What Is the Dollar Blue? Guide 2026 – Bolivia & Latin America | Bolivia Blue",
     "description": language === 'es'
       ? "¿Qué es el dólar blue? Guía completa sobre el dólar blue en Bolivia. Explicación del mercado paralelo, cómo funciona, diferencia con el dólar oficial y por qué es importante. Actualizado cada 15 minutos."
       : "What is the blue dollar? Complete guide about the blue dollar in Bolivia. Explanation of the parallel market, how it works, difference with official dollar and why it is important. Updated every 15 minutes.",
@@ -158,8 +158,8 @@ function QueEsDolarBlue() {
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
         title={language === 'es'
-          ? '¿Qué es el Dólar Blue? Guía 2025 – Bolivia y Latinoamérica'
-          : 'What Is the Blue Dollar? Guide 2025 – Bolivia & Latin America'}
+          ? '¿Qué es el Dólar Blue? Guía 2026 – Bolivia y Latinoamérica'
+          : 'What Is the Blue Dollar? Guide 2026 – Bolivia & Latin America'}
         description={language === 'es'
           ? '¿Qué es el dólar blue? Guía completa sobre el dólar blue en Bolivia. Explicación del mercado paralelo, cómo funciona, diferencia con el dólar oficial y por qué es importante. Actualizado cada 15 minutos. Gratis.'
           : 'What is the blue dollar? Complete guide about the blue dollar in Bolivia. Explanation of the parallel market, how it works, difference with official dollar and why it is important. Updated every 15 minutes. Free.'}
@@ -197,7 +197,7 @@ function QueEsDolarBlue() {
             : 'Complete guide about the blue dollar in Bolivia: what it is, how it works and why it is important'}
         </p>
         <p className="text-center text-sm text-gray-500 dark:text-gray-500 mb-3 sm:mb-6">
-          {language === 'es' ? 'Última actualización: Enero 2025' : 'Last updated: January 2025'}
+          {language === 'es' ? 'Última actualización: Agosto 2026' : 'Last updated: August 2026'}
         </p>
 
         {/* Rate Cards */}

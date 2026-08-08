@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import { fetchBlueRate } from '../utils/api';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
+import { buildLiveRateSeoMeta } from '../utils/seoRateMeta';
 
 function RealToBoliviano() {
   // Signal to AdSense that this page has sufficient content
@@ -49,15 +50,19 @@ function RealToBoliviano() {
   const sellStr = Number.isFinite(sell) ? sell.toFixed(2) : null;
   const hundredStr = Number.isFinite(buy) ? (buy * 100).toFixed(2) : null;
 
+  const liveSeo = buildLiveRateSeoMeta({
+    buy,
+    sell,
+    updatedAt: currentRate?.updated_at_iso || null,
+    language,
+    page: 'real',
+  });
+
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "Article",
-    "headline": language === 'es' 
-      ? "Real Brasileño a Boliviano - Tipo de Cambio Actual 2025 | Convertir BRL a BOB"
-      : "Brazilian Real to Boliviano - Current Exchange Rate 2025 | Convert BRL to BOB",
-    "description": language === 'es'
-      ? "Convierte Real Brasileño a Boliviano (BRL a BOB) con el tipo de cambio actualizado cada 15 minutos. Calculadora gratuita, cotización en tiempo real y guía completa para cambiar reales brasileños a bolivianos en Bolivia."
-      : "Convert Brazilian Real to Boliviano (BRL to BOB) with the exchange rate updated every 15 minutes. Free calculator, real-time quote and complete guide to exchange Brazilian reais to bolivianos in Bolivia.",
+    "headline": liveSeo.title,
+    "description": liveSeo.description,
     "author": {
       "@type": "Organization",
       "name": "Bolivia Blue con Paz"
@@ -149,15 +154,11 @@ function RealToBoliviano() {
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
-        title={language === 'es'
-          ? 'Real Brasileño a Boliviano - Tipo de Cambio Actual 2025 | Convertir BRL a BOB'
-          : 'Brazilian Real to Boliviano - Current Exchange Rate 2025 | Convert BRL to BOB'}
-        description={language === 'es'
-          ? 'Convierte Real Brasileño a Boliviano (BRL a BOB) con el tipo de cambio actualizado cada 15 minutos. Calculadora gratuita, cotización en tiempo real y guía completa para cambiar reales brasileños a bolivianos en Bolivia. Gratis y sin registro.'
-          : 'Convert Brazilian Real to Boliviano (BRL to BOB) with the exchange rate updated every 15 minutes. Free calculator, real-time quote and complete guide to exchange Brazilian reais to bolivianos in Bolivia. Free and no registration required.'}
+        title={liveSeo.title}
+        description={liveSeo.description}
         keywords={language === 'es'
-          ? "real brasileño a boliviano, brl a bob, convertir real a boliviano, tipo de cambio real boliviano, cambiar reales a bolivianos, real bolivia, cotización real boliviano, brl/bob, real brasileño bolivia"
-          : "brazilian real to boliviano, brl to bob, convert real to boliviano, real boliviano exchange rate, exchange reais to bolivianos, real bolivia, real boliviano quote, brl/bob, brazilian real bolivia"}
+          ? "real blue bolivia, real a boliviano paralelo, brl a bob mercado negro, real brasileño bolivia, convertir real a boliviano, cotización real boliviano, binance p2p real"
+          : "real blue bolivia, parallel brl to bob, brazilian real bolivia, convert real to boliviano, brl/bob, binance p2p real"}
         canonical="/real-a-boliviano"
         structuredData={[articleSchema, faqSchema]}
       />
@@ -179,9 +180,9 @@ function RealToBoliviano() {
         />
 
         <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2 text-center">
-          {language === 'es' 
-            ? 'Real Brasileño a Boliviano - Tipo de Cambio Actual'
-            : 'Brazilian Real to Boliviano - Current Exchange Rate'}
+          {language === 'es'
+            ? 'Real Blue Bolivia – BRL a BOB (Mercado Paralelo)'
+            : 'Real Blue Bolivia – BRL to BOB (Parallel Market)'}
         </h1>
         <p className="text-center text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-3 sm:mb-6 min-h-[1.75rem]">
           {lastUpdated
@@ -236,19 +237,25 @@ function RealToBoliviano() {
           <div className="max-w-4xl mx-auto">
             <div className="prose prose-lg dark:prose-invert max-w-none">
               <h2 className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
-                {language === 'es' 
-                  ? 'Convertir Real Brasileño a Boliviano (BRL a BOB)'
-                  : 'Convert Brazilian Real to Boliviano (BRL to BOB)'}
+                {language === 'es'
+                  ? 'Real blue / mercado paralelo: BRL a BOB en Bolivia'
+                  : 'Real blue / parallel market: BRL to BOB in Bolivia'}
               </h2>
-              
+
+              <p className="text-gray-700 dark:text-gray-300 mb-4">
+                {language === 'es'
+                  ? <>El <strong>real blue</strong> (real paralelo o precio del real en el mercado informal) es la cotización BRL/BOB que se negocia fuera del tipo oficial del BCB—sobre todo en frontera y en <Link to="/binance-p2p-bolivia" className="text-green-600 dark:text-green-400 hover:underline font-medium">Binance P2P</Link>. Se mueve con el <Link to="/" className="text-green-600 dark:text-green-400 hover:underline font-medium">dólar blue</Link> y con la demanda fronteriza con Brasil.</>
+                  : <>The <strong>real blue</strong> (parallel/informal BRL price) is the BRL/BOB quote traded outside the official BCB rate—especially at the border and on <Link to="/binance-p2p-bolivia" className="text-green-600 dark:text-green-400 hover:underline font-medium">Binance P2P</Link>. It moves with the <Link to="/" className="text-green-600 dark:text-green-400 hover:underline font-medium">blue dollar</Link> and Brazil–Bolivia border demand.</>}
+              </p>
+
               <p className="text-gray-700 dark:text-gray-300 mb-6">
-                {language === 'es' 
-                  ? <>Si necesitas <strong>convertir Reales Brasileños a Bolivianos</strong>, estás en el lugar correcto. Ofrecemos el <strong>tipo de cambio actualizado</strong> del Real Brasileño al Boliviano basado en el mercado paralelo en Bolivia. Esta cotización se actualiza cada 15 minutos y refleja el precio real del Real en el mercado boliviano. Bolivia comparte frontera con Brasil, por lo que este tipo de cambio es especialmente importante para viajeros, comerciantes y personas que reciben remesas.</>
-                  : <>If you need to <strong>convert Brazilian Reais to Bolivianos</strong>, you're in the right place. We offer the <strong>current exchange rate</strong> from Brazilian Real to Boliviano based on the parallel market in Bolivia. This quote is updated every 15 minutes and reflects the real price of the Real in the Bolivian market. Bolivia shares a border with Brazil, so this exchange rate is especially important for travelers, merchants, and people receiving remittances.</>}
+                {language === 'es'
+                  ? <>Actualizamos el <strong>real a boliviano</strong> cada 15 minutos. Si también sigues el dólar, mira <Link to="/dolar-blue-hoy" className="text-green-600 dark:text-green-400 hover:underline font-medium">dólar blue hoy</Link> o la <Link to="/calculadora" className="text-green-600 dark:text-green-400 hover:underline font-medium">calculadora</Link>.</>
+                  : <>We update <strong>real-to-boliviano</strong> every 15 minutes. For USD, see <Link to="/dolar-blue-hoy" className="text-green-600 dark:text-green-400 hover:underline font-medium">blue dollar today</Link> or the <Link to="/calculadora" className="text-green-600 dark:text-green-400 hover:underline font-medium">calculator</Link>.</>}
               </p>
 
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
-                {language === 'es' 
+                {language === 'es'
                   ? 'Conversiones Comunes: Real Brasileño a Boliviano'
                   : 'Common Conversions: Brazilian Real to Boliviano'}
               </h3>

@@ -276,8 +276,8 @@ function DatosHistoricos() {
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
         title={language === 'es' 
-          ? 'Datos Históricos Dólar Blue Bolivia | Archivo 2024-2025'
-          : 'Blue Dollar Bolivia Historical Data | Archive 2024-2025'}
+          ? 'Datos Históricos Dólar Blue Bolivia | Archivo 2024-2026'
+          : 'Blue Dollar Bolivia Historical Data | Archive 2024-2026'}
         description={language === 'es'
           ? 'Archivo de datos históricos del dólar blue en Bolivia. Promedios, máximos, mínimos y tendencias desde 2024. Incluye el Valor referencial del dólar estadounidense (BCB) para comparación. Descarga disponible.'
           : 'Historical blue dollar data archive in Bolivia. Averages, highs, lows and trends since 2024. Includes the US Dollar reference rate (BCB) for comparison. Download available.'}

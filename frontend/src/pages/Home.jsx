@@ -330,8 +330,8 @@ function Home() {
         title={liveSeo.title}
         description={liveSeo.description}
         keywords={language === 'es'
-          ? "cuanto esta el dolar en bolivia hoy, dolar blue bolivia, precio del dolar en bolivia hoy, cotizacion dolar bolivia hoy, dolar paralelo bolivia hoy, bolivia blue rate, tipo de cambio bolivia, dólar blue bolivia, mercado paralelo bolivia, binance bolivia, usdt bob, cotización dólar bolivia"
-          : "how much is the dollar in bolivia today, blue dollar bolivia, bolivia dollar price today, bolivia parallel dollar today, bolivia blue rate, exchange rate bolivia, binance bolivia, usdt bob, bolivia dollar calculator"}
+          ? "dólar blue hoy, dolar paralelo bolivia, binance p2p bolivia, cuanto esta el dolar en bolivia hoy, dolar blue bolivia, precio del dolar en bolivia hoy, cotizacion dolar bolivia hoy, bolivia blue rate, tipo de cambio bolivia, usdt bob"
+          : "blue dollar today bolivia, parallel dollar bolivia, binance p2p bolivia, how much is the dollar in bolivia today, bolivia blue rate, exchange rate bolivia, usdt bob"}
         canonical="/"
         structuredData={allStructuredData}
       />

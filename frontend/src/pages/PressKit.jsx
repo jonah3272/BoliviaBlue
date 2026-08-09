@@ -126,8 +126,8 @@ function PressKit() {
       <PageMeta
         title={
           language === 'es'
-            ? 'Kit de Prensa Bolivia Blue | Badges, Citas y Datos para Medios'
-            : 'Bolivia Blue Press Kit | Badges, Citations & Data for Media'
+            ? 'Prensa Bolivia Blue | Kit de medios, citas y datos'
+            : 'Bolivia Blue Press | Media kit, citations & data'
         }
         description={
           language === 'es'

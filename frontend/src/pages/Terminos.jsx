@@ -60,7 +60,7 @@ function Terminos() {
 
         <article className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 sm:p-8 lg:p-12">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-            {language === 'es' ? '📋 Términos de Servicio' : '📋 Terms of Service'}
+            {language === 'es' ? 'Términos de Servicio' : 'Terms of Service'}
           </h1>
 
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">

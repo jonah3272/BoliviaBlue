@@ -27,10 +27,12 @@ function About() {
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
-        title={t('aboutPageTitle')}
+        title={language === 'es'
+          ? 'Sobre Bolivia Blue | Metodología y transparencia del dólar paralelo'
+          : 'About Bolivia Blue | Methodology and parallel dollar transparency'}
         description={language === 'es'
-          ? "Conoce cómo funciona Bolivia Blue con Paz. Metodología transparente, fuentes de datos verificadas, análisis con IA en tiempo real, y actualizaciones cada 15 minutos. La plataforma más precisa del mercado paralelo boliviano."
-          : "Learn how Bolivia Blue with Paz works. Transparent methodology, verified data sources, real-time AI analysis, and updates every 15 minutes. The most accurate platform for the Bolivian parallel market."}
+          ? "Conoce cómo funciona Bolivia Blue. Metodología transparente, fuentes verificadas, análisis con IA, y cotización del dólar blue actualizada cada pocos minutos."
+          : "Learn how Bolivia Blue works. Transparent methodology, verified sources, AI analysis, and blue dollar quotes updated every few minutes."}
         keywords={language === 'es'
           ? "acerca de bolivia blue, metodología tipo cambio, cómo funciona dólar blue, transparencia bolivia, cómo se calcula dólar blue, fuente datos bolivia blue, metodología binance p2p"
           : "about bolivia blue, exchange rate methodology, how blue dollar works, bolivia transparency, how blue dollar calculated, bolivia blue data source, binance p2p methodology"}
@@ -54,7 +56,7 @@ function About() {
 
             <article className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 sm:p-8 lg:p-12">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-            {t('aboutPageTitle')}
+            {language === 'es' ? 'Sobre Bolivia Blue' : 'About Bolivia Blue'}
           </h1>
 
           {/* Mission Section */}

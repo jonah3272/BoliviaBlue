@@ -80,29 +80,7 @@ function Home() {
     return () => clearInterval(interval);
   }, []);
   
-  // Organization schema for homepage
-  const organizationSchema = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "Bolivia Blue con Paz",
-    "alternateName": "Bolivia Blue with Paz",
-    "url": "https://boliviablue.com",
-    "logo": "https://boliviablue.com/favicon.svg",
-    "description": language === 'es' 
-      ? "Bolivia blue rate y bolivia blue exchange rate - Plataforma de seguimiento en tiempo real del tipo de cambio del dólar blue en Bolivia"
-      : "Bolivia blue rate and bolivia blue exchange rate - Real-time tracking platform for the blue dollar exchange rate in Bolivia",
-    "keywords": language === 'es'
-      ? "bolivia blue rate, bolivia blue exchange rate, dólar blue bolivia, tipo de cambio bolivia"
-      : "bolivia blue rate, bolivia blue exchange rate, blue dollar bolivia, exchange rate bolivia",
-    "sameAs": [],
-    "contactPoint": {
-      "@type": "ContactPoint",
-      "contactType": "Customer Service",
-      "availableLanguage": ["Spanish", "English"]
-    }
-  };
-
-  // FAQ Schema for homepage
+  // FAQ Schema for homepage (Organization + WebSite injected sitewide via PageMeta)
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -312,8 +290,8 @@ function Home() {
     { name: language === 'es' ? 'Inicio' : 'Home', url: '/' }
   ]);
 
-  // Combine structured data: no AggregateRating (no visible reviews), no VideoObject (no real video), no LocalBusiness (weak fit)
-  const allStructuredData = [organizationSchema, webPageSchema, faqSchema];
+  // Page-specific schema only — brand Organization/WebSite come from PageMeta
+  const allStructuredData = [webPageSchema, faqSchema];
   if (financialProductSchema) allStructuredData.push(financialProductSchema);
   allStructuredData.push(dataFeedSchema);
   allStructuredData.push(breadcrumbSchema);

@@ -59,7 +59,10 @@ function MobileMenu() {
     { path: '/blog', key: 'navBlog', icon: 'blog' },
     { path: '/preguntas-frecuentes', key: 'navFAQ', icon: 'faq' },
     { path: '/acerca-de', key: 'navAbout', icon: 'about' },
+    { path: '/prensa', key: 'navPress', icon: 'about' },
+    { path: '/publicitar', key: 'navAdvertise', icon: 'about' },
     { path: '/contacto', key: 'navContact', icon: 'contact' },
+    { path: '/preguntas-frecuentes', key: 'navFAQ', icon: 'faq' },
     { path: '/politica-de-privacidad', key: 'navPrivacy', icon: 'privacy' },
     { path: '/rodrigo-paz', key: 'navRodrigoPaz', icon: 'rodrigo' }
   ];

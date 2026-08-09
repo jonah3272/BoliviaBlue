@@ -12,10 +12,78 @@ export const BASE_URL = 'https://boliviablue.com';
 
 export const PUBLISHER_ORG = {
   '@type': 'Organization',
-  name: 'Bolivia Blue con Paz',
+  name: 'Bolivia Blue',
+  alternateName: ['Bolivia Blue con Paz', 'Bolivia Blue with Paz', 'Bolivian Blue'],
   url: BASE_URL,
   logo: { '@type': 'ImageObject', url: `${BASE_URL}/favicon.svg` }
 };
+
+/**
+ * Sitewide Organization — brand signals for Knowledge Panel / sitelinks.
+ */
+export function getOrganizationSchema(language = 'es') {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'Bolivia Blue',
+    alternateName: ['Bolivia Blue con Paz', 'Bolivia Blue with Paz', 'Bolivian Blue', 'boliviablue'],
+    url: BASE_URL,
+    logo: {
+      '@type': 'ImageObject',
+      url: `${BASE_URL}/header-og-image.jpg`,
+      width: 1200,
+      height: 630
+    },
+    image: `${BASE_URL}/header-og-image.jpg`,
+    description:
+      language === 'es'
+        ? 'Cotización del dólar blue / paralelo en Bolivia. Datos Binance P2P, gráficos, calculadora y noticias.'
+        : 'Bolivia blue / parallel dollar rate. Binance P2P data, charts, calculator and news.',
+    foundingDate: '2024',
+    areaServed: { '@type': 'Country', name: 'Bolivia' },
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'customer support',
+      email: 'info@boliviablue.com',
+      availableLanguage: ['Spanish', 'English'],
+      url: `${BASE_URL}/contacto`
+    },
+    knowsAbout: [
+      'Dólar blue Bolivia',
+      'Dólar paralelo Bolivia',
+      'Tipo de cambio BOB',
+      'Binance P2P USDT/BOB'
+    ]
+  };
+}
+
+/**
+ * WebSite schema — helps Google understand the brand homepage for sitelinks.
+ */
+export function getWebSiteSchema(language = 'es') {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Bolivia Blue',
+    alternateName: ['Bolivia Blue con Paz', 'Bolivian Blue'],
+    url: BASE_URL,
+    inLanguage: language === 'es' ? ['es-BO', 'en-US'] : ['en-US', 'es-BO'],
+    publisher: PUBLISHER_ORG,
+    potentialAction: {
+      '@type': 'ReadAction',
+      target: [
+        `${BASE_URL}/`,
+        `${BASE_URL}/dolar-blue-hoy`,
+        `${BASE_URL}/acerca-de`,
+        `${BASE_URL}/prensa`,
+        `${BASE_URL}/publicitar`,
+        `${BASE_URL}/terminos`,
+        `${BASE_URL}/politica-de-privacidad`,
+        `${BASE_URL}/widget`,
+      ],
+    },
+  };
+}
 
 /**
  * WebPage schema for authority and freshness.
@@ -35,7 +103,7 @@ export function getWebPage({ name, description, url, dateModified, inLanguage, m
     name,
     description,
     url: fullUrl,
-    isPartOf: { '@type': 'WebSite', name: 'Bolivia Blue con Paz', url: BASE_URL },
+    isPartOf: { '@type': 'WebSite', name: 'Bolivia Blue', url: BASE_URL },
     publisher: PUBLISHER_ORG
   };
   if (dateModified) page.dateModified = dateModified;

@@ -114,7 +114,7 @@ export const translations = {
     aboutLastUpdate: 'Última actualización del sistema: Agosto 2026',
     
     // About Page (Full)
-    aboutPageTitle: 'Acerca de - Bolivia Blue con Paz',
+    aboutPageTitle: 'Sobre Bolivia Blue | Acerca de la plataforma',
     aboutMissionTitle: 'Nuestra Misión',
     aboutMissionDesc: 'Bolivia Blue con Paz es una plataforma independiente de seguimiento en tiempo real del tipo de cambio del dólar blue en Bolivia. Nuestro objetivo es proporcionar transparencia y visibilidad sobre el mercado cambiario informal durante la presidencia de Rodrigo Paz.',
     aboutMissionDesc2: 'Creemos que el acceso a información precisa y actualizada sobre los tipos de cambio es fundamental para que los bolivianos tomen decisiones financieras informadas.',
@@ -232,7 +232,7 @@ export const translations = {
     navBuyDollars: 'Comprar Dólares',
     navNews: 'Noticias',
     navRodrigoPaz: 'Rodrigo Paz',
-    navAbout: 'Acerca de',
+    navAbout: 'Sobre Bolivia Blue',
     navContact: 'Contacto',
     navFAQ: 'FAQ',
     navBlog: 'Blog',
@@ -241,6 +241,8 @@ export const translations = {
     navEquipo: 'Equipo',
     navPrivacy: 'Privacidad',
     navTerms: 'Términos',
+    navPress: 'Prensa',
+    navAdvertise: 'Publicitar',
     navCorrections: 'Correcciones',
     navEditorial: 'Política Editorial',
     navDolarHoy: 'Dólar blue hoy',
@@ -473,7 +475,7 @@ export const translations = {
     aboutLastUpdate: 'Last system update: August 2026',
     
     // About Page (Full)
-    aboutPageTitle: 'About - Bolivia Blue with Paz',
+    aboutPageTitle: 'About Bolivia Blue | How the platform works',
     aboutMissionTitle: 'Our Mission',
     aboutMissionDesc: 'Bolivia Blue with Paz is an independent platform for real-time tracking of the blue dollar exchange rate in Bolivia. Our goal is to provide transparency and visibility into the informal exchange market during the presidency of Rodrigo Paz.',
     aboutMissionDesc2: 'We believe that access to accurate and up-to-date information about exchange rates is essential for Bolivians to make informed financial decisions.',
@@ -591,7 +593,7 @@ export const translations = {
     navBuyDollars: 'Buy Dollars',
     navNews: 'News',
     navRodrigoPaz: 'Rodrigo Paz',
-    navAbout: 'About',
+    navAbout: 'About Bolivia Blue',
     navContact: 'Contact',
     navFAQ: 'FAQ',
     navBlog: 'Blog',
@@ -600,6 +602,8 @@ export const translations = {
     navEquipo: 'Team',
     navPrivacy: 'Privacy',
     navTerms: 'Terms',
+    navPress: 'Press',
+    navAdvertise: 'Advertise',
     navCorrections: 'Corrections',
     navEditorial: 'Editorial Policy',
     navDolarHoy: 'Blue dollar today',

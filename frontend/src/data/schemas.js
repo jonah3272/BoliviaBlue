@@ -1,27 +1,13 @@
 /**
- * Structured data schemas for SEO
+ * Structured data schemas for SEO.
+ * Organization / WebSite live in utils/seoSchema — re-exported here for older imports.
  */
-
-export const getOrganizationSchema = (language) => ({
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "Bolivia Blue con Paz",
-  "alternateName": "Bolivia Blue with Paz",
-  "url": "https://boliviablue.com",
-  "logo": "https://boliviablue.com/favicon.svg",
-  "description": language === 'es' 
-    ? "Bolivia blue rate y bolivia blue exchange rate - Plataforma de seguimiento en tiempo real del tipo de cambio del dólar blue en Bolivia"
-    : "Bolivia blue rate and bolivia blue exchange rate - Real-time tracking platform for the blue dollar exchange rate in Bolivia",
-  "keywords": language === 'es'
-    ? "bolivia blue rate, bolivia blue exchange rate, dólar blue bolivia, tipo de cambio bolivia"
-    : "bolivia blue rate, bolivia blue exchange rate, blue dollar bolivia, exchange rate bolivia",
-  "sameAs": [],
-  "contactPoint": {
-    "@type": "ContactPoint",
-    "contactType": "Customer Service",
-    "availableLanguage": ["Spanish", "English"]
-  }
-});
+export {
+  getOrganizationSchema,
+  getWebSiteSchema,
+  BASE_URL,
+  PUBLISHER_ORG,
+} from '../utils/seoSchema.js';
 
 export const getFAQSchema = (language) => ({
   "@context": "https://schema.org",
@@ -66,30 +52,6 @@ export const getFAQSchema = (language) => ({
         "@type": "Answer",
         "text": "El bolivia blue rate refleja el mercado paralelo y puede diferir significativamente de la tasa oficial del Banco Central de Bolivia. La tasa oficial es fija o se ajusta muy raramente, mientras que el bolivia blue exchange rate fluctúa según la oferta y demanda del mercado."
       }
-    },
-    {
-      "@type": "Question",
-      "name": "¿Por qué es importante conocer el bolivia blue rate?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Conocer el bolivia blue rate es importante porque refleja la realidad del mercado cambiario boliviano y es utilizado por millones de bolivianos para transacciones diarias. Te ayuda a tomar mejores decisiones financieras y entender el verdadero valor del dólar en Bolivia."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "¿Cuánto es $100 USD en Bolivia?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Con el bolivia blue rate actual (aproximadamente 10.50 BOB por USD), $100 USD equivalen a aproximadamente 1,050 BOB. Con la tasa oficial (~9.00 BOB/USD) serían solo 900 BOB. La diferencia puede ser significativa, por eso es importante usar el bolivia blue exchange rate para obtener el mejor valor. Usa nuestra calculadora para obtener el cálculo exacto con la tasa actual."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "¿Cuánto es 1 USD a 1 Boliviano?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "El bolivia blue exchange rate actualmente fluctúa entre 10.00 y 11.50 BOB por USD, con un promedio de aproximadamente 10.50 BOB por USD. Esto significa que 1 USD equivale a aproximadamente 10.50 BOB, mientras que 1 BOB equivale a aproximadamente 0.095 USD. El bolivia blue rate se actualiza cada 15 minutos en nuestra plataforma."
-      }
     }
   ] : [
     {
@@ -115,29 +77,13 @@ export const getFAQSchema = (language) => ({
         "@type": "Answer",
         "text": "The bolivia blue exchange rate is updated every 15 minutes using real-time data from Binance P2P, providing the most accurate and up-to-date exchange rate information."
       }
-    },
-    {
-      "@type": "Question",
-      "name": "Where does the bolivia blue rate come from?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "The bolivia blue rate comes from public Binance P2P data for the USDT/BOB pair. We calculate the median of buy and sell offers to obtain a representative estimate of the parallel market."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "What's the difference between bolivia blue rate and the official rate?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "The bolivia blue rate reflects the parallel market and can differ significantly from the official rate set by the Central Bank of Bolivia. The official rate is fixed or adjusted very rarely, while the bolivia blue exchange rate fluctuates according to market supply and demand."
-      }
     }
   ]
 });
 
-export const getExchangeRateSchema = (currentRate, language) => {
+export const getExchangeRateSchema = (currentRate) => {
   if (!currentRate) return null;
-  
+
   return {
     "@context": "https://schema.org",
     "@type": "ExchangeRateSpecification",
@@ -154,4 +100,3 @@ export const getExchangeRateSchema = (currentRate, language) => {
     }
   };
 };
-

@@ -38,10 +38,12 @@ const pages = [
   { path: '/api-docs', changefreq: 'monthly', priority: '0.75' },
   { path: '/widget', changefreq: 'monthly', priority: '0.9' },
   { path: '/prensa', changefreq: 'monthly', priority: '0.9' },
+  { path: '/publicitar', changefreq: 'monthly', priority: '0.85' },
   { path: '/rodrigo-paz', changefreq: 'weekly', priority: '0.8' },
-  { path: '/acerca-de', changefreq: 'monthly', priority: '0.7' },
+  { path: '/acerca-de', changefreq: 'monthly', priority: '0.85' },
   { path: '/contacto', changefreq: 'monthly', priority: '0.65' },
-  { path: '/politica-de-privacidad', changefreq: 'monthly', priority: '0.5' },
+  { path: '/terminos', changefreq: 'monthly', priority: '0.55' },
+  { path: '/politica-de-privacidad', changefreq: 'monthly', priority: '0.55' },
 ];
 
 function urlEntry(locPath, { lastmod = currentDate, changefreq = 'weekly', priority = '0.7' } = {}) {

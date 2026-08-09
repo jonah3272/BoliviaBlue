@@ -9,6 +9,7 @@ const Calculator = lazy(() => import('./pages/Calculator'));
 const News = lazy(() => import('./pages/News'));
 const NewsArticle = lazy(() => import('./pages/NewsArticle'));
 const About = lazy(() => import('./pages/About'));
+const Publicitar = lazy(() => import('./pages/Publicitar'));
 const Contact = lazy(() => import('./pages/Contact'));
 const FAQ = lazy(() => import('./pages/FAQ'));
 const Privacy = lazy(() => import('./pages/Privacy'));
@@ -82,6 +83,7 @@ function AppContent() {
           <Route path="/noticias" element={<News />} />
           <Route path="/noticias/:slugParam" element={<NewsArticle />} />
           <Route path="/acerca-de" element={<About />} />
+          <Route path="/publicitar" element={<Publicitar />} />
           <Route path="/contacto" element={<Contact />} />
           <Route path="/preguntas-frecuentes" element={<FAQ />} />
           <Route path="/politica-de-privacidad" element={<Privacy />} />
@@ -96,6 +98,7 @@ function AppContent() {
           <Route path="/calculator" element={<Redirect to="/calculadora" />} />
           <Route path="/news" element={<Redirect to="/noticias" />} />
           <Route path="/about" element={<Redirect to="/acerca-de" />} />
+          <Route path="/advertise" element={<Redirect to="/publicitar" />} />
           <Route path="/contact" element={<Redirect to="/contacto" />} />
           <Route path="/faq" element={<Redirect to="/preguntas-frecuentes" />} />
           <Route path="/comparison" element={<Redirect to="/comparacion" />} />

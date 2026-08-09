@@ -155,6 +155,15 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
     }
   }, [effectiveSetShowOfficial]);
 
+  useEffect(() => {
+    const onMode = (e) => {
+      const mode = e?.detail;
+      if (mode === 'blue' || mode === 'official' || mode === 'card') setMode(mode);
+    };
+    window.addEventListener('bolivia-blue:set-rate-mode', onMode);
+    return () => window.removeEventListener('bolivia-blue:set-rate-mode', onMode);
+  }, [setMode]);
+
   const abortControllerRef = React.useRef(null);
   const currentCurrencyRef = React.useRef(currency);
 
@@ -313,7 +322,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
         </Helmet>
       )}
       
-      <div className="flex items-center justify-center mb-6 min-h-[3.25rem]">
+      <div className="flex items-center justify-center mb-6 min-h-[3.25rem]" data-rate-mode-tabs>
         <div className="inline-flex flex-wrap items-center justify-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-xl p-1.5 shadow-inner border border-gray-200 dark:border-gray-700">
           {modeBtn(
             'blue',
@@ -476,13 +485,26 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
                     <div className="text-emerald-700 dark:text-emerald-300">{t('cardRateNetworkNote')}</div>
                   )}
                   {vsBluePct != null && (
-                    <div>
+                    <div className="text-sm font-semibold text-gray-800 dark:text-gray-200">
                       {t('cardRateVsBlue')}:{' '}
                       <span className={vsBluePct >= 0 ? 'text-green-600' : 'text-red-600'}>
                         {vsBluePct >= 0 ? '+' : ''}
                         {vsBluePct.toFixed(2)}%{' '}
                         ({vsBluePct >= 0 ? t('cardRateBetter') : t('cardRateWorse')})
                       </span>
+                      <div className="mt-1 text-xs font-normal text-gray-600 dark:text-gray-400">
+                        {vsBluePct >= 0.3
+                          ? (language === 'es'
+                            ? 'Señal: pagar con tarjeta suele rendir más Bs por USD que cambiar cash al paralelo.'
+                            : 'Signal: paying by card often yields more Bs per USD than cash at the parallel rate.')
+                          : vsBluePct <= -0.3
+                            ? (language === 'es'
+                              ? 'Señal: el cash blue está más “rico” que la tarjeta hoy.'
+                              : 'Signal: cash blue is richer than card today.')
+                            : (language === 'es'
+                              ? 'Brecha chica — mira comisión FX y comodidad.'
+                              : 'Small gap — check FX fee and convenience.')}
+                      </div>
                     </div>
                   )}
                   {showTimestampInCards && cardRates?.t && (

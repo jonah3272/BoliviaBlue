@@ -38,8 +38,11 @@ function Navigation() {
     { path: '/plataformas', key: 'navPlataformas', icon: 'platform' },
     { path: '/bancos', key: 'navBancos', icon: 'bank' },
     { path: '/acerca-de', key: 'navAbout', icon: 'about' },
+    { path: '/prensa', key: 'navPress', icon: 'about' },
+    { path: '/publicitar', key: 'navAdvertise', icon: 'about' },
     { path: '/contacto', key: 'navContact', icon: 'contact' },
     { path: '/preguntas-frecuentes', key: 'navFAQ', icon: 'faq' },
+    { path: '/terminos', key: 'navTerms', icon: 'terms' },
     { path: '/politica-de-privacidad', key: 'navPrivacy', icon: 'privacy' },
     { path: '/rodrigo-paz', key: 'navRodrigoPaz', icon: 'rodrigo' }
   ];

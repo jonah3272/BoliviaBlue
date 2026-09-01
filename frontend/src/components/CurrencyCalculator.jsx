@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { fetchBlueRate } from '../utils/api';
 import { useLanguage } from '../contexts/LanguageContext';
-import AnimatedNumber from './AnimatedNumber';
 import { trackCalculatorUsage, trackCalculatorCurrencySwitch, trackCalculatorSwap } from '../utils/analytics';
 import { trackCalculatorUsed } from '../utils/analyticsEvents';
 
@@ -217,58 +216,74 @@ function CurrencyCalculator() {
   const getBuyRate = () => useOfficial ? rateData?.official_buy : rateData?.buy_bob_per_usd;
   const getSellRate = () => useOfficial ? rateData?.official_sell : rateData?.sell_bob_per_usd;
 
+  const es = language === 'es';
+  const rate = getRate();
+
   return (
-    <div className="max-w-7xl mx-auto">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Calculator */}
-        <div className={`${showHistory ? 'lg:col-span-2' : 'lg:col-span-3 max-w-3xl mx-auto w-full'}`}>
-          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl shadow-2xl p-8 border border-blue-100 dark:border-gray-700">
-            {/* Header */}
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 flex items-center justify-center gap-2">
-                <span className="text-4xl">💱</span>
-                {t('currencyCalculator')}
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400">
-                {language === 'es' 
-                  ? 'Convierte entre Bolivianos y monedas extranjeras utilizando tasas de cambio oficiales o no oficiales'
-                  : 'Convert between Bolivianos and foreign currencies using official or unofficial exchange rates'}
-              </p>
+    <div className="w-full">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
+        <div className={`${showHistory ? 'lg:col-span-2' : 'lg:col-span-3 w-full'}`}>
+          <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm overflow-hidden">
+            {/* Rate type + tools */}
+            <div className="flex items-center justify-between gap-2 px-4 py-3 border-b border-gray-100 dark:border-gray-700/80 bg-gray-50/80 dark:bg-gray-900/40">
+              <div className="inline-flex rounded-lg border border-gray-200 dark:border-gray-600 p-0.5 bg-white dark:bg-gray-800">
+                <button
+                  type="button"
+                  onClick={() => setUseOfficial(false)}
+                  className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
+                    !useOfficial
+                      ? 'bg-sky-500 text-white'
+                      : 'text-gray-600 dark:text-gray-400'
+                  }`}
+                >
+                  {t('unofficialRates')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setUseOfficial(true)}
+                  className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
+                    useOfficial
+                      ? 'bg-sky-500 text-white'
+                      : 'text-gray-600 dark:text-gray-400'
+                  }`}
+                >
+                  {t('officialRates')}
+                </button>
+              </div>
+              <div className="flex gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setComparisonMode(!comparisonMode)}
+                  className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                    comparisonMode
+                      ? 'bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300'
+                      : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  {es ? 'Comparar' : 'Compare'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowHistory(!showHistory)}
+                  className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                    showHistory
+                      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
+                      : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  {es ? 'Historial' : 'History'}
+                  {history.length > 0 ? ` (${history.length})` : ''}
+                </button>
+              </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex gap-2 mb-6 flex-wrap justify-center">
-              <button
-                onClick={() => setComparisonMode(!comparisonMode)}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                  comparisonMode
-                    ? 'bg-purple-600 text-white shadow-lg'
-                    : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:shadow-md'
-                }`}
-              >
-                {comparisonMode ? '✓' : ''} {language === 'es' ? 'Modo Comparación' : 'Comparison Mode'}
-              </button>
-              <button
-                onClick={() => setShowHistory(!showHistory)}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                  showHistory
-                    ? 'bg-green-600 text-white shadow-lg'
-                    : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:shadow-md'
-                }`}
-              >
-                📊 {language === 'es' ? 'Historial' : 'History'} ({history.length})
-              </button>
-            </div>
-
-            {/* Currency Selector */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {language === 'es' ? 'Selecciona Moneda' : 'Select Currency'}
-              </label>
-              <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+            <div className="p-4 sm:p-6 space-y-4">
+              {/* Currency pills */}
+              <div className="flex flex-wrap gap-1.5">
                 {Object.entries(currencies).map(([code, data]) => (
                   <button
                     key={code}
+                    type="button"
                     onClick={() => {
                       const prevCurrency = selectedCurrency;
                       setSelectedCurrency(code);
@@ -276,238 +291,181 @@ function CurrencyCalculator() {
                         trackCalculatorCurrencySwitch(prevCurrency, code);
                       }
                     }}
-                    className={`p-3 rounded-xl font-medium transition-all text-center ${
+                    className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-semibold transition-colors touch-manipulation ${
                       selectedCurrency === code
-                        ? 'bg-blue-600 text-white shadow-lg scale-105'
-                        : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:shadow-md hover:scale-102'
+                        ? 'bg-sky-500 text-white'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
                     }`}
                   >
-                    <div className="text-2xl mb-1">{data.flag}</div>
-                    <div className="text-xs font-bold">{code}</div>
+                    <span aria-hidden>{data.flag}</span>
+                    {code}
                   </button>
                 ))}
               </div>
-            </div>
 
-            {/* Calculator Inputs */}
-            <div className="space-y-4 mb-8">
-              {/* BOB Input */}
-              <div className="transform transition-all hover:scale-102">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  {t('bolivianos')} (BOB)
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={bobAmount}
-                    onChange={handleBobChange}
-                    className="w-full px-4 py-4 text-2xl font-mono font-bold bg-white dark:bg-gray-700 border-2 border-blue-300 dark:border-gray-600 rounded-xl focus:ring-4 focus:ring-blue-200 focus:border-blue-500 text-gray-900 dark:text-white transition-all shadow-sm"
-                    placeholder="100.00"
-                  />
-                  <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 font-semibold text-lg">
-                    Bs.
-                  </span>
+              {/* Inputs */}
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                    {t('bolivianos')} (BOB)
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      inputMode="decimal"
+                      value={bobAmount}
+                      onChange={handleBobChange}
+                      className="w-full px-4 py-3.5 pr-12 text-2xl font-mono font-bold tabular-nums bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-sky-500/40 focus:border-sky-500 text-gray-900 dark:text-white"
+                      placeholder="100.00"
+                    />
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-gray-400 font-medium">
+                      Bs.
+                    </span>
+                  </div>
                 </div>
-              </div>
 
-              {/* Swap Button */}
-              <div className="flex justify-center">
-                <button
-                  onClick={handleSwap}
-                  className="group bg-white dark:bg-gray-700 hover:bg-blue-100 dark:hover:bg-gray-600 p-4 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-lg hover:shadow-xl"
-                  aria-label={t('swapCurrencies')}
-                >
-                  <svg 
-                    className="w-6 h-6 text-blue-600 dark:text-blue-400 group-hover:rotate-180 transition-transform duration-300" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    viewBox="0 0 24 24"
+                <div className="flex justify-center -my-1">
+                  <button
+                    type="button"
+                    onClick={handleSwap}
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-sky-600 dark:text-sky-400 shadow-sm touch-manipulation active:scale-95"
+                    aria-label={t('swapCurrencies')}
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-                  </svg>
-                </button>
-              </div>
-
-              {/* Foreign Currency Input */}
-              <div className="transform transition-all hover:scale-102">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  {currencies[selectedCurrency].name} ({selectedCurrency})
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={usdAmount}
-                    onChange={handleUsdChange}
-                    className="w-full px-4 py-4 text-2xl font-mono font-bold bg-white dark:bg-gray-700 border-2 border-blue-300 dark:border-gray-600 rounded-xl focus:ring-4 focus:ring-blue-200 focus:border-blue-500 text-gray-900 dark:text-white transition-all shadow-sm"
-                    placeholder="0.0000"
-                  />
-                  <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 font-semibold text-lg">
-                    {currencies[selectedCurrency].symbol}
-                  </span>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                    </svg>
+                  </button>
                 </div>
-              </div>
-            </div>
 
-            {/* Rate Toggle */}
-            <div className="flex items-center justify-center mb-8 bg-white dark:bg-gray-700 rounded-xl p-4 shadow-md">
-              <label className="flex items-center cursor-pointer">
-                <span className="mr-3 text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {t('unofficialRates')}
-                </span>
-                <div className="relative">
-                  <input
-                    type="checkbox"
-                    checked={useOfficial}
-                    onChange={(e) => setUseOfficial(e.target.checked)}
-                    className="sr-only"
-                  />
-                  <div className={`block w-14 h-8 rounded-full transition shadow-inner ${useOfficial ? 'bg-pink-500' : 'bg-blue-500'}`}></div>
-                  <div className={`absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform shadow-md ${useOfficial ? 'transform translate-x-6' : ''}`}></div>
-                </div>
-                <span className="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {t('officialRates')}
-                </span>
-              </label>
-            </div>
-
-            {/* Exchange Rate Display — always reserved to avoid CLS when rates load */}
-            <div className="bg-gradient-to-r from-white to-blue-50 dark:from-gray-700 dark:to-gray-800 rounded-xl p-6 shadow-lg border border-blue-100 dark:border-gray-600 min-h-[8.5rem]">
-              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-4 text-center">
-                {t('exchangeRates')}
-              </h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="text-center p-3 bg-white dark:bg-gray-800 rounded-lg min-h-[4.5rem]">
-                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                    {useOfficial ? t('official') : t('unofficial')}
-                  </div>
-                  <div className={`text-xl font-mono font-bold tabular-nums min-h-[1.75rem] ${useOfficial ? 'text-pink-600 dark:text-pink-400' : 'text-blue-600 dark:text-blue-400'}`}>
-                    {isLoading || !rateData ? (
-                      <span className="inline-block skeleton h-6 w-36 mx-auto" aria-hidden="true" />
-                    ) : (
-                      <>1 {selectedCurrency} = {(getRate()).toFixed(4)} BOB</>
-                    )}
-                  </div>
-                </div>
-                <div className="text-center p-3 bg-white dark:bg-gray-800 rounded-lg min-h-[4.5rem]">
-                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                    {t('inverse')}
-                  </div>
-                  <div className={`text-xl font-mono font-bold tabular-nums min-h-[1.75rem] ${!useOfficial ? 'text-blue-600 dark:text-blue-400' : 'text-pink-600 dark:text-pink-400'}`}>
-                    {isLoading || !rateData ? (
-                      <span className="inline-block skeleton h-6 w-36 mx-auto" aria-hidden="true" />
-                    ) : (
-                      <>1 BOB = {(1 / getRate()).toFixed(6)} {selectedCurrency}</>
-                    )}
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                    {currencies[selectedCurrency].name} ({selectedCurrency})
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      inputMode="decimal"
+                      value={usdAmount}
+                      onChange={handleUsdChange}
+                      className="w-full px-4 py-3.5 pr-12 text-2xl font-mono font-bold tabular-nums bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-sky-500/40 focus:border-sky-500 text-gray-900 dark:text-white"
+                      placeholder="0.00"
+                    />
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-gray-400 font-medium">
+                      {currencies[selectedCurrency].symbol}
+                    </span>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Comparison Mode */}
-            {comparisonMode && !isLoading && rateData && (
-              <div className="mt-6 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-gray-700 dark:to-gray-800 rounded-xl p-6 shadow-lg border border-purple-100 dark:border-gray-600">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 text-center">
-                  {language === 'es' ? '📊 Comparación de Tasas' : '📊 Rate Comparison'}
-                </h3>
-                <div className="space-y-3">
+              {/* Live rate strip */}
+              <div className="rounded-xl bg-sky-50 dark:bg-sky-950/30 border border-sky-100 dark:border-sky-900/50 px-4 py-3">
+                <div className="grid grid-cols-2 gap-3 text-center">
+                  <div>
+                    <div className="text-[10px] uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-0.5">
+                      1 {selectedCurrency} → BOB
+                    </div>
+                    <div className="font-mono text-lg font-bold tabular-nums text-sky-700 dark:text-sky-300 min-h-[1.5rem]">
+                      {isLoading || !rateData ? '—' : rate.toFixed(2)}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-[10px] uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-0.5">
+                      1 BOB → {selectedCurrency}
+                    </div>
+                    <div className="font-mono text-lg font-bold tabular-nums text-sky-700 dark:text-sky-300 min-h-[1.5rem]">
+                      {isLoading || !rateData || rate === 0 ? '—' : (1 / rate).toFixed(4)}
+                    </div>
+                  </div>
+                </div>
+                {!isLoading && rateData && (
+                  <p className="mt-2 text-center text-[11px] text-gray-500 dark:text-gray-400">
+                    {useOfficial ? t('official') : t('unofficial')} · {es ? 'compra' : 'buy'}{' '}
+                    {getBuyRate()?.toFixed(2)} · {es ? 'venta' : 'sell'} {getSellRate()?.toFixed(2)}
+                  </p>
+                )}
+              </div>
+
+              {comparisonMode && !isLoading && rateData && (
+                <div className="rounded-xl border border-gray-200 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700 overflow-hidden">
+                  <p className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50">
+                    {es ? 'Mismo monto en otras monedas' : 'Same amount in other currencies'}
+                  </p>
                   {Object.entries(currencies).map(([code, data]) => {
-                    const baseRateBOBperUSD = ((getBuyRate() + getSellRate()) / 2);
+                    const baseRateBOBperUSD = (getBuyRate() + getSellRate()) / 2;
                     const currencyToUSD = exchangeRates[code];
-                    const rate = baseRateBOBperUSD / currencyToUSD;
+                    const itemRate = baseRateBOBperUSD / currencyToUSD;
                     const amount = parseFloat(bobAmount) || 100;
-                    const converted = (amount / rate).toFixed(4);
+                    const converted = (amount / itemRate).toFixed(2);
                     return (
-                      <div key={code} className={`p-3 rounded-lg transition-all ${
-                        code === selectedCurrency 
-                          ? 'bg-purple-100 dark:bg-purple-900/30 border-2 border-purple-500' 
-                          : 'bg-white dark:bg-gray-800'
-                      }`}>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <span className="text-2xl">{data.flag}</span>
-                            <div>
-                              <div className="font-bold text-gray-900 dark:text-white">{code}</div>
-                              <div className="text-xs text-gray-500 dark:text-gray-400">{data.name}</div>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <div className="font-mono font-bold text-lg text-gray-900 dark:text-white">
-                              <AnimatedNumber 
-                                value={parseFloat(converted)} 
-                                decimals={4} 
-                                prefix={data.symbol}
-                              />
-                            </div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400">
-                              1 {code} = <AnimatedNumber value={rate} decimals={4} /> BOB
-                            </div>
-                          </div>
-                        </div>
+                      <div
+                        key={code}
+                        className={`flex items-center justify-between px-3 py-2.5 text-sm ${
+                          code === selectedCurrency ? 'bg-sky-50 dark:bg-sky-950/20' : ''
+                        }`}
+                      >
+                        <span className="font-medium text-gray-800 dark:text-gray-200">
+                          {data.flag} {code}
+                        </span>
+                        <span className="font-mono font-semibold tabular-nums text-gray-900 dark:text-white">
+                          {data.symbol}{converted}
+                        </span>
                       </div>
                     );
                   })}
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
 
-        {/* History Panel */}
         {showHistory && (
           <div className="lg:col-span-1">
-            <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl shadow-2xl p-6 border border-green-100 dark:border-gray-700 sticky top-4">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                  {language === 'es' ? '📊 Historial' : '📊 History'}
+            <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm p-4 lg:sticky lg:top-20">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white">
+                  {es ? 'Historial' : 'History'}
                 </h3>
                 {history.length > 0 && (
                   <button
+                    type="button"
                     onClick={() => {
                       setHistory([]);
                       localStorage.removeItem('calculatorHistory');
                     }}
-                    className="text-xs px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
+                    className="text-xs text-red-600 dark:text-red-400 font-medium"
                   >
-                    {language === 'es' ? 'Limpiar' : 'Clear'}
+                    {es ? 'Limpiar' : 'Clear'}
                   </button>
                 )}
               </div>
 
-              <div className="space-y-3 max-h-[600px] overflow-y-auto">
+              <div className="space-y-2 max-h-80 lg:max-h-[32rem] overflow-y-auto">
                 {history.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                    <p className="text-sm">
-                      {language === 'es' 
-                        ? 'Sin historial aún. Realiza un cálculo para empezar.' 
-                        : 'No history yet. Make a calculation to get started.'}
-                    </p>
-                  </div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 py-6 text-center">
+                    {es ? 'Tus conversiones aparecerán aquí.' : 'Your conversions will appear here.'}
+                  </p>
                 ) : (
                   history.map((item) => (
-                    <div key={item.id} className="bg-white dark:bg-gray-700 rounded-lg p-3 shadow-md hover:shadow-lg transition-all">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className={`text-xs px-2 py-1 rounded ${
-                          item.rateType === 'official' 
-                            ? 'bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400'
-                            : 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
-                        }`}>
+                    <div
+                      key={item.id}
+                      className="rounded-lg border border-gray-100 dark:border-gray-700 p-3 text-sm"
+                    >
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">
                           {item.rateType === 'official' ? t('official') : t('unofficial')}
                         </span>
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                        <span className="text-[10px] text-gray-400">
                           {new Date(item.timestamp).toLocaleTimeString()}
                         </span>
                       </div>
-                      <div className="font-mono text-sm">
-                        <div className="text-gray-900 dark:text-white font-bold">
+                      <div className="font-mono tabular-nums">
+                        <div className="font-semibold text-gray-900 dark:text-white">
                           {item.fromAmount} {item.from}
                         </div>
-                        <div className="text-gray-500 dark:text-gray-400 text-xs my-1">↓</div>
-                        <div className="text-green-600 dark:text-green-400 font-bold">
+                        <div className="text-gray-400 text-xs">↓</div>
+                        <div className="font-semibold text-emerald-600 dark:text-emerald-400">
                           {item.toAmount} {item.to}
                         </div>
-                      </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                        {language === 'es' ? 'Tasa:' : 'Rate:'} {item.rate}
                       </div>
                     </div>
                   ))

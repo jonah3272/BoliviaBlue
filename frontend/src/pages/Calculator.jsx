@@ -15,7 +15,7 @@ const CurrencyCalculator = lazy(() => import('../components/CurrencyCalculator')
 
 const ComponentLoader = () => (
   <div
-    className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 sm:p-8 min-h-[28rem] sm:min-h-[32rem] flex items-center justify-center"
+    className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-8 min-h-[20rem] flex items-center justify-center"
     aria-busy="true"
     aria-label="Loading calculator"
   >
@@ -180,35 +180,38 @@ function Calculator() {
       {/* Navigation */}
       <Navigation />
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-3 sm:py-6 md:py-8 space-y-3 sm:space-y-6 md:space-y-8 flex flex-col pb-[max(5rem,calc(3.5rem+env(safe-area-inset-bottom)))] md:pb-[max(1.5rem,env(safe-area-inset-bottom))]">
-        <div className="text-center">
-          <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white">
+      <main className="max-w-xl md:max-w-3xl mx-auto px-3 sm:px-4 py-3 sm:py-6 md:py-8 flex flex-col gap-3 sm:gap-5 pb-[max(5rem,calc(3.5rem+env(safe-area-inset-bottom)))] md:pb-8">
+        <div className="text-center space-y-1">
+          <h1 className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
             {language === 'es' ? 'Calculadora USD/BOB' : 'USD/BOB Calculator'}
           </h1>
-          <p className="hidden sm:block mt-2 text-base sm:text-lg text-gray-600 dark:text-gray-400">
-            {language === 'es'
-              ? 'Tipo de cambio blue en tiempo real · actualizado cada 15 min'
-              : 'Live blue rate · updated every 15 min'}
-          </p>
+          {currentRate && (
+            <p className="text-xs sm:text-sm font-mono text-gray-500 dark:text-gray-400 tabular-nums">
+              {language === 'es' ? 'Blue hoy' : 'Blue today'}:{' '}
+              <span className="text-sky-600 dark:text-sky-400">
+                {language === 'es' ? 'compra' : 'buy'} {currentRate.buy?.toFixed(2)}
+              </span>
+              {' · '}
+              <span className="text-emerald-600 dark:text-emerald-400">
+                {language === 'es' ? 'venta' : 'sell'} {currentRate.sell?.toFixed(2)}
+              </span>
+            </p>
+          )}
         </div>
 
-        <section className="order-2 md:order-3 min-h-[28rem] sm:min-h-[32rem]">
-          <Suspense fallback={<ComponentLoader />}>
-            <CurrencyCalculator />
-          </Suspense>
-        </section>
+        <Suspense fallback={<ComponentLoader />}>
+          <CurrencyCalculator />
+        </Suspense>
 
-        <section className="order-3 md:order-2 hidden md:block">
+        <section className="hidden md:block">
           <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} />
         </section>
 
-        <section className="order-4 hidden md:block min-h-[12rem] sm:min-h-[11rem]">
+        <section className="hidden md:block">
           <BinanceBanner />
         </section>
 
-        {/* SEO / help — collapsed on mobile so the tool stays front and center */}
-        <section className="order-5 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 sm:p-8 md:p-10">
+        <section className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 p-4 sm:p-6">
           <details className="md:hidden group">
             <summary className="cursor-pointer list-none font-semibold text-gray-900 dark:text-white marker:content-none flex items-center justify-between gap-2">
               <span>{language === 'es' ? 'Guía y ejemplos' : 'Guide & examples'}</span>

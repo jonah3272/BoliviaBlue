@@ -1,5 +1,6 @@
 import Header from '../components/Header';
 import BlueRateCards from '../components/BlueRateCards';
+import RateTrioStrip from '../components/RateTrioStrip';
 import BinanceBanner from '../components/BinanceBanner';
 import PageMeta from '../components/PageMeta';
 import Navigation from '../components/Navigation';
@@ -337,6 +338,17 @@ function Calculator() {
         <Suspense fallback={<ComponentLoader />}>
           <CurrencyCalculator />
         </Suspense>
+
+        {currentRate && (
+          <RateTrioStrip
+            buy={currentRate.buy}
+            sell={currentRate.sell}
+            officialBuy={currentRate.official_buy}
+            officialSell={currentRate.official_sell}
+            language={language}
+            updatedAt={currentRate.updated_at_iso}
+          />
+        )}
 
         <CalculatorScenarios language={language} currentRate={currentRate} />
 

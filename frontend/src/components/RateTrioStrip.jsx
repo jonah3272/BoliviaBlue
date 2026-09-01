@@ -6,19 +6,6 @@ import { Link } from 'react-router-dom';
 import { fetchCardRates } from '../utils/api';
 import { formatRate } from '../utils/formatters';
 
-function useMobileCollapsed(defaultCollapsed = true) {
-  const [collapsed, setCollapsed] = useState(false);
-  useEffect(() => {
-    if (!defaultCollapsed) return;
-    const mq = window.matchMedia('(max-width: 767px)');
-    const sync = () => setCollapsed(mq.matches);
-    sync();
-    mq.addEventListener('change', sync);
-    return () => mq.removeEventListener('change', sync);
-  }, [defaultCollapsed]);
-  return [collapsed, setCollapsed];
-}
-
 function cardBobPerUsd(row) {
   if (!row) return null;
   const n =
@@ -40,7 +27,6 @@ export default function RateTrioStrip({
 }) {
   const es = language === 'es';
   const [fetchedCard, setFetchedCard] = useState(null);
-  const [collapsed] = useMobileCollapsed(true);
 
   useEffect(() => {
     if (cardRateProp != null) return undefined;
@@ -210,9 +196,12 @@ export default function RateTrioStrip({
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="flex md:grid md:grid-cols-3 gap-3 overflow-x-auto snap-x snap-mandatory pb-1 -mx-1 px-1 md:mx-0 md:px-0 hide-scrollbar">
         {cells.map((c) => (
-          <div key={c.key} className={`rounded-xl border-l-4 ${c.accent} px-4 py-3`}>
+          <div
+            key={c.key}
+            className={`snap-center shrink-0 w-[82%] sm:w-[70%] md:w-auto md:shrink rounded-xl border-l-4 ${c.accent} px-4 py-3`}
+          >
             <div className="text-[11px] uppercase tracking-wide font-semibold text-gray-500 dark:text-gray-400">
               {c.label}
             </div>
@@ -238,37 +227,11 @@ export default function RateTrioStrip({
 
   return (
     <section
-      className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 sm:p-5 shadow-sm"
+      className="rounded-2xl border-2 border-emerald-200/80 dark:border-emerald-800/50 bg-white dark:bg-gray-900 p-4 sm:p-5 shadow-sm ring-1 ring-emerald-500/10"
       aria-label={es ? 'Paralelo vs tarjeta vs oficial' : 'Parallel vs card vs official'}
     >
-      {collapsed ? (
-        <details className="md:hidden group">
-          <summary className="cursor-pointer list-none marker:content-none">
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-sm font-bold text-gray-900 dark:text-white">
-                {es ? '¿Tarjeta o cash?' : 'Card or cash?'}
-              </span>
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                {es ? 'expandir' : 'expand'}
-              </span>
-            </div>
-            {cardVsBluePct != null && (
-              <p className="mt-1 text-xs font-mono text-gray-600 dark:text-gray-300">
-                {es ? 'Tarjeta vs blue' : 'Card vs blue'}:{' '}
-                <span className={cardVsBluePct >= 0 ? 'text-emerald-600' : 'text-blue-600'}>
-                  {cardVsBluePct >= 0 ? '+' : ''}
-                  {cardVsBluePct.toFixed(1)}%
-                </span>
-              </p>
-            )}
-          </summary>
-          <div className="mt-4">{bodyBlock}</div>
-        </details>
-      ) : null}
-      <div className={collapsed ? 'hidden md:block' : ''}>
-        {headerBlock}
-        {bodyBlock}
-      </div>
+      {headerBlock}
+      {bodyBlock}
     </section>
   );
 }

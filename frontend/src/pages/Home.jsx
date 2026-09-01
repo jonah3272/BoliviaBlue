@@ -405,16 +405,7 @@ function Home() {
               </p>
             )}
             <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} showTimestampInCards={false} showCrossSourceBadge={false} />
-            <AiCitationBlock
-              language={language}
-              buy={currentRate?.buy ?? currentRate?.buy_bob_per_usd}
-              sell={currentRate?.sell ?? currentRate?.sell_bob_per_usd}
-              updatedAt={currentRate?.updated_at_iso}
-              sourcesUsed={currentRate?.sources_used}
-              citePath="/"
-              className="mt-4 max-w-3xl mx-auto"
-            />
-            <div className="mt-5 sm:mt-6 max-w-5xl mx-auto">
+            <div className="mt-4 max-w-5xl mx-auto">
               <RateTrioStrip
                 buy={currentRate?.buy ?? currentRate?.buy_bob_per_usd}
                 sell={currentRate?.sell ?? currentRate?.sell_bob_per_usd}
@@ -424,6 +415,15 @@ function Home() {
                 updatedAt={currentRate?.updated_at_iso}
               />
             </div>
+            <AiCitationBlock
+              language={language}
+              buy={currentRate?.buy ?? currentRate?.buy_bob_per_usd}
+              sell={currentRate?.sell ?? currentRate?.sell_bob_per_usd}
+              updatedAt={currentRate?.updated_at_iso}
+              sourcesUsed={currentRate?.sources_used}
+              citePath="/"
+              className="mt-4 max-w-3xl mx-auto"
+            />
           </section>
 
           <section id="price-alerts" className="mt-5 sm:mt-6">

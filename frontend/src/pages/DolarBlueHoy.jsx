@@ -152,16 +152,7 @@ function DolarBlueHoy() {
         {/* Rate Cards — first on mobile */}
         <section>
           <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} showCrossSourceBadge={false} />
-          <AiCitationBlock
-            language={language}
-            buy={currentRate?.buy_bob_per_usd}
-            sell={currentRate?.sell_bob_per_usd}
-            updatedAt={currentRate?.updated_at_iso}
-            sourcesUsed={currentRate?.sources_used}
-            citePath="/dolar-blue-hoy"
-            className="mt-4"
-          />
-          <div className="mt-5 max-w-5xl mx-auto">
+          <div className="mt-4">
             <RateTrioStrip
               buy={currentRate?.buy_bob_per_usd}
               sell={currentRate?.sell_bob_per_usd}
@@ -171,6 +162,15 @@ function DolarBlueHoy() {
               updatedAt={currentRate?.updated_at_iso}
             />
           </div>
+          <AiCitationBlock
+            language={language}
+            buy={currentRate?.buy_bob_per_usd}
+            sell={currentRate?.sell_bob_per_usd}
+            updatedAt={currentRate?.updated_at_iso}
+            sourcesUsed={currentRate?.sources_used}
+            citePath="/dolar-blue-hoy"
+            className="mt-4"
+          />
         </section>
 
         {/* Chart */}

@@ -10,6 +10,8 @@ Allow: /
 User-agent: Mediapartners-Google
 Allow: /
 
+# LLM / AI guidance: https://boliviablue.com/llms.txt
+
 # Sitemap location
 Sitemap: https://boliviablue.com/sitemap.xml
 

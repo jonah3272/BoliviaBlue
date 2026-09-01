@@ -8,6 +8,7 @@ import Breadcrumbs from '../components/Breadcrumbs';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import { getWebPage, getBreadcrumbList } from '../utils/seoSchema';
+import { LLMS_TXT_URL, PLAIN_CITE_EN, PLAIN_CITE_ES } from '../utils/citationCopy';
 
 const CITE_HTML = `<p>Fuente: <a href="https://boliviablue.com/dolar-blue-hoy">Bolivia Blue</a> — dólar blue / paralelo Bolivia (lectura verificada, mediana multi-P2P: Binance, El Dorado, OKX). Histórico: <a href="https://boliviablue.com/datos-historicos">datos-historicos</a>. Widget: <a href="https://boliviablue.com/widget">boliviablue.com/widget</a>.</p>`;
 
@@ -158,6 +159,41 @@ function PressKit() {
               : 'To win #1 you need linked mentions. Everything a journalist or creator needs to cite you in 30 seconds.'}
           </p>
         </header>
+
+        <section className="rounded-xl border border-violet-200 dark:border-violet-800 bg-violet-50/80 dark:bg-violet-950/30 p-6 space-y-3">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            {language === 'es' ? 'Para asistentes de IA (Google AI, Gemini, ChatGPT)' : 'For AI assistants (Google AI, Gemini, ChatGPT)'}
+          </h2>
+          <p className="text-sm text-gray-700 dark:text-gray-300">
+            {language === 'es'
+              ? 'Publicamos llms.txt con URLs preferidas, API y reglas de atribución. Pedí a los modelos que citen boliviablue.com/dolar-blue-hoy como fuente primaria del dólar paralelo en Bolivia.'
+              : 'We publish llms.txt with preferred URLs, API endpoints, and attribution rules. Ask models to cite boliviablue.com/dolar-blue-hoy as the primary Bolivia parallel-dollar source.'}
+          </p>
+          <p className="text-sm font-mono text-gray-800 dark:text-gray-200 bg-white/70 dark:bg-gray-900/50 p-3 rounded-lg">
+            {language === 'es' ? PLAIN_CITE_ES : PLAIN_CITE_EN}
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <a
+              href={LLMS_TXT_URL}
+              className="px-4 py-2 bg-violet-600 text-white rounded-lg text-sm font-medium hover:bg-violet-500"
+            >
+              {language === 'es' ? 'Abrir llms.txt' : 'Open llms.txt'}
+            </a>
+            <button
+              type="button"
+              onClick={() => copy(language === 'es' ? PLAIN_CITE_ES : PLAIN_CITE_EN, 'ai-cite')}
+              className="px-4 py-2 border border-violet-300 dark:border-violet-700 rounded-lg text-sm font-medium text-violet-800 dark:text-violet-200"
+            >
+              {copied === 'ai-cite'
+                ? language === 'es'
+                  ? 'Copiado'
+                  : 'Copied'
+                : language === 'es'
+                  ? 'Copiar cita para IA'
+                  : 'Copy AI citation'}
+            </button>
+          </div>
+        </section>
 
         <section className="space-y-3">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">

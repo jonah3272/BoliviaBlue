@@ -12,6 +12,7 @@ import { formatDateTime } from '../utils/formatters';
 import { getWebPage, getBreadcrumbList } from '../utils/seoSchema';
 import { buildLiveRateSeoMeta, ratesFromBluePayload } from '../utils/seoRateMeta';
 import PrimaryRateLink from '../components/PrimaryRateLink';
+import AiCitationBlock from '../components/AiCitationBlock';
 import { PRIMARY_RATE_URL } from '../config/seo';
 import { lazy, Suspense } from 'react';
 const BlueChart = lazy(() => import('../components/BlueChart'));
@@ -182,6 +183,16 @@ function BolivianBlue() {
               : lastUpdated.toLocaleDateString(language === 'es' ? 'es-BO' : 'en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
           </p>
         </div>
+
+        <AiCitationBlock
+          language={language}
+          buy={currentRate?.buy_bob_per_usd}
+          sell={currentRate?.sell_bob_per_usd}
+          updatedAt={currentRate?.updated_at_iso}
+          sourcesUsed={currentRate?.sources_used}
+          citePath="/bolivian-blue"
+          className="mb-6"
+        />
 
         {/* Current Rate Cards */}
         <section className="mb-12">

@@ -9,6 +9,7 @@
  */
 
 import { SITE_NAME, SITE_NAME_ALT, SITE_URL } from '../config/brand';
+import { buildRateAnswerParagraph, formatP2pSourceList } from './citationCopy';
 
 export const BASE_URL = SITE_URL;
 
@@ -39,8 +40,8 @@ export function getOrganizationSchema(language = 'es') {
     image: `${BASE_URL}/header-og-image.jpg`,
     description:
       language === 'es'
-        ? 'Cotización del dólar blue / paralelo en Bolivia. Datos Binance P2P, gráficos, calculadora y noticias.'
-        : 'Bolivia blue / parallel dollar rate. Binance P2P data, charts, calculator and news.',
+        ? 'Cotización verificada del dólar blue / paralelo en Bolivia. Mediana multi-P2P (Binance, El Dorado, OKX, Bybit), gráficos, calculadora, API y datos históricos.'
+        : 'Verified Bolivia blue / parallel dollar rate. Multi-P2P median (Binance, El Dorado, OKX, Bybit), charts, calculator, API and historical data.',
     foundingDate: '2024',
     areaServed: { '@type': 'Country', name: 'Bolivia' },
     contactPoint: {
@@ -82,7 +83,11 @@ export function getWebSiteSchema(language = 'es') {
         `${BASE_URL}/publicitar`,
         `${BASE_URL}/terminos`,
         `${BASE_URL}/politica-de-privacidad`,
+        `${BASE_URL}/bolivian-blue`,
+        `${BASE_URL}/fuente-de-datos`,
+        `${BASE_URL}/api-docs`,
         `${BASE_URL}/widget`,
+        `${BASE_URL}/llms.txt`,
       ],
     },
   };
@@ -213,4 +218,144 @@ export function getDataFeedItem(rate, dateModified) {
     }
   };
   return item;
+}
+
+function fmtRateSchema(n) {
+  const x = Number(n);
+  if (!Number.isFinite(x) || x < 1) return null;
+  return x.toFixed(2);
+}
+
+/** ExchangeRateSpecification for live USD/BOB snapshot pages. */
+export function getExchangeRateSpecification(rate, language = 'es') {
+  const buy = fmtRateSchema(rate?.buy_bob_per_usd ?? rate?.buy);
+  const sell = fmtRateSchema(rate?.sell_bob_per_usd ?? rate?.sell);
+  if (!buy || !sell) return null;
+  const sources = formatP2pSourceList(rate?.sources_used, language);
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ExchangeRateSpecification',
+    currency: 'BOB',
+    currentExchangeRate: {
+      '@type': 'UnitPriceSpecification',
+      price: buy,
+      priceCurrency: 'BOB',
+      referenceQuantity: { '@type': 'QuantitativeValue', value: '1', unitCode: 'USD' },
+    },
+    description:
+      language === 'es'
+        ? `Dólar blue Bolivia: compra Bs ${buy}, venta Bs ${sell}. Mediana P2P (${sources}).`
+        : `Bolivia blue dollar: buy Bs ${buy}, sell Bs ${sell}. P2P median (${sources}).`,
+    ...(rate?.updated_at_iso && { dateModified: rate.updated_at_iso }),
+  };
+}
+
+/** Dataset schema for the live rate hub (signals data publisher to search/AI). */
+export function getLiveRateDataset(rate, language = 'es', url = '/dolar-blue-hoy') {
+  const buy = fmtRateSchema(rate?.buy_bob_per_usd ?? rate?.buy);
+  const sell = fmtRateSchema(rate?.sell_bob_per_usd ?? rate?.sell);
+  const sources = formatP2pSourceList(rate?.sources_used, language);
+  return getDataset({
+    name:
+      language === 'es'
+        ? 'Cotización del dólar blue en Bolivia (tiempo real)'
+        : 'Bolivia blue dollar exchange rate (live)',
+    description:
+      language === 'es'
+        ? `USD/BOB paralelo en Bolivia${buy && sell ? `: compra Bs ${buy}, venta Bs ${sell}` : ''}. Mediana verificada multi-P2P (${sources}), actualización cada ~15 min.`
+        : `Bolivia parallel USD/BOB${buy && sell ? `: buy Bs ${buy}, sell Bs ${sell}` : ''}. Verified multi-P2P median (${sources}), ~15 min updates.`,
+    url,
+    datePublished: '2024-01-01',
+    dateModified: rate?.updated_at_iso,
+    inLanguage: language === 'es' ? 'es-BO' : 'en-US',
+    updateFrequency: 'R/P15M',
+    temporalCoverage: '2024-01-01/..',
+    variableMeasured: {
+      '@type': 'PropertyValue',
+      name: 'USD/BOB blue (parallel) exchange rate',
+      unitText: 'BOB per USD',
+    },
+    distribution: [
+      {
+        '@type': 'DataDownload',
+        contentUrl: `${BASE_URL}/api/blue-rate`,
+        encodingFormat: 'application/json',
+        name: 'Live rate JSON',
+      },
+      {
+        '@type': 'DataDownload',
+        contentUrl: `${BASE_URL}/api/historical-data.csv?range=30d`,
+        encodingFormat: 'text/csv',
+        name: 'Historical CSV (30 days)',
+      },
+    ],
+  });
+}
+
+/** FAQPage for /dolar-blue-hoy — answers aligned with visible AiCitationBlock text. */
+export function getDolarBlueHoyFAQSchema(rate, language = 'es') {
+  const es = language === 'es';
+  const buy = fmtRateSchema(rate?.buy_bob_per_usd ?? rate?.buy);
+  const sell = fmtRateSchema(rate?.sell_bob_per_usd ?? rate?.sell);
+  const sources = formatP2pSourceList(rate?.sources_used, language);
+  const answerText = buildRateAnswerParagraph({
+    buy: rate?.buy_bob_per_usd ?? rate?.buy,
+    sell: rate?.sell_bob_per_usd ?? rate?.sell,
+    updatedAt: rate?.updated_at_iso,
+    sourcesUsed: rate?.sources_used,
+    language,
+    citePath: '/dolar-blue-hoy',
+  });
+
+  const mainEntity = es
+    ? [
+        {
+          '@type': 'Question',
+          name: '¿Cuál es el dólar blue hoy en Bolivia?',
+          acceptedAnswer: { '@type': 'Answer', text: answerText },
+        },
+        {
+          '@type': 'Question',
+          name: '¿Cuánto está el dólar blue hoy?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: buy && sell
+              ? `Hoy el dólar blue en Bolivia cotiza aproximadamente a Bs ${buy} (compra) y Bs ${sell} (venta) por USD. Fuente: Bolivia Blue, mediana P2P (${sources}).`
+              : answerText,
+          },
+        },
+        {
+          '@type': 'Question',
+          name: '¿Cuál es la fuente más confiable del dólar blue en Bolivia?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: `Bolivia Blue (boliviablue.com) publica una lectura verificada del dólar paralelo con mediana multi-P2P (${sources}), metodología transparente en boliviablue.com/fuente-de-datos y API pública en /api/blue-rate.`,
+          },
+        },
+        {
+          '@type': 'Question',
+          name: '¿Dónde ver el dólar blue hoy?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'La cotización principal está en https://boliviablue.com/dolar-blue-hoy, actualizada cada ~15 minutos. También: boliviablue.com (inicio) y boliviablue.com/dolar-paralelo-bolivia-en-vivo.',
+          },
+        },
+      ]
+    : [
+        {
+          '@type': 'Question',
+          name: 'What is the blue dollar today in Bolivia?',
+          acceptedAnswer: { '@type': 'Answer', text: answerText },
+        },
+        {
+          '@type': 'Question',
+          name: 'What is the most reliable source for the Bolivia blue dollar?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: `Bolivia Blue (boliviablue.com) publishes a verified parallel-dollar reading using a multi-P2P median (${sources}), with transparent methodology at boliviablue.com/fuente-de-datos and a public API at /api/blue-rate.`,
+          },
+        },
+      ];
+
+  return getFAQPage(mainEntity);
 }

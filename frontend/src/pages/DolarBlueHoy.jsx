@@ -10,7 +10,8 @@ import BinanceBanner from '../components/BinanceBanner';
 import { Link } from 'react-router-dom';
 import { fetchBlueRate } from '../utils/api';
 import { formatDateTime } from '../utils/formatters';
-import { getWebPage, getBreadcrumbList } from '../utils/seoSchema';
+import { getWebPage, getBreadcrumbList, getDolarBlueHoyFAQSchema, getLiveRateDataset, getExchangeRateSpecification } from '../utils/seoSchema';
+import AiCitationBlock from '../components/AiCitationBlock';
 import { buildLiveRateSeoMeta, ratesFromBluePayload } from '../utils/seoRateMeta';
 import { lazy, Suspense } from 'react';
 const BlueChart = lazy(() => import('../components/BlueChart'));
@@ -64,7 +65,8 @@ function DolarBlueHoy() {
     description: language === 'es' ? 'Esta es la cotización del dólar blue hoy en Bolivia, actualizada cada 15 minutos.' : "This is today's blue dollar quote in Bolivia, updated every 15 minutes.",
     url: '/dolar-blue-hoy',
     dateModified: rateDateModified,
-    inLanguage: language === 'es' ? 'es-BO' : 'en-US'
+    inLanguage: language === 'es' ? 'es-BO' : 'en-US',
+    mainEntity: getExchangeRateSpecification(currentRate, language) || undefined,
   });
 
   const breadcrumbSchema = getBreadcrumbList([
@@ -72,45 +74,8 @@ function DolarBlueHoy() {
     { name: language === 'es' ? 'Dólar Blue Hoy' : 'Blue Dollar Today', url: '/dolar-blue-hoy' }
   ]);
 
-  const faqSchema = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": language === 'es' ? [
-      {
-        "@type": "Question",
-        "name": "¿Cuál es el dólar blue hoy?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": `El dólar blue hoy es de aproximadamente ${currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB por USD para compra y ${currentRate?.sell_bob_per_usd?.toFixed(2) || '10.60'} BOB por USD para venta. Esta cotización se actualiza cada 15 minutos con datos en tiempo real de Binance P2P.`
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "¿Cuál es el dólar blue hoy en Bolivia?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": `El dólar blue hoy en Bolivia es de aproximadamente ${currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB por USD. Esta cotización refleja el mercado paralelo y se actualiza cada 15 minutos en nuestra plataforma.`
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "¿Dónde ver el dólar blue hoy?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Puedes ver el dólar blue hoy en nuestra plataforma boliviablue.com, que actualiza la cotización cada 15 minutos con datos en tiempo real de Binance P2P. También puedes consultar otras plataformas, pero nuestra actualización es más frecuente que la mayoría."
-        }
-      }
-    ] : [
-      {
-        "@type": "Question",
-        "name": "What is the blue dollar today?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": `The blue dollar today is approximately ${currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB per USD for buying and ${currentRate?.sell_bob_per_usd?.toFixed(2) || '10.60'} BOB per USD for selling. This quote is updated every 15 minutes with real-time data from Binance P2P.`
-        }
-      }
-    ]
-  };
+  const faqSchema = getDolarBlueHoyFAQSchema(currentRate, language);
+  const datasetSchema = getLiveRateDataset(currentRate, language, '/dolar-blue-hoy');
 
   const today = new Date().toLocaleDateString(language === 'es' ? 'es-BO' : 'en-US', { 
     weekday: 'long', 
@@ -134,7 +99,7 @@ function DolarBlueHoy() {
           ? "dólar blue hoy, dólar blue hoy bolivia, dólar blue hoy en bolivia, cotización dólar blue hoy, precio dólar blue hoy, dólar blue hoy actual, dólar blue hoy la paz, tipo cambio hoy bolivia"
           : "blue dollar today, blue dollar today bolivia, blue dollar quote today, blue dollar price today, blue dollar current today, exchange rate today bolivia"}
         canonical="/dolar-blue-hoy"
-        structuredData={[webPageSchema, breadcrumbSchema, articleSchema, faqSchema]}
+        structuredData={[webPageSchema, breadcrumbSchema, articleSchema, faqSchema, datasetSchema]}
       />
       
       <Header />
@@ -173,6 +138,16 @@ function DolarBlueHoy() {
               : lastUpdated.toLocaleTimeString(language === 'es' ? 'es-BO' : 'en-US', { hour: '2-digit', minute: '2-digit' })}
           </p>
         </div>
+
+        <AiCitationBlock
+          language={language}
+          buy={currentRate?.buy_bob_per_usd}
+          sell={currentRate?.sell_bob_per_usd}
+          updatedAt={currentRate?.updated_at_iso}
+          sourcesUsed={currentRate?.sources_used}
+          citePath="/dolar-blue-hoy"
+          className="mb-4"
+        />
 
         {/* Rate Cards */}
         <section>

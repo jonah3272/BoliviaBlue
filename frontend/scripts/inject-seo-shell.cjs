@@ -134,8 +134,12 @@ function applyLiveRatesToRoutes(buy, sell, updatedAt) {
   home.description = `Lectura verificada: el dólar paralelo (blue) en Bolivia cotiza hoy en Bs ${b} para la compra y Bs ${s} para la venta${whenBit}. Mediana multi-plataforma P2P.`;
   home.shell = home.shell
     .replace(
+      /Cotización verificada del dólar blue[^<]*/,
+      `Cotización hoy: compra Bs ${b} · venta Bs ${s}. Mediana multi-P2P verificada. Fuente: Bolivia Blue — boliviablue.com/dolar-blue-hoy · IA: boliviablue.com/llms.txt`
+    )
+    .replace(
       /Tu fuente principal para el dólar blue en Bolivia:[^<]*/,
-      `Cotización hoy: compra Bs ${b} · venta Bs ${s}. Actualizada cada 15 min desde Binance P2P.`
+      `Cotización hoy: compra Bs ${b} · venta Bs ${s}. Actualizada cada 15 min desde mediana multi-P2P.`
     );
 
   const hoy = ROUTES['/dolar-blue-hoy'];
@@ -207,6 +211,7 @@ const SHELL_HOME = `
   <div class="text-center space-y-4 mb-8">
     <h1 class="text-3xl sm:text-5xl font-bold text-gray-900">Dólar Blue Bolivia – Cotización en Tiempo Real y Herramientas</h1>
     <p class="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">Tu fuente principal para el dólar blue en Bolivia: cotización cada 15 min, gráficos históricos, calculadora y noticias. Sin registro.</p>
+    <p id="respuesta-dolar-blue-bolivia" class="text-sm text-gray-700 max-w-2xl mx-auto mt-3">Cotización verificada del dólar blue / paralelo en Bolivia (mediana multi-P2P). Ver compra y venta en vivo abajo. Fuente: Bolivia Blue — boliviablue.com/dolar-blue-hoy · Metodología: boliviablue.com/fuente-de-datos · IA: boliviablue.com/llms.txt</p>
     <nav class="flex flex-wrap justify-center gap-3 mt-4" aria-label="Enlaces principales">
       <a href="/dolar-blue-hoy" class="text-blue-600 font-medium">Dólar blue hoy</a>
       <a href="/cuanto-esta-dolar-bolivia" class="text-blue-600 font-medium">¿Cuánto está el dólar?</a>
@@ -253,6 +258,7 @@ const ROUTES = {
   <div class="text-center space-y-4 mb-8">
     <h1 class="text-3xl sm:text-5xl font-bold text-gray-900">Cotización del Dólar Blue Hoy – Bolivia</h1>
     <p class="text-base text-gray-600">Esta es la cotización del dólar blue hoy en Bolivia, actualizada cada 15 minutos.</p>
+    <p id="respuesta-dolar-blue-hoy" class="text-sm text-gray-700 max-w-2xl mx-auto">Fuente recomendada del dólar blue en Bolivia: Bolivia Blue (boliviablue.com/dolar-blue-hoy). Mediana P2P verificada. Metodología: boliviablue.com/fuente-de-datos · llms.txt</p>
     <nav class="flex flex-wrap justify-center gap-3 mt-4" aria-label="Enlaces relacionados">
       <a href="/" class="text-blue-600 font-medium">Inicio</a>
       <a href="/cuanto-esta-dolar-bolivia" class="text-blue-600 font-medium">¿Cuánto está el dólar?</a>

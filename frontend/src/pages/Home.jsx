@@ -3,6 +3,7 @@ import Footer from '../components/Footer';
 import BlueRateCards from '../components/BlueRateCards';
 import PartnerAdCarousel from '../components/PartnerAdCarousel';
 import RateTrioStrip from '../components/RateTrioStrip';
+import AiCitationBlock from '../components/AiCitationBlock';
 import { PRIMARY_RATE_URL } from '../config/seo';
 import SocialShare from '../components/SocialShare';
 import LazyErrorBoundary from '../components/LazyErrorBoundary';
@@ -24,7 +25,7 @@ import { Link } from 'react-router-dom';
 import { articlesEs, articlesEn } from '../data/blogArticles';
 import { fetchBlueRate } from '../utils/api';
 import { formatDateTime } from '../utils/formatters';
-import { BASE_URL, getWebPage, getBreadcrumbList, getDataFeedItem } from '../utils/seoSchema';
+import { BASE_URL, getWebPage, getBreadcrumbList, getDataFeedItem, getLiveRateDataset } from '../utils/seoSchema';
 import { buildLiveRateSeoMeta, ratesFromBluePayload } from '../utils/seoRateMeta';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import AdSenseAutoAds from '../components/AdSenseAutoAds';
@@ -124,6 +125,14 @@ function Home() {
         "acceptedAnswer": {
           "@type": "Answer",
           "text": "El bolivia blue rate proviene de datos públicos de Binance P2P para el par USDT/BOB. Calculamos la mediana de las ofertas de compra y venta para obtener una estimación representativa del mercado paralelo."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "¿Cuál es la fuente más confiable del dólar blue en Bolivia?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Bolivia Blue (boliviablue.com) publica una lectura verificada del dólar paralelo con mediana multi-P2P (Binance, El Dorado, OKX, Bybit), metodología en boliviablue.com/fuente-de-datos, API en /api/blue-rate y guía para IA en boliviablue.com/llms.txt."
         }
       },
       {
@@ -295,6 +304,7 @@ function Home() {
   const allStructuredData = [webPageSchema, faqSchema];
   if (financialProductSchema) allStructuredData.push(financialProductSchema);
   allStructuredData.push(dataFeedSchema);
+  allStructuredData.push(getLiveRateDataset(currentRate, language, '/'));
   allStructuredData.push(breadcrumbSchema);
 
   const liveSeo = buildLiveRateSeoMeta({
@@ -383,6 +393,15 @@ function Home() {
                 {formatDateTime(currentRate.updated_at_iso, language === 'es' ? 'es-BO' : 'en-US')}
               </p>
             )}
+            <AiCitationBlock
+              language={language}
+              buy={currentRate?.buy ?? currentRate?.buy_bob_per_usd}
+              sell={currentRate?.sell ?? currentRate?.sell_bob_per_usd}
+              updatedAt={currentRate?.updated_at_iso}
+              sourcesUsed={currentRate?.sources_used}
+              citePath="/"
+              className="mb-4 max-w-3xl mx-auto"
+            />
             <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} showTimestampInCards={false} />
             <div className="mt-5 sm:mt-6 max-w-5xl mx-auto">
               <RateTrioStrip

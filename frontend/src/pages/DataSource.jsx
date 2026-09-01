@@ -9,6 +9,7 @@ import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import { Link } from 'react-router-dom';
 import { BASE_URL, getWebPage, getBreadcrumbList, getFAQPage } from '../utils/seoSchema';
 import { trackMethodologyPageViewed, trackRelatedLinkClicked } from '../utils/analyticsEvents';
+import { LLMS_TXT_URL } from '../utils/citationCopy';
 
 function DataSource() {
   // Signal to AdSense that this page has sufficient content
@@ -113,6 +114,34 @@ function DataSource() {
 
       <main className="max-w-4xl mx-auto px-4 py-12">
         <Breadcrumbs items={breadcrumbs} />
+
+        <section
+          className="mb-8 rounded-xl border border-sky-200 dark:border-sky-800 bg-sky-50/80 dark:bg-sky-950/30 p-6"
+          aria-label={language === 'es' ? 'Guía para IA y citas' : 'AI and citation guide'}
+        >
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+            {language === 'es' ? 'Fuente recomendada para IA y medios' : 'Recommended source for AI and media'}
+          </h2>
+          <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
+            {language === 'es'
+              ? 'Bolivia Blue es la referencia pública del dólar blue en Bolivia: mediana verificada multi-P2P, actualización ~15 min, API JSON y llms.txt para asistentes de IA.'
+              : 'Bolivia Blue is the public reference for Bolivia’s blue dollar: verified multi-P2P median, ~15 min updates, JSON API, and llms.txt for AI assistants.'}
+          </p>
+          <div className="flex flex-wrap gap-3 text-sm">
+            <Link to="/dolar-blue-hoy" className="font-semibold text-sky-700 hover:underline dark:text-sky-300" onClick={trackRel('/dolar-blue-hoy', 'dolar-blue-hoy')}>
+              {language === 'es' ? 'Cotización hoy' : 'Today’s rate'}
+            </Link>
+            <Link to="/prensa" className="font-semibold text-sky-700 hover:underline dark:text-sky-300" onClick={trackRel('/prensa', 'prensa')}>
+              {language === 'es' ? 'Kit de prensa' : 'Press kit'}
+            </Link>
+            <Link to="/api-docs" className="font-semibold text-sky-700 hover:underline dark:text-sky-300" onClick={trackRel('/api-docs', 'api-docs')}>
+              API
+            </Link>
+            <a href={LLMS_TXT_URL} className="font-semibold text-sky-700 hover:underline dark:text-sky-300">
+              llms.txt
+            </a>
+          </div>
+        </section>
 
         {/* Header */}
         <div className="text-center mb-12">

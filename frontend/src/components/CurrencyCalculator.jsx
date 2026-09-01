@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { fetchBlueRate } from '../utils/api';
 import { useLanguage } from '../contexts/LanguageContext';
 import { trackCalculatorUsage, trackCalculatorCurrencySwitch, trackCalculatorSwap } from '../utils/analytics';
@@ -21,8 +22,9 @@ function CurrencyCalculator() {
   const [comparisonMode, setComparisonMode] = useState(false);
   const [history, setHistory] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
-  
-  // Currency configurations - multipliers will be fetched from API
+  const [copied, setCopied] = useState(false);
+  const [searchParams] = useSearchParams();
+
   const currencies = {
     USD: { symbol: '$', name: 'US Dollar', flag: '🇺🇸' },
     USDT: { symbol: '₮', name: 'Tether', flag: '💲' },
@@ -53,6 +55,18 @@ function CurrencyCalculator() {
       }
     }
   }, []);
+
+  useEffect(() => {
+    const usd = searchParams.get('usd');
+    const bob = searchParams.get('bob');
+    if (usd && /^\d+(\.\d+)?$/.test(usd)) {
+      setUsdAmount(usd);
+      setConvertFromBOB(false);
+    } else if (bob && /^\d+(\.\d+)?$/.test(bob)) {
+      setBobAmount(bob);
+      setConvertFromBOB(true);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     loadRates();
@@ -213,11 +227,41 @@ function CurrencyCalculator() {
     trackCalculatorCurrencySwitch(prevFromCurrency, prevToCurrency);
   };
 
-  const getBuyRate = () => useOfficial ? rateData?.official_buy : rateData?.buy_bob_per_usd;
-  const getSellRate = () => useOfficial ? rateData?.official_sell : rateData?.sell_bob_per_usd;
+  const getBuyRate = () => (useOfficial ? rateData?.official_buy : rateData?.buy_bob_per_usd);
+  const getSellRate = () => (useOfficial ? rateData?.official_sell : rateData?.sell_bob_per_usd);
+
+  const applyUsdPreset = useCallback((amount) => {
+    setUsdAmount(String(amount));
+    setConvertFromBOB(false);
+  }, []);
+
+  const applyBobPreset = useCallback((amount) => {
+    setBobAmount(String(amount));
+    setConvertFromBOB(true);
+  }, []);
+
+  const copyResult = async () => {
+    const fromAmt = convertFromBOB ? bobAmount : usdAmount;
+    const toAmt = convertFromBOB ? usdAmount : bobAmount;
+    const fromLabel = convertFromBOB ? 'BOB' : selectedCurrency;
+    const toLabel = convertFromBOB ? selectedCurrency : 'BOB';
+    if (!fromAmt || !toAmt) return;
+    const text = es
+      ? `${fromAmt} ${fromLabel} = ${toAmt} ${toLabel} (Bolivia Blue, tasa ${useOfficial ? 'oficial' : 'blue'})`
+      : `${fromAmt} ${fromLabel} = ${toAmt} ${toLabel} (Bolivia Blue, ${useOfficial ? 'official' : 'blue'} rate)`;
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      /* ignore */
+    }
+  };
 
   const es = language === 'es';
   const rate = getRate();
+  const usdPresets = [20, 50, 100, 500, 1000];
+  const bobPresets = [500, 1000, 5000, 10000];
 
   return (
     <div className="w-full">
@@ -357,6 +401,25 @@ function CurrencyCalculator() {
                 </div>
               </div>
 
+              {/* Quick amounts */}
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400 mb-1.5">
+                  {es ? 'Montos rápidos' : 'Quick amounts'}
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {(convertFromBOB ? bobPresets : usdPresets).map((n) => (
+                    <button
+                      key={n}
+                      type="button"
+                      onClick={() => (convertFromBOB ? applyBobPreset(n) : applyUsdPreset(n))}
+                      className="px-2.5 py-1 rounded-lg text-xs font-mono font-semibold tabular-nums bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-sky-100 hover:text-sky-800 dark:hover:bg-sky-900/40 dark:hover:text-sky-200 transition-colors touch-manipulation"
+                    >
+                      {convertFromBOB ? `${n.toLocaleString()} Bs` : `$${n}`}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* Live rate strip */}
               <div className="rounded-xl bg-sky-50 dark:bg-sky-950/30 border border-sky-100 dark:border-sky-900/50 px-4 py-3">
                 <div className="grid grid-cols-2 gap-3 text-center">
@@ -384,6 +447,40 @@ function CurrencyCalculator() {
                   </p>
                 )}
               </div>
+
+              {/* Result + copy */}
+              {bobAmount && usdAmount && !isLoading && (
+                <div className="flex items-center justify-between gap-3 rounded-xl border border-emerald-200 dark:border-emerald-800/50 bg-emerald-50/80 dark:bg-emerald-950/20 px-4 py-3">
+                  <p className="text-sm font-medium text-gray-800 dark:text-gray-100 leading-snug">
+                    {convertFromBOB ? (
+                      <>
+                        <span className="font-mono tabular-nums">{bobAmount} Bs</span>
+                        {' → '}
+                        <span className="font-mono tabular-nums font-bold text-emerald-700 dark:text-emerald-300">
+                          {currencies[selectedCurrency].symbol}{usdAmount} {selectedCurrency}
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="font-mono tabular-nums">
+                          {currencies[selectedCurrency].symbol}{usdAmount} {selectedCurrency}
+                        </span>
+                        {' → '}
+                        <span className="font-mono tabular-nums font-bold text-emerald-700 dark:text-emerald-300">
+                          {bobAmount} Bs
+                        </span>
+                      </>
+                    )}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={copyResult}
+                    className="shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 touch-manipulation"
+                  >
+                    {copied ? (es ? 'Copiado' : 'Copied') : (es ? 'Copiar' : 'Copy')}
+                  </button>
+                </div>
+              )}
 
               {comparisonMode && !isLoading && rateData && (
                 <div className="rounded-xl border border-gray-200 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700 overflow-hidden">

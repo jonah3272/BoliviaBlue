@@ -3,30 +3,44 @@ import { useLocation } from 'react-router-dom';
 import { trackPageView, initScrollDepthTracking, initTimeOnPageTracking } from '../utils/analytics';
 
 /**
- * Hook to track page views, scroll depth, and time on page
- * Use this in your main App component or page components
+ * Hook to track page views, scroll depth, and time on page.
+ * Also scrolls to top on route change (SPAs don't do this by default).
  */
 export function usePageTracking() {
   const location = useLocation();
 
   useEffect(() => {
-    // Track page view
+    let hashTimer;
+
+    if (location.hash) {
+      const id = location.hash.replace('#', '');
+      const scrollToHash = () => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          return true;
+        }
+        return false;
+      };
+      if (!scrollToHash()) {
+        hashTimer = window.setTimeout(scrollToHash, 100);
+      }
+    } else {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    }
+
     const pagePath = location.pathname + location.search;
     const pageTitle = document.title || 'Bolivia Blue';
-    
+
     trackPageView(pagePath, pageTitle);
 
-    // Initialize scroll depth tracking
     const scrollCleanup = initScrollDepthTracking();
-
-    // Initialize time on page tracking
     const timeCleanup = initTimeOnPageTracking(pagePath);
 
-    // Cleanup on unmount or route change
     return () => {
+      if (hashTimer) window.clearTimeout(hashTimer);
       if (scrollCleanup) scrollCleanup();
       if (timeCleanup) timeCleanup();
     };
   }, [location]);
 }
-

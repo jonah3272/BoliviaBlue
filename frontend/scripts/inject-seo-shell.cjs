@@ -10,13 +10,72 @@ const https = require('https');
 
 const DIST = path.join(__dirname, '..', 'dist');
 const BASE_URL = 'https://boliviablue.com';
-const RATE_API = 'https://boliviablue.com/api/blue-rate';
+const RATE_API = process.env.BUILD_RATE_API_URL || `${BASE_URL}/api/blue-rate`;
+const RATE_FETCH_RETRIES = 3;
+const RATE_FETCH_DELAY_MS = 2000;
 
-function fetchJson(url, timeoutMs = 8000) {
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function extractBuySell(payload) {
+  if (!payload || typeof payload !== 'object') return { buy: null, sell: null, updatedAt: null };
+  const buy = payload.buy_bob_per_usd ?? payload.buy ?? null;
+  const sell = payload.sell_bob_per_usd ?? payload.sell ?? null;
+  const updatedAt = payload.updated_at_iso ?? payload.t ?? null;
+  return { buy, sell, updatedAt };
+}
+
+/** Fetch live USD/BOB with retries; optional BUILD_RATE_BUY/SELL env fallback for CI. */
+async function fetchLiveRate() {
+  const envBuy = process.env.BUILD_RATE_BUY;
+  const envSell = process.env.BUILD_RATE_SELL;
+  if (envBuy && envSell) {
+    const buy = Number(envBuy);
+    const sell = Number(envSell);
+    if (fmtRate(buy) && fmtRate(sell)) {
+      return { buy, sell, updatedAt: new Date().toISOString(), source: 'env' };
+    }
+  }
+
+  let lastErr;
+  for (let attempt = 1; attempt <= RATE_FETCH_RETRIES; attempt += 1) {
+    try {
+      const payload = await fetchJson(RATE_API);
+      const { buy, sell, updatedAt } = extractBuySell(payload);
+      if (fmtRate(buy) && fmtRate(sell)) {
+        return { buy, sell, updatedAt, source: 'api' };
+      }
+      lastErr = new Error('Rate payload missing valid buy/sell');
+    } catch (err) {
+      lastErr = err;
+    }
+    if (attempt < RATE_FETCH_RETRIES) {
+      await sleep(RATE_FETCH_DELAY_MS);
+    }
+  }
+  throw lastErr || new Error('Could not fetch live rate');
+}
+
+function fetchJson(url, timeoutMs = 8000, redirectHops = 0) {
   return new Promise((resolve, reject) => {
     const req = https.get(url, { headers: { Accept: 'application/json' } }, (res) => {
-      if (res.statusCode && res.statusCode >= 400) {
-        reject(new Error(`HTTP ${res.statusCode}`));
+      const code = res.statusCode || 0;
+      if ([301, 302, 307, 308].includes(code) && res.headers.location) {
+        if (redirectHops >= 5) {
+          reject(new Error('Too many redirects'));
+          res.resume();
+          return;
+        }
+        const next = res.headers.location.startsWith('http')
+          ? res.headers.location
+          : new URL(res.headers.location, url).toString();
+        res.resume();
+        fetchJson(next, timeoutMs, redirectHops + 1).then(resolve).catch(reject);
+        return;
+      }
+      if (code >= 400) {
+        reject(new Error(`HTTP ${code}`));
         res.resume();
         return;
       }
@@ -494,14 +553,10 @@ async function main() {
   }
 
   try {
-    const rate = await fetchJson(RATE_API);
-    const ok = applyLiveRatesToRoutes(
-      rate.buy_bob_per_usd ?? rate.buy,
-      rate.sell_bob_per_usd ?? rate.sell,
-      rate.updated_at_iso
-    );
+    const { buy, sell, updatedAt, source } = await fetchLiveRate();
+    const ok = applyLiveRatesToRoutes(buy, sell, updatedAt);
     if (ok) {
-      console.log('[inject-seo-shell] Injected live buy/sell into SEO meta + shells');
+      console.log(`[inject-seo-shell] Injected live buy/sell into SEO meta + shells (${source})`);
     } else {
       console.warn('[inject-seo-shell] Rate payload missing buy/sell; using static meta');
     }
@@ -555,6 +610,9 @@ module.exports = {
   injectRootShell,
   injectStaticJsonLd,
   buildStaticJsonLd,
+  fetchLiveRate,
+  applyLiveRatesToRoutes,
+  fmtRate,
   main
 };
 

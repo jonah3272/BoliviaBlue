@@ -3,7 +3,6 @@ import Footer from '../components/Footer';
 import BlueRateCards from '../components/BlueRateCards';
 import PartnerAdCarousel from '../components/PartnerAdCarousel';
 import RateTrioStrip from '../components/RateTrioStrip';
-import CrossSourceBadge from '../components/CrossSourceBadge';
 import { PRIMARY_RATE_URL } from '../config/seo';
 import SocialShare from '../components/SocialShare';
 import LazyErrorBoundary from '../components/LazyErrorBoundary';
@@ -341,7 +340,7 @@ function Home() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
               </span>
-              {language === 'es' ? 'Lectura verificada · multi-P2P' : 'Verified reading · multi-P2P'}
+              {language === 'es' ? 'Actualizado cada 15 min' : 'Updated every 15 min'}
             </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight">
               {language === 'es' ? 'Dólar Blue Bolivia Hoy' : 'Bolivia Blue Dollar Today'}
@@ -385,7 +384,6 @@ function Home() {
               </p>
             )}
             <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} showTimestampInCards={false} />
-            <CrossSourceBadge sourcesUsed={currentRate?.sources_used} className="mt-3" />
             <div className="mt-5 sm:mt-6 max-w-5xl mx-auto">
               <RateTrioStrip
                 buy={currentRate?.buy ?? currentRate?.buy_bob_per_usd}

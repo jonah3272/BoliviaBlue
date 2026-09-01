@@ -11,7 +11,6 @@ import { fetchBlueRate } from '../utils/api';
 import { formatDateTime } from '../utils/formatters';
 import { getWebPage, getBreadcrumbList } from '../utils/seoSchema';
 import { buildLiveRateSeoMeta, ratesFromBluePayload } from '../utils/seoRateMeta';
-import CrossSourceBadge from '../components/CrossSourceBadge';
 import PrimaryRateLink from '../components/PrimaryRateLink';
 import { PRIMARY_RATE_URL } from '../config/seo';
 import { lazy, Suspense } from 'react';
@@ -188,7 +187,6 @@ function BolivianBlue() {
         <section className="mb-12">
           <PrimaryRateLink className="mb-4" />
           <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} />
-          <CrossSourceBadge sourcesUsed={currentRate?.sources_used} className="mt-3" />
         </section>
 
         {/* Binance Banner */}

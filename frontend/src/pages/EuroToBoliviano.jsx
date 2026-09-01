@@ -183,6 +183,14 @@ function EuroToBoliviano() {
               : `Last updated: ${lastUpdated.toLocaleString('en-US', { dateStyle: 'long', timeStyle: 'short' })}`)
             : '\u00a0'}
         </p>
+        <p className="text-center mb-4 sm:mb-6">
+          <Link
+            to="/dolar-blue-hoy"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-sky-500/10 px-4 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-500/20 dark:text-sky-300 dark:hover:bg-sky-500/20 transition-colors"
+          >
+            {language === 'es' ? 'Ver cotización del dólar blue hoy →' : 'See today’s blue dollar rate →'}
+          </Link>
+        </p>
 
         <CurrencyRateSnapshot
           language={language}

@@ -3,7 +3,7 @@
  * Uses trackEvent from analytics.js (gtag). See ANALYTICS_EVENT_PLAN.md.
  */
 
-import { trackEvent } from './analytics';
+import { trackEvent, trackConversion } from './analytics';
 
 function baseParams(overrides = {}) {
   const path =
@@ -21,23 +21,27 @@ export function trackRateAlertOpened({ language }) {
 }
 
 export function trackRateAlertSubmitted({ language, alert_type, direction, threshold }) {
-  trackEvent('rate_alert_submitted', baseParams({
+  const params = baseParams({
     language,
     page_type: 'rate_alert',
     alert_type,
     direction,
     threshold: threshold != null ? String(threshold) : undefined,
-  }));
+  });
+  trackEvent('rate_alert_submitted', params);
+  trackConversion('rate_alert_submitted', parseFloat(threshold) || 0);
 }
 
 export function trackCalculatorUsed({ language, from_currency, to_currency, use_official }) {
-  trackEvent('calculator_used', baseParams({
+  const params = baseParams({
     language,
     page_type: 'calculator',
     from_currency,
     to_currency,
     use_official: use_official === true,
-  }));
+  });
+  trackEvent('calculator_used', params);
+  trackConversion('calculator_used');
 }
 
 export function trackHistoricalDownloadCsv({ language, range, source }) {
@@ -144,6 +148,7 @@ export function trackReferralClicked({
     page_type: 'referral',
   });
   trackEvent('referral_clicked', params);
+  trackConversion('referral_clicked');
   // Keep legacy outbound event for historical reports
   trackEvent('outbound_source_clicked', params);
 }

@@ -6,7 +6,7 @@ import { formatRate, formatDateTime, isStale } from '../utils/formatters';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 import CrossSourceBadge from './CrossSourceBadge';
-import { PRIMARY_RATE_URL } from '../config/seo';
+import { trackRateCardView, trackOfficialRateToggle, trackRateUpdate } from '../utils/analytics';
 import {
   effectiveBobPerUsd
 } from '../data/usCardIssuers';

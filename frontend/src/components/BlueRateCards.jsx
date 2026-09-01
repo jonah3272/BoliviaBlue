@@ -118,7 +118,7 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
   );
 });
 
-function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInCards = true }) {
+function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInCards = true, showCrossSourceBadge = true }) {
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
@@ -349,7 +349,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
       <p className="mt-3 text-center text-xs leading-relaxed text-gray-600 dark:text-gray-400 max-w-3xl mx-auto min-h-[2.5rem]">
         {description}
       </p>
-      {rateMode === 'blue' && (
+      {rateMode === 'blue' && showCrossSourceBadge && (
         <CrossSourceBadge
           sourcesUsed={data?.sources_used}
           className="mt-2"

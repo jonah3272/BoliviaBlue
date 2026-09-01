@@ -151,7 +151,7 @@ function DolarBlueHoy() {
 
         {/* Rate Cards */}
         <section>
-          <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} />
+          <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} showCrossSourceBadge={false} />
           <div className="mt-5 max-w-5xl mx-auto">
             <RateTrioStrip
               buy={currentRate?.buy_bob_per_usd}

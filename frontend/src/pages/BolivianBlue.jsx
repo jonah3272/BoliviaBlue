@@ -197,7 +197,7 @@ function BolivianBlue() {
         {/* Current Rate Cards */}
         <section className="mb-12">
           <PrimaryRateLink className="mb-4" />
-          <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} />
+          <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} showCrossSourceBadge={false} />
         </section>
 
         {/* Binance Banner */}

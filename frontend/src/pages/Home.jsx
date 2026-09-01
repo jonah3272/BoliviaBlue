@@ -402,7 +402,7 @@ function Home() {
               citePath="/"
               className="mb-4 max-w-3xl mx-auto"
             />
-            <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} showTimestampInCards={false} />
+            <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} showTimestampInCards={false} showCrossSourceBadge={false} />
             <div className="mt-5 sm:mt-6 max-w-5xl mx-auto">
               <RateTrioStrip
                 buy={currentRate?.buy ?? currentRate?.buy_bob_per_usd}

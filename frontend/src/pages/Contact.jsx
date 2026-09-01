@@ -26,7 +26,7 @@ function Contact() {
         "@type": "ListItem",
         "position": 2,
         "name": language === 'es' ? "Contacto" : "Contact",
-        "item": "https://boliviablue.com/contact"
+        "item": "https://boliviablue.com/contacto"
       }
     ]
   };

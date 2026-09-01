@@ -147,7 +147,7 @@ function BlueDollarBolivia() {
               How is Blue Dollar Bolivia Calculated?
             </h2>
             <p className="text-gray-700 dark:text-gray-300 mb-6">
-              Our platform calculates the <strong>blue dollar bolivia</strong> using real-time data from Binance P2P for the USDT/BOB pair. We process public buy and sell offers, calculating the median of these offers to obtain a representative estimate of the <strong>blue dollar exchange rate</strong>. This method allows us to provide an accurate rate that reflects the real conditions of the parallel market. <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Use our calculator</Link> to convert currencies or <Link to="/about" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">learn more about our methodology</Link>.
+              Our platform calculates the <strong>blue dollar bolivia</strong> using real-time data from Binance P2P for the USDT/BOB pair. We process public buy and sell offers, calculating the median of these offers to obtain a representative estimate of the <strong>blue dollar exchange rate</strong>. This method allows us to provide an accurate rate that reflects the real conditions of the parallel market. <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Use our calculator</Link> to convert currencies or <Link to="/acerca-de" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">learn more about our methodology</Link>.
             </p>
 
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6 mt-12">

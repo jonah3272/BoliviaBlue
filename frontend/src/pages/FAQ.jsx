@@ -147,7 +147,7 @@ function FAQ() {
         "@type": "HowToStep",
         "name": language === 'es' ? "Usar calculadora" : "Use calculator",
         "text": language === 'es' ? "Usa nuestra calculadora para convertir USD a BOB o viceversa instantáneamente" : "Use our calculator to convert USD to BOB or vice versa instantly",
-        "url": "https://boliviablue.com/calculator"
+        "url": "https://boliviablue.com/calculadora"
       }
     ]
   };
@@ -352,7 +352,7 @@ function FAQ() {
                       {language === 'es' ? 'Convierte USD a BOB y viceversa' : 'Convert USD to BOB and vice versa'}
                     </div>
                   </Link>
-                  <Link to="/bolivia-blue-rate" className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                  <Link to="/bolivian-blue" className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
                     <div className="font-medium text-gray-900 dark:text-white mb-1">
                       {language === 'es' ? 'Bolivia Blue Rate' : 'Bolivia Blue Rate'}
                     </div>

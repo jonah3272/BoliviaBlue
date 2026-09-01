@@ -613,7 +613,7 @@ export const articlesEs = [
       <p><strong>Recuerda:</strong> El objetivo no es hacerte rico rápidamente, sino proteger lo que ya tienes y crecer de manera constante y segura.</p>
       
       <div style="background: #FEF3C7; padding: 16px; border-radius: 8px; margin-top: 24px;">
-        <p><strong>⚡ Próximo paso:</strong> Usa nuestro <a href="/calculator">calculador de tipo de cambio</a> para planificar tus conversiones y ver el impacto real en tus ahorros.</p>
+        <p><strong>⚡ Próximo paso:</strong> Usa nuestro <a href="/calculadora">calculador de tipo de cambio</a> para planificar tus conversiones y ver el impacto real en tus ahorros.</p>
       </div>
     `,
     author: "Equipo Bolivia Blue",
@@ -1698,7 +1698,7 @@ export const articlesEn = [
       <p><strong>Remember:</strong> The goal isn't to get rich quickly, but to protect what you already have and grow steadily and safely.</p>
       
       <div style="background: #FEF3C7; padding: 16px; border-radius: 8px; margin-top: 24px;">
-        <p><strong>⚡ Next step:</strong> Use our <a href="/calculator">exchange rate calculator</a> to plan your conversions and see the real impact on your savings.</p>
+        <p><strong>⚡ Next step:</strong> Use our <a href="/calculadora">exchange rate calculator</a> to plan your conversions and see the real impact on your savings.</p>
       </div>
     `,
     author: "Bolivia Blue Team",

@@ -552,7 +552,7 @@ function Bancos() {
                 </div>
               </Link>
               <Link
-                to="/bolivia-blue-rate"
+                to="/bolivian-blue"
                 className="group p-5 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-md transition-all"
               >
                 <div className="flex items-start gap-3">

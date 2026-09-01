@@ -13,7 +13,8 @@ function Header() {
   const language = languageContext?.language || 'es';
 
   return (
-    <header className="sticky top-0 z-40 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md border-b border-gray-200/80 dark:border-gray-700/80 supports-[padding:max(0px)]:pt-[env(safe-area-inset-top)]">
+    <header className="site-header sticky top-0 z-40 border-b border-gray-200/80 dark:border-gray-700/80 bg-white dark:bg-gray-800 md:bg-white/90 md:dark:bg-gray-800/90 md:backdrop-blur-md">
+      <div className="pt-[env(safe-area-inset-top,0px)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3">
         <div className="flex items-center justify-between gap-3">
           <Link to="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity min-w-0 flex-1">
@@ -106,6 +107,7 @@ function Header() {
             <ThemeToggle />
           </div>
         </div>
+      </div>
       </div>
     </header>
   );

@@ -46,11 +46,11 @@ function BinanceP2PBolivia() {
       : "Binance P2P Bolivia: Complete guide on how to use Binance P2P to buy and sell USDT in Bolivia. How it works, detailed steps, security and best practices. Updated 2026.",
     "author": {
       "@type": "Organization",
-      "name": "Bolivia Blue con Paz"
+      "name": "Bolivia Blue"
     },
     "publisher": {
       "@type": "Organization",
-      "name": "Bolivia Blue con Paz",
+      "name": "Bolivia Blue",
       "logo": {
         "@type": "ImageObject",
         "url": "https://boliviablue.com/favicon.svg"

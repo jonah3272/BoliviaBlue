@@ -53,8 +53,8 @@ function DolarBlueHoy() {
     "description": language === 'es'
       ? "Dólar blue hoy actualizado cada 15 minutos. Consulta la cotización actual del dólar blue en Bolivia hoy. Precio en tiempo real, gráficos históricos y análisis del mercado paralelo."
       : "Blue dollar today updated every 15 minutes. Check the current blue dollar quote in Bolivia today. Real-time price, historical charts and parallel market analysis.",
-    "author": { "@type": "Organization", "name": "Bolivia Blue con Paz" },
-    "publisher": { "@type": "Organization", "name": "Bolivia Blue con Paz", "logo": { "@type": "ImageObject", "url": "https://boliviablue.com/favicon.svg" } },
+    "author": { "@type": "Organization", "name": "Bolivia Blue" },
+    "publisher": { "@type": "Organization", "name": "Bolivia Blue", "logo": { "@type": "ImageObject", "url": "https://boliviablue.com/favicon.svg" } },
     "datePublished": "2025-01-01",
     ...(rateDateModified && { "dateModified": rateDateModified })
   };

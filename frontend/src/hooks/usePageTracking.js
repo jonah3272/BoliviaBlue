@@ -12,7 +12,7 @@ export function usePageTracking() {
   useEffect(() => {
     // Track page view
     const pagePath = location.pathname + location.search;
-    const pageTitle = document.title || 'Bolivia Blue con Paz';
+    const pageTitle = document.title || 'Bolivia Blue';
     
     trackPageView(pagePath, pageTitle);
 

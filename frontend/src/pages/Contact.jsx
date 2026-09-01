@@ -34,7 +34,7 @@ function Contact() {
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "Bolivia Blue con Paz",
+    "name": "Bolivia Blue",
     "url": "https://boliviablue.com",
     "logo": "https://boliviablue.com/favicon-96x96.png",
     "contactPoint": {
@@ -49,8 +49,8 @@ function Contact() {
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
         title={language === 'es' 
-          ? 'Contacto - Bolivia Blue con Paz | Preguntas y Sugerencias'
-          : 'Contact - Bolivia Blue with Paz | Questions and Suggestions'}
+          ? 'Contacto - Bolivia Blue | Preguntas y Sugerencias'
+          : 'Contact - Bolivia Blue | Questions and Suggestions'}
         description={language === 'es'
           ? 'Contáctanos para preguntas sobre el tipo de cambio del dólar blue en Bolivia, reportar errores, o enviar sugerencias. Respondemos todas las consultas.'
           : 'Contact us for questions about Bolivia blue dollar exchange rate, report errors, or send suggestions. We respond to all inquiries.'}
@@ -289,8 +289,8 @@ function Contact() {
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">
               {language === 'es'
-                ? 'En Bolivia Blue con Paz, valoramos la comunicación con nuestros usuarios. Estamos comprometidos a responder todas tus consultas de manera rápida y profesional. A continuación encontrarás información detallada sobre cómo contactarnos y qué esperar cuando lo hagas.'
-                : 'At Bolivia Blue with Paz, we value communication with our users. We are committed to responding to all your inquiries quickly and professionally. Below you will find detailed information on how to contact us and what to expect when you do.'}
+                ? 'En Bolivia Blue, valoramos la comunicación con nuestros usuarios. Estamos comprometidos a responder todas tus consultas de manera rápida y profesional. A continuación encontrarás información detallada sobre cómo contactarnos y qué esperar cuando lo hagas.'
+                : 'At Bolivia Blue, we value communication with our users. We are committed to responding to all your inquiries quickly and professionally. Below you will find detailed information on how to contact us and what to expect when you do.'}
             </p>
 
             <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4">
@@ -441,8 +441,8 @@ function Contact() {
             </h3>
             <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
               {language === 'es'
-                ? 'En Bolivia Blue con Paz, creemos que la comunicación abierta y transparente es fundamental para construir confianza. Nos comprometemos a:'
-                : 'At Bolivia Blue with Paz, we believe that open and transparent communication is fundamental to building trust. We commit to:'}
+                ? 'En Bolivia Blue, creemos que la comunicación abierta y transparente es fundamental para construir confianza. Nos comprometemos a:'
+                : 'At Bolivia Blue, we believe that open and transparent communication is fundamental to building trust. We commit to:'}
             </p>
             <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 mb-6">
               {language === 'es' ? (

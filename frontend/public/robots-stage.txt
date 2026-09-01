@@ -1,4 +1,4 @@
-# Bolivia Blue con Paz - Robots.txt for STAGE Environment
+# Bolivia Blue - Robots.txt for STAGE Environment
 # This file should be used for stage.boliviablue.com
 # ALL search engines are disallowed to prevent indexing
 

@@ -1,6 +1,21 @@
 {
   "redirects": [
     {
+      "source": "/rodrigo-paz",
+      "destination": "/dolar-blue-hoy",
+      "permanent": true
+    },
+    {
+      "source": "/blog/rodrigo-paz-dolar-blue-bolivia-2025",
+      "destination": "/dolar-blue-hoy",
+      "permanent": true
+    },
+    {
+      "source": "/blog/rodrigo-paz-blue-dollar-bolivia-2025",
+      "destination": "/dolar-blue-hoy",
+      "permanent": true
+    },
+    {
       "source": "/blue-dollar-bolivia",
       "destination": "/bolivian-blue",
       "permanent": true

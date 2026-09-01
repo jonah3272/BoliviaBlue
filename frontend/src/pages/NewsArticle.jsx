@@ -81,10 +81,10 @@ export default function NewsArticle() {
           description: summary || title,
           datePublished: article.published_at_iso,
           dateModified: article.published_at_iso,
-          author: { '@type': 'Organization', name: article.source || 'Bolivia Blue con Paz' },
+          author: { '@type': 'Organization', name: article.source || 'Bolivia Blue' },
           publisher: {
             '@type': 'Organization',
-            name: 'Bolivia Blue con Paz',
+            name: 'Bolivia Blue',
             url: 'https://boliviablue.com',
           },
           mainEntityOfPage: `https://boliviablue.com${path}`,

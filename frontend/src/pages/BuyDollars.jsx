@@ -141,8 +141,8 @@ function BuyDollars() {
       <PageMeta
         title={
           es
-            ? 'Cómo Comprar Dólares en Bolivia - Binance, El Dorado, Takenos, Meru - Bolivia Blue con Paz'
-            : 'How to Buy Dollars in Bolivia - Binance, El Dorado, Takenos, Meru - Bolivia Blue with Paz'
+            ? 'Cómo Comprar Dólares en Bolivia - Binance, El Dorado, Takenos, Meru - Bolivia Blue'
+            : 'How to Buy Dollars in Bolivia - Binance, El Dorado, Takenos, Meru - Bolivia Blue'
         }
         description={
           es

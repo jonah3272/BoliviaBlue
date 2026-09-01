@@ -59,11 +59,11 @@ function UsdtBolivia() {
       : "USDT in Bolivia: Complete guide about Tether (USDT) in Bolivia. How to convert USDT to BOB, where to buy and sell USDT, current exchange rate and best practices. Updated 2026.",
     "author": {
       "@type": "Organization",
-      "name": "Bolivia Blue con Paz"
+      "name": "Bolivia Blue"
     },
     "publisher": {
       "@type": "Organization",
-      "name": "Bolivia Blue con Paz",
+      "name": "Bolivia Blue",
       "logo": {
         "@type": "ImageObject",
         "url": "https://boliviablue.com/favicon.svg"

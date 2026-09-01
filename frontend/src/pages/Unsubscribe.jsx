@@ -79,7 +79,7 @@ function Unsubscribe() {
   return (
     <>
       <PageMeta
-        title={language === 'es' ? 'Cancelar Alerta - Bolivia Blue con Paz' : 'Unsubscribe - Bolivia Blue con Paz'}
+        title={language === 'es' ? 'Cancelar Alerta - Bolivia Blue' : 'Unsubscribe - Bolivia Blue'}
         description={
           language === 'es'
             ? 'Cancela tus alertas de tipo de cambio'

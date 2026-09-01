@@ -47,8 +47,8 @@ function QueEsDolarBlue() {
     "description": language === 'es'
       ? "¿Qué es el dólar blue? Guía completa sobre el dólar blue en Bolivia. Explicación del mercado paralelo, cómo funciona, diferencia con el dólar oficial y por qué es importante. Actualizado cada 15 minutos."
       : "What is the blue dollar? Complete guide about the blue dollar in Bolivia. Explanation of the parallel market, how it works, difference with official dollar and why it is important. Updated every 15 minutes.",
-    "author": { "@type": "Organization", "name": "Bolivia Blue con Paz" },
-    "publisher": { "@type": "Organization", "name": "Bolivia Blue con Paz", "logo": { "@type": "ImageObject", "url": "https://boliviablue.com/favicon.svg" } },
+    "author": { "@type": "Organization", "name": "Bolivia Blue" },
+    "publisher": { "@type": "Organization", "name": "Bolivia Blue", "logo": { "@type": "ImageObject", "url": "https://boliviablue.com/favicon.svg" } },
     "datePublished": "2025-01-01",
     "dateModified": new Date().toISOString().split('T')[0]
   };

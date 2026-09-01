@@ -159,7 +159,7 @@ function Blog() {
   const blogSchema = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "name": language === 'es' ? "Blog - Bolivia Blue con Paz" : "Blog - Bolivia Blue with Paz",
+    "name": language === 'es' ? "Blog - Bolivia Blue" : "Blog - Bolivia Blue",
     "description": language === 'es' 
       ? "Artículos y análisis sobre el dólar blue, criptomonedas, USDT y finanzas personales en Bolivia"
       : "Articles and analysis about the blue dollar, cryptocurrencies, USDT and personal finance in Bolivia",
@@ -195,7 +195,7 @@ function Blog() {
       },
       "publisher": {
         "@type": "Organization",
-        "name": "Bolivia Blue con Paz",
+        "name": "Bolivia Blue",
         "logo": {
           "@type": "ImageObject",
           "url": "https://boliviablue.com/favicon.svg"

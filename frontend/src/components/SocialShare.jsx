@@ -13,7 +13,7 @@ export function SocialShare({ title, description, url }) {
   // Use current URL if not provided
   const shareUrl = url || window.location.href;
   const encodedUrl = encodeURIComponent(shareUrl);
-  const encodedTitle = encodeURIComponent(title || 'Bolivia Blue con Paz');
+  const encodedTitle = encodeURIComponent(title || 'Bolivia Blue');
   const encodedDescription = encodeURIComponent(description || '');
 
   const shareLinks = {

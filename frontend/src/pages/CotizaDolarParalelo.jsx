@@ -52,11 +52,11 @@ function CotizaDolarParalelo() {
       : "Quote the parallel dollar in Bolivia with data updated every 15 minutes. Check the blue dollar quote, parallel exchange rate and current dollar price in the informal market.",
     "author": {
       "@type": "Organization",
-      "name": "Bolivia Blue con Paz"
+      "name": "Bolivia Blue"
     },
     "publisher": {
       "@type": "Organization",
-      "name": "Bolivia Blue con Paz",
+      "name": "Bolivia Blue",
       "logo": {
         "@type": "ImageObject",
         "url": "https://boliviablue.com/favicon.svg"

@@ -17,7 +17,6 @@ const Terminos = lazy(() => import('./pages/Terminos'));
 const Correcciones = lazy(() => import('./pages/Correcciones'));
 const PoliticaEditorial = lazy(() => import('./pages/PoliticaEditorial'));
 const Equipo = lazy(() => import('./pages/Equipo'));
-const RodrigoPaz = lazy(() => import('./pages/RodrigoPaz'));
 const BuyDollars = lazy(() => import('./pages/BuyDollars'));
 const Blog = lazy(() => import('./pages/Blog'));
 const BoliviaBlueRate = lazy(() => import('./pages/BoliviaBlueRate'));
@@ -105,9 +104,11 @@ function AppContent() {
           <Route path="/buy-dollars" element={<Redirect to="/comprar-dolares" />} />
           <Route path="/platforms" element={<Redirect to="/plataformas" />} />
           
-          {/* Other pages (already in Spanish) */}
-          <Route path="/rodrigo-paz" element={<RodrigoPaz />} />
+          {/* Legacy political hub → primary rate landing */}
+          <Route path="/rodrigo-paz" element={<Redirect to="/dolar-blue-hoy" />} />
           <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/rodrigo-paz-dolar-blue-bolivia-2025" element={<Redirect to="/dolar-blue-hoy" />} />
+          <Route path="/blog/rodrigo-paz-blue-dollar-bolivia-2025" element={<Redirect to="/dolar-blue-hoy" />} />
           <Route path="/blog/:slug" element={<Blog />} />
           
           {/* Canonical: /bolivian-blue (main Spanish page - redirect duplicates) */}

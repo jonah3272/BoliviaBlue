@@ -124,8 +124,8 @@ function buildStaticJsonLd(routePath, routeName, pageName, pageDescription, extr
     description: pageDescription,
     url: canonical,
     inLanguage: routePath === '/bolivian-blue' ? 'en-US' : 'es-BO',
-    isPartOf: { '@type': 'WebSite', name: 'Bolivia Blue con Paz', url: BASE_URL },
-    publisher: { '@type': 'Organization', name: 'Bolivia Blue con Paz', url: BASE_URL }
+    isPartOf: { '@type': 'WebSite', name: 'Bolivia Blue', url: BASE_URL },
+    publisher: { '@type': 'Organization', name: 'Bolivia Blue', url: BASE_URL }
   };
   const breadcrumbItems = [{ name: routePath === '/' ? 'Inicio' : 'Home', url: '/' }];
   if (routePath !== '/') breadcrumbItems.push({ name: routeName, url: routePath });
@@ -168,8 +168,8 @@ const DATASET_DATOS = {
   datePublished: '2024-01-01',
   temporalCoverage: '2024-01-01/..',
   variableMeasured: { '@type': 'PropertyValue', name: 'USD/BOB blue dollar exchange rate' },
-  creator: { '@type': 'Organization', name: 'Bolivia Blue con Paz', url: BASE_URL },
-  publisher: { '@type': 'Organization', name: 'Bolivia Blue con Paz', url: BASE_URL },
+  creator: { '@type': 'Organization', name: 'Bolivia Blue', url: BASE_URL },
+  publisher: { '@type': 'Organization', name: 'Bolivia Blue', url: BASE_URL },
   distribution: [
     { '@type': 'DataDownload', contentUrl: BASE_URL + '/api/historical-data.csv?range=30d', encodingFormat: 'text/csv', name: 'CSV últimos 30 días' },
     { '@type': 'DataDownload', contentUrl: BASE_URL + '/api/historical-data.json?range=30d', encodingFormat: 'application/json', name: 'JSON últimos 30 días' }

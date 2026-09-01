@@ -1,4 +1,4 @@
-// Service Worker for Bolivia Blue con Paz
+// Service Worker for Bolivia Blue
 // Provides offline support and caching for better performance
 
 const CACHE_NAME = 'bolivia-blue-v3';

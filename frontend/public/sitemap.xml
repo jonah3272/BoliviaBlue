@@ -255,15 +255,6 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://boliviablue.com/publicitar" />
   </url>
   <url>
-    <loc>https://boliviablue.com/rodrigo-paz</loc>
-    <lastmod>2026-09-01T12:00:00+00:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/rodrigo-paz" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/rodrigo-paz?lang=en" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://boliviablue.com/rodrigo-paz" />
-  </url>
-  <url>
     <loc>https://boliviablue.com/acerca-de</loc>
     <lastmod>2026-09-01T12:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
@@ -334,15 +325,6 @@
     <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/blog/historia-dolar-blue-bolivia-2020-2025" />
     <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/blog/historia-dolar-blue-bolivia-2020-2025?lang=en" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://boliviablue.com/blog/historia-dolar-blue-bolivia-2020-2025" />
-  </url>
-  <url>
-    <loc>https://boliviablue.com/blog/rodrigo-paz-dolar-blue-bolivia-2025</loc>
-    <lastmod>2025-11-14T12:00:00+00:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="es" href="https://boliviablue.com/blog/rodrigo-paz-dolar-blue-bolivia-2025" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://boliviablue.com/blog/rodrigo-paz-dolar-blue-bolivia-2025?lang=en" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://boliviablue.com/blog/rodrigo-paz-dolar-blue-bolivia-2025" />
   </url>
   <url>
     <loc>https://boliviablue.com/blog/por-que-se-llama-dolar-blue-origen</loc>

@@ -211,7 +211,7 @@ function Bancos() {
       : "Complete guide on monthly limits and restrictions of major Bolivian banks for international purchases with credit or debit cards.",
     "author": {
       "@type": "Organization",
-      "name": "Bolivia Blue con Paz"
+      "name": "Bolivia Blue"
     },
     "datePublished": "2025-01-11",
     "dateModified": "2025-01-11"
@@ -221,8 +221,8 @@ function Bancos() {
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
         title={language === 'es'
-          ? 'Límites y Restricciones de Bancos Bolivianos | Bolivia Blue con Paz'
-          : 'Bolivian Bank Limits and Restrictions | Bolivia Blue with Paz'}
+          ? 'Límites y Restricciones de Bancos Bolivianos | Bolivia Blue'
+          : 'Bolivian Bank Limits and Restrictions | Bolivia Blue'}
         description={language === 'es'
           ? 'Guía completa sobre límites mensuales y restricciones de bancos bolivianos para compras internacionales. Compara restricciones del Banco Unión, Bisa, Nacional, y más.'
           : 'Complete guide on monthly limits and restrictions of Bolivian banks for international purchases. Compare restrictions from Banco Unión, Bisa, Nacional, and more.'}

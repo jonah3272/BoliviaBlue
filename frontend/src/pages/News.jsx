@@ -59,7 +59,7 @@ function News() {
   const newsPageSchema = news.length > 0 ? {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "name": language === 'es' ? "Noticias Económicas - Bolivia Blue con Paz" : "Economic News - Bolivia Blue with Paz",
+    "name": language === 'es' ? "Noticias Económicas - Bolivia Blue" : "Economic News - Bolivia Blue",
     "description": language === 'es'
       ? "Últimas noticias financieras y económicas de Bolivia relacionadas con el tipo de cambio del dólar blue"
       : "Latest financial and economic news from Bolivia related to the blue dollar exchange rate",
@@ -77,7 +77,7 @@ function News() {
           "datePublished": article.published_at_iso,
           "publisher": {
             "@type": "Organization",
-            "name": article.source || "Bolivia Blue con Paz"
+            "name": article.source || "Bolivia Blue"
           }
         }
       }))
@@ -162,8 +162,8 @@ function News() {
           ? "Últimas noticias financieras y económicas de Bolivia relacionadas con el tipo de cambio del dólar blue. Actualizado cada 5 minutos. Análisis de sentimiento con IA. Gratis."
           : "Latest financial and economic news from Bolivia related to the blue dollar exchange rate. Updated every 5 minutes. AI sentiment analysis. Free."}
         keywords={language === 'es'
-          ? "noticias bolivia, noticias económicas bolivia, noticias dólar blue, noticias rodrigo paz, economía bolivia, noticias tipo cambio bolivia, noticias mercado cambiario bolivia, análisis sentimiento dólar bolivia, noticias financieras bolivia, mejor fuente noticias bolivia"
-          : "bolivia news, economic news bolivia, blue dollar news, rodrigo paz news, bolivia economy, bolivia exchange rate news, bolivia currency market news, bolivia dollar sentiment analysis, bolivia financial news, best bolivia news source"}
+          ? "noticias bolivia, noticias económicas bolivia, noticias dólar blue, economía bolivia, noticias tipo cambio bolivia, noticias mercado cambiario bolivia, análisis sentimiento dólar bolivia, noticias financieras bolivia, mejor fuente noticias bolivia"
+          : "bolivia news, economic news bolivia, blue dollar news, bolivia economy, bolivia exchange rate news, bolivia currency market news, bolivia dollar sentiment analysis, bolivia financial news, best bolivia news source"}
         canonical="/noticias"
         structuredData={newsPageSchema}
       />

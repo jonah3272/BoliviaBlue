@@ -35,11 +35,11 @@ function Equipo() {
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
         title={language === 'es' 
-          ? 'Equipo - Bolivia Blue con Paz | Quiénes Somos'
-          : 'Team - Bolivia Blue with Paz | Who We Are'}
+          ? 'Equipo - Bolivia Blue | Quiénes Somos'
+          : 'Team - Bolivia Blue | Who We Are'}
         description={language === 'es'
-          ? 'Conoce al equipo detrás de Bolivia Blue con Paz. Nuestra misión, valores y compromiso con la transparencia y precisión en la información sobre el tipo de cambio del dólar blue en Bolivia.'
-          : 'Meet the team behind Bolivia Blue with Paz. Our mission, values and commitment to transparency and accuracy in information about the blue dollar exchange rate in Bolivia.'}
+          ? 'Conoce al equipo detrás de Bolivia Blue. Nuestra misión, valores y compromiso con la transparencia y precisión en la información sobre el tipo de cambio del dólar blue en Bolivia.'
+          : 'Meet the team behind Bolivia Blue. Our mission, values and commitment to transparency and accuracy in information about the blue dollar exchange rate in Bolivia.'}
         keywords={language === 'es'
           ? 'equipo bolivia blue, quiénes somos, sobre nosotros, equipo editorial, transparencia'
           : 'bolivia blue team, who we are, about us, editorial team, transparency'}
@@ -72,12 +72,12 @@ function Equipo() {
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <section className="mb-8">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                {language === 'es' ? 'Sobre Bolivia Blue con Paz' : 'About Bolivia Blue with Paz'}
+                {language === 'es' ? 'Sobre Bolivia Blue' : 'About Bolivia Blue'}
               </h2>
               <p className="text-gray-700 dark:text-gray-300 mb-4">
                 {language === 'es'
-                  ? 'Bolivia Blue con Paz es una plataforma independiente dedicada a proporcionar información precisa y transparente sobre el tipo de cambio del dólar blue en Bolivia. Nuestro equipo está compuesto por desarrolladores, analistas de datos, y profesionales comprometidos con la transparencia financiera.'
-                  : 'Bolivia Blue with Paz is an independent platform dedicated to providing accurate and transparent information about the blue dollar exchange rate in Bolivia. Our team is composed of developers, data analysts, and professionals committed to financial transparency.'}
+                  ? 'Bolivia Blue es una plataforma independiente dedicada a proporcionar información precisa y transparente sobre el tipo de cambio del dólar blue en Bolivia. Nuestro equipo está compuesto por desarrolladores, analistas de datos, y profesionales comprometidos con la transparencia financiera.'
+                  : 'Bolivia Blue is an independent platform dedicated to providing accurate and transparent information about the blue dollar exchange rate in Bolivia. Our team is composed of developers, data analysts, and professionals committed to financial transparency.'}
               </p>
             </section>
 
@@ -154,8 +154,8 @@ function Equipo() {
               </h2>
               <p className="text-gray-700 dark:text-gray-300 mb-4">
                 {language === 'es'
-                  ? 'Bolivia Blue con Paz es una plataforma independiente operada por un equipo privado. No recibimos financiamiento de bancos, instituciones gubernamentales, o casas de cambio. Nuestros ingresos provienen principalmente de enlaces de afiliados (como Binance y Airtm) y publicidad, pero estos no influyen en nuestro contenido editorial.'
-                  : 'Bolivia Blue with Paz is an independent platform operated by a private team. We do not receive funding from banks, government institutions, or exchange houses. Our revenue comes primarily from affiliate links (such as Binance and Airtm) and advertising, but these do not influence our editorial content.'}
+                  ? 'Bolivia Blue es una plataforma independiente operada por un equipo privado. No recibimos financiamiento de bancos, instituciones gubernamentales, o casas de cambio. Nuestros ingresos provienen principalmente de enlaces de afiliados (como Binance y Airtm) y publicidad, pero estos no influyen en nuestro contenido editorial.'
+                  : 'Bolivia Blue is an independent platform operated by a private team. We do not receive funding from banks, government institutions, or exchange houses. Our revenue comes primarily from affiliate links (such as Binance and Airtm) and advertising, but these do not influence our editorial content.'}
               </p>
             </section>
 

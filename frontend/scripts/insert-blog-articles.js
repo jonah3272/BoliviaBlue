@@ -133,7 +133,7 @@ const articles = [
 </article>
     `,
     content_format: 'html',
-    author: 'Bolivia Blue con Paz',
+    author: 'Bolivia Blue',
     category: 'Política Económica',
     language: 'es',
     featured: true,
@@ -293,7 +293,7 @@ const articles = [
 </article>
     `,
     content_format: 'html',
-    author: 'Bolivia Blue con Paz',
+    author: 'Bolivia Blue',
     category: 'Tecnología y Finanzas',
     language: 'es',
     featured: true,
@@ -530,7 +530,7 @@ const articles = [
 </article>
     `,
     content_format: 'html',
-    author: 'Bolivia Blue con Paz',
+    author: 'Bolivia Blue',
     category: 'Análisis Económico',
     language: 'es',
     featured: false,
@@ -816,7 +816,7 @@ const articles = [
 </article>
     `,
     content_format: 'html',
-    author: 'Bolivia Blue con Paz',
+    author: 'Bolivia Blue',
     category: 'Análisis y Proyecciones',
     language: 'es',
     featured: false,

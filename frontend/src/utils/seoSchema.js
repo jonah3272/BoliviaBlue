@@ -8,12 +8,14 @@
  * - dateModified: ISO 8601; use real rate timestamp when available
  */
 
-export const BASE_URL = 'https://boliviablue.com';
+import { SITE_NAME, SITE_NAME_ALT, SITE_URL } from '../config/brand';
+
+export const BASE_URL = SITE_URL;
 
 export const PUBLISHER_ORG = {
   '@type': 'Organization',
-  name: 'Bolivia Blue',
-  alternateName: ['Bolivia Blue con Paz', 'Bolivia Blue with Paz', 'Bolivian Blue'],
+  name: SITE_NAME,
+  alternateName: [SITE_NAME_ALT, 'boliviablue'],
   url: BASE_URL,
   logo: { '@type': 'ImageObject', url: `${BASE_URL}/favicon.svg` }
 };
@@ -25,8 +27,8 @@ export function getOrganizationSchema(language = 'es') {
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'Bolivia Blue',
-    alternateName: ['Bolivia Blue con Paz', 'Bolivia Blue with Paz', 'Bolivian Blue', 'boliviablue'],
+    name: SITE_NAME,
+    alternateName: [SITE_NAME_ALT, 'boliviablue'],
     url: BASE_URL,
     logo: {
       '@type': 'ImageObject',
@@ -51,6 +53,7 @@ export function getOrganizationSchema(language = 'es') {
     knowsAbout: [
       'Dólar blue Bolivia',
       'Dólar paralelo Bolivia',
+      'Bolivian Blue',
       'Tipo de cambio BOB',
       'Binance P2P USDT/BOB'
     ]
@@ -64,8 +67,8 @@ export function getWebSiteSchema(language = 'es') {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'Bolivia Blue',
-    alternateName: ['Bolivia Blue con Paz', 'Bolivian Blue'],
+    name: SITE_NAME,
+    alternateName: [SITE_NAME_ALT],
     url: BASE_URL,
     inLanguage: language === 'es' ? ['es-BO', 'en-US'] : ['en-US', 'es-BO'],
     publisher: PUBLISHER_ORG,
@@ -103,7 +106,7 @@ export function getWebPage({ name, description, url, dateModified, inLanguage, m
     name,
     description,
     url: fullUrl,
-    isPartOf: { '@type': 'WebSite', name: 'Bolivia Blue', url: BASE_URL },
+    isPartOf: { '@type': 'WebSite', name: SITE_NAME, url: BASE_URL },
     publisher: PUBLISHER_ORG
   };
   if (dateModified) page.dateModified = dateModified;
@@ -174,8 +177,8 @@ export function getDataset({
     name,
     description,
     url: fullUrl,
-    creator: creator || { '@type': 'Organization', name: 'Bolivia Blue con Paz', url: BASE_URL },
-    publisher: { '@type': 'Organization', name: 'Bolivia Blue con Paz', url: BASE_URL }
+    creator: creator || { '@type': 'Organization', name: SITE_NAME, url: BASE_URL },
+    publisher: { '@type': 'Organization', name: SITE_NAME, url: BASE_URL }
   };
   if (datePublished) dataset.datePublished = datePublished;
   if (dateModified) dataset.dateModified = dateModified;

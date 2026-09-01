@@ -253,7 +253,7 @@ function Home() {
       : "Real-time blue dollar exchange rate in Bolivia",
     "provider": {
       "@type": "Organization",
-      "name": "Bolivia Blue con Paz"
+      "name": "Bolivia Blue"
     },
     "exchangeRate": {
       "@type": "UnitPriceSpecification",
@@ -1145,8 +1145,8 @@ function Home() {
               </p>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                 {language === 'es' 
-                  ? 'Este mercado paralelo existe debido a las restricciones cambiarias y la demanda de dólares que supera la oferta oficial. El dólar blue generalmente cotiza a un precio más alto que el dólar oficial, reflejando la escasez de divisas y el riesgo asociado con las transacciones fuera del sistema bancario. En Bolivia, bajo la administración del presidente Rodrigo Paz, el mercado paralelo ha ganado importancia como indicador de la confianza económica y la disponibilidad real de divisas.'
-                  : 'This parallel market exists due to exchange restrictions and dollar demand that exceeds official supply. The blue dollar generally trades at a higher price than the official dollar, reflecting currency scarcity and the risk associated with transactions outside the banking system. In Bolivia, under President Rodrigo Paz\'s administration, the parallel market has gained importance as an indicator of economic confidence and real currency availability.'}
+                  ? 'Este mercado paralelo existe cuando la demanda de dólares supera la oferta oficial o hay restricciones cambiarias. El dólar blue suele cotizar por encima del tipo oficial del BCB, reflejando escasez de divisas y el precio real que pagan compradores y vendedores en el mercado informal.'
+                  : 'This parallel market exists when dollar demand exceeds official supply or exchange restrictions apply. The blue dollar usually trades above the BCB official rate, reflecting currency scarcity and the real price buyers and sellers pay in the informal market.'}
               </p>
               <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
                 {language === 'es' 
@@ -1170,8 +1170,8 @@ function Home() {
               </h3>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                 {language === 'es' 
-                  ? 'Bolivia Blue con Paz es la plataforma más confiable para monitorear el tipo de cambio del dólar blue en tiempo real. Ofrecemos:'
-                  : 'Bolivia Blue with Paz is the most reliable platform for monitoring the blue dollar exchange rate in real-time. We offer:'}
+                  ? 'Bolivia Blue es la plataforma más confiable para monitorear el tipo de cambio del dólar blue en tiempo real. Ofrecemos:'
+                  : 'Bolivia Blue is the most reliable platform for monitoring the blue dollar exchange rate in real-time. We offer:'}
               </p>
               <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 mb-4">
                 <li>{language === 'es' 

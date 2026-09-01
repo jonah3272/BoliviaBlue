@@ -37,11 +37,11 @@ function Privacy() {
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
         title={language === 'es' 
-          ? 'Política de Privacidad - Bolivia Blue con Paz | Protección de Datos'
-          : 'Privacy Policy - Bolivia Blue with Paz | Data Protection'}
+          ? 'Política de Privacidad - Bolivia Blue | Protección de Datos'
+          : 'Privacy Policy - Bolivia Blue | Data Protection'}
         description={language === 'es'
-          ? 'Política de privacidad de Bolivia Blue con Paz. Información sobre cómo recopilamos, usamos y protegemos tus datos personales. Transparencia y seguridad de datos.'
-          : 'Privacy policy of Bolivia Blue with Paz. Information about how we collect, use and protect your personal data. Transparency and data security.'}
+          ? 'Política de privacidad de Bolivia Blue. Información sobre cómo recopilamos, usamos y protegemos tus datos personales. Transparencia y seguridad de datos.'
+          : 'Privacy policy of Bolivia Blue. Information about how we collect, use and protect your personal data. Transparency and data security.'}
         keywords={language === 'es'
           ? 'política de privacidad, protección de datos, privacidad bolivia blue, cookies, datos personales, GDPR, privacidad web'
           : 'privacy policy, data protection, bolivia blue privacy, cookies, personal data, GDPR, web privacy'}
@@ -78,8 +78,8 @@ function Privacy() {
               </h2>
               <p className="text-gray-700 dark:text-gray-300 mb-4">
                 {language === 'es'
-                  ? 'Bolivia Blue con Paz ("nosotros", "nuestro", "el sitio") se compromete a proteger tu privacidad. Esta Política de Privacidad explica cómo recopilamos, usamos, divulgamos y protegemos tu información cuando utilizas nuestro sitio web boliviablue.com.'
-                  : 'Bolivia Blue with Paz ("we", "our", "the site") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose and protect your information when you use our website boliviablue.com.'}
+                  ? 'Bolivia Blue ("nosotros", "nuestro", "el sitio") se compromete a proteger tu privacidad. Esta Política de Privacidad explica cómo recopilamos, usamos, divulgamos y protegemos tu información cuando utilizas nuestro sitio web boliviablue.com.'
+                  : 'Bolivia Blue ("we", "our", "the site") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose and protect your information when you use our website boliviablue.com.'}
               </p>
             </section>
 

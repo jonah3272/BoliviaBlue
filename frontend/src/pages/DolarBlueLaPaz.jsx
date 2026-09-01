@@ -51,11 +51,11 @@ function DolarBlueLaPaz() {
       : "Blue dollar La Paz updated every 15 minutes. Check the blue dollar quote in La Paz, Bolivia. Real-time exchange rate, historical charts and where to exchange dollars in La Paz.",
     "author": {
       "@type": "Organization",
-      "name": "Bolivia Blue con Paz"
+      "name": "Bolivia Blue"
     },
     "publisher": {
       "@type": "Organization",
-      "name": "Bolivia Blue con Paz",
+      "name": "Bolivia Blue",
       "logo": {
         "@type": "ImageObject",
         "url": "https://boliviablue.com/favicon.svg"

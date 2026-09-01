@@ -55,8 +55,8 @@ function BolivianBlue() {
     "description": language === 'es'
       ? "Bolivian Blue - Tipo de Cambio Dólar Blue en Tiempo Real. Actualizado cada 15 minutos. Gráficos históricos, calculadora gratuita y noticias. La información más precisa del mercado paralelo boliviano."
       : "Bolivian Blue - Real-Time Blue Dollar Exchange Rate. Updated every 15 minutes. Historical charts, free calculator and news. The most accurate information on the Bolivian parallel market.",
-    "author": { "@type": "Organization", "name": "Bolivia Blue con Paz" },
-    "publisher": { "@type": "Organization", "name": "Bolivia Blue con Paz", "logo": { "@type": "ImageObject", "url": "https://boliviablue.com/favicon.svg" } },
+    "author": { "@type": "Organization", "name": "Bolivia Blue" },
+    "publisher": { "@type": "Organization", "name": "Bolivia Blue", "logo": { "@type": "ImageObject", "url": "https://boliviablue.com/favicon.svg" } },
     "datePublished": "2025-01-20",
     ...(rateDateModified && { "dateModified": rateDateModified })
   };

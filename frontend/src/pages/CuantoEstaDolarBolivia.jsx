@@ -53,8 +53,8 @@ function CuantoEstaDolarBolivia() {
     "description": language === 'es'
       ? "¿Cuánto está el dólar en Bolivia? Consulta el precio actual del dólar blue en Bolivia. Cotización en tiempo real actualizada cada 15 minutos. Gráficos históricos y calculadora gratuita."
       : "How much is the dollar in Bolivia? Check the current blue dollar price in Bolivia. Real-time quote updated every 15 minutes. Historical charts and free calculator.",
-    "author": { "@type": "Organization", "name": "Bolivia Blue con Paz" },
-    "publisher": { "@type": "Organization", "name": "Bolivia Blue con Paz", "logo": { "@type": "ImageObject", "url": "https://boliviablue.com/favicon.svg" } },
+    "author": { "@type": "Organization", "name": "Bolivia Blue" },
+    "publisher": { "@type": "Organization", "name": "Bolivia Blue", "logo": { "@type": "ImageObject", "url": "https://boliviablue.com/favicon.svg" } },
     "datePublished": "2025-01-01",
     ...(rateDateModified && { "dateModified": rateDateModified })
   };

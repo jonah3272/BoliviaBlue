@@ -60,7 +60,7 @@ function Calculator() {
       : "Free calculator to convert US dollars to bolivianos using real-time blue exchange rate",
     "provider": {
       "@type": "Organization",
-      "name": "Bolivia Blue con Paz",
+      "name": "Bolivia Blue",
       "url": "https://boliviablue.com"
     },
     "fromCurrency": "USD",

@@ -82,11 +82,11 @@ function MonthlyReport() {
     "description": report.excerpt,
     "author": {
       "@type": "Organization",
-      "name": "Bolivia Blue con Paz"
+      "name": "Bolivia Blue"
     },
     "publisher": {
       "@type": "Organization",
-      "name": "Bolivia Blue con Paz",
+      "name": "Bolivia Blue",
       "logo": {
         "@type": "ImageObject",
         "url": "https://boliviablue.com/favicon.svg"

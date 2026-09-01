@@ -72,8 +72,8 @@ function About() {
             </p>
             <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
               {language === 'es' 
-                ? 'En un mercado donde la información sobre el tipo de cambio puede ser confusa o difícil de acceder, Bolivia Blue con Paz se compromete a proporcionar datos precisos, actualizados y completamente transparentes. Creemos que cada boliviano tiene derecho a conocer el precio real del dólar, ya sea para tomar decisiones financieras personales, realizar transacciones comerciales, o simplemente mantenerse informado sobre la situación económica del país.'
-                : 'In a market where exchange rate information can be confusing or difficult to access, Bolivia Blue with Paz is committed to providing accurate, up-to-date, and completely transparent data. We believe every Bolivian has the right to know the real price of the dollar, whether for personal financial decisions, commercial transactions, or simply staying informed about the country\'s economic situation.'}
+                ? 'En un mercado donde la información sobre el tipo de cambio puede ser confusa o difícil de acceder, Bolivia Blue se compromete a proporcionar datos precisos, actualizados y completamente transparentes. Creemos que cada boliviano tiene derecho a conocer el precio real del dólar, ya sea para tomar decisiones financieras personales, realizar transacciones comerciales, o simplemente mantenerse informado sobre la situación económica del país.'
+                : 'In a market where exchange rate information can be confusing or difficult to access, Bolivia Blue is committed to providing accurate, up-to-date, and completely transparent data. We believe every Bolivian has the right to know the real price of the dollar, whether for personal financial decisions, commercial transactions, or simply staying informed about the country\'s economic situation.'}
             </p>
             <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
               {language === 'es' 
@@ -94,13 +94,13 @@ function About() {
             </p>
             <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
               {language === 'es' 
-                ? 'Con la llegada de plataformas digitales como Binance P2P, el mercado paralelo se ha vuelto más accesible y transparente. Sin embargo, aún existe una necesidad de una fuente centralizada de información que agregue datos de múltiples fuentes, los analice, y los presente de manera clara y comprensible. Bolivia Blue con Paz nació de esta necesidad: crear una plataforma que democratice el acceso a información precisa sobre el tipo de cambio del dólar blue.'
-                : 'With the arrival of digital platforms like Binance P2P, the parallel market has become more accessible and transparent. However, there is still a need for a centralized source of information that aggregates data from multiple sources, analyzes it, and presents it in a clear and understandable way. Bolivia Blue with Paz was born from this need: to create a platform that democratizes access to accurate information about the blue dollar exchange rate.'}
+                ? 'Con la llegada de plataformas digitales como Binance P2P, el mercado paralelo se ha vuelto más accesible y transparente. Sin embargo, aún existe una necesidad de una fuente centralizada de información que agregue datos de múltiples fuentes, los analice, y los presente de manera clara y comprensible. Bolivia Blue nació de esta necesidad: crear una plataforma que democratice el acceso a información precisa sobre el tipo de cambio del dólar blue.'
+                : 'With the arrival of digital platforms like Binance P2P, the parallel market has become more accessible and transparent. However, there is still a need for a centralized source of information that aggregates data from multiple sources, analyzes it, and presents it in a clear and understandable way. Bolivia Blue was born from this need: to create a platform that democratizes access to accurate information about the blue dollar exchange rate.'}
             </p>
             <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
               {language === 'es' 
-                ? 'Bajo la administración del presidente Rodrigo Paz, el contexto económico de Bolivia está evolucionando, y es más importante que nunca tener acceso a información precisa y actualizada sobre el mercado cambiario. Nuestra plataforma no solo proporciona datos en tiempo real, sino que también ofrece análisis de tendencias, noticias relevantes, y herramientas prácticas como calculadoras y alertas de precio.'
-                : 'Under President Rodrigo Paz\'s administration, Bolivia\'s economic context is evolving, and it is more important than ever to have access to accurate and up-to-date information about the exchange market. Our platform not only provides real-time data but also offers trend analysis, relevant news, and practical tools like calculators and price alerts.'}
+                ? 'Hoy es más importante que nunca tener acceso a información precisa sobre el mercado cambiario. Nuestra plataforma ofrece datos en tiempo real, análisis de tendencias, noticias relevantes y herramientas como calculadora y alertas de precio — todo en un solo lugar.'
+                : 'Accurate exchange market information matters more than ever. Our platform offers real-time data, trend analysis, relevant news, and tools like a calculator and price alerts — all in one place.'}
             </p>
           </section>
 

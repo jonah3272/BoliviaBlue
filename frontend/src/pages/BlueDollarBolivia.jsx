@@ -44,11 +44,11 @@ function BlueDollarBolivia() {
     "description": "Blue Dollar Bolivia - Real-Time Blue Dollar Exchange Rate. Updated every 15 minutes. Historical charts, free calculator and news. The most accurate information on the Bolivian parallel market.",
     "author": {
       "@type": "Organization",
-      "name": "Bolivia Blue con Paz"
+      "name": "Bolivia Blue"
     },
     "publisher": {
       "@type": "Organization",
-      "name": "Bolivia Blue con Paz",
+      "name": "Bolivia Blue",
       "logo": {
         "@type": "ImageObject",
         "url": "https://boliviablue.com/favicon.svg"

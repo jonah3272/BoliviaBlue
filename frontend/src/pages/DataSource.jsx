@@ -65,8 +65,8 @@ function DataSource() {
     {
       q: language === 'es' ? '¿Puedo usar estos datos en artículos o investigaciones?' : 'Can I use this data in articles or research?',
       a: language === 'es'
-        ? 'Sí. Puedes citar nuestros datos mencionando "Bolivia Blue con Paz" o "boliviablue.com" como fuente. Los datos históricos están disponibles para descarga en CSV y JSON en la página de datos históricos.'
-        : 'Yes. You can cite our data by mentioning "Bolivia Blue con Paz" or "boliviablue.com" as the source. Historical data is available for download in CSV and JSON on the historical data page.'
+        ? 'Sí. Puedes citar nuestros datos mencionando "Bolivia Blue" o "boliviablue.com" como fuente. Los datos históricos están disponibles para descarga en CSV y JSON en la página de datos históricos.'
+        : 'Yes. You can cite our data by mentioning "Bolivia Blue" or "boliviablue.com" as the source. Historical data is available for download in CSV and JSON on the historical data page.'
     }
   ];
 
@@ -79,7 +79,7 @@ function DataSource() {
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "Bolivia Blue con Paz",
+    "name": "Bolivia Blue",
     "url": BASE_URL,
     "logo": `${BASE_URL}/favicon.svg`,
     "description": language === 'es'
@@ -355,8 +355,8 @@ function DataSource() {
             </div>
             <p className="text-sm">
               {language === 'es'
-                ? 'Alternativas: "Bolivia Blue con Paz (boliviablue.com)" o "según datos de boliviablue.com".'
-                : 'Alternatives: "Bolivia Blue con Paz (boliviablue.com)" or "according to data from boliviablue.com".'}
+                ? 'Alternativas: "Bolivia Blue (boliviablue.com)" o "según datos de boliviablue.com".'
+                : 'Alternatives: "Bolivia Blue (boliviablue.com)" or "according to data from boliviablue.com".'}
             </p>
           </div>
         </section>

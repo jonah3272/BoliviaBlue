@@ -1,4 +1,4 @@
-# Bolivia Blue con Paz - Robots.txt
+# Bolivia Blue - Robots.txt
 # This file is for production (boliviablue.com)
 # For stage environment (stage.boliviablue.com), all crawlers are disallowed
 

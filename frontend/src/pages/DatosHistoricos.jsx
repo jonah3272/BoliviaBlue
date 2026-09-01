@@ -189,7 +189,7 @@ function DatosHistoricos() {
     updateFrequency: language === 'es' ? 'Actualización cada 15 minutos (fuente en vivo)' : 'Updates every 15 minutes (live source)',
     temporalCoverage: '2024-01-01/..',
     variableMeasured: { '@type': 'PropertyValue', name: language === 'es' ? 'Tipo de cambio USD/BOB (dólar blue)' : 'USD/BOB exchange rate (blue dollar)' },
-    creator: { '@type': 'Organization', name: 'Bolivia Blue con Paz', url: BASE_URL },
+    creator: { '@type': 'Organization', name: 'Bolivia Blue', url: BASE_URL },
     distribution: [
       { '@type': 'DataDownload', contentUrl: `${BASE_URL}/api/historical-data.csv?range=30d`, encodingFormat: 'text/csv', name: language === 'es' ? 'CSV últimos 30 días' : 'CSV last 30 days' },
       { '@type': 'DataDownload', contentUrl: `${BASE_URL}/api/historical-data.json?range=30d`, encodingFormat: 'application/json', name: language === 'es' ? 'JSON últimos 30 días' : 'JSON last 30 days' }

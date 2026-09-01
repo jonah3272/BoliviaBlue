@@ -41,7 +41,7 @@ function ApiDocs() {
     "url": "https://boliviablue.com/api-docs",
     "provider": {
       "@type": "Organization",
-      "name": "Bolivia Blue con Paz",
+      "name": "Bolivia Blue",
       "url": "https://boliviablue.com"
     },
     "documentation": "https://boliviablue.com/api-docs",
@@ -151,7 +151,7 @@ function ApiDocs() {
         url: 'https://boliviablue.com/api/historical-data.json?range=30d',
         response: {
           metadata: {
-            source: 'Bolivia Blue con Paz',
+            source: 'Bolivia Blue',
             attribution: 'https://boliviablue.com',
             range_requested: '30d',
             rows_returned: 120

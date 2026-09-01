@@ -25,7 +25,7 @@ function Header() {
               />
               <img 
                 src="/header-og-image.jpg" 
-                alt="Bolivia Blue con Paz - Logo del sitio web de tipo de cambio del dólar boliviano" 
+                alt="Bolivia Blue - Logo del sitio web de tipo de cambio del dólar boliviano" 
                 className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 flex-shrink-0 rounded-lg object-cover"
                 loading="eager"
                 width="56"

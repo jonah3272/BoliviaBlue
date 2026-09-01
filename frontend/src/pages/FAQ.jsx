@@ -326,13 +326,13 @@ function FAQ() {
                       {t('faqLearnMore')}
                     </Link>
                     <Link
-                      to="/rodrigo-paz"
+                      to="/dolar-blue-hoy"
                       className="inline-flex items-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                       </svg>
-                      {t('faqAboutRodrigoPaz')}
+                      {language === 'es' ? 'Dólar blue hoy' : 'Blue dollar today'}
                     </Link>
                   </div>
                 </div>
@@ -344,6 +344,14 @@ function FAQ() {
                   {language === 'es' ? 'Enlaces Rápidos' : 'Quick Links'}
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <Link to="/dolar-blue-hoy" className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                    <div className="font-medium text-gray-900 dark:text-white mb-1">
+                      {language === 'es' ? 'Dólar blue hoy' : 'Blue dollar today'}
+                    </div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                      {language === 'es' ? 'Cotización actualizada cada 15 min' : 'Rate updated every 15 minutes'}
+                    </div>
+                  </Link>
                   <Link to="/calculadora" className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
                     <div className="font-medium text-gray-900 dark:text-white mb-1">
                       {language === 'es' ? 'Calculadora' : 'Calculator'}
@@ -354,10 +362,10 @@ function FAQ() {
                   </Link>
                   <Link to="/bolivian-blue" className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
                     <div className="font-medium text-gray-900 dark:text-white mb-1">
-                      {language === 'es' ? 'Bolivia Blue Rate' : 'Bolivia Blue Rate'}
+                      Bolivian Blue
                     </div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">
-                      {language === 'es' ? 'Guía completa sobre el dólar blue' : 'Complete guide about blue dollar'}
+                      {language === 'es' ? 'Marca en inglés y guía del dólar blue' : 'English brand term and blue dollar guide'}
                     </div>
                   </Link>
                   <Link to="/comprar-dolares" className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">

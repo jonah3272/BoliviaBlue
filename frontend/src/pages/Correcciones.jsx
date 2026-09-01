@@ -35,11 +35,11 @@ function Correcciones() {
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
         title={language === 'es' 
-          ? 'Política de Correcciones - Bolivia Blue con Paz | Transparencia y Precisión'
-          : 'Corrections Policy - Bolivia Blue with Paz | Transparency and Accuracy'}
+          ? 'Política de Correcciones - Bolivia Blue | Transparencia y Precisión'
+          : 'Corrections Policy - Bolivia Blue | Transparency and Accuracy'}
         description={language === 'es'
-          ? 'Política de correcciones de Bolivia Blue con Paz. Cómo reportar errores, nuestro proceso de corrección y compromiso con la precisión y transparencia de la información.'
-          : 'Corrections policy of Bolivia Blue with Paz. How to report errors, our correction process and commitment to accuracy and transparency of information.'}
+          ? 'Política de correcciones de Bolivia Blue. Cómo reportar errores, nuestro proceso de corrección y compromiso con la precisión y transparencia de la información.'
+          : 'Corrections policy of Bolivia Blue. How to report errors, our correction process and commitment to accuracy and transparency of information.'}
         keywords={language === 'es'
           ? 'política de correcciones, reportar errores, corrección de datos, transparencia, precisión, bolivia blue correcciones'
           : 'corrections policy, report errors, data correction, transparency, accuracy, bolivia blue corrections'}
@@ -76,8 +76,8 @@ function Correcciones() {
               </h2>
               <p className="text-gray-700 dark:text-gray-300 mb-4">
                 {language === 'es'
-                  ? 'En Bolivia Blue con Paz, nos comprometemos a proporcionar información precisa y actualizada sobre el tipo de cambio del dólar blue en Bolivia. Reconocemos que, a pesar de nuestros mejores esfuerzos, pueden ocurrir errores. Esta política describe cómo manejamos las correcciones y cómo puedes ayudarnos a mantener la precisión de nuestra información.'
-                  : 'At Bolivia Blue with Paz, we are committed to providing accurate and up-to-date information about the blue dollar exchange rate in Bolivia. We recognize that, despite our best efforts, errors may occur. This policy describes how we handle corrections and how you can help us maintain the accuracy of our information.'}
+                  ? 'En Bolivia Blue, nos comprometemos a proporcionar información precisa y actualizada sobre el tipo de cambio del dólar blue en Bolivia. Reconocemos que, a pesar de nuestros mejores esfuerzos, pueden ocurrir errores. Esta política describe cómo manejamos las correcciones y cómo puedes ayudarnos a mantener la precisión de nuestra información.'
+                  : 'At Bolivia Blue, we are committed to providing accurate and up-to-date information about the blue dollar exchange rate in Bolivia. We recognize that, despite our best efforts, errors may occur. This policy describes how we handle corrections and how you can help us maintain the accuracy of our information.'}
               </p>
             </section>
 

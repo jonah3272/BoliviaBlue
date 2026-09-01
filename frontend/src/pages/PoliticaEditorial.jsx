@@ -35,11 +35,11 @@ function PoliticaEditorial() {
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
         title={language === 'es' 
-          ? 'Política Editorial - Bolivia Blue con Paz | Estándares y Principios'
-          : 'Editorial Policy - Bolivia Blue with Paz | Standards and Principles'}
+          ? 'Política Editorial - Bolivia Blue | Estándares y Principios'
+          : 'Editorial Policy - Bolivia Blue | Standards and Principles'}
         description={language === 'es'
-          ? 'Política editorial de Bolivia Blue con Paz. Nuestros estándares de contenido, principios de independencia, metodología de noticias y compromiso con la precisión y transparencia.'
-          : 'Editorial policy of Bolivia Blue with Paz. Our content standards, independence principles, news methodology and commitment to accuracy and transparency.'}
+          ? 'Política editorial de Bolivia Blue. Nuestros estándares de contenido, principios de independencia, metodología de noticias y compromiso con la precisión y transparencia.'
+          : 'Editorial policy of Bolivia Blue. Our content standards, independence principles, news methodology and commitment to accuracy and transparency.'}
         keywords={language === 'es'
           ? 'política editorial, estándares editoriales, independencia editorial, metodología noticias, transparencia periodística'
           : 'editorial policy, editorial standards, editorial independence, news methodology, journalistic transparency'}
@@ -76,8 +76,8 @@ function PoliticaEditorial() {
               </h2>
               <p className="text-gray-700 dark:text-gray-300 mb-4">
                 {language === 'es'
-                  ? 'Bolivia Blue con Paz se compromete a proporcionar información precisa, imparcial y útil sobre el mercado cambiario boliviano. Nuestra política editorial guía todas las decisiones sobre qué contenido publicamos, cómo lo presentamos, y cómo mantenemos nuestra independencia editorial.'
-                  : 'Bolivia Blue with Paz is committed to providing accurate, unbiased and useful information about the Bolivian exchange market. Our editorial policy guides all decisions about what content we publish, how we present it, and how we maintain our editorial independence.'}
+                  ? 'Bolivia Blue se compromete a proporcionar información precisa, imparcial y útil sobre el mercado cambiario boliviano. Nuestra política editorial guía todas las decisiones sobre qué contenido publicamos, cómo lo presentamos, y cómo mantenemos nuestra independencia editorial.'
+                  : 'Bolivia Blue is committed to providing accurate, unbiased and useful information about the Bolivian exchange market. Our editorial policy guides all decisions about what content we publish, how we present it, and how we maintain our editorial independence.'}
               </p>
             </section>
 

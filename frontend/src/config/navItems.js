@@ -11,6 +11,7 @@ export const PRIMARY_NAV_ITEMS = [
 
 export const SECONDARY_NAV_ITEMS = [
   { path: '/dolar-paralelo-bolivia-en-vivo', key: 'navEnVivo', icon: 'dashboard' },
+  { path: '/bolivian-blue', key: 'navBolivianBlue', icon: 'dashboard' },
   { path: '/datos-historicos', key: 'navHistoricos', icon: 'dashboard' },
   { path: '/plataformas', key: 'navPlataformas', icon: 'platform' },
   { path: '/bancos', key: 'navBancos', icon: 'bank' },
@@ -21,7 +22,6 @@ export const SECONDARY_NAV_ITEMS = [
   { path: '/preguntas-frecuentes', key: 'navFAQ', icon: 'faq' },
   { path: '/terminos', key: 'navTerms', icon: 'terms' },
   { path: '/politica-de-privacidad', key: 'navPrivacy', icon: 'privacy' },
-  { path: '/rodrigo-paz', key: 'navRodrigoPaz', icon: 'rodrigo' },
 ];
 
 const primaryPaths = new Set(PRIMARY_NAV_ITEMS.map((item) => item.path));

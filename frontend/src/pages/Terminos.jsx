@@ -35,11 +35,11 @@ function Terminos() {
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
         title={language === 'es' 
-          ? 'Términos de Servicio - Bolivia Blue con Paz | Condiciones de Uso'
-          : 'Terms of Service - Bolivia Blue with Paz | Terms of Use'}
+          ? 'Términos de Servicio - Bolivia Blue | Condiciones de Uso'
+          : 'Terms of Service - Bolivia Blue | Terms of Use'}
         description={language === 'es'
-          ? 'Términos de servicio de Bolivia Blue con Paz. Condiciones de uso de la plataforma, responsabilidades del usuario y limitaciones de responsabilidad. Información legal y transparencia.'
-          : 'Terms of service of Bolivia Blue with Paz. Platform terms of use, user responsibilities and liability limitations. Legal information and transparency.'}
+          ? 'Términos de servicio de Bolivia Blue. Condiciones de uso de la plataforma, responsabilidades del usuario y limitaciones de responsabilidad. Información legal y transparencia.'
+          : 'Terms of service of Bolivia Blue. Platform terms of use, user responsibilities and liability limitations. Legal information and transparency.'}
         keywords={language === 'es'
           ? 'términos de servicio, condiciones de uso, términos legales, bolivia blue términos, uso del sitio, responsabilidad legal'
           : 'terms of service, terms of use, legal terms, bolivia blue terms, site usage, legal liability'}
@@ -87,8 +87,8 @@ function Terminos() {
               </h2>
               <p className="text-gray-700 dark:text-gray-300 mb-4">
                 {language === 'es'
-                  ? 'Bolivia Blue con Paz proporciona información sobre el tipo de cambio del dólar blue en Bolivia. Nuestro servicio es gratuito y está disponible para uso personal, educativo y comercial legítimo.'
-                  : 'Bolivia Blue with Paz provides information about the blue dollar exchange rate in Bolivia. Our service is free and available for personal, educational and legitimate commercial use.'}
+                  ? 'Bolivia Blue proporciona información sobre el tipo de cambio del dólar blue en Bolivia. Nuestro servicio es gratuito y está disponible para uso personal, educativo y comercial legítimo.'
+                  : 'Bolivia Blue provides information about the blue dollar exchange rate in Bolivia. Our service is free and available for personal, educational and legitimate commercial use.'}
               </p>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
                 {language === 'es' ? '2.1 Uso Permitido' : '2.1 Permitted Use'}
@@ -156,8 +156,8 @@ function Terminos() {
               </h2>
               <p className="text-gray-700 dark:text-gray-300 mb-4">
                 {language === 'es'
-                  ? 'Bolivia Blue con Paz se proporciona "tal cual" y "según disponibilidad". No garantizamos que el servicio esté libre de errores, interrupciones o defectos. En la máxima medida permitida por la ley, no seremos responsables por ningún daño directo, indirecto, incidental, especial o consecuente que resulte del uso o la imposibilidad de usar nuestro servicio.'
-                  : 'Bolivia Blue with Paz is provided "as is" and "as available". We do not guarantee that the service is free from errors, interruptions or defects. To the maximum extent permitted by law, we will not be liable for any direct, indirect, incidental, special or consequential damages resulting from the use or inability to use our service.'}
+                  ? 'Bolivia Blue se proporciona "tal cual" y "según disponibilidad". No garantizamos que el servicio esté libre de errores, interrupciones o defectos. En la máxima medida permitida por la ley, no seremos responsables por ningún daño directo, indirecto, incidental, especial o consecuente que resulte del uso o la imposibilidad de usar nuestro servicio.'
+                  : 'Bolivia Blue is provided "as is" and "as available". We do not guarantee that the service is free from errors, interruptions or defects. To the maximum extent permitted by law, we will not be liable for any direct, indirect, incidental, special or consequential damages resulting from the use or inability to use our service.'}
               </p>
             </section>
 
@@ -167,8 +167,8 @@ function Terminos() {
               </h2>
               <p className="text-gray-700 dark:text-gray-300 mb-4">
                 {language === 'es'
-                  ? 'Todo el contenido del sitio, incluyendo pero no limitado a texto, gráficos, logos, iconos, imágenes y software, es propiedad de Bolivia Blue con Paz o sus proveedores de contenido y está protegido por leyes de derechos de autor y otras leyes de propiedad intelectual.'
-                  : 'All site content, including but not limited to text, graphics, logos, icons, images and software, is the property of Bolivia Blue with Paz or its content providers and is protected by copyright laws and other intellectual property laws.'}
+                  ? 'Todo el contenido del sitio, incluyendo pero no limitado a texto, gráficos, logos, iconos, imágenes y software, es propiedad de Bolivia Blue o sus proveedores de contenido y está protegido por leyes de derechos de autor y otras leyes de propiedad intelectual.'
+                  : 'All site content, including but not limited to text, graphics, logos, icons, images and software, is the property of Bolivia Blue or its content providers and is protected by copyright laws and other intellectual property laws.'}
               </p>
             </section>
 

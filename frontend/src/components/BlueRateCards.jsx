@@ -5,7 +5,8 @@ import { fetchBlueRate, fetchCardRates } from '../utils/api';
 import { formatRate, formatDateTime, isStale } from '../utils/formatters';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useCurrency } from '../contexts/CurrencyContext';
-import { trackRateCardView, trackOfficialRateToggle, trackRateUpdate } from '../utils/analytics';
+import CrossSourceBadge from './CrossSourceBadge';
+import { PRIMARY_RATE_URL } from '../config/seo';
 import {
   effectiveBobPerUsd
 } from '../data/usCardIssuers';
@@ -348,6 +349,12 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
       <p className="mt-3 text-center text-xs leading-relaxed text-gray-600 dark:text-gray-400 max-w-3xl mx-auto min-h-[2.5rem]">
         {description}
       </p>
+      {rateMode === 'blue' && (
+        <CrossSourceBadge
+          sourcesUsed={data?.sources_used}
+          className="mt-2"
+        />
+      )}
 
       {rateMode === 'blue' && (
         <div>

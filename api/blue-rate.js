@@ -5,9 +5,15 @@ const {
   isRateStale,
 } = require('./_lib/binanceRefresh');
 
+/** Last cross-source platforms seen on refresh (per serverless instance) */
+let lastSourcesUsed = ['binance'];
+
 function toPayload(data) {
+  const sources = lastSourcesUsed.length ? lastSourcesUsed : ['binance'];
   return {
-    source: 'binance-p2p',
+    source: sources.length > 1 ? 'p2p-cross-median' : 'binance-p2p',
+    sources_used: sources,
+    source_count: sources.length,
     buy_bob_per_usd: data.buy,
     sell_bob_per_usd: data.sell,
     official_buy: data.official_buy,
@@ -61,7 +67,8 @@ module.exports = async function handler(req, res) {
           .limit(1)
           .maybeSingle();
         if (isRateStale(latest?.t, STALE_MS)) {
-          const { row } = await refreshBlueFromBinance(supabase);
+          const { row, sourcesUsed } = await refreshBlueFromBinance(supabase);
+          if (sourcesUsed?.length) lastSourcesUsed = sourcesUsed;
           data = row;
         } else {
           const { data: fresh } = await supabase

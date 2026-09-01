@@ -49,8 +49,8 @@ function MobileMenu() {
   }, [isOpen]);
 
   const navItems = [
-    { path: '/', key: 'navDashboard', shortKey: 'navDashboardShort', icon: 'dashboard' },
     { path: '/dolar-blue-hoy', key: 'navDolarHoy', icon: 'dashboard' },
+    { path: '/', key: 'navDashboard', shortKey: 'navDashboardShort', icon: 'dashboard' },
     { path: '/dolar-paralelo-bolivia-en-vivo', key: 'navEnVivo', icon: 'dashboard' },
     { path: '/datos-historicos', key: 'navHistoricos', icon: 'dashboard' },
     { path: '/calculadora', key: 'navCalculator', icon: 'calculator' },

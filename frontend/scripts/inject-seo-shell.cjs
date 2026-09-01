@@ -72,7 +72,7 @@ function applyLiveRatesToRoutes(buy, sell, updatedAt) {
 
   const home = ROUTES['/'];
   home.title = `Dólar Blue Bolivia Hoy: Compra ${b} · Venta ${s}`;
-  home.description = `El dólar paralelo (blue) en Bolivia cotiza hoy en Bs ${b} para la compra y Bs ${s} para la venta${whenBit}. Actualizado cada 15 min (Binance P2P).`;
+  home.description = `Lectura verificada: el dólar paralelo (blue) en Bolivia cotiza hoy en Bs ${b} para la compra y Bs ${s} para la venta${whenBit}. Mediana multi-plataforma P2P.`;
   home.shell = home.shell
     .replace(
       /Tu fuente principal para el dólar blue en Bolivia:[^<]*/,

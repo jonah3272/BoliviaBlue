@@ -10,6 +10,10 @@ import { Link } from 'react-router-dom';
 import { fetchBlueRate } from '../utils/api';
 import { formatDateTime } from '../utils/formatters';
 import { getWebPage, getBreadcrumbList } from '../utils/seoSchema';
+import { buildLiveRateSeoMeta, ratesFromBluePayload } from '../utils/seoRateMeta';
+import CrossSourceBadge from '../components/CrossSourceBadge';
+import PrimaryRateLink from '../components/PrimaryRateLink';
+import { PRIMARY_RATE_URL } from '../config/seo';
 import { lazy, Suspense } from 'react';
 const BlueChart = lazy(() => import('../components/BlueChart'));
 import Breadcrumbs from '../components/Breadcrumbs';
@@ -134,18 +138,20 @@ function BolivianBlue() {
     ]
   };
 
+  const liveSeo = buildLiveRateSeoMeta({
+    ...ratesFromBluePayload(currentRate),
+    language,
+    page: 'bolivian-blue',
+  });
+
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
-        title={language === 'es'
-          ? 'Bolivian Blue | Tipo de Cambio Dólar Blue Bolivia'
-          : 'Bolivian Blue | Blue Dollar Exchange Rate Bolivia'}
-        description={language === 'es'
-          ? 'Bolivian Blue: tipo de cambio del dólar blue en tiempo real. Actualizado cada 15 min. Gráficos, calculadora y noticias. Mercado paralelo boliviano.'
-          : 'Bolivian Blue: real-time blue dollar exchange rate. Updated every 15 min. Charts, calculator and news. Bolivian parallel market.'}
+        title={liveSeo.title}
+        description={liveSeo.description}
         keywords={language === 'es'
-          ? "bolivian blue, bolivian blue rate, bolivian blue exchange rate, dólar blue bolivia, tipo de cambio bolivia, mercado paralelo bolivia, cotización dólar bolivia, precio dólar bolivia"
-          : "bolivian blue, bolivian blue rate, bolivian blue exchange rate, blue dollar bolivia, exchange rate bolivia, parallel market bolivia, bolivia dollar rate, bolivia dollar price"}
+          ? "bolivian blue, bolivian blue rate, bolivian blue bolivia, dólar blue bolivia, tipo de cambio bolivia, mercado paralelo bolivia, cotización dólar bolivia, precio dólar bolivia"
+          : "bolivian blue, bolivian blue rate, bolivian blue bolivia, blue dollar bolivia, exchange rate bolivia, parallel market bolivia, bolivia dollar rate, bolivia dollar price"}
         canonical="/bolivian-blue"
         structuredData={[webPageSchema, breadcrumbSchema, articleSchema, faqSchema]}
       />
@@ -180,7 +186,9 @@ function BolivianBlue() {
 
         {/* Current Rate Cards */}
         <section className="mb-12">
+          <PrimaryRateLink className="mb-4" />
           <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} />
+          <CrossSourceBadge sourcesUsed={currentRate?.sources_used} className="mt-3" />
         </section>
 
         {/* Binance Banner */}

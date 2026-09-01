@@ -1,5 +1,9 @@
 import fetch from 'node-fetch';
+import { createRequire } from 'module';
 import { median } from './median.js';
+
+const require = createRequire(import.meta.url);
+const { fetchCrossSourceBobRates } = require('../api/_lib/p2pCrossSource.js');
 
 const BINANCE_P2P_URL = 'https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search';
 const REQUEST_TIMEOUT = 10000; // 10 seconds
@@ -121,20 +125,30 @@ async function getCurrentBlueRateForFiat(fiat = 'BOB') {
  */
 export async function getCurrentBlueRate() {
   try {
+    const cross = await fetchCrossSourceBobRates();
+
+    return {
+      source: cross.sources_used.length > 1 ? 'p2p-cross-median' : 'binance-p2p',
+      sources_used: cross.sources_used,
+      buy_bob_per_usd: cross.buy,
+      sell_bob_per_usd: cross.sell,
+      updated_at_iso: new Date().toISOString(),
+      sample_buy: cross.platforms.map((p) => p.buy).slice(0, 5),
+      sample_sell: cross.platforms.map((p) => p.sell).slice(0, 5),
+    };
+
+  } catch (error) {
+    console.error('Error fetching cross-source blue rate, falling back to Binance:', error);
     const usdRate = await getCurrentBlueRateForFiat('BOB');
-    
     return {
       source: 'binance-p2p',
+      sources_used: ['binance'],
       buy_bob_per_usd: usdRate.buy,
       sell_bob_per_usd: usdRate.sell,
       updated_at_iso: new Date().toISOString(),
       sample_buy: usdRate.sample_buy,
-      sample_sell: usdRate.sample_sell
+      sample_sell: usdRate.sample_sell,
     };
-
-  } catch (error) {
-    console.error('Error fetching blue rate:', error);
-    throw error;
   }
 }
 

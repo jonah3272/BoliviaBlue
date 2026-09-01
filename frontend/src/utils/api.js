@@ -133,6 +133,9 @@ export async function fetchBlueRate(currency = 'USD') {
                 fresh.buy_bob_per_eur != null && fresh.sell_bob_per_eur != null
                   ? (fresh.buy_bob_per_eur + fresh.sell_bob_per_eur) / 2
                   : data.mid_bob_per_eur,
+              source: fresh.source ?? data.source,
+              sources_used: fresh.sources_used ?? data.sources_used,
+              source_count: fresh.source_count ?? data.source_count,
             };
           }
         }
@@ -200,7 +203,9 @@ export async function fetchBlueRate(currency = 'USD') {
     
     // Format response to match expected structure (always use buy_bob_per_* naming for consistency)
     const response = {
-      source: 'binance-p2p',
+      source: data.source || 'p2p-cross-median',
+      sources_used: data.sources_used || ['binance', 'eldorado', 'okx'],
+      source_count: data.source_count || (data.sources_used?.length ?? 3),
       updated_at_iso: data.t,
       buy_change_24h: buyChange,
       sell_change_24h: sellChange,

@@ -3,6 +3,8 @@ import Footer from '../components/Footer';
 import BlueRateCards from '../components/BlueRateCards';
 import PartnerAdCarousel from '../components/PartnerAdCarousel';
 import RateTrioStrip from '../components/RateTrioStrip';
+import CrossSourceBadge from '../components/CrossSourceBadge';
+import { PRIMARY_RATE_URL } from '../config/seo';
 import SocialShare from '../components/SocialShare';
 import LazyErrorBoundary from '../components/LazyErrorBoundary';
 import { lazy, Suspense, useState, useEffect, useMemo } from 'react';
@@ -339,20 +341,26 @@ function Home() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
               </span>
-              {language === 'es' ? 'En vivo · Binance P2P' : 'Live · Binance P2P'}
+              {language === 'es' ? 'Lectura verificada · multi-P2P' : 'Verified reading · multi-P2P'}
             </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight">
               {language === 'es' ? 'Dólar Blue Bolivia Hoy' : 'Bolivia Blue Dollar Today'}
             </h1>
             <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 max-w-lg mx-auto">
               {language === 'es'
-                ? 'Cotización paralelo actualizada cada pocos minutos. Sin registro.'
-                : 'Parallel quote updated every few minutes. No signup.'}
+                ? 'Mediana de varias plataformas P2P. Sin registro.'
+                : 'Median across P2P platforms. No signup.'}
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
               <Link
-                to="/comprar-dolares"
+                to={PRIMARY_RATE_URL}
                 className="inline-flex h-11 items-center justify-center rounded-xl bg-sky-500 px-5 text-sm font-bold text-white shadow-md shadow-sky-500/25 transition hover:bg-sky-400"
+              >
+                {language === 'es' ? 'Cotización completa de hoy' : 'Full quote for today'}
+              </Link>
+              <Link
+                to="/comprar-dolares"
+                className="inline-flex h-11 items-center justify-center rounded-xl border border-gray-300 dark:border-gray-600 bg-white/70 dark:bg-gray-800/70 px-5 text-sm font-semibold text-gray-800 dark:text-gray-100 backdrop-blur transition hover:bg-white dark:hover:bg-gray-800"
               >
                 {language === 'es' ? 'Cómo comprar dólares' : 'How to buy dollars'}
               </Link>
@@ -377,6 +385,7 @@ function Home() {
               </p>
             )}
             <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} showTimestampInCards={false} />
+            <CrossSourceBadge sourcesUsed={currentRate?.sources_used} className="mt-3" />
             <div className="mt-5 sm:mt-6 max-w-5xl mx-auto">
               <RateTrioStrip
                 buy={currentRate?.buy ?? currentRate?.buy_bob_per_usd}

@@ -15,6 +15,7 @@ function Footer() {
       title: es ? 'Bolivia Blue' : 'Bolivia Blue',
       links: [
         { path: '/acerca-de', label: es ? 'Sobre Bolivia Blue' : 'About Bolivia Blue' },
+        { path: '/bolivian-blue', label: 'Bolivian Blue' },
         { path: '/contacto', label: es ? 'Contacto' : 'Contact' },
         { path: '/preguntas-frecuentes', label: 'FAQ' },
         { path: '/fuente-de-datos', label: es ? 'Fuente de datos' : 'Data source' },

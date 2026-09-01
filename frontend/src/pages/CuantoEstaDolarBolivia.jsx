@@ -13,6 +13,7 @@ import { getWebPage, getBreadcrumbList } from '../utils/seoSchema';
 import { buildLiveRateSeoMeta, ratesFromBluePayload } from '../utils/seoRateMeta';
 import { lazy, Suspense } from 'react';
 const BlueChart = lazy(() => import('../components/BlueChart'));
+import PrimaryRateLink from '../components/PrimaryRateLink';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 
@@ -149,6 +150,7 @@ function CuantoEstaDolarBolivia() {
       <Navigation />
 
       <main className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-6 md:py-8 space-y-2 sm:space-y-6 md:space-y-8">
+        <PrimaryRateLink />
         <Breadcrumbs
           items={language === 'es' 
             ? [

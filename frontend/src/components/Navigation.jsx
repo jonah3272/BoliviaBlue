@@ -23,6 +23,7 @@ function Navigation() {
   // Navigation optimized for Google Sitelinks - Using Spanish URLs (no redirects!)
   // Primary navigation (always visible on desktop)
   const primaryNavItems = [
+    { path: '/dolar-blue-hoy', key: 'navDolarHoy', icon: 'dashboard' },
     { path: '/', key: 'navDashboard', shortKey: 'navDashboardShort', icon: 'dashboard' },
     { path: '/calculadora', key: 'navCalculator', icon: 'calculator' },
     { path: '/comprar-dolares', key: 'navBuyDollars', icon: 'buy' },

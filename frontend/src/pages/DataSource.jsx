@@ -35,8 +35,8 @@ function DataSource() {
   const webPageSchema = getWebPage({
     name: language === 'es' ? 'Metodología y Fuente de Datos | Bolivia Blue' : 'Methodology & Data Source | Bolivia Blue',
     description: language === 'es'
-      ? 'Cómo calculamos el dólar blue en Bolivia: fuente (Binance P2P), metodología (mediana), actualización cada 15 min. Para medios, investigadores y desarrolladores.'
-      : 'How we calculate the Bolivia blue dollar rate: source (Binance P2P), methodology (median), update every 15 min. For media, researchers and developers.',
+      ? 'Cómo calculamos el dólar blue en Bolivia: mediana cross-source P2P (Binance, El Dorado, OKX, Bybit), actualización cada 15 min. Para medios, investigadores y desarrolladores.'
+      : 'How we calculate the Bolivia blue dollar rate: cross-source P2P median (Binance, El Dorado, OKX, Bybit), update every 15 min. For media, researchers and developers.',
     url: '/fuente-de-datos',
     inLanguage: language === 'es' ? 'es-BO' : 'en-US'
   });
@@ -47,8 +47,8 @@ function DataSource() {
     {
       q: language === 'es' ? '¿De dónde vienen los datos del dólar blue?' : 'Where does the blue dollar data come from?',
       a: language === 'es'
-        ? 'Los datos provienen de ofertas públicas de compra y venta en Binance P2P (par USDT/BOB). Calculamos la mediana de las ofertas de compra y la mediana de las ofertas de venta; el sistema se actualiza cada 15 minutos.'
-        : 'Data comes from public buy and sell offers on Binance P2P (USDT/BOB pair). We calculate the median of buy offers and the median of sell offers; the system updates every 15 minutes.'
+        ? 'Los datos provienen de varias plataformas P2P (Binance, El Dorado, OKX y Bybit cuando responden). Calculamos la mediana de cada plataforma y luego la mediana cross-source; el sistema se actualiza cada 15 minutos.'
+        : 'Data comes from multiple P2P platforms (Binance, El Dorado, OKX and Bybit when available). We compute each platform median, then a cross-source median; the system updates every 15 minutes.'
     },
     {
       q: language === 'es' ? '¿Con qué frecuencia se actualiza la cotización?' : 'How often is the rate updated?',
@@ -141,8 +141,8 @@ function DataSource() {
             </p>
             <p>
               {language === 'es'
-                ? 'Bolivia Blue con Paz rastrea este tipo de cambio usando datos públicos del mercado P2P de Binance (par USDT/BOB), de forma transparente y actualizada.'
-                : 'Bolivia Blue con Paz tracks this exchange rate using public data from Binance\'s P2P market (USDT/BOB pair), in a transparent and up-to-date way.'}
+                ? 'Bolivia Blue rastrea este tipo de cambio con una lectura verificada: mediana cross-source de plataformas P2P (USDT/BOB), de forma transparente y actualizada.'
+                : 'Bolivia Blue tracks this exchange rate with a verified reading: cross-source median from P2P platforms (USDT/BOB), transparent and up to date.'}
             </p>
           </div>
         </section>

@@ -31,19 +31,19 @@ const PAGE_COPY = {
   home: {
     es: {
       titleWith: (b, s) => `Dólar Blue Hoy Bolivia: Compra ${b} · Venta ${s} | Paralelo`,
-      titleFallback: 'Dólar Blue Hoy Bolivia | Paralelo, Binance P2P y Cotización',
+      titleFallback: 'Dólar Blue Hoy Bolivia | Paralelo, Lectura Verificada P2P',
       descWith: (b, s, when) =>
-        `Dólar blue hoy / paralelo en Bolivia: compra Bs ${b} y venta Bs ${s}${when ? ` (${when})` : ''}. Cotización cada 15 min desde Binance P2P.`,
+        `Lectura verificada: dólar blue hoy compra Bs ${b} y venta Bs ${s}${when ? ` (${when})` : ''}. Mediana multi-plataforma P2P (Binance, El Dorado, OKX).`,
       descFallback:
-        'Dólar blue hoy y paralelo en Bolivia: compra y venta actualizados cada 15 min desde Binance P2P. Gratis, sin registro.',
+        'Dólar blue hoy en Bolivia: lectura verificada, mediana multi-plataforma P2P. Gratis, sin registro.',
     },
     en: {
       titleWith: (b, s) => `Bolivia Blue Dollar Today: Buy ${b} · Sell ${s} | Parallel`,
-      titleFallback: 'Bolivia Blue Dollar Today | Parallel Rate & Binance P2P',
+      titleFallback: 'Bolivia Blue Dollar Today | Verified P2P Reading',
       descWith: (b, s, when) =>
-        `Bolivia blue / parallel dollar today: buy Bs ${b}, sell Bs ${s}${when ? ` (as of ${when})` : ''}. Updated every 15 min from Binance P2P.`,
+        `Verified reading: blue dollar today buy Bs ${b}, sell Bs ${s}${when ? ` (${when})` : ''}. Multi-platform P2P median (Binance, El Dorado, OKX).`,
       descFallback:
-        'Bolivia blue / parallel dollar today: buy and sell rates. Updated every 15 min from Binance P2P. Free, no signup.',
+        'Bolivia blue dollar today: verified multi-platform P2P median. Free, no signup.',
     },
   },
   'dolar-blue-hoy': {
@@ -56,11 +56,11 @@ const PAGE_COPY = {
         }).format(new Date());
         return `Dólar Blue Hoy ${d}: Compra ${b} · Venta ${s}`;
       },
-      titleFallback: 'Dólar Blue Hoy Bolivia | Precio Paralelo Actualizado',
+      titleFallback: 'Dólar Blue Hoy Bolivia | Lectura Verificada Paralelo',
       descWith: (b, s, when) =>
-        `Dólar blue hoy en Bolivia (mercado paralelo): compra Bs ${b} y venta Bs ${s}${when ? ` (${when})` : ''}. Datos Binance P2P cada 15 min.`,
+        `Lectura verificada — dólar blue hoy: compra Bs ${b}, venta Bs ${s}${when ? ` (${when})` : ''}. Mediana P2P multi-plataforma.`,
       descFallback:
-        'Dólar blue hoy en Bolivia: precio paralelo de compra y venta. Actualizado cada 15 min desde Binance P2P.',
+        'Dólar blue hoy en Bolivia: lectura verificada del paralelo. Mediana P2P actualizada cada pocos minutos.',
     },
     en: {
       titleWith: (b, s) => {
@@ -73,9 +73,27 @@ const PAGE_COPY = {
       },
       titleFallback: 'Blue Dollar Today Bolivia | Parallel Price Now',
       descWith: (b, s, when) =>
-        `Blue dollar today in Bolivia (parallel market): buy Bs ${b}, sell Bs ${s}${when ? ` (${when})` : ''}. Binance P2P, every 15 min.`,
+        `Blue dollar today in Bolivia (parallel): buy Bs ${b}, sell Bs ${s}${when ? ` (${when})` : ''}. Verified multi-platform P2P median.`,
       descFallback:
-        'Blue dollar today in Bolivia: parallel buy and sell price. Updated every 15 min from Binance P2P.',
+        'Blue dollar today in Bolivia: verified parallel reading. Multi-platform P2P median, updated every few minutes.',
+    },
+  },
+  'bolivian-blue': {
+    es: {
+      titleWith: (b, s) => `Bolivian Blue Hoy: Compra ${b} · Venta ${s} | Bolivia`,
+      titleFallback: 'Bolivian Blue Bolivia | Dólar Paralelo Hoy',
+      descWith: (b, s, when) =>
+        `Bolivian Blue en Bolivia: compra Bs ${b}, venta Bs ${s}${when ? ` (${when})` : ''}. Lectura verificada · mediana P2P multi-plataforma.`,
+      descFallback:
+        'Bolivian Blue Bolivia: cotización del dólar paralelo hoy. Lectura verificada desde varias plataformas P2P.',
+    },
+    en: {
+      titleWith: (b, s) => `Bolivian Blue Today: Buy ${b} · Sell ${s} | Bolivia`,
+      titleFallback: 'Bolivian Blue Bolivia | Parallel Dollar Today',
+      descWith: (b, s, when) =>
+        `Bolivian Blue in Bolivia: buy Bs ${b}, sell Bs ${s}${when ? ` (${when})` : ''}. Verified multi-platform P2P median.`,
+      descFallback:
+        'Bolivian Blue Bolivia: today’s parallel dollar rate. Verified reading from multiple P2P platforms.',
     },
   },
   'dolar-paralelo': {

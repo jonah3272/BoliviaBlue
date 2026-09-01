@@ -17,7 +17,7 @@ export const translations = {
     updated: 'Actualizado',
     stale: 'Desactualizado',
     change24h: '24h',
-    blueMarketTitle: 'Mercado Paralelo (Dólar Blue) - Binance P2P',
+    blueMarketTitle: 'Mercado Paralelo (Dólar Blue) — mediana multi-P2P',
     officialRateTitle: 'Valor referencial del dólar estadounidense (BCB)',
     cardRateTitle: 'Tarjeta US',
     officialRateDescription:
@@ -380,7 +380,7 @@ export const translations = {
     updated: 'Updated',
     stale: 'Stale',
     change24h: '24h',
-    blueMarketTitle: 'Parallel Market (Blue Dollar) - Binance P2P',
+    blueMarketTitle: 'Parallel Market (Blue Dollar) — multi-P2P median',
     officialRateTitle: 'US Dollar reference rate (BCB)',
     cardRateTitle: 'US Card',
     officialRateDescription:

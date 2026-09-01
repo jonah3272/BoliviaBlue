@@ -12,12 +12,12 @@ const baseUrl = 'https://boliviablue.com';
 
 const pages = [
   { path: '/', changefreq: 'hourly', priority: '1.0' },
+  { path: '/dolar-blue-hoy', changefreq: 'hourly', priority: '1.0' },
+  { path: '/bolivian-blue', changefreq: 'hourly', priority: '0.95' },
   { path: '/calculadora', changefreq: 'daily', priority: '0.9' },
-  { path: '/cuanto-esta-dolar-bolivia', changefreq: 'hourly', priority: '0.95' },
-  { path: '/dolar-blue-hoy', changefreq: 'hourly', priority: '0.95' },
-  { path: '/dolar-paralelo-bolivia-en-vivo', changefreq: 'hourly', priority: '0.95' },
-  { path: '/cotiza-dolar-paralelo', changefreq: 'hourly', priority: '0.9' },
-  { path: '/bolivian-blue', changefreq: 'hourly', priority: '0.9' },
+  { path: '/cuanto-esta-dolar-bolivia', changefreq: 'hourly', priority: '0.85' },
+  { path: '/dolar-paralelo-bolivia-en-vivo', changefreq: 'hourly', priority: '0.75' },
+  { path: '/cotiza-dolar-paralelo', changefreq: 'hourly', priority: '0.85' },
   { path: '/que-es-dolar-blue', changefreq: 'weekly', priority: '0.85' },
   { path: '/dolar-blue-la-paz', changefreq: 'hourly', priority: '0.85' },
   { path: '/dolar-blue-santa-cruz', changefreq: 'hourly', priority: '0.85' },

@@ -1,6 +1,6 @@
 const { createClient } = require('@supabase/supabase-js');
+const { fetchBinanceSide, fetchCrossSourceBobRates } = require('./p2pCrossSource');
 
-const BINANCE_P2P_URL = 'https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search';
 const STALE_MS = 20 * 60 * 1000;
 
 function createSupabaseClient() {
@@ -21,24 +21,7 @@ function median(values) {
 }
 
 async function fetchP2P(tradeType, fiat = 'BOB', rows = 20) {
-  const res = await fetch(BINANCE_P2P_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-    body: JSON.stringify({
-      asset: 'USDT',
-      fiat,
-      tradeType,
-      rows,
-      page: 1,
-      merchantCheck: false,
-      payTypes: [],
-    }),
-  });
-  if (!res.ok) throw new Error(`Binance P2P HTTP ${res.status}`);
-  const data = await res.json();
-  return (data.data || [])
-    .map((row) => parseFloat(row.adv?.price))
-    .filter((n) => Number.isFinite(n));
+  return fetchBinanceSide(tradeType, fiat, rows);
 }
 
 async function getOfficialFallback(supabase) {
@@ -56,21 +39,16 @@ async function getOfficialFallback(supabase) {
 }
 
 /**
- * Fetch Binance P2P medians and insert a new rates row.
- * @returns {{ row: object, buyPrices: number[], sellPrices: number[] }}
+ * Cross-source P2P medians (Binance + El Dorado + OKX + Bybit) and insert rates row.
+ * @returns {{ row: object, buyPrices: number[], sellPrices: number[], sourcesUsed: string[] }}
  */
 async function refreshBlueFromBinance(supabase = createSupabaseClient()) {
-  const [buyPrices, sellPrices] = await Promise.all([
-    fetchP2P('BUY', 'BOB'),
-    fetchP2P('SELL', 'BOB'),
-  ]);
-  const buy = median(buyPrices);
-  const sell = median(sellPrices);
-  if (buy == null || sell == null) {
-    const err = new Error('Insufficient Binance P2P data');
-    err.statusCode = 502;
-    throw err;
-  }
+  const cross = await fetchCrossSourceBobRates();
+  const buy = cross.buy;
+  const sell = cross.sell;
+  const buyPrices = cross.platforms.map((p) => p.buy);
+  const sellPrices = cross.platforms.map((p) => p.sell);
+  const sourcesUsed = cross.sources_used;
 
   let buyBrl = null;
   let sellBrl = null;
@@ -127,7 +105,7 @@ async function refreshBlueFromBinance(supabase = createSupabaseClient()) {
   const { error } = await supabase.from('rates').insert(row);
   if (error) throw error;
 
-  return { row, buyPrices, sellPrices };
+  return { row, buyPrices, sellPrices, sourcesUsed };
 }
 
 function isRateStale(iso, staleMs = STALE_MS) {

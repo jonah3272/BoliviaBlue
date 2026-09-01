@@ -9,11 +9,11 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import { getWebPage, getBreadcrumbList } from '../utils/seoSchema';
 
-const CITE_HTML = `<p>Fuente: <a href="https://boliviablue.com/">Bolivia Blue</a> — dólar blue / paralelo Bolivia (Binance P2P, mediana). Histórico: <a href="https://boliviablue.com/datos-historicos">datos-historicos</a>. Widget: <a href="https://boliviablue.com/widget">boliviablue.com/widget</a>.</p>`;
+const CITE_HTML = `<p>Fuente: <a href="https://boliviablue.com/dolar-blue-hoy">Bolivia Blue</a> — dólar blue / paralelo Bolivia (lectura verificada, mediana multi-P2P: Binance, El Dorado, OKX). Histórico: <a href="https://boliviablue.com/datos-historicos">datos-historicos</a>. Widget: <a href="https://boliviablue.com/widget">boliviablue.com/widget</a>.</p>`;
 
-const CITE_MD = `Fuente: [Bolivia Blue](https://boliviablue.com/) — dólar blue / paralelo Bolivia (Binance P2P). Histórico: [datos-historicos](https://boliviablue.com/datos-historicos). Widget: [boliviablue.com/widget](https://boliviablue.com/widget).`;
+const CITE_MD = `Fuente: [Bolivia Blue](https://boliviablue.com/dolar-blue-hoy) — dólar blue / paralelo Bolivia (mediana multi-P2P). Histórico: [datos-historicos](https://boliviablue.com/datos-historicos). Widget: [boliviablue.com/widget](https://boliviablue.com/widget).`;
 
-const CITE_METHODOLOGY = `Metodología: https://boliviablue.com/fuente-de-datos — mediana Binance P2P USDT/BOB, actualización ~15 min.`;
+const CITE_METHODOLOGY = `Metodología: https://boliviablue.com/fuente-de-datos — mediana cross-source P2P (Binance, El Dorado, OKX, Bybit cuando disponible), actualización ~15 min.`;
 
 const BADGE_HTML = `<a href="https://boliviablue.com/?utm_source=badge" rel="noopener"><img src="https://boliviablue.com/badge.svg" alt="Bolivia Blue live rate" width="200" height="40" /></a>`;
 

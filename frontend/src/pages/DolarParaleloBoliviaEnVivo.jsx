@@ -10,6 +10,7 @@ import { fetchBlueRate } from '../utils/api';
 import { formatDateTime } from '../utils/formatters';
 import { getWebPage, getBreadcrumbList } from '../utils/seoSchema';
 import { buildLiveRateSeoMeta, ratesFromBluePayload } from '../utils/seoRateMeta';
+import PrimaryRateLink from '../components/PrimaryRateLink';
 import { Link } from 'react-router-dom';
 import { useAdsenseReadyWhen } from '../hooks/useAdsenseReady';
 
@@ -86,13 +87,14 @@ function DolarParaleloBoliviaEnVivo() {
         title={liveSeo.title}
         description={liveSeo.description}
         keywords="dolar blue en vivo, dolar paralelo bolivia en vivo, dolar blue bolivia en vivo, dolar paralelo bolivia, tipo cambio bolivia en vivo, cotizacion dolar blue bolivia, bolivia blue en vivo, precio dolar paralelo bolivia"
-        canonical="/dolar-paralelo-bolivia-en-vivo"
+        canonical="/dolar-blue-hoy"
         structuredData={structuredData}
       />
 
       <Header />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
+        <PrimaryRateLink />
         {/* Hero Section with Live Badge */}
         <section className="bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 sm:p-8 shadow-2xl border-2 border-red-300 dark:border-red-800">
           <div className="flex items-center gap-3 mb-4">

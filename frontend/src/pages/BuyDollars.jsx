@@ -432,15 +432,15 @@ function BuyDollars() {
         </section>
       </main>
 
-      <div className="fixed bottom-0 inset-x-0 z-40 p-3 bg-white/95 dark:bg-gray-900/95 border-t border-gray-200 dark:border-gray-700 sm:hidden backdrop-blur">
+      <div className="fixed bottom-[calc(3.5rem+env(safe-area-inset-bottom))] inset-x-0 z-40 p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] bg-white/95 dark:bg-gray-900/95 border-t border-gray-200 dark:border-gray-700 sm:hidden backdrop-blur">
         <a
           href="#opciones"
-          className="flex w-full h-11 items-center justify-center rounded-xl bg-sky-500 text-white text-sm font-bold shadow-md"
+          className="flex w-full min-h-[44px] items-center justify-center rounded-xl bg-sky-500 text-white text-sm font-bold shadow-md touch-manipulation"
         >
           {es ? 'Ver opciones para comprar' : 'See buy options'}
         </a>
       </div>
-      <div className="h-16 sm:hidden" aria-hidden />
+      <div className="h-[calc(7rem+env(safe-area-inset-bottom))] sm:hidden" aria-hidden />
 
       <Footer />
     </div>

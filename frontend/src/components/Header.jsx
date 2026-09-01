@@ -43,8 +43,9 @@ function Header() {
             </div>
           </Link>
           
-          {/* Mobile: Hamburger Menu */}
-          <div className="md:hidden">
+          {/* Mobile: currency + hamburger */}
+          <div className="md:hidden flex items-center gap-1 flex-shrink-0">
+            <CurrencyToggle />
             <MobileMenu />
           </div>
 

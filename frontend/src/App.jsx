@@ -1,10 +1,12 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
-import Home from './pages/Home';
 import Redirect from './components/Redirect';
+import MobileBottomNav from './components/MobileBottomNav';
+import RateAlertFab from './components/RateAlertFab';
 import { usePageTracking } from './hooks/usePageTracking';
 
 // Lazy load routes for code splitting
+const Home = lazy(() => import('./pages/Home'));
 const Calculator = lazy(() => import('./pages/Calculator'));
 const News = lazy(() => import('./pages/News'));
 const NewsArticle = lazy(() => import('./pages/NewsArticle'));
@@ -73,8 +75,9 @@ function AppContent() {
   usePageTracking();
   
   return (
-    <Suspense fallback={<LoadingFallback />}>
-      <Routes>
+    <>
+      <Suspense fallback={<LoadingFallback />}>
+        <Routes>
           <Route path="/" element={<Home />} />
           
           {/* Spanish URL Aliases (Primary for SEO) */}
@@ -161,6 +164,9 @@ function AppContent() {
           <Route path="/comunidad" element={<Chat />} />
         </Routes>
       </Suspense>
+      <MobileBottomNav />
+      <RateAlertFab />
+    </>
   );
 }
 

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, memo, useCallback, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { motion } from 'framer-motion';
 import { fetchBlueRate, fetchCardRates } from '../utils/api';
 import { formatRate, formatDateTime, isStale } from '../utils/formatters';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -439,7 +438,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
                   role="option"
                   aria-selected={active}
                   onClick={() => setIssuerId(item.id)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium touch-manipulation transition-colors border ${
+                  className={`px-3 py-2 rounded-lg text-xs font-medium touch-manipulation transition-colors border ${
                     active
                       ? 'bg-emerald-600 text-white border-emerald-600'
                       : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:border-emerald-400'
@@ -451,11 +450,8 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
             })}
           </div>
 
-          <motion.div
-            className="bg-white/90 dark:bg-gray-800/90 rounded-xl border border-emerald-300/70 dark:border-emerald-800 p-4 sm:p-6"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, ease: 'easeOut' }}
+          <div
+            className="bg-white/90 dark:bg-gray-800/90 rounded-xl border border-emerald-300/70 dark:border-emerald-800 p-4 sm:p-6 transition-opacity duration-300"
             key={`${issuerId}-${effectiveRate}`}
           >
             <div className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 uppercase tracking-wider mb-2">
@@ -523,7 +519,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
                 </div>
               </>
             )}
-          </motion.div>
+          </div>
         </div>
       )}
     </div>

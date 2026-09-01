@@ -12,14 +12,12 @@ import { lazy, Suspense, useState, useEffect, useMemo } from 'react';
 // Lazy load heavy components for better performance
 const BlueChart = lazy(() => import('../components/BlueChart'));
 const NewsTabs = lazy(() => import('../components/NewsTabs'));
-const RotatingNewsCarousel = lazy(() => import('../components/RotatingNewsCarousel'));
 const SentimentNewsCard = lazy(() => import('../components/SentimentNewsCard'));
 const RateAlertForm = lazy(() => import('../components/RateAlertForm'));
 
 import About from '../components/About';
 import PageMeta from '../components/PageMeta';
 import Navigation from '../components/Navigation';
-import DailySentimentHeader from '../components/DailySentimentHeader';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Link } from 'react-router-dom';
 import { articlesEs, articlesEn } from '../data/blogArticles';
@@ -334,9 +332,22 @@ function Home() {
       <AdSenseAutoAds />
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-5 sm:py-8 md:py-10 space-y-6 sm:space-y-8 md:space-y-10 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
-        {/* Hero — brand + live signal; rates are the product */}
-        <div className="relative text-center mb-1 overflow-hidden rounded-3xl border border-sky-200/60 dark:border-sky-800/40 px-4 py-8 sm:px-8 sm:py-10">
+      <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-5 sm:py-8 md:py-10 space-y-6 sm:space-y-8 md:space-y-10 pb-[max(5rem,calc(3.5rem+env(safe-area-inset-bottom)))] md:pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+        {/* Mobile: compact title — rates are the product */}
+        <div className="md:hidden text-center">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white leading-tight">
+            {language === 'es' ? 'Dólar Blue Bolivia Hoy' : 'Bolivia Blue Dollar Today'}
+          </h1>
+          {currentRate?.updated_at_iso && (
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              {language === 'es' ? 'Actualizado' : 'Updated'}:{' '}
+              {formatDateTime(currentRate.updated_at_iso, language === 'es' ? 'es-BO' : 'en-US')}
+            </p>
+          )}
+        </div>
+
+        {/* Hero — desktop only */}
+        <div className="hidden md:block relative text-center mb-1 overflow-hidden rounded-3xl border border-sky-200/60 dark:border-sky-800/40 px-4 py-8 sm:px-8 sm:py-10">
           <div
             className="pointer-events-none absolute inset-0"
             style={{
@@ -387,12 +398,13 @@ function Home() {
         <div className="relative rounded-2xl px-1 py-4 sm:px-4 sm:py-6 -mx-1 sm:mx-0 bg-gradient-to-b from-sky-50/90 via-transparent to-transparent dark:from-sky-950/40 dark:via-transparent">
           <section>
             {currentRate?.updated_at_iso && (
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-3 text-center flex items-center justify-center gap-2">
+              <p className="hidden md:flex text-sm text-gray-500 dark:text-gray-400 mb-3 text-center items-center justify-center gap-2">
                 <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden />
                 {language === 'es' ? 'Actualizado' : 'Updated'}:{' '}
                 {formatDateTime(currentRate.updated_at_iso, language === 'es' ? 'es-BO' : 'en-US')}
               </p>
             )}
+            <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} showTimestampInCards={false} showCrossSourceBadge={false} />
             <AiCitationBlock
               language={language}
               buy={currentRate?.buy ?? currentRate?.buy_bob_per_usd}
@@ -400,9 +412,8 @@ function Home() {
               updatedAt={currentRate?.updated_at_iso}
               sourcesUsed={currentRate?.sources_used}
               citePath="/"
-              className="mb-4 max-w-3xl mx-auto"
+              className="mt-4 max-w-3xl mx-auto"
             />
-            <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} showTimestampInCards={false} showCrossSourceBadge={false} />
             <div className="mt-5 sm:mt-6 max-w-5xl mx-auto">
               <RateTrioStrip
                 buy={currentRate?.buy ?? currentRate?.buy_bob_per_usd}
@@ -415,19 +426,24 @@ function Home() {
             </div>
           </section>
 
-          <section className="mt-5 sm:mt-6">
-            <PartnerAdCarousel placement="home_after_rates" midRate={midRate} />
+          <section id="price-alerts" className="mt-5 sm:mt-6">
+            <div className="mb-3 text-center sm:text-left">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                {language === 'es' ? 'Alerta de precio' : 'Price alert'}
+              </h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {language === 'es'
+                  ? 'Avisanos a qué tasa querés que te avisemos.'
+                  : 'Tell us which rate should trigger a notification.'}
+              </p>
+            </div>
+            <LazyErrorBoundary>
+              <Suspense fallback={<ComponentLoader />}>
+                <RateAlertForm />
+              </Suspense>
+            </LazyErrorBoundary>
           </section>
         </div>
-
-        {/* Combined Sentiment + News Card */}
-        <section>
-          <LazyErrorBoundary>
-            <Suspense fallback={<ComponentLoader />}>
-              <SentimentNewsCard />
-            </Suspense>
-          </LazyErrorBoundary>
-        </section>
 
         {/* Chart */}
         <section>
@@ -449,7 +465,20 @@ function Home() {
           </LazyErrorBoundary>
         </section>
 
-        {/* Second partner rotation — offset so Meru / later partners get more views */}
+        <section>
+          <PartnerAdCarousel placement="home_after_rates" midRate={midRate} />
+        </section>
+
+        {/* Combined Sentiment + News Card — after chart on mobile */}
+        <section>
+          <LazyErrorBoundary>
+            <Suspense fallback={<ComponentLoader />}>
+              <SentimentNewsCard />
+            </Suspense>
+          </LazyErrorBoundary>
+        </section>
+
+        {/* Second partner rotation */}
         <section>
           <PartnerAdCarousel
             placement="home_after_chart"
@@ -458,25 +487,6 @@ function Home() {
             startOffset={2}
             reverse
           />
-        </section>
-
-        {/* Rate Alerts Form */}
-        <section id="price-alerts">
-          <div className="mb-3 text-center sm:text-left">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              {language === 'es' ? 'Alerta de precio' : 'Price alert'}
-            </h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              {language === 'es'
-                ? 'Avisanos a qué tasa querés que te avisemos.'
-                : 'Tell us which rate should trigger a notification.'}
-            </p>
-          </div>
-          <LazyErrorBoundary>
-            <Suspense fallback={<ComponentLoader />}>
-              <RateAlertForm />
-            </Suspense>
-          </LazyErrorBoundary>
         </section>
 
         {/* How It Works Section */}

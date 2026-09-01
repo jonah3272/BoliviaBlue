@@ -112,7 +112,7 @@ function Calculator() {
       <Navigation />
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8 space-y-4 sm:space-y-6 md:space-y-8">
+      <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8 space-y-4 sm:space-y-6 md:space-y-8 flex flex-col pb-[max(5rem,calc(3.5rem+env(safe-area-inset-bottom)))] md:pb-[max(1.5rem,env(safe-area-inset-bottom))]">
         {/* Page Title - H1 */}
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-2 text-center">
           {language === 'es' 
@@ -125,21 +125,21 @@ function Calculator() {
             : 'Convert US dollars to bolivianos and vice versa using real-time blue exchange rate'}
         </p>
 
-        {/* Rate Cards */}
-        <section>
-          <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} />
-        </section>
-
-        {/* Binance Banner - Above Calculator */}
-        <section className="min-h-[12rem] sm:min-h-[11rem]">
-          <BinanceBanner />
-        </section>
-
-        {/* Calculator — Suspense fallback matches approximate calculator height */}
-        <section className="min-h-[28rem] sm:min-h-[32rem]">
+        {/* Calculator first on mobile */}
+        <section className="order-2 md:order-3 min-h-[28rem] sm:min-h-[32rem]">
           <Suspense fallback={<ComponentLoader />}>
             <CurrencyCalculator />
           </Suspense>
+        </section>
+
+        {/* Rate Cards */}
+        <section className="order-3 md:order-2">
+          <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} />
+        </section>
+
+        {/* Binance Banner */}
+        <section className="order-4 min-h-[12rem] sm:min-h-[11rem]">
+          <BinanceBanner />
         </section>
 
         {/* Additional Content Section for AdSense Compliance */}

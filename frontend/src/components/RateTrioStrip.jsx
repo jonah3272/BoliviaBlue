@@ -3,8 +3,21 @@
  */
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { formatRate } from '../utils/formatters';
 import { fetchCardRates } from '../utils/api';
+import { formatRate } from '../utils/formatters';
+
+function useMobileCollapsed(defaultCollapsed = true) {
+  const [collapsed, setCollapsed] = useState(false);
+  useEffect(() => {
+    if (!defaultCollapsed) return;
+    const mq = window.matchMedia('(max-width: 767px)');
+    const sync = () => setCollapsed(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, [defaultCollapsed]);
+  return [collapsed, setCollapsed];
+}
 
 function cardBobPerUsd(row) {
   if (!row) return null;
@@ -27,6 +40,7 @@ export default function RateTrioStrip({
 }) {
   const es = language === 'es';
   const [fetchedCard, setFetchedCard] = useState(null);
+  const [collapsed] = useMobileCollapsed(true);
 
   useEffect(() => {
     if (cardRateProp != null) return undefined;
@@ -135,45 +149,44 @@ export default function RateTrioStrip({
         ? 'border-blue-300 bg-blue-50/90 dark:border-blue-800 dark:bg-blue-950/50'
         : 'border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800/50';
 
-  return (
-    <section
-      className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 sm:p-5 shadow-sm"
-      aria-label={es ? 'Paralelo vs tarjeta vs oficial' : 'Parallel vs card vs official'}
-    >
-      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 mb-4">
-        <div>
-          <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
-            {es ? '¿Tarjeta o cash?' : 'Card or cash?'}
-          </h2>
-          <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1 max-w-2xl">
-            {es
-              ? 'Tres precios del dólar: paralelo (billetes), tarjeta USD→BOB, y BCB. La brecha es la oportunidad.'
-              : 'Three dollar prices: parallel cash, USD→BOB card, and BCB. The gap is the opportunity.'}
-          </p>
-        </div>
-        {cardVsBluePct != null && (
-          <div className="text-xs sm:text-sm font-mono text-gray-600 dark:text-gray-300 whitespace-nowrap">
-            {es ? 'Tarjeta vs blue' : 'Card vs blue'}:{' '}
-            <span
-              className={
-                cardVsBluePct >= 0
-                  ? 'text-emerald-600 dark:text-emerald-400'
-                  : 'text-blue-600 dark:text-blue-400'
-              }
-            >
-              {cardVsBluePct >= 0 ? '+' : ''}
-              {cardVsBluePct.toFixed(1)}%
-            </span>
-            {bcbVsBluePct != null && (
-              <span className="text-gray-400 dark:text-gray-500 ml-2">
-                · BCB {bcbVsBluePct >= 0 ? '+' : ''}
-                {bcbVsBluePct.toFixed(1)}%
-              </span>
-            )}
-          </div>
-        )}
+  const headerBlock = (
+    <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 mb-4">
+      <div>
+        <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
+          {es ? '¿Tarjeta o cash?' : 'Card or cash?'}
+        </h2>
+        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1 max-w-2xl">
+          {es
+            ? 'Tres precios del dólar: paralelo (billetes), tarjeta USD→BOB, y BCB. La brecha es la oportunidad.'
+            : 'Three dollar prices: parallel cash, USD→BOB card, and BCB. The gap is the opportunity.'}
+        </p>
       </div>
+      {cardVsBluePct != null && (
+        <div className="text-xs sm:text-sm font-mono text-gray-600 dark:text-gray-300 whitespace-nowrap">
+          {es ? 'Tarjeta vs blue' : 'Card vs blue'}:{' '}
+          <span
+            className={
+              cardVsBluePct >= 0
+                ? 'text-emerald-600 dark:text-emerald-400'
+                : 'text-blue-600 dark:text-blue-400'
+            }
+          >
+            {cardVsBluePct >= 0 ? '+' : ''}
+            {cardVsBluePct.toFixed(1)}%
+          </span>
+          {bcbVsBluePct != null && (
+            <span className="text-gray-400 dark:text-gray-500 ml-2">
+              · BCB {bcbVsBluePct >= 0 ? '+' : ''}
+              {bcbVsBluePct.toFixed(1)}%
+            </span>
+          )}
+        </div>
+      )}
+    </div>
+  );
 
+  const bodyBlock = (
+    <>
       {arb && (
         <div className={`mb-4 rounded-xl border px-4 py-3 ${arbTone}`}>
           <p className="text-sm font-bold text-gray-900 dark:text-white">{arb.title}</p>
@@ -220,6 +233,42 @@ export default function RateTrioStrip({
           {new Date(updatedAt).toLocaleString(es ? 'es-BO' : 'en-US')}
         </p>
       )}
+    </>
+  );
+
+  return (
+    <section
+      className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 sm:p-5 shadow-sm"
+      aria-label={es ? 'Paralelo vs tarjeta vs oficial' : 'Parallel vs card vs official'}
+    >
+      {collapsed ? (
+        <details className="md:hidden group">
+          <summary className="cursor-pointer list-none marker:content-none">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-sm font-bold text-gray-900 dark:text-white">
+                {es ? '¿Tarjeta o cash?' : 'Card or cash?'}
+              </span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                {es ? 'expandir' : 'expand'}
+              </span>
+            </div>
+            {cardVsBluePct != null && (
+              <p className="mt-1 text-xs font-mono text-gray-600 dark:text-gray-300">
+                {es ? 'Tarjeta vs blue' : 'Card vs blue'}:{' '}
+                <span className={cardVsBluePct >= 0 ? 'text-emerald-600' : 'text-blue-600'}>
+                  {cardVsBluePct >= 0 ? '+' : ''}
+                  {cardVsBluePct.toFixed(1)}%
+                </span>
+              </p>
+            )}
+          </summary>
+          <div className="mt-4">{bodyBlock}</div>
+        </details>
+      ) : null}
+      <div className={collapsed ? 'hidden md:block' : ''}>
+        {headerBlock}
+        {bodyBlock}
+      </div>
     </section>
   );
 }

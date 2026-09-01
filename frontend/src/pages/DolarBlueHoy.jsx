@@ -105,7 +105,7 @@ function DolarBlueHoy() {
       <Header />
       <Navigation />
 
-      <main className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-6 md:py-8 space-y-2 sm:space-y-6 md:space-y-8">
+      <main className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-6 md:py-8 space-y-2 sm:space-y-6 md:space-y-8 pb-[max(5rem,calc(3.5rem+env(safe-area-inset-bottom)))] md:pb-[max(1.5rem,env(safe-area-inset-bottom))]">
         <Breadcrumbs
           items={language === 'es' 
             ? [
@@ -119,15 +119,25 @@ function DolarBlueHoy() {
         />
 
         <div className="text-center mb-4">
-          <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+          <div className="text-sm text-gray-500 dark:text-gray-400 mb-2 hidden sm:block">
             {language === 'es' ? 'Hoy es' : 'Today is'} {today}
           </div>
-          <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">
-            {language === 'es'
-              ? `Dólar Blue Hoy ${today}: compra ${currentRate?.buy_bob_per_usd?.toFixed(2) || '—'} · venta ${currentRate?.sell_bob_per_usd?.toFixed(2) || '—'}`
-              : `Blue Dollar Today ${today}: buy ${currentRate?.buy_bob_per_usd?.toFixed(2) || '—'} · sell ${currentRate?.sell_bob_per_usd?.toFixed(2) || '—'}`}
+          <h1 className="text-xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2 leading-tight">
+            <span className="md:hidden">
+              {language === 'es' ? 'Dólar Blue Hoy' : 'Blue Dollar Today'}
+              {currentRate?.buy_bob_per_usd != null && (
+                <span className="block text-lg font-mono text-sky-600 dark:text-sky-400 mt-1">
+                  {currentRate.buy_bob_per_usd.toFixed(2)} / {currentRate.sell_bob_per_usd?.toFixed(2) || '—'} Bs
+                </span>
+              )}
+            </span>
+            <span className="hidden md:inline">
+              {language === 'es'
+                ? `Dólar Blue Hoy ${today}: compra ${currentRate?.buy_bob_per_usd?.toFixed(2) || '—'} · venta ${currentRate?.sell_bob_per_usd?.toFixed(2) || '—'}`
+                : `Blue Dollar Today ${today}: buy ${currentRate?.buy_bob_per_usd?.toFixed(2) || '—'} · sell ${currentRate?.sell_bob_per_usd?.toFixed(2) || '—'}`}
+            </span>
           </h1>
-          <p className="text-base text-gray-600 dark:text-gray-400 mb-1">
+          <p className="text-base text-gray-600 dark:text-gray-400 mb-1 hidden md:block">
             {language === 'es'
               ? 'Foto del día con fecha: compra/venta blue de hoy, máximo/mínimo del gráfico y comparación vs BCB. Para el monitor continuo ve a paralelo EN VIVO; para convertir un monto, a ¿Cuánto está?'
               : 'Dated daily snapshot: today’s blue buy/sell, chart high/low, and vs BCB. For continuous monitoring go to parallel LIVE; to convert an amount, How Much Is the Dollar?'}
@@ -139,19 +149,18 @@ function DolarBlueHoy() {
           </p>
         </div>
 
-        <AiCitationBlock
-          language={language}
-          buy={currentRate?.buy_bob_per_usd}
-          sell={currentRate?.sell_bob_per_usd}
-          updatedAt={currentRate?.updated_at_iso}
-          sourcesUsed={currentRate?.sources_used}
-          citePath="/dolar-blue-hoy"
-          className="mb-4"
-        />
-
-        {/* Rate Cards */}
+        {/* Rate Cards — first on mobile */}
         <section>
           <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} showCrossSourceBadge={false} />
+          <AiCitationBlock
+            language={language}
+            buy={currentRate?.buy_bob_per_usd}
+            sell={currentRate?.sell_bob_per_usd}
+            updatedAt={currentRate?.updated_at_iso}
+            sourcesUsed={currentRate?.sources_used}
+            citePath="/dolar-blue-hoy"
+            className="mt-4"
+          />
           <div className="mt-5 max-w-5xl mx-auto">
             <RateTrioStrip
               buy={currentRate?.buy_bob_per_usd}
@@ -163,48 +172,6 @@ function DolarBlueHoy() {
             />
           </div>
         </section>
-
-        {/* Today's Rate Highlight */}
-        {currentRate && (
-          <section className="bg-gradient-to-br from-green-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 rounded-xl p-6 sm:p-8 border-2 border-green-200 dark:border-green-800">
-            <div className="max-w-3xl mx-auto text-center">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                {language === 'es' 
-                  ? 'Cotización del Dólar Blue Hoy'
-                  : 'Blue Dollar Quote Today'}
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg">
-                  <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                    {language === 'es' ? 'Compra' : 'Buy'}
-                  </div>
-                  <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-1">
-                    {currentRate.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB
-                  </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-500">
-                    {language === 'es' ? 'por 1 USD' : 'per 1 USD'}
-                  </div>
-                </div>
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg">
-                  <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                    {language === 'es' ? 'Venta' : 'Sell'}
-                  </div>
-                  <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-1">
-                    {currentRate.sell_bob_per_usd?.toFixed(2) || '10.60'} BOB
-                  </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-500">
-                    {language === 'es' ? 'por 1 USD' : 'per 1 USD'}
-                  </div>
-                </div>
-              </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-4">
-                {language === 'es'
-                  ? 'Actualizado cada 15 minutos con datos en tiempo real de Binance P2P'
-                  : 'Updated every 15 minutes with real-time data from Binance P2P'}
-              </p>
-            </div>
-          </section>
-        )}
 
         {/* Chart */}
         <section>

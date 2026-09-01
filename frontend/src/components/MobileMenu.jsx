@@ -185,7 +185,7 @@ function MobileMenu() {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="md:hidden p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative z-[80]"
+        className="md:hidden flex items-center justify-center min-h-[44px] min-w-[44px] rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative z-[80]"
         aria-label={language === 'es' ? (isOpen ? 'Cerrar menú' : 'Abrir menú') : isOpen ? 'Close menu' : 'Open menu'}
         aria-expanded={isOpen}
         aria-controls="mobile-nav-drawer"

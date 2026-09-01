@@ -13,20 +13,19 @@ function Header() {
   const language = languageContext?.language || 'es';
 
   return (
-    <header className="site-header sticky top-0 z-40 border-b border-gray-200/80 dark:border-gray-700/80 bg-white dark:bg-gray-800 md:bg-white/90 md:dark:bg-gray-800/90 md:backdrop-blur-md">
-      <div className="pt-[env(safe-area-inset-top,0px)]">
+    <header className="sticky top-0 z-40 border-b border-gray-200/80 dark:border-gray-700/80 bg-white dark:bg-gray-800 md:bg-white/90 md:dark:bg-gray-800/90 md:backdrop-blur-md pt-[env(safe-area-inset-top,0px)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3">
         <div className="flex items-center justify-between gap-3">
           <Link to="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity min-w-0 flex-1">
             <picture>
-              <source 
+              <source
                 srcSet="/header-og-image-320w.webp 320w, /header-og-image-640w.webp 640w, /header-og-image-1280w.webp 1280w"
                 type="image/webp"
                 sizes="(max-width: 640px) 40px, (max-width: 768px) 48px, 56px"
               />
-              <img 
-                src="/header-og-image.jpg" 
-                alt="Bolivia Blue - Logo del sitio web de tipo de cambio del dólar boliviano" 
+              <img
+                src="/header-og-image.jpg"
+                alt="Bolivia Blue - Logo del sitio web de tipo de cambio del dólar boliviano"
                 className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 flex-shrink-0 rounded-lg object-cover"
                 loading="eager"
                 width="56"
@@ -43,16 +42,13 @@ function Header() {
               </p>
             </div>
           </Link>
-          
-          {/* Mobile: currency + hamburger */}
+
           <div className="md:hidden flex items-center gap-1 flex-shrink-0">
             <CurrencyToggle />
             <MobileMenu />
           </div>
 
-          {/* Desktop: CTAs and Controls */}
           <div className="hidden md:flex items-center gap-2 lg:gap-3 flex-shrink-0">
-            {/* Buy Dollars CTA - Binance (Subtle Outlined Style) */}
             <a
               href={BINANCE_REFERRAL_LINK}
               target="_blank"
@@ -70,14 +66,11 @@ function Header() {
               className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border-2 border-yellow-500/70 dark:border-yellow-400/50 text-yellow-700 dark:text-yellow-300 hover:bg-yellow-50 dark:hover:bg-yellow-900/10 hover:border-yellow-600 dark:hover:border-yellow-400 transition-all duration-200 text-sm font-medium whitespace-nowrap"
             >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
+                <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z" />
               </svg>
-              <span className="hidden lg:inline">
-                Binance
-              </span>
+              <span className="hidden lg:inline">Binance</span>
             </a>
-            
-            {/* Buy Bolivianos CTA - Airtm (Subtle Outlined Style) */}
+
             <a
               href={AIRTM_REFERRAL_LINK}
               target="_blank"
@@ -97,21 +90,17 @@ function Header() {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
               </svg>
-              <span className="hidden lg:inline">
-                Airtm
-              </span>
+              <span className="hidden lg:inline">Airtm</span>
             </a>
-            
+
             <CurrencyToggle />
             <LanguageToggle />
             <ThemeToggle />
           </div>
         </div>
       </div>
-      </div>
     </header>
   );
 }
 
 export default Header;
-

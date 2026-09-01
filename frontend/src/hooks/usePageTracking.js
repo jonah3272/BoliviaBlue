@@ -26,7 +26,9 @@ export function usePageTracking() {
         hashTimer = window.setTimeout(scrollToHash, 100);
       }
     } else {
-      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
     }
 
     const pagePath = location.pathname + location.search;

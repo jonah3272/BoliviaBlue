@@ -4,6 +4,7 @@ const {
   refreshBlueFromBinance,
   isRateStale,
 } = require('./_lib/binanceRefresh');
+const { attachOfficial } = require('./_lib/officialRate');
 
 /** Last cross-source platforms seen on refresh (per serverless instance) */
 let lastSourcesUsed = ['binance'];
@@ -18,6 +19,7 @@ function toPayload(data) {
     sell_bob_per_usd: data.sell,
     official_buy: data.official_buy,
     official_sell: data.official_sell,
+    official_mid: data.official_mid,
     buy_bob_per_brl: data.buy_bob_per_brl,
     sell_bob_per_brl: data.sell_bob_per_brl,
     buy_bob_per_eur: data.buy_bob_per_eur,
@@ -84,6 +86,8 @@ module.exports = async function handler(req, res) {
         // Fall through with stale row rather than 500ing the public API.
       }
     }
+
+    data = await attachOfficial(data, supabase);
 
     return res.status(200).json(toPayload(data));
   } catch (err) {

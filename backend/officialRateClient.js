@@ -1,4 +1,8 @@
 import fetch from 'node-fetch';
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
+const { parseBcbHomepage } = require('../api/_lib/officialRate.js');
 
 // BCB homepage — "Tipo de cambio oficial" KPI card
 const BCB_HOME_URL = 'https://www.bcb.gob.bo/';
@@ -41,29 +45,8 @@ export async function getOfficialRate() {
 }
 
 /**
- * Parse Spanish/Bolivian number formats: "12,15" or "12.15" or "12,1500"
- */
-function parseBolivianNumber(str) {
-  const raw = String(str).trim();
-  // If comma is decimal separator (BO style)
-  let normalized = raw;
-  if (raw.includes(',') && !raw.includes('.')) {
-    normalized = raw.replace(',', '.');
-  } else if (raw.includes(',') && raw.includes('.')) {
-    // thousand . and decimal ,
-    normalized = raw.replace(/\./g, '').replace(',', '.');
-  }
-  const value = parseFloat(normalized);
-  if (!Number.isFinite(value) || value < 1 || value > 100) {
-    throw new Error(`Invalid BCB numeric value: "${str}"`);
-  }
-  return value;
-}
-
-/**
  * Fetch from Banco Central de Bolivia homepage KPI.
- * As of 2026 the site shows a single "Tipo de cambio oficial" (Bs → N,NN),
- * not separate Compra/Venta in the old "Valor referencial" widget.
+ * Sep 2026 board is a single mid in `.bcb-tco-num` (Bs label commented out).
  */
 async function fetchFromBCB() {
   const controller = new AbortController();
@@ -85,54 +68,8 @@ async function fetchFromBCB() {
     }
 
     const html = await response.text();
-
-    // Prefer the dedicated official TC card
-    const cardMatch = html.match(
-      /<article class="bcb-kpi2-card is-tc-oficial[\s\S]*?<\/article>/i
-    );
-    const cardHtml = cardMatch ? cardMatch[0] : html;
-
-    // Pattern: "Bs --> 12,15" or "Bs → 12,15" inside the official card
-    const arrowMatch = cardHtml.match(/Bs\s*(?:-->|->|→|&rarr;)\s*([\d.,]+)/i);
-    if (arrowMatch) {
-      const mid = parseBolivianNumber(arrowMatch[1]);
-      // Official board is a single mid rate; keep tiny spread for buy/sell UI
-      return { buy: mid, sell: mid };
-    }
-
-    // Fallback: plain-text search near "Tipo de cambio oficial"
-    const text = html
-      .replace(/<script[\s\S]*?<\/script>/gi, ' ')
-      .replace(/<style[\s\S]*?<\/style>/gi, ' ')
-      .replace(/<[^>]+>/g, ' ')
-      .replace(/&nbsp;/gi, ' ')
-      .replace(/\s+/g, ' ')
-      .trim();
-
-    const markerIdx = text.toLowerCase().indexOf('tipo de cambio oficial');
-    if (markerIdx !== -1) {
-      const slice = text.slice(markerIdx, markerIdx + 280);
-      const numMatch = slice.match(/Bs\s*(?:-->|->|→)?\s*([\d.,]+)/i)
-        || slice.match(/([\d]{1,2}[.,][\d]{2,4})/);
-      if (numMatch) {
-        const mid = parseBolivianNumber(numMatch[1]);
-        return { buy: mid, sell: mid };
-      }
-    }
-
-    // Legacy: Compra / Venta under Valor referencial (older homepage layout)
-    const legacyIdx = text.toLowerCase().indexOf('valor referencial del');
-    if (legacyIdx !== -1) {
-      const slice = text.slice(legacyIdx, legacyIdx + 400);
-      const compraMatch = slice.match(/Compra\s+([\d.,]+)/i);
-      const ventaMatch = slice.match(/Venta\s+([\d.,]+)/i);
-      if (compraMatch && ventaMatch) {
-        return {
-          buy: parseBolivianNumber(compraMatch[1]),
-          sell: parseBolivianNumber(ventaMatch[1])
-        };
-      }
-    }
+    const parsed = parseBcbHomepage(html);
+    if (parsed) return parsed;
 
     throw new Error('Could not parse Tipo de cambio oficial from BCB homepage');
   } catch (error) {

@@ -1,5 +1,6 @@
 const { createClient } = require('@supabase/supabase-js');
 const { fetchBinanceSide, fetchCrossSourceBobRates } = require('./p2pCrossSource');
+const { resolveOfficialRate } = require('./officialRate');
 
 const STALE_MS = 20 * 60 * 1000;
 
@@ -25,17 +26,7 @@ async function fetchP2P(tradeType, fiat = 'BOB', rows = 20) {
 }
 
 async function getOfficialFallback(supabase) {
-  const { data } = await supabase
-    .from('rates')
-    .select('official_buy, official_sell, official_mid')
-    .order('t', { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  return {
-    official_buy: data?.official_buy ?? null,
-    official_sell: data?.official_sell ?? null,
-    official_mid: data?.official_mid ?? null,
-  };
+  return resolveOfficialRate(supabase);
 }
 
 /**

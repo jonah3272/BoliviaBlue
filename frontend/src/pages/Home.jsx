@@ -3,6 +3,7 @@ import Footer from '../components/Footer';
 import BlueRateCards from '../components/BlueRateCards';
 import PartnerAdCarousel from '../components/PartnerAdCarousel';
 import RateTrioStrip from '../components/RateTrioStrip';
+import TravelersGuideTeaser from '../components/TravelersGuideTeaser';
 import AiCitationBlock from '../components/AiCitationBlock';
 import { PRIMARY_RATE_URL } from '../config/seo';
 import SocialShare from '../components/SocialShare';
@@ -503,12 +504,18 @@ function Home() {
                 {language === 'es' ? 'Calculadora completa →' : 'Full calculator →'}
               </Link>
             </div>
-            <p className="mt-3 text-center">
+            <p className="mt-3 text-center flex flex-wrap justify-center gap-2">
               <Link
                 to="/euro-a-boliviano"
                 className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-500/10 px-4 py-2 text-sm font-semibold text-indigo-700 hover:bg-indigo-500/20 dark:text-indigo-300"
               >
                 {language === 'es' ? 'Ver euro blue (EUR a BOB) →' : 'See euro blue (EUR to BOB) →'}
+              </Link>
+              <Link
+                to="/peso-a-boliviano"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-purple-500/10 px-4 py-2 text-sm font-semibold text-purple-700 hover:bg-purple-500/20 dark:text-purple-300"
+              >
+                {language === 'es' ? 'Ver peso colombiano (COP a BOB) →' : 'See Colombian peso (COP to BOB) →'}
               </Link>
             </p>
             <nav
@@ -574,6 +581,7 @@ function Home() {
                 {language === 'es' ? 'Términos y Condiciones' : 'Terms'}
               </Link>
             </nav>
+            <TravelersGuideTeaser language={language} />
           </section>
 
           <section id="price-alerts" className="mt-5 sm:mt-6">
@@ -1149,6 +1157,9 @@ function Home() {
             </Link>
             <Link to="/blog" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
               Blog
+            </Link>
+            <Link to={language === 'en' ? '/bolivia-money-guide' : '/guia-dinero-bolivia'} className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+              {language === 'es' ? 'Guía de dinero para viajeros' : 'Traveler money guide'}
             </Link>
             <Link to="/terminos" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
               {language === 'es' ? 'Términos y Condiciones' : 'Terms and Conditions'}

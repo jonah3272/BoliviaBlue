@@ -1,5 +1,5 @@
 import { getAllCurrentBlueRates } from './p2pClient.js';
-import { getOfficialRate, getStaticOfficialRate } from './officialRateClient.js';
+import { getOfficialRate } from './officialRateClient.js';
 import { fetchNews } from './newsClient.js'; // Already has Bolivia filtering
 import { fetchTwitterNews } from './twitterClient.js'; // Twitter/X integration
 import { insertRate, insertNews, upsertCardRate, supabase } from './db-supabase.js';
@@ -37,9 +37,28 @@ export async function refreshBlueRate() {
     // Fetch both rates in parallel
     const [blueRateData, officialRateData] = await Promise.all([
       getAllCurrentBlueRates(),
-      getOfficialRate().catch(err => {
-        console.warn('Official rate fetch failed, using static:', err.message);
-        return getStaticOfficialRate();
+      getOfficialRate().catch(async (err) => {
+        console.warn('Official rate fetch failed, using last stored BCB (not a static fallback):', err.message);
+        const { data: lastOff } = await supabase
+          .from('rates')
+          .select('official_buy, official_sell, official_mid')
+          .not('official_buy', 'is', null)
+          .not('official_sell', 'is', null)
+          .order('t', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        if (lastOff?.official_buy != null && lastOff?.official_sell != null) {
+          return {
+            source: 'rates-table',
+            official_buy: lastOff.official_buy,
+            official_sell: lastOff.official_sell,
+          };
+        }
+        return {
+          source: 'unavailable',
+          official_buy: null,
+          official_sell: null,
+        };
       })
     ]);
     
@@ -61,7 +80,10 @@ export async function refreshBlueRate() {
       blueRateData.mid_bob_per_brl || null,
       blueRateData.buy_bob_per_eur || null,
       blueRateData.sell_bob_per_eur || null,
-      blueRateData.mid_bob_per_eur || null
+      blueRateData.mid_bob_per_eur || null,
+      blueRateData.buy_bob_per_cop || null,
+      blueRateData.sell_bob_per_cop || null,
+      blueRateData.mid_bob_per_cop || null
     );
     
     // Update cache with both rates

@@ -262,6 +262,30 @@ describe('single snapshot', () => {
     assert.match(out, /compra Bs 12\.48 · venta Bs 12\.44/);
   });
 
+  it('does not put USD rates on the peso page when COP is missing', () => {
+    const rates = normalizeRates({
+      buy_bob_per_usd: 12.48,
+      sell_bob_per_usd: 12.44,
+      updated_at_iso: '2026-09-07T19:00:00.000Z',
+    });
+    assert.equal(applyLiveSeo('<html></html>', '/peso-a-boliviano', rates), null);
+  });
+
+  it('uses 1.000 COP in Bs on the peso path, not the per-peso rate', () => {
+    const html = `<html><head><title>x</title><meta name="description" content="d" /><meta property="og:title" content="x" /><meta property="og:description" content="d" /><meta name="twitter:title" content="x" /><meta name="twitter:description" content="d" /></head><body><p>compra Bs 0.00 · venta Bs 0.00</p></body></html>`;
+    const rates = normalizeRates({
+      buy_bob_per_usd: 12.48,
+      sell_bob_per_usd: 12.44,
+      buy_bob_per_cop: 0.00375,
+      sell_bob_per_cop: 0.00372,
+      updated_at_iso: '2026-09-14T19:00:00.000Z',
+    });
+    const applied = applyLiveSeo(html, '/peso-a-boliviano', rates);
+    assert.ok(applied?.live);
+    assert.match(applied.html, /1\.000 COP ≈ 3\.75 \/ 3\.72 Bs/);
+    assert.doesNotMatch(applied.html, /Compra 12\.48/);
+  });
+
   it('does not put USD rates on the euro page when EUR is missing', () => {
     const rates = normalizeRates({
       buy_bob_per_usd: 12.48,
@@ -298,6 +322,15 @@ describe('single snapshot', () => {
     assert.equal(meta.title, 'Prensa Bolivia Blue | Kit de medios, citas y datos');
     assert.match(meta.description, /11\.61/);
     assert.match(meta.description, /11\.50/);
+  });
+
+  it('puts live rates in the traveler money-guide titles', () => {
+    const es = metaForPath('/guia-dinero-bolivia', '11.61', '11.50');
+    assert.match(es.title, /11\.61/);
+    assert.match(es.description, /viajeros/i);
+    const en = metaForPath('/bolivia-money-guide', '11.61', '11.50');
+    assert.match(en.title, /Money Guide/i);
+    assert.match(en.description, /11\.50/);
   });
 
   it('puts live Santa Cruz rates in the city title', () => {

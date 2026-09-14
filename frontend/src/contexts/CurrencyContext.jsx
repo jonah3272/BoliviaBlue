@@ -5,19 +5,19 @@ const CurrencyContext = createContext(null);
 
 const CURRENCY_STORAGE_KEY = 'bolivia-blue-currency';
 
+export const SUPPORTED_CURRENCIES = ['USD', 'BRL', 'EUR', 'COP'];
+
 export function CurrencyProvider({ children }) {
   const [currency, setCurrencyState] = useState(() => {
-    // Load from localStorage or default to USD
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem(CURRENCY_STORAGE_KEY);
-      if (saved && ['USD', 'BRL', 'EUR'].includes(saved)) {
+      if (saved && SUPPORTED_CURRENCIES.includes(saved)) {
         return saved;
       }
     }
     return 'USD';
   });
 
-  // Save to localStorage whenever currency changes
   useEffect(() => {
     if (typeof window !== 'undefined') {
       localStorage.setItem(CURRENCY_STORAGE_KEY, currency);
@@ -25,15 +25,14 @@ export function CurrencyProvider({ children }) {
   }, [currency]);
 
   const setCurrency = (newCurrency) => {
-    if (['USD', 'BRL', 'EUR'].includes(newCurrency)) {
+    if (SUPPORTED_CURRENCIES.includes(newCurrency)) {
       const prevCurrency = currency;
       setCurrencyState(newCurrency);
-      // Track currency switch
       if (prevCurrency !== newCurrency) {
         trackCurrencySwitch(prevCurrency, newCurrency);
       }
     } else {
-      console.warn(`Invalid currency: ${newCurrency}. Must be USD, BRL, or EUR.`);
+      console.warn(`Invalid currency: ${newCurrency}. Must be ${SUPPORTED_CURRENCIES.join(', ')}.`);
     }
   };
 
@@ -56,4 +55,3 @@ export function useCurrency() {
   }
   return context;
 }
-

@@ -92,7 +92,7 @@ function ApiDocs() {
           name: 'currency',
           type: 'string',
           required: false,
-          options: ['USD', 'BRL', 'EUR'],
+          options: ['USD', 'BRL', 'EUR', 'COP'],
           description: language === 'es' 
             ? 'Moneda base (por defecto: USD)'
             : 'Base currency (default: USD)'

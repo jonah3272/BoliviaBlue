@@ -6,6 +6,7 @@ const {
   bobPerFiatFromUsdtSpot,
 } = require('./fxDerive');
 const { resolveOfficialRate } = require('./officialRate');
+const { refreshCardRates } = require('./cardRate');
 
 const STALE_MS = 20 * 60 * 1000;
 
@@ -41,6 +42,14 @@ async function fetchEurUsdtSpot() {
   return asPositiveRate(data?.price);
 }
 
+/** USDTCOP is COP per 1 USDT (same units as Binance P2P COP). */
+async function fetchUsdtCopSpot() {
+  const res = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=USDTCOP');
+  if (!res.ok) return null;
+  const data = await res.json();
+  return asPositiveRate(data?.price);
+}
+
 async function getOfficialFallback(supabase) {
   return resolveOfficialRate(supabase);
 }
@@ -62,6 +71,9 @@ async function refreshBlueFromBinance(supabase = createSupabaseClient()) {
   let buyEur = null;
   let sellEur = null;
   let eurDerivation = null;
+  let buyCop = null;
+  let sellCop = null;
+  let copDerivation = null;
   try {
     const brl = await p2pFiatPerUsdt('BRL');
     if (brl) {
@@ -94,6 +106,29 @@ async function refreshBlueFromBinance(supabase = createSupabaseClient()) {
     }
   }
 
+  try {
+    const cop = await p2pFiatPerUsdt('COP');
+    if (cop) {
+      buyCop = bobPerFiatFromUsdtP2p(buy, cop.buy);
+      sellCop = bobPerFiatFromUsdtP2p(sell, cop.sell);
+      copDerivation = 'p2p-usdt';
+    }
+  } catch {
+    /* fall through to spot */
+  }
+  if (buyCop == null || sellCop == null) {
+    try {
+      const copPerUsdt = await fetchUsdtCopSpot();
+      if (copPerUsdt) {
+        buyCop = bobPerFiatFromUsdtP2p(buy, copPerUsdt);
+        sellCop = bobPerFiatFromUsdtP2p(sell, copPerUsdt);
+        copDerivation = 'spot-usdtcop';
+      }
+    } catch {
+      /* COP remains unavailable */
+    }
+  }
+
   const official = await getOfficialFallback(supabase);
   const mid = (buy + sell) / 2;
   const nowIso = new Date().toISOString();
@@ -111,12 +146,22 @@ async function refreshBlueFromBinance(supabase = createSupabaseClient()) {
     buy_bob_per_eur: buyEur,
     sell_bob_per_eur: sellEur,
     mid_bob_per_eur: buyEur != null && sellEur != null ? (buyEur + sellEur) / 2 : null,
+    buy_bob_per_cop: buyCop,
+    sell_bob_per_cop: sellCop,
+    mid_bob_per_cop: buyCop != null && sellCop != null ? (buyCop + sellCop) / 2 : null,
   };
 
   const { error } = await supabase.from('rates').insert(row);
   if (error) throw error;
 
-  return { row, buyPrices, sellPrices, sourcesUsed, eurDerivation };
+  let cardRate = null;
+  try {
+    cardRate = await refreshCardRates(supabase);
+  } catch (err) {
+    console.warn('[refresh] card rates failed:', err.message || err);
+  }
+
+  return { row, buyPrices, sellPrices, sourcesUsed, eurDerivation, copDerivation, cardRate };
 }
 
 function isRateStale(iso, staleMs = STALE_MS) {

@@ -5,19 +5,26 @@ const {
   isRateStale,
 } = require('./_lib/binanceRefresh');
 const { attachOfficial } = require('./_lib/officialRate');
+const { attachFreshCardRate } = require('./_lib/cardRate');
 
 /** Last cross-source platforms seen on refresh (per serverless instance) */
 let lastSourcesUsed = ['binance'];
 let lastEurDerivation = null;
+let lastCopDerivation = null;
 
 function toPayload(data, extras = {}) {
   const sources = lastSourcesUsed.length ? lastSourcesUsed : ['binance'];
   const generatedAt = extras.generated_at_iso || new Date().toISOString();
   const hasEur = data.buy_bob_per_eur != null && data.sell_bob_per_eur != null;
+  const hasCop = data.buy_bob_per_cop != null && data.sell_bob_per_cop != null;
   const eurDerivation =
     extras.eur_derivation ||
     lastEurDerivation ||
     (hasEur ? 'usdt-cross' : null);
+  const copDerivation =
+    extras.cop_derivation ||
+    lastCopDerivation ||
+    (hasCop ? 'p2p-usdt' : null);
   return {
     source: sources.length > 1 ? 'p2p-cross-median' : 'binance-p2p',
     sources_used: sources,
@@ -32,11 +39,15 @@ function toPayload(data, extras = {}) {
     sell_bob_per_brl: data.sell_bob_per_brl,
     buy_bob_per_eur: data.buy_bob_per_eur,
     sell_bob_per_eur: data.sell_bob_per_eur,
+    buy_bob_per_cop: data.buy_bob_per_cop,
+    sell_bob_per_cop: data.sell_bob_per_cop,
     updated_at_iso: data.t,
     generated_at_iso: generatedAt,
     eur_updated_at_iso: data.eur_updated_at_iso || (hasEur ? data.t : null),
+    cop_updated_at_iso: data.cop_updated_at_iso || (hasCop ? data.t : null),
     is_stale: isRateStale(data.t, STALE_MS),
     eur_derivation: eurDerivation,
+    cop_derivation: copDerivation,
     sample_buy: [],
     sample_sell: [],
   };
@@ -80,9 +91,10 @@ module.exports = async function handler(req, res) {
           .limit(1)
           .maybeSingle();
         if (isRateStale(latest?.t, STALE_MS)) {
-          const { row, sourcesUsed, eurDerivation } = await refreshBlueFromBinance(supabase);
+          const { row, sourcesUsed, eurDerivation, copDerivation } = await refreshBlueFromBinance(supabase);
           if (sourcesUsed?.length) lastSourcesUsed = sourcesUsed;
           if (eurDerivation) lastEurDerivation = eurDerivation;
+          if (copDerivation) lastCopDerivation = copDerivation;
           data = row;
         } else {
           const { data: fresh } = await supabase
@@ -123,7 +135,33 @@ module.exports = async function handler(req, res) {
       }
     }
 
+    if (data.buy_bob_per_cop == null || data.sell_bob_per_cop == null) {
+      try {
+        const { data: lastCop } = await supabase
+          .from('rates')
+          .select('buy_bob_per_cop, sell_bob_per_cop, t')
+          .not('buy_bob_per_cop', 'is', null)
+          .not('sell_bob_per_cop', 'is', null)
+          .order('t', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        if (lastCop?.buy_bob_per_cop != null && lastCop?.sell_bob_per_cop != null) {
+          data = {
+            ...data,
+            buy_bob_per_cop: lastCop.buy_bob_per_cop,
+            sell_bob_per_cop: lastCop.sell_bob_per_cop,
+            cop_updated_at_iso: lastCop.t,
+          };
+          lastCopDerivation = 'usdt-cross-last-valid';
+        }
+      } catch {
+        /* keep USD row even if COP lookup fails */
+      }
+    }
+
     data = await attachOfficial(data, supabase);
+    // Blue can be fresh while Wise/card still sits on this morning's snapshot.
+    await attachFreshCardRate(supabase);
 
     return res.status(200).json(toPayload(data));
   } catch (err) {

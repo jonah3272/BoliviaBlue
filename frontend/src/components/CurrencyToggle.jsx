@@ -9,7 +9,8 @@ function CurrencyToggle() {
   const currencies = [
     { code: 'USD', label: 'USD', flag: '🇺🇸' },
     { code: 'BRL', label: 'BRL', flag: '🇧🇷' },
-    { code: 'EUR', label: 'EUR', flag: '🇪🇺' }
+    { code: 'EUR', label: 'EUR', flag: '🇪🇺' },
+    { code: 'COP', label: 'COP', flag: '🇨🇴' }
   ];
 
   const currentCurrency = currencies.find(c => c.code === currency) || currencies[0];

@@ -37,7 +37,7 @@ export { supabase };
 /**
  * Insert a new rate record
  */
-export async function insertRate(t, buy, sell, mid, official_buy, official_sell, official_mid, buy_bob_per_brl = null, sell_bob_per_brl = null, mid_bob_per_brl = null, buy_bob_per_eur = null, sell_bob_per_eur = null, mid_bob_per_eur = null) {
+export async function insertRate(t, buy, sell, mid, official_buy, official_sell, official_mid, buy_bob_per_brl = null, sell_bob_per_brl = null, mid_bob_per_brl = null, buy_bob_per_eur = null, sell_bob_per_eur = null, mid_bob_per_eur = null, buy_bob_per_cop = null, sell_bob_per_cop = null, mid_bob_per_cop = null) {
   // Skip writes in local mode
   if (LOCAL_MODE) {
     console.log(`[LOCAL MODE] Skipping rate insert: ${buy}/${sell} BOB at ${t}`);
@@ -63,7 +63,10 @@ export async function insertRate(t, buy, sell, mid, official_buy, official_sell,
       mid_bob_per_brl,
       buy_bob_per_eur,
       sell_bob_per_eur,
-      mid_bob_per_eur
+      mid_bob_per_eur,
+      buy_bob_per_cop,
+      sell_bob_per_cop,
+      mid_bob_per_cop
     })
     .select()
     .single();

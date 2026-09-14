@@ -461,6 +461,17 @@ function RealToBoliviano() {
               </div>
             </Link>
             <Link
+              to="/peso-a-boliviano"
+              className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+            >
+              <div className="font-medium text-gray-900 dark:text-white mb-1">
+                {language === 'es' ? 'Peso a Boliviano' : 'Peso to Boliviano'}
+              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                {language === 'es' ? 'Tipo de cambio COP/BOB' : 'COP/BOB exchange rate'}
+              </div>
+            </Link>
+            <Link
               to="/cuanto-esta-dolar-bolivia"
               className="p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
             >

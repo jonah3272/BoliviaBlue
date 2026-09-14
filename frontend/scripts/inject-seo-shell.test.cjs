@@ -182,7 +182,7 @@ describe('homepage brand sitelink candidates', () => {
 
   it('exposes product sitelinks, $100 converter slot and mercado negro copy', () => {
     const shell = ROUTES['/'].shell;
-    for (const href of ['/prensa', '/fuente-de-datos', '/binance-p2p-bolivia', '/calculadora', '/datos-historicos']) {
+    for (const href of ['/prensa', '/fuente-de-datos', '/binance-p2p-bolivia', '/calculadora', '/datos-historicos', '/guia-dinero-bolivia']) {
       assert.match(shell, new RegExp(`href="${href}"`));
     }
     assert.match(shell, /data-live-usd100/);
@@ -198,9 +198,12 @@ describe('priority crawl shells', () => {
     { path: '/prensa', h1: 'Kit de prensa y backlinks', shellId: 'prensa', must: ['medios', '/api-docs', 'data-live-buy', 'historical-data.csv', '/embed.html'] },
     { path: '/api-docs', h1: 'API del Dólar Blue Bolivia', shellId: 'api-docs', must: ['REST', '/dolar-blue-hoy'] },
     { path: '/real-a-boliviano', h1: 'Real Blue Bolivia – BRL a BOB', shellId: 'real-a-boliviano', must: ['USDT', '/euro-a-boliviano'] },
+    { path: '/peso-a-boliviano', h1: 'Peso colombiano a boliviano – COP a BOB', shellId: 'peso-a-boliviano', must: ['USDT/COP', '/euro-a-boliviano', '/calculadora'] },
     { path: '/dolar-blue-santa-cruz', h1: 'Dólar Blue Santa Cruz Hoy', shellId: 'dolar-blue-santa-cruz', must: ['data-live-buy', '/calculadora', '/dolar-blue-la-paz'] },
     { path: '/dolar-blue-la-paz', h1: 'Dólar Blue La Paz Hoy', shellId: 'dolar-blue-la-paz', must: ['data-live-buy', '/dolar-blue-santa-cruz'] },
     { path: '/dolar-blue-cochabamba', h1: 'Dólar Blue Cochabamba Hoy', shellId: 'dolar-blue-cochabamba', must: ['data-live-buy', '/dolar-blue-la-paz'] },
+    { path: '/guia-dinero-bolivia', h1: 'Guía de dinero para viajeros en Bolivia (2026)', shellId: 'guia-dinero-bolivia', must: ['data-live-buy', '/binance-p2p-bolivia', '/calculadora'] },
+    { path: '/bolivia-money-guide', h1: 'The Bolivia money guide for travelers (2026)', shellId: 'bolivia-money-guide', must: ['data-live-buy', 'Binance P2P', '/guia-dinero-bolivia'] },
   ]) {
     it(`defines ${expected.path} without homepage identity`, () => {
       const route = ROUTES[expected.path];

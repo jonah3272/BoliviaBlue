@@ -52,6 +52,8 @@ export function RateProvider({ children }) {
             : data.official_buy),
         buy_bob_per_eur: data.buy_bob_per_eur,
         sell_bob_per_eur: data.sell_bob_per_eur,
+        buy_bob_per_cop: data.buy_bob_per_cop,
+        sell_bob_per_cop: data.sell_bob_per_cop,
         source: data.source,
         quoteKind: data.quote_kind || 'usdt_p2p_median',
         updatedAt: data.updated_at_iso,
@@ -66,6 +68,8 @@ export function RateProvider({ children }) {
         sources_used: data.sources_used,
         eur_derivation: data.eur_derivation || null,
         eur_updated_at_iso: data.eur_updated_at_iso || null,
+        cop_derivation: data.cop_derivation || null,
+        cop_updated_at_iso: data.cop_updated_at_iso || null,
       };
 
       lastValidRef.current = standardized;

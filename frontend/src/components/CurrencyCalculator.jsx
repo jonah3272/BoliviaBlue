@@ -30,18 +30,20 @@ function CurrencyCalculator() {
     USDT: { symbol: '₮', name: 'Tether', flag: '💲' },
     USDC: { symbol: 'Ⓢ', name: 'USD Coin', flag: '💵' },
     EUR: { symbol: '€', name: 'Euro', flag: '🇪🇺' },
-    ARS: { symbol: '$', name: 'Argentine Peso', flag: '🇦🇷' },
-    BRL: { symbol: 'R$', name: 'Brazilian Real', flag: '🇧🇷' }
+    BRL: { symbol: 'R$', name: 'Brazilian Real', flag: '🇧🇷' },
+    COP: { symbol: '$', name: 'Colombian Peso', flag: '🇨🇴' },
+    ARS: { symbol: '$', name: 'Argentine Peso', flag: '🇦🇷' }
   };
-  
-  // Exchange rate multipliers (1 USD = X of this currency)
+
+  // 1 USD = X of this currency. EUR/BRL/COP are filled from live BOB crosses; ARS stays approximate.
   const [exchangeRates, setExchangeRates] = useState({
     USD: 1,
     USDT: 1,
     USDC: 1,
-    EUR: 0.92, // 1 USD = 0.92 EUR (approximate)
-    ARS: 1000, // 1 USD = 1000 ARS (approximate)
-    BRL: 5.0   // 1 USD = 5.0 BRL (approximate)
+    EUR: null,
+    BRL: null,
+    COP: null,
+    ARS: 1000
   });
 
   // Load history from localStorage on mount
@@ -88,6 +90,17 @@ function CurrencyCalculator() {
     try {
       const data = await fetchBlueRate();
       setRateData(data);
+      const usdBuy = Number(data.buy_bob_per_usd ?? data.buy);
+      setExchangeRates((prev) => {
+        const next = { ...prev, USD: 1, USDT: 1, USDC: 1 };
+        const eur = Number(data.buy_bob_per_eur);
+        const brl = Number(data.buy_bob_per_brl);
+        const cop = Number(data.buy_bob_per_cop);
+        if (usdBuy > 0 && eur > 0) next.EUR = usdBuy / eur;
+        if (usdBuy > 0 && brl > 0) next.BRL = usdBuy / brl;
+        if (usdBuy > 0 && cop > 0) next.COP = usdBuy / cop;
+        return next;
+      });
       setIsLoading(false);
     } catch (error) {
       console.error('Error loading rates:', error);
@@ -95,27 +108,47 @@ function CurrencyCalculator() {
     }
   };
 
+  const fiatBobPerUnit = (side) => {
+    if (selectedCurrency === 'EUR') {
+      return side === 'sell' ? Number(rateData?.sell_bob_per_eur) : Number(rateData?.buy_bob_per_eur);
+    }
+    if (selectedCurrency === 'BRL') {
+      return side === 'sell' ? Number(rateData?.sell_bob_per_brl) : Number(rateData?.buy_bob_per_brl);
+    }
+    if (selectedCurrency === 'COP') {
+      return side === 'sell' ? Number(rateData?.sell_bob_per_cop) : Number(rateData?.buy_bob_per_cop);
+    }
+    return null;
+  };
+
   const getRate = () => {
     if (!rateData) return 0;
-    
-    // Use the actual buy/sell rate based on conversion direction
-    // When converting FROM BOB to USD, use the SELL rate (you're selling BOB)
-    // When converting FROM USD to BOB, use the BUY rate (you're buying BOB)
-    let baseRateBOBperUSD;
-    
-    if (useOfficial) {
-      baseRateBOBperUSD = convertFromBOB 
-        ? rateData.official_sell  // Selling BOB = use sell rate
-        : rateData.official_buy;  // Buying BOB = use buy rate
-    } else {
-      baseRateBOBperUSD = convertFromBOB
-        ? rateData.sell_bob_per_usd  // Selling BOB = use sell rate  
-        : rateData.buy_bob_per_usd;  // Buying BOB = use buy rate
+
+    const usdBlue = convertFromBOB
+      ? Number(rateData.sell_bob_per_usd)
+      : Number(rateData.buy_bob_per_usd);
+    const usdOfficial = convertFromBOB
+      ? Number(rateData.official_sell)
+      : Number(rateData.official_buy);
+    const fiatBlue = fiatBobPerUnit(convertFromBOB ? 'sell' : 'buy');
+
+    if (selectedCurrency === 'USD' || selectedCurrency === 'USDT' || selectedCurrency === 'USDC') {
+      return useOfficial ? usdOfficial : usdBlue;
     }
-    
-    // Convert BOB per USD to BOB per selected currency
-    const currencyToUSD = exchangeRates[selectedCurrency];
-    return baseRateBOBperUSD / currencyToUSD;
+
+    if (Number.isFinite(fiatBlue) && fiatBlue > 0) {
+      if (useOfficial && Number.isFinite(usdOfficial) && usdOfficial > 0 && usdBlue > 0) {
+        return usdOfficial * (fiatBlue / usdBlue);
+      }
+      if (!useOfficial) return fiatBlue;
+    }
+
+    const currencyToUSD = Number(exchangeRates[selectedCurrency]);
+    const base = useOfficial ? usdOfficial : usdBlue;
+    if (Number.isFinite(base) && Number.isFinite(currencyToUSD) && currencyToUSD > 0) {
+      return base / currencyToUSD;
+    }
+    return 0;
   };
   
   const saveToHistory = (from, to, fromAmount, toAmount, rate) => {
@@ -227,8 +260,40 @@ function CurrencyCalculator() {
     trackCalculatorCurrencySwitch(prevFromCurrency, prevToCurrency);
   };
 
-  const getBuyRate = () => (useOfficial ? rateData?.official_buy : rateData?.buy_bob_per_usd);
-  const getSellRate = () => (useOfficial ? rateData?.official_sell : rateData?.sell_bob_per_usd);
+  const getBuyRate = () => {
+    if (useOfficial) {
+      if (selectedCurrency === 'COP' || selectedCurrency === 'EUR' || selectedCurrency === 'BRL') {
+        const usdBlue = Number(rateData?.buy_bob_per_usd);
+        const usdOff = Number(rateData?.official_buy);
+        const fiat = fiatBobPerUnit('buy');
+        if (usdBlue > 0 && usdOff > 0 && Number.isFinite(fiat) && fiat > 0) {
+          return usdOff * (fiat / usdBlue);
+        }
+      }
+      return rateData?.official_buy;
+    }
+    if (selectedCurrency === 'EUR') return rateData?.buy_bob_per_eur;
+    if (selectedCurrency === 'BRL') return rateData?.buy_bob_per_brl;
+    if (selectedCurrency === 'COP') return rateData?.buy_bob_per_cop;
+    return rateData?.buy_bob_per_usd;
+  };
+  const getSellRate = () => {
+    if (useOfficial) {
+      if (selectedCurrency === 'COP' || selectedCurrency === 'EUR' || selectedCurrency === 'BRL') {
+        const usdBlue = Number(rateData?.sell_bob_per_usd);
+        const usdOff = Number(rateData?.official_sell);
+        const fiat = fiatBobPerUnit('sell');
+        if (usdBlue > 0 && usdOff > 0 && Number.isFinite(fiat) && fiat > 0) {
+          return usdOff * (fiat / usdBlue);
+        }
+      }
+      return rateData?.official_sell;
+    }
+    if (selectedCurrency === 'EUR') return rateData?.sell_bob_per_eur;
+    if (selectedCurrency === 'BRL') return rateData?.sell_bob_per_brl;
+    if (selectedCurrency === 'COP') return rateData?.sell_bob_per_cop;
+    return rateData?.sell_bob_per_usd;
+  };
 
   const applyUsdPreset = useCallback((amount) => {
     setUsdAmount(String(amount));
@@ -260,7 +325,10 @@ function CurrencyCalculator() {
 
   const es = language === 'es';
   const rate = getRate();
-  const usdPresets = [20, 50, 100, 500, 1000];
+  const rateDecimals = selectedCurrency === 'COP' ? 4 : selectedCurrency === 'BRL' ? 3 : 2;
+  const usdPresets = selectedCurrency === 'COP'
+    ? [10000, 50000, 100000, 500000, 1000000]
+    : [20, 50, 100, 500, 1000];
   const bobPresets = [500, 1000, 5000, 10000];
 
   return (
@@ -414,7 +482,9 @@ function CurrencyCalculator() {
                       onClick={() => (convertFromBOB ? applyBobPreset(n) : applyUsdPreset(n))}
                       className="px-2.5 py-1 rounded-lg text-xs font-mono font-semibold tabular-nums bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-sky-100 hover:text-sky-800 dark:hover:bg-sky-900/40 dark:hover:text-sky-200 transition-colors touch-manipulation"
                     >
-                      {convertFromBOB ? `${n.toLocaleString()} Bs` : `$${n}`}
+                      {convertFromBOB
+                        ? `${n.toLocaleString()} Bs`
+                        : `${currencies[selectedCurrency].symbol}${n.toLocaleString()}`}
                     </button>
                   ))}
                 </div>
@@ -428,7 +498,9 @@ function CurrencyCalculator() {
                       1 {selectedCurrency} → BOB
                     </div>
                     <div className="font-mono text-lg font-bold tabular-nums text-sky-700 dark:text-sky-300 min-h-[1.5rem]">
-                      {isLoading || !rateData ? '—' : rate.toFixed(2)}
+                      {isLoading || !rateData || !Number.isFinite(rate) || rate <= 0
+                        ? '—'
+                        : rate.toFixed(rateDecimals)}
                     </div>
                   </div>
                   <div>
@@ -443,7 +515,7 @@ function CurrencyCalculator() {
                 {!isLoading && rateData && (
                   <p className="mt-2 text-center text-[11px] text-gray-500 dark:text-gray-400">
                     {useOfficial ? t('official') : t('unofficial')} · {es ? 'compra' : 'buy'}{' '}
-                    {getBuyRate()?.toFixed(2)} · {es ? 'venta' : 'sell'} {getSellRate()?.toFixed(2)}
+                    {Number.isFinite(Number(getBuyRate())) ? Number(getBuyRate()).toFixed(rateDecimals) : '—'} · {es ? 'venta' : 'sell'} {Number.isFinite(Number(getSellRate())) ? Number(getSellRate()).toFixed(rateDecimals) : '—'}
                   </p>
                 )}
               </div>
@@ -488,11 +560,21 @@ function CurrencyCalculator() {
                     {es ? 'Mismo monto en otras monedas' : 'Same amount in other currencies'}
                   </p>
                   {Object.entries(currencies).map(([code, data]) => {
-                    const baseRateBOBperUSD = (getBuyRate() + getSellRate()) / 2;
-                    const currencyToUSD = exchangeRates[code];
-                    const itemRate = baseRateBOBperUSD / currencyToUSD;
+                    const usdMid = (Number(rateData.buy_bob_per_usd) + Number(rateData.sell_bob_per_usd)) / 2;
+                    const currencyToUSD = Number(exchangeRates[code]);
+                    if (!Number.isFinite(usdMid) || usdMid <= 0 || !Number.isFinite(currencyToUSD) || currencyToUSD <= 0) {
+                      return (
+                        <div key={code} className="flex items-center justify-between px-3 py-2.5 text-sm">
+                          <span className="font-medium text-gray-800 dark:text-gray-200">
+                            {data.flag} {code}
+                          </span>
+                          <span className="font-mono font-semibold tabular-nums text-gray-400">—</span>
+                        </div>
+                      );
+                    }
+                    const itemRate = usdMid / currencyToUSD;
                     const amount = parseFloat(bobAmount) || 100;
-                    const converted = (amount / itemRate).toFixed(2);
+                    const converted = (amount / itemRate).toFixed(code === 'COP' ? 0 : 2);
                     return (
                       <div
                         key={code}

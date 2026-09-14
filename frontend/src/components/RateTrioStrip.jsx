@@ -45,11 +45,13 @@ export default function RateTrioStrip({
 
   const blueMid =
     Number.isFinite(buy) && Number.isFinite(sell) ? (buy + sell) / 2 : Number.isFinite(buy) ? buy : null;
+  const officialBuyN = Number(officialBuy);
+  const officialSellN = Number(officialSell);
   const bcbMid =
-    Number.isFinite(officialBuy) && Number.isFinite(officialSell)
-      ? (officialBuy + officialSell) / 2
-      : Number.isFinite(officialBuy)
-        ? officialBuy
+    Number.isFinite(officialBuyN) && Number.isFinite(officialSellN)
+      ? (officialBuyN + officialSellN) / 2
+      : Number.isFinite(officialBuyN)
+        ? officialBuyN
         : null;
   const cardRate =
     Number.isFinite(cardRateProp) && cardRateProp > 0

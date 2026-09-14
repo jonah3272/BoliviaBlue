@@ -1,7 +1,7 @@
 /**
  * Format a number to appropriate decimal places based on currency
  * @param {number} value - The rate value to format
- * @param {string} currency - Currency code (USD, BRL, EUR)
+ * @param {string} currency - Currency code (USD, BRL, EUR, COP)
  * @returns {string} Formatted rate string
  */
 export function formatRate(value, currency = 'USD') {
@@ -10,7 +10,16 @@ export function formatRate(value, currency = 'USD') {
   if (!Number.isFinite(num)) return '—';
   // BRL rates are smaller, so show 3 decimal places (thousandths) for better precision
   // USD and EUR show 2 decimal places (hundredths)
-  return currency === 'BRL' ? num.toFixed(3) : num.toFixed(2);
+  if (currency === 'COP') return num.toFixed(4);
+  if (currency === 'BRL') return num.toFixed(3);
+  return num.toFixed(2);
+}
+
+/** BOB you get for 1,000 Colombian pesos (readable COP scale). */
+export function formatCopThousand(bobPerCop) {
+  const n = Number(bobPerCop);
+  if (!Number.isFinite(n)) return '—';
+  return (n * 1000).toFixed(2);
 }
 
 /**

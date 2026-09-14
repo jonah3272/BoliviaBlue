@@ -188,28 +188,39 @@ export async function fetchAmexBobPerUsd() {
  * stand-in for Visa/MC/Amex until network production APIs are available.
  */
 export async function fetchWiseBobPerUsd() {
-  const url =
-    'https://wise.com/gateway/v3/comparisons?sourceCurrency=USD&targetCurrency=BOB&sendAmount=100';
-  const data = await fetchJson(url, {
-    Accept: 'application/json',
-    Referer: 'https://wise.com/',
-    Origin: 'https://wise.com'
-  });
-  const providers = Array.isArray(data?.providers) ? data.providers : [];
-  const wise =
-    providers.find(
-      (p) =>
-        String(p?.name || '').toLowerCase() === 'wise' ||
-        String(p?.alias || '').toLowerCase() === 'wise'
-    ) || providers[0];
-  const quote = wise?.quotes?.[0];
-  const rate = Number(quote?.rate);
-  assertPlausibleBobPerUsd(rate, 'Wise');
-  return {
-    bobPerUsd: round4(rate),
-    raw: { provider: wise?.name, quote },
-    source: 'wise-proxy'
-  };
+  try {
+    const live = await fetchJson('https://wise.com/rates/live?source=USD&target=BOB', {
+      Accept: 'application/json',
+      Referer: 'https://wise.com/'
+    });
+    const mid = Number(live?.value);
+    assertPlausibleBobPerUsd(mid, 'Wise mid');
+    return {
+      bobPerUsd: round4(mid),
+      raw: live,
+      source: 'wise-mid'
+    };
+  } catch (liveErr) {
+    const url =
+      'https://wise.com/gateway/v3/comparisons?sourceCurrency=USD&targetCurrency=BOB&sendAmount=100';
+    const data = await fetchJson(url, {
+      Accept: 'application/json',
+      Referer: 'https://wise.com/',
+      Origin: 'https://wise.com'
+    });
+    const providers = Array.isArray(data?.providers) ? data.providers : [];
+    const wise = providers.find((p) => String(p?.alias || '').toLowerCase() === 'wise');
+    const rate = Number(wise?.quotes?.[0]?.rate);
+    if (!Number.isFinite(rate)) {
+      throw liveErr;
+    }
+    assertPlausibleBobPerUsd(rate, 'Wise comparison');
+    return {
+      bobPerUsd: round4(rate),
+      raw: { provider: wise?.name, quote: wise?.quotes?.[0] },
+      source: 'wise-proxy'
+    };
+  }
 }
 
 function acceptNetworkRate(result, label, notes) {

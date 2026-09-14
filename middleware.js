@@ -28,6 +28,9 @@ export const config = {
     '/real-a-boliviano',
     '/real-a-boliviano/',
     '/real-a-boliviano/index.html',
+    '/peso-a-boliviano',
+    '/peso-a-boliviano/',
+    '/peso-a-boliviano/index.html',
     '/dolar-blue-santa-cruz',
     '/dolar-blue-santa-cruz/',
     '/dolar-blue-santa-cruz/index.html',
@@ -40,6 +43,12 @@ export const config = {
     '/prensa',
     '/prensa/',
     '/prensa/index.html',
+    '/guia-dinero-bolivia',
+    '/guia-dinero-bolivia/',
+    '/guia-dinero-bolivia/index.html',
+    '/bolivia-money-guide',
+    '/bolivia-money-guide/',
+    '/bolivia-money-guide/index.html',
   ],
 };
 
@@ -56,6 +65,15 @@ export function fmt(n) {
   // Parallel USD/BOB is never near zero; treat junk as missing.
   if (!Number.isFinite(x) || x < 1) return null;
   return x.toFixed(2);
+}
+
+/** 1 COP is ~0.0037 BOB; SERP copy uses 1.000 COP in Bs. */
+export function fmtCopThousand(n) {
+  const x = Number(n);
+  if (!Number.isFinite(x) || x <= 0) return null;
+  const scaled = x * 1000;
+  if (scaled < 1) return null;
+  return scaled.toFixed(2);
 }
 
 export function normalizePath(pathname) {
@@ -102,6 +120,8 @@ export function normalizeRates(rate) {
     sellEur: fmt(rate.sell_bob_per_eur),
     buyBrl: fmt(rate.buy_bob_per_brl),
     sellBrl: fmt(rate.sell_bob_per_brl),
+    buyCopThousand: fmtCopThousand(rate.buy_bob_per_cop),
+    sellCopThousand: fmtCopThousand(rate.sell_bob_per_cop),
     eurUpdatedAt: (() => {
       if (typeof rate.eur_updated_at_iso !== 'string') return null;
       const d = new Date(rate.eur_updated_at_iso);
@@ -161,6 +181,11 @@ export function metaForPath(path, buy, sell) {
         title: `Real Blue Bolivia Hoy: Compra ${buy} · Venta ${sell}`,
         description: `Real brasileño blue / paralelo en Bolivia: compra Bs ${buy} y venta Bs ${sell}. Actualizado cada 15 min.`,
       };
+    case '/peso-a-boliviano':
+      return {
+        title: `Peso colombiano a boliviano: 1.000 COP ≈ ${buy} / ${sell} Bs`,
+        description: `Peso colombiano (COP) a boliviano: 1.000 COP ≈ compra Bs ${buy} · venta Bs ${sell}. Derivado de USDT/COP en vivo, no un tipo inventado.`,
+      };
     case '/dolar-blue-santa-cruz':
       return {
         title: `Dólar Blue Santa Cruz Hoy: Compra ${buy} · Venta ${sell}`,
@@ -180,6 +205,16 @@ export function metaForPath(path, buy, sell) {
       return {
         title: 'Prensa Bolivia Blue | Kit de medios, citas y datos',
         description: `Cita lista: dólar blue Bolivia compra Bs ${buy} · venta Bs ${sell}. CSV histórico, metodología y badge.`,
+      };
+    case '/guia-dinero-bolivia':
+      return {
+        title: `Guía de dinero Bolivia 2026 | Blue compra ${buy} · venta ${sell}`,
+        description: `Guía para viajeros: efectivo, tarjetas, cajeros y dólar blue (compra Bs ${buy} · venta Bs ${sell}). Tasas en vivo, no consejos de 2024.`,
+      };
+    case '/bolivia-money-guide':
+      return {
+        title: `Bolivia Money Guide 2026 | Blue buy ${buy} · sell ${sell}`,
+        description: `Traveler money guide: cash, cards, ATMs, and Bolivia’s blue dollar (buy Bs ${buy} · sell Bs ${sell}). Live rates, not leftover 2024 advice.`,
       };
     case '/':
     default:
@@ -330,6 +365,11 @@ export function metaForPathEn(path, buy, sell) {
         title: `Real Blue Bolivia Today: Buy ${buy} · Sell ${sell}`,
         description: `Brazilian real blue / parallel in Bolivia: buy Bs ${buy}, sell Bs ${sell}. Derived via USDT.`,
       };
+    case '/peso-a-boliviano':
+      return {
+        title: `Colombian peso to boliviano: 1,000 COP ≈ ${buy} / ${sell} Bs`,
+        description: `Colombian peso (COP) to boliviano: 1,000 COP ≈ buy Bs ${buy} · sell Bs ${sell}. Live USDT/COP cross, never an invented rate.`,
+      };
     case '/dolar-blue-santa-cruz':
       return {
         title: `Blue Dollar Santa Cruz Today: Buy ${buy} · Sell ${sell}`,
@@ -420,6 +460,13 @@ export function applyLiveSeo(html, path, rates) {
   } else if (path === '/real-a-boliviano') {
     if (!rates.buyBrl || !rates.sellBrl) return null;
     pair = { buy: rates.buyBrl, sell: rates.sellBrl, updatedAt: rates.updatedAt };
+  } else if (path === '/peso-a-boliviano') {
+    if (!rates.buyCopThousand || !rates.sellCopThousand) return null;
+    pair = {
+      buy: rates.buyCopThousand,
+      sell: rates.sellCopThousand,
+      updatedAt: rates.updatedAt,
+    };
   }
 
   const meta = metaForPath(path, pair.buy, pair.sell);

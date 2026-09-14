@@ -172,6 +172,24 @@ const PAGE_COPY = {
         'Real blue Bolivia: parallel BRL to BOB vs official rate. Updated every 15 min from Binance P2P.',
     },
   },
+  peso: {
+    es: {
+      titleWith: (b, s) => `Peso colombiano a boliviano: 1.000 COP ≈ ${b} / ${s} Bs`,
+      titleFallback: 'Peso colombiano a boliviano | COP a BOB paralelo (vía USDT)',
+      descWith: (b, s, when) =>
+        `Peso colombiano (COP) a boliviano: 1.000 COP ≈ compra Bs ${b} · venta Bs ${s}${when ? ` (${when})` : ''}. Derivado de USDT/COP en vivo, no un tipo inventado.`,
+      descFallback:
+        'COP a BOB en Bolivia: peso colombiano paralelo derivado de USDT/COP (P2P o spot). Nunca un multiplicador fijo.',
+    },
+    en: {
+      titleWith: (b, s) => `Colombian peso to boliviano: 1,000 COP ≈ ${b} / ${s} Bs`,
+      titleFallback: 'Colombian peso to boliviano | Parallel COP to BOB (via USDT)',
+      descWith: (b, s, when) =>
+        `Colombian peso (COP) to boliviano: 1,000 COP ≈ buy Bs ${b} · sell Bs ${s}${when ? ` (as of ${when})` : ''}. Live USDT/COP cross, never an invented rate.`,
+      descFallback:
+        'COP to BOB in Bolivia: Colombian peso derived from live USDT/COP (P2P or spot). Never a fixed multiplier.',
+    },
+  },
   'santa-cruz': {
     es: {
       titleWith: (b, s) => `Dólar Blue Santa Cruz Hoy: Compra ${b} · Venta ${s}`,
@@ -226,6 +244,24 @@ const PAGE_COPY = {
         'Blue dollar Cochabamba: national parallel (P2P) quote as a Cochabamba reference. Updated every 15 min.',
     },
   },
+  'guia-dinero': {
+    es: {
+      titleWith: (b, s) => `Guía de dinero Bolivia 2026 | Blue compra ${b} · venta ${s}`,
+      titleFallback: 'Guía de dinero para viajeros en Bolivia 2026 | Efectivo, ATM y dólar blue',
+      descWith: (b, s, when) =>
+        `Guía para viajeros: efectivo, tarjetas, cajeros y dólar blue (compra Bs ${b} · venta Bs ${s}${when ? `, ${when}` : ''}). Tasas en vivo.`,
+      descFallback:
+        'Cómo manejar dinero en Bolivia en 2026: efectivo USD, tarjetas, cajeros y el dólar blue. Tasas en vivo desde P2P.',
+    },
+    en: {
+      titleWith: (b, s) => `Bolivia Money Guide 2026 | Blue buy ${b} · sell ${s}`,
+      titleFallback: 'Bolivia Money Guide for Travelers 2026 | Cash, ATMs & Blue Dollar',
+      descWith: (b, s, when) =>
+        `Traveler money guide: cash, cards, ATMs, and the blue dollar (buy Bs ${b} · sell Bs ${s}${when ? `, ${when}` : ''}). Live rates.`,
+      descFallback:
+        'How to handle money in Bolivia in 2026: USD cash, cards, ATMs, and the blue dollar. Live P2P rates.',
+    },
+  },
 };
 
 const PATH_TO_PAGE = {
@@ -237,9 +273,12 @@ const PATH_TO_PAGE = {
   '/cuanto-esta-dolar-bolivia': 'cuanto',
   '/euro-a-boliviano': 'euro',
   '/real-a-boliviano': 'real',
+  '/peso-a-boliviano': 'peso',
   '/dolar-blue-santa-cruz': 'santa-cruz',
   '/dolar-blue-la-paz': 'la-paz',
   '/dolar-blue-cochabamba': 'cochabamba',
+  '/guia-dinero-bolivia': 'guia-dinero',
+  '/bolivia-money-guide': 'guia-dinero',
 };
 
 /** Stable GA titles for routes that do not use live-rate copy. */

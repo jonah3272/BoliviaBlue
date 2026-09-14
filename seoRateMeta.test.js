@@ -36,6 +36,17 @@ describe('buildLiveRateSeoMeta', () => {
     assert.equal(meta.title, 'Bolivia Blue | Dólar Blue Hoy, lectura P2P verificada');
   });
 
+  it('uses 1.000 COP in Bs for the peso page (per-peso rate is < 1)', () => {
+    const meta = buildLiveRateSeoMeta({
+      buy: 3.75,
+      sell: 3.72,
+      language: 'es',
+      page: 'peso',
+    });
+    assert.equal(meta.title, 'Peso colombiano a boliviano: 1.000 COP ≈ 3.75 / 3.72 Bs');
+    assert.match(meta.description, /USDT\/COP/);
+  });
+
   it('uses city live titles for Santa Cruz', () => {
     const meta = buildLiveRateSeoMeta({
       buy: 11.6,

@@ -177,16 +177,27 @@ async function attachOfficial(data, supabase) {
   const resolved = await resolveOfficialRate(supabase);
   if (!asOfficialRate(resolved.official_buy)) return data;
 
-  if (data.t && supabase) {
+  if (supabase) {
+    const patch = {
+      official_buy: resolved.official_buy,
+      official_sell: resolved.official_sell,
+      official_mid: resolved.official_mid,
+    };
     try {
-      await supabase
-        .from('rates')
-        .update({
-          official_buy: resolved.official_buy,
-          official_sell: resolved.official_sell,
-          official_mid: resolved.official_mid,
-        })
-        .eq('t', data.t);
+      let t = data.t;
+      if (!t) {
+        const { data: latest } = await supabase
+          .from('rates')
+          .select('t')
+          .order('t', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        t = latest?.t;
+      }
+      if (t) {
+        const { error } = await supabase.from('rates').update(patch).eq('t', t);
+        if (error) console.warn('[official] persist failed:', error.message);
+      }
     } catch (err) {
       console.warn('[official] persist failed:', err.message || err);
     }

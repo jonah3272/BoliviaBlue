@@ -18,6 +18,8 @@ export default function PageMeta({
   structuredData,
   /** When true (default), inject sitewide Organization + WebSite brand graph */
   includeBrandSchema = true,
+  /** Separate locale URLs (not ?lang=) — used by the traveler guide. */
+  localePaths = null,
 }) {
   const languageContext = useLanguage();
   const language = languageContext?.language || 'es';
@@ -33,12 +35,19 @@ export default function PageMeta({
   const baseUrl = isStage ? 'https://stage.boliviablue.com' : 'https://www.boliviablue.com';
 
   const canonicalPath = (canonical || '/').split('?')[0] || '/';
-  const esUrl = `${baseUrl}${canonicalPath}`;
-  const enUrl =
-    canonicalPath === '/'
+  const esUrl = localePaths?.es
+    ? `${baseUrl}${localePaths.es}`
+    : `${baseUrl}${canonicalPath}`;
+  const enUrl = localePaths?.en
+    ? `${baseUrl}${localePaths.en}`
+    : canonicalPath === '/'
       ? `${baseUrl}/?lang=en`
       : `${baseUrl}${canonicalPath}?lang=en`;
-  const fullCanonical = language === 'en' ? enUrl : esUrl;
+  const fullCanonical = localePaths
+    ? `${baseUrl}${canonicalPath}`
+    : language === 'en'
+      ? enUrl
+      : esUrl;
   const fullOgImage = ogImage.startsWith('http') ? ogImage : `${baseUrl}${ogImage}`;
 
   const alternateEs = esUrl;

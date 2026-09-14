@@ -159,7 +159,7 @@ export async function getCurrentBlueRate() {
 export async function getAllCurrentBlueRates() {
   try {
     // Fetch all currencies in parallel
-    const [bobRate, brlRate, eurRate] = await Promise.all([
+    const [bobRate, brlRate, eurRate, copRate] = await Promise.all([
       getCurrentBlueRateForFiat('BOB').catch(err => {
         console.warn('Failed to fetch BOB rate:', err.message);
         return null;
@@ -175,6 +175,10 @@ export async function getAllCurrentBlueRates() {
       }),
       getCurrentBlueRateForFiat('EUR').catch(err => {
         console.warn('Failed to fetch EUR rate:', err.message);
+        return null;
+      }),
+      getCurrentBlueRateForFiat('COP').catch(err => {
+        console.warn('Failed to fetch COP rate:', err.message);
         return null;
       })
     ]);
@@ -224,6 +228,29 @@ export async function getAllCurrentBlueRates() {
       result.buy_bob_per_eur = bobRate.buy / eurRate.buy;
       result.sell_bob_per_eur = bobRate.sell / eurRate.sell;
       result.mid_bob_per_eur = (result.buy_bob_per_eur + result.sell_bob_per_eur) / 2;
+    }
+
+    if (copRate) {
+      result.buy_bob_per_cop = bobRate.buy / copRate.buy;
+      result.sell_bob_per_cop = bobRate.sell / copRate.sell;
+      result.mid_bob_per_cop = (result.buy_bob_per_cop + result.sell_bob_per_cop) / 2;
+      result.cop_derivation = 'p2p-usdt';
+    } else {
+      try {
+        const spotRes = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=USDTCOP');
+        if (spotRes.ok) {
+          const spot = await spotRes.json();
+          const copPerUsdt = parseFloat(spot?.price);
+          if (Number.isFinite(copPerUsdt) && copPerUsdt > 0) {
+            result.buy_bob_per_cop = bobRate.buy / copPerUsdt;
+            result.sell_bob_per_cop = bobRate.sell / copPerUsdt;
+            result.mid_bob_per_cop = (result.buy_bob_per_cop + result.sell_bob_per_cop) / 2;
+            result.cop_derivation = 'spot-usdtcop';
+          }
+        }
+      } catch (err) {
+        console.warn('COP spot fallback failed:', err.message);
+      }
     }
 
     // Calculate mid rate for USD

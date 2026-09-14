@@ -14,10 +14,11 @@ on:
     - cron: '*/5 * * * *'
   workflow_dispatch: # manual "Run workflow" button
 
-# Don't pile up when runners are scarce — newest run wins.
+# Don't pile up when runners are scarce. Keep the in-flight run so the
+# full job (BCB + Wise/card) can finish instead of being cancelled every 5m.
 concurrency:
   group: refresh-blue-rates
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   # Lightweight path: only needs curl + CRON_SECRET. Survives better when

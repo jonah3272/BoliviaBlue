@@ -1,7 +1,7 @@
 import React, { useState, useEffect, memo, useCallback, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { fetchBlueRate, fetchCardRates } from '../utils/api';
-import { formatRate, formatDateTime, isStale } from '../utils/formatters';
+import { formatRate, formatCopThousand, formatDateTime, isStale } from '../utils/formatters';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 import CrossSourceBadge from './CrossSourceBadge';
@@ -16,6 +16,21 @@ const CARD_FEE_OPTIONS = [
   { id: '2.7', feePct: 0.027, labelEs: '2.7% FX', labelEn: '2.7% FX' },
   { id: '3', feePct: 0.03, labelEs: '3% FX', labelEn: '3% FX' }
 ];
+
+function sideRate(data, currency, side) {
+  const direct = Number(data?.[side]);
+  if (Number.isFinite(direct) && direct > 0) return direct;
+  const field =
+    currency === 'BRL'
+      ? `${side}_bob_per_brl`
+      : currency === 'EUR'
+        ? `${side}_bob_per_eur`
+        : currency === 'COP'
+          ? `${side}_bob_per_cop`
+          : `${side}_bob_per_usd`;
+  const n = Number(data?.[field]);
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
 
 function sharedCardBobPerUsd(cardRates) {
   if (!cardRates) return null;
@@ -73,6 +88,13 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
             {language === 'es' ? 'BRL puede no estar disponible en Binance P2P en este momento.' : 'BRL may not be available on Binance P2P at this time.'}
           </div>
         )}
+        {currency === 'COP' && (
+          <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+            {language === 'es'
+              ? 'El peso colombiano se deriva de USDT/COP en vivo. Si no hay ofertas P2P, usamos el spot USDTCOP — nunca un tipo inventado.'
+              : 'Colombian peso is derived from live USDT/COP. If P2P is empty we use USDTCOP spot — never an invented rate.'}
+          </div>
+        )}
       </div>
     );
   }
@@ -105,6 +127,13 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
         </div>
         <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium min-h-[1.25rem]">
           {language === 'es' ? `Bs. por ${currency}` : `Bs. per ${currency}`}
+          {currency === 'COP' && Number.isFinite(Number(rate)) ? (
+            <span className="block text-xs font-normal mt-0.5">
+              {language === 'es'
+                ? `1.000 COP ≈ ${formatCopThousand(rate)} Bs`
+                : `1,000 COP ≈ ${formatCopThousand(rate)} Bs`}
+            </span>
+          ) : null}
         </div>
       </div>
 
@@ -369,7 +398,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
             <RateCard
               type="buy"
-              rate={data?.buy || (currency === 'USD' ? data?.buy_bob_per_usd : currency === 'BRL' ? data?.buy_bob_per_brl : data?.buy_bob_per_eur)}
+              rate={sideRate(data, currency, 'buy')}
               timestamp={data?.updated_at_iso}
               isStaleData={isDataStale}
               isLoading={isLoading}
@@ -381,7 +410,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
             />
             <RateCard
               type="sell"
-              rate={data?.sell || (currency === 'USD' ? data?.sell_bob_per_usd : currency === 'BRL' ? data?.sell_bob_per_brl : data?.sell_bob_per_eur)}
+              rate={sideRate(data, currency, 'sell')}
               timestamp={data?.updated_at_iso}
               isStaleData={isDataStale}
               isLoading={isLoading}

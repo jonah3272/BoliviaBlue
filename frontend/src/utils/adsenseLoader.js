@@ -44,6 +44,8 @@ const EXCLUDED_ROUTES = [
   // High-CLS conversion URLs: Auto Ads inject layout shifts; keep content ad-free
   '/euro-a-boliviano',
   '/real-a-boliviano',
+  '/peso-a-boliviano',
+  '/cop-a-boliviano',
   '/usdt-bolivia',
   '/usdt-en-bolivia',
   '/calculadora',

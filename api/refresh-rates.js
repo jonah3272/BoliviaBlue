@@ -31,7 +31,7 @@ module.exports = async function handler(req, res) {
 
   try {
     const supabase = createSupabaseClient();
-    const { row, buyPrices, sellPrices } = await refreshBlueFromBinance(supabase);
+    const { row, buyPrices, sellPrices, cardRate } = await refreshBlueFromBinance(supabase);
 
     return res.status(200).json({
       ok: true,
@@ -40,6 +40,13 @@ module.exports = async function handler(req, res) {
       sell_bob_per_usd: row.sell,
       updated_at_iso: row.t,
       samples: { buy: buyPrices.slice(0, 5), sell: sellPrices.slice(0, 5) },
+      card: cardRate
+        ? {
+            visa_bob_per_usd: cardRate.visa_bob_per_usd,
+            source: cardRate.source,
+            updated_at_iso: cardRate.t,
+          }
+        : null,
     });
   } catch (err) {
     console.error('[refresh-rates]', err);

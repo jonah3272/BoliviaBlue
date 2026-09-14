@@ -114,6 +114,21 @@
       "source": "/cuanto-esta-dolar-bolivia-hoy",
       "destination": "/cuanto-esta-dolar-bolivia",
       "permanent": true
+    },
+    {
+      "source": "/travelers-guide",
+      "destination": "/bolivia-money-guide",
+      "permanent": true
+    },
+    {
+      "source": "/guia-viajeros",
+      "destination": "/guia-dinero-bolivia",
+      "permanent": true
+    },
+    {
+      "source": "/cop-a-boliviano",
+      "destination": "/peso-a-boliviano",
+      "permanent": true
     }
   ],
   "buildCommand": "cd frontend && npm install && npm run build",
@@ -158,7 +173,10 @@
     { "source": "/noticias", "destination": "/noticias/index.html" },
     { "source": "/euro-a-boliviano", "destination": "/euro-a-boliviano/index.html" },
     { "source": "/real-a-boliviano", "destination": "/real-a-boliviano/index.html" },
+    { "source": "/peso-a-boliviano", "destination": "/peso-a-boliviano/index.html" },
     { "source": "/prensa", "destination": "/prensa/index.html" },
+    { "source": "/guia-dinero-bolivia", "destination": "/guia-dinero-bolivia/index.html" },
+    { "source": "/bolivia-money-guide", "destination": "/bolivia-money-guide/index.html" },
     { "source": "/api-docs", "destination": "/api-docs/index.html" },
     { "source": "/acerca-de", "destination": "/acerca-de/index.html" },
     { "source": "/publicitar", "destination": "/publicitar/index.html" },
@@ -189,6 +207,15 @@
   "headers": [
     {
       "source": "/api/blue-rate",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, s-maxage=60, stale-while-revalidate=120"
+        }
+      ]
+    },
+    {
+      "source": "/api/card-rate",
       "headers": [
         {
           "key": "Cache-Control",

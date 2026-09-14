@@ -20,7 +20,7 @@ function sleep(ms) {
 
 function extractBuySell(payload) {
   if (!payload || typeof payload !== 'object') {
-    return { buy: null, sell: null, updatedAt: null, buyEur: null, sellEur: null, buyBrl: null, sellBrl: null };
+    return { buy: null, sell: null, updatedAt: null, buyEur: null, sellEur: null, buyBrl: null, sellBrl: null, buyCop: null, sellCop: null };
   }
   const buy = payload.buy_bob_per_usd ?? payload.buy ?? null;
   const sell = payload.sell_bob_per_usd ?? payload.sell ?? null;
@@ -33,6 +33,8 @@ function extractBuySell(payload) {
     sellEur: payload.sell_bob_per_eur ?? null,
     buyBrl: payload.buy_bob_per_brl ?? null,
     sellBrl: payload.sell_bob_per_brl ?? null,
+    buyCop: payload.buy_bob_per_cop ?? null,
+    sellCop: payload.sell_bob_per_cop ?? null,
     eurUpdatedAt: payload.eur_updated_at_iso ?? updatedAt,
   };
 }
@@ -45,7 +47,7 @@ async function fetchLiveRate() {
     const buy = Number(envBuy);
     const sell = Number(envSell);
     if (fmtRate(buy) && fmtRate(sell)) {
-      return { buy, sell, updatedAt: new Date().toISOString(), source: 'env', buyEur: null, sellEur: null, buyBrl: null, sellBrl: null };
+      return { buy, sell, updatedAt: new Date().toISOString(), source: 'env', buyEur: null, sellEur: null, buyBrl: null, sellBrl: null, buyCop: null, sellCop: null };
     }
   }
 
@@ -63,6 +65,8 @@ async function fetchLiveRate() {
           sellEur: payload.sell_bob_per_eur ?? null,
           buyBrl: payload.buy_bob_per_brl ?? null,
           sellBrl: payload.sell_bob_per_brl ?? null,
+          buyCop: payload.buy_bob_per_cop ?? null,
+          sellCop: payload.sell_bob_per_cop ?? null,
           eurUpdatedAt: payload.eur_updated_at_iso ?? updatedAt,
           source: 'api',
         };
@@ -123,6 +127,14 @@ function fmtRate(n) {
   // Never bake Compra 0.00 into static shells for Google.
   if (!Number.isFinite(x) || x < 1) return null;
   return x.toFixed(2);
+}
+
+function fmtCopThousand(n) {
+  const x = Number(n);
+  if (!Number.isFinite(x) || x <= 0) return null;
+  const scaled = x * 1000;
+  if (scaled < 1) return null;
+  return scaled.toFixed(2);
 }
 
 function formatSnippetTime(iso) {
@@ -232,6 +244,19 @@ function applyLiveRatesToRoutes(buy, sell, updatedAt, extra = {}) {
     prensa.shell = fillLiveRateSlots(prensa.shell, b, s, updatedAt);
   }
 
+  const guia = ROUTES['/guia-dinero-bolivia'];
+  if (guia) {
+    guia.title = `Guía de dinero Bolivia 2026 | Blue compra ${b} · venta ${s}`;
+    guia.description = `Guía para viajeros: efectivo, tarjetas, cajeros y dólar blue (compra Bs ${b} · venta Bs ${s}). Tasas en vivo.`;
+    guia.shell = fillLiveRateSlots(guia.shell, b, s, updatedAt);
+  }
+  const moneyGuide = ROUTES['/bolivia-money-guide'];
+  if (moneyGuide) {
+    moneyGuide.title = `Bolivia Money Guide 2026 | Blue buy ${b} · sell ${s}`;
+    moneyGuide.description = `Traveler money guide: cash, cards, ATMs, and Bolivia’s blue dollar (buy Bs ${b} · sell Bs ${s}). Live rates.`;
+    moneyGuide.shell = fillLiveRateSlots(moneyGuide.shell, b, s, updatedAt);
+  }
+
   const eurB = fmtRate(extra.buyEur);
   const eurS = fmtRate(extra.sellEur);
   const euro = ROUTES['/euro-a-boliviano'];
@@ -250,6 +275,15 @@ function applyLiveRatesToRoutes(buy, sell, updatedAt, extra = {}) {
     real.shell = fillLiveRateSlots(real.shell, brlB, brlS, updatedAt);
   }
 
+  const copB = fmtCopThousand(extra.buyCop);
+  const copS = fmtCopThousand(extra.sellCop);
+  const peso = ROUTES['/peso-a-boliviano'];
+  if (peso && copB && copS) {
+    peso.title = `Peso colombiano a boliviano: 1.000 COP ≈ ${copB} / ${copS} Bs`;
+    peso.description = `Peso colombiano (COP) a boliviano: 1.000 COP ≈ compra Bs ${copB} · venta Bs ${copS}. Derivado de USDT/COP en vivo, no un tipo inventado.`;
+    peso.shell = fillLiveRateSlots(peso.shell, copB, copS, extra.copUpdatedAt || updatedAt);
+  }
+
   return true;
 }
 
@@ -262,7 +296,7 @@ function buildStaticJsonLd(routePath, routeName, pageName, pageDescription, extr
     name: pageName,
     description: pageDescription,
     url: canonical,
-    inLanguage: routePath === '/bolivian-blue' ? 'en-US' : 'es-BO',
+    inLanguage: routePath === '/bolivian-blue' || routePath === '/bolivia-money-guide' ? 'en-US' : 'es-BO',
     isPartOf: { '@type': 'WebSite', name: 'Bolivia Blue', url: BASE_URL },
     publisher: { '@type': 'Organization', name: 'Bolivia Blue', url: BASE_URL }
   };
@@ -306,6 +340,7 @@ const SHELL_HOME = `
       <a href="/prensa" class="text-blue-600 font-medium">Prensa</a>
       <a href="/fuente-de-datos" class="text-blue-600 font-medium">Fuente de datos</a>
       <a href="/binance-p2p-bolivia" class="text-blue-600 font-medium">Binance P2P</a>
+      <a href="/guia-dinero-bolivia" class="text-blue-600 font-medium">Guía de dinero para viajeros</a>
       <a href="/euro-a-boliviano" class="text-blue-600 font-medium">Euro blue</a>
     </nav>
     <nav class="flex flex-wrap justify-center gap-3 mt-3" aria-label="Cotización por ciudad">
@@ -629,6 +664,7 @@ const ROUTES = {
       <a href="/" class="text-blue-600 font-medium">Dólar blue</a>
       <a href="/dolar-blue-hoy" class="text-blue-600 font-medium">Dólar blue hoy</a>
       <a href="/real-a-boliviano" class="text-blue-600 font-medium">Real a boliviano</a>
+      <a href="/peso-a-boliviano" class="text-blue-600 font-medium">Peso colombiano</a>
       <a href="/calculadora" class="text-blue-600 font-medium">Calculadora</a>
     </nav>
   </div>
@@ -654,6 +690,26 @@ const ROUTES = {
 </main>`.replace(/\n/g, '').trim(),
     getJsonLd: () => buildStaticJsonLd('/real-a-boliviano', 'Real a Boliviano', 'Real Blue Bolivia – BRL a BOB', 'Real brasileño blue en Bolivia derivado vía USDT.', [])
   },
+  '/peso-a-boliviano': {
+    title: 'Peso colombiano a boliviano | COP a BOB paralelo (vía USDT)',
+    description: 'COP a BOB en Bolivia: peso colombiano paralelo derivado de USDT/COP (P2P o spot). Nunca un multiplicador fijo.',
+    canonical: BASE_URL + '/peso-a-boliviano',
+    shell: `
+<main class="max-w-7xl mx-auto px-4 py-8" data-seo-shell="peso-a-boliviano">
+  <div class="text-center space-y-4 mb-8">
+    <h1 class="text-3xl sm:text-5xl font-bold text-gray-900">Peso colombiano a boliviano – COP a BOB</h1>
+    <p class="text-base text-gray-700 max-w-2xl mx-auto">1.000 COP ≈ compra <span data-live-buy>—</span> · venta <span data-live-sell>—</span> Bs. Derivado de USDT/COP en vivo (P2P o spot USDTCOP), nunca un tipo inventado.</p>
+    <p class="text-sm text-gray-600">Lectura: <time data-live-when datetime="">—</time> (hora de Bolivia). <a href="/fuente-de-datos">Metodología</a> · <a href="/calculadora">Calculadora</a></p>
+    <nav class="flex flex-wrap justify-center gap-3 mt-4" aria-label="Enlaces relacionados">
+      <a href="/" class="text-blue-600 font-medium">Dólar blue</a>
+      <a href="/euro-a-boliviano" class="text-blue-600 font-medium">Euro blue</a>
+      <a href="/real-a-boliviano" class="text-blue-600 font-medium">Real a boliviano</a>
+      <a href="/calculadora" class="text-blue-600 font-medium">Calculadora</a>
+    </nav>
+  </div>
+</main>`.replace(/\n/g, '').trim(),
+    getJsonLd: () => buildStaticJsonLd('/peso-a-boliviano', 'Peso a Boliviano', 'Peso colombiano a boliviano – COP a BOB', 'COP a BOB derivado vía USDT. No es tipo oficial ni de ventanilla.', [])
+  },
   '/prensa': {
     title: 'Prensa Bolivia Blue | Kit de medios, citas y datos',
     description: 'Recursos gratis para periodistas: cómo citar el dólar blue, badge SVG, widget embed, CSV histórico y metodología.',
@@ -674,6 +730,44 @@ const ROUTES = {
   </div>
 </main>`.replace(/\n/g, '').trim(),
     getJsonLd: () => buildStaticJsonLd('/prensa', 'Prensa', 'Kit de prensa Bolivia Blue', 'Recursos para periodistas: citas, badge, widget y datos históricos del dólar blue.', [])
+  },
+  '/guia-dinero-bolivia': {
+    title: 'Guía de dinero para viajeros en Bolivia 2026 | Efectivo, ATM y dólar blue',
+    description: 'Cómo manejar dinero en Bolivia en 2026: efectivo USD, tarjetas, cajeros y dólar blue con tasas en vivo. No es la guía de 6,96 de 2024.',
+    canonical: BASE_URL + '/guia-dinero-bolivia',
+    shell: `
+<main class="max-w-3xl mx-auto px-4 py-8" data-seo-shell="guia-dinero-bolivia">
+  <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">Guía de dinero para viajeros en Bolivia (2026)</h1>
+  <p class="text-base text-gray-700 mt-3">Dólar blue hoy: compra <span data-live-buy>—</span> · venta <span data-live-sell>—</span> Bs por USD. Lectura: <time data-live-when datetime="">—</time>. 100 USD ≈ <span data-live-usd100>—</span> Bs (compra P2P, no ventanilla).</p>
+  <p class="text-sm text-gray-600 mt-2">Efectivo USD impecable, tarjetas como respaldo, cajeros que no pagan el paralelo, y Binance P2P si te quedás semanas. El oficial ya no está clavado en 6,96.</p>
+  <nav class="flex flex-wrap gap-3 mt-4" aria-label="Enlaces">
+    <a href="/" class="text-blue-600 font-medium">Inicio</a>
+    <a href="/dolar-blue-hoy" class="text-blue-600 font-medium">Dólar blue hoy</a>
+    <a href="/calculadora" class="text-blue-600 font-medium">Calculadora</a>
+    <a href="/binance-p2p-bolivia" class="text-blue-600 font-medium">Binance P2P</a>
+    <a href="/bolivia-money-guide" class="text-blue-600 font-medium">English</a>
+  </nav>
+</main>`.replace(/\n/g, '').trim(),
+    getJsonLd: () => buildStaticJsonLd('/guia-dinero-bolivia', 'Guía de dinero', 'Guía de dinero para viajeros en Bolivia (2026)', 'Efectivo, tarjetas, cajeros y dólar blue con tasas en vivo.', [])
+  },
+  '/bolivia-money-guide': {
+    title: 'Bolivia Money Guide for Travelers 2026 | Cash, ATMs & Blue Dollar',
+    description: 'How to handle money in Bolivia in 2026: USD cash, cards, ATMs, and the blue dollar with live rates — not leftover 2024 6.96 advice.',
+    canonical: BASE_URL + '/bolivia-money-guide',
+    shell: `
+<main class="max-w-3xl mx-auto px-4 py-8" data-seo-shell="bolivia-money-guide">
+  <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">The Bolivia money guide for travelers (2026)</h1>
+  <p class="text-base text-gray-700 mt-3">Blue dollar today: buy <span data-live-buy>—</span> · sell <span data-live-sell>—</span> Bs per USD. Reading: <time data-live-when datetime="">—</time>. 100 USD ≈ <span data-live-usd100>—</span> Bs (P2P buy, not a cash desk).</p>
+  <p class="text-sm text-gray-600 mt-2">Pristine USD cash, cards as backup, ATMs that do not pay the parallel rate, and Binance P2P if you stay weeks. The official rate is no longer stuck at 6.96.</p>
+  <nav class="flex flex-wrap gap-3 mt-4" aria-label="Links">
+    <a href="/" class="text-blue-600 font-medium">Home</a>
+    <a href="/dolar-blue-hoy" class="text-blue-600 font-medium">Blue dollar today</a>
+    <a href="/calculadora" class="text-blue-600 font-medium">Calculator</a>
+    <a href="/binance-p2p-bolivia" class="text-blue-600 font-medium">Binance P2P</a>
+    <a href="/guia-dinero-bolivia" class="text-blue-600 font-medium">Español</a>
+  </nav>
+</main>`.replace(/\n/g, '').trim(),
+    getJsonLd: () => buildStaticJsonLd('/bolivia-money-guide', 'Money guide', 'The Bolivia money guide for travelers (2026)', 'Cash, cards, ATMs, and the blue dollar with live rates.', [])
   },
   '/api-docs': {
     title: 'API del Dólar Blue Bolivia | Documentación Completa',
@@ -806,6 +900,8 @@ async function main() {
       sellEur: live.sellEur,
       buyBrl: live.buyBrl,
       sellBrl: live.sellBrl,
+      buyCop: live.buyCop,
+      sellCop: live.sellCop,
       eurUpdatedAt: live.eurUpdatedAt,
     });
     if (ok) {
@@ -843,7 +939,10 @@ async function main() {
     '/noticias',
     '/euro-a-boliviano',
     '/real-a-boliviano',
+    '/peso-a-boliviano',
     '/prensa',
+    '/guia-dinero-bolivia',
+    '/bolivia-money-guide',
     '/api-docs',
   ];
   for (const routePath of otherPaths) {
@@ -919,6 +1018,7 @@ module.exports = {
   applyLiveRatesToRoutes,
   fmtRate,
   fillLiveRateSlots,
+  fmtCopThousand,
   main
 };
 

@@ -39,3 +39,12 @@ describe('EUR derivation', () => {
     assert.equal(buy > sell, 12.48 / 0.85 > 12.44 / 0.86);
   });
 });
+
+describe('COP derivation', () => {
+  it('COP P2P path divides BOB/USDT by COP/USDT', () => {
+    const bobBuy = 11.65;
+    const copPerUsdt = 3106;
+    const out = bobPerFiatFromUsdtP2p(bobBuy, copPerUsdt);
+    assert.ok(out > 0.003 && out < 0.005);
+  });
+});

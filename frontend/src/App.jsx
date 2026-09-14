@@ -7,6 +7,7 @@ import { usePageTracking } from './hooks/usePageTracking';
 
 // Lazy load routes for code splitting
 const Home = lazy(() => import('./pages/Home'));
+const TravelersMoneyGuide = lazy(() => import('./pages/TravelersMoneyGuide'));
 const Calculator = lazy(() => import('./pages/Calculator'));
 const News = lazy(() => import('./pages/News'));
 const NewsArticle = lazy(() => import('./pages/NewsArticle'));
@@ -37,6 +38,7 @@ const QueEsDolarBlue = lazy(() => import('./pages/QueEsDolarBlue'));
     const DolarParaleloBoliviaEnVivo = lazy(() => import('./pages/DolarParaleloBoliviaEnVivo'));
     const EuroToBoliviano = lazy(() => import('./pages/EuroToBoliviano'));
     const RealToBoliviano = lazy(() => import('./pages/RealToBoliviano'));
+    const PesoToBoliviano = lazy(() => import('./pages/PesoToBoliviano'));
     const BolivianBlue = lazy(() => import('./pages/BolivianBlue'));
     const BlueDolarBolivia = lazy(() => import('./pages/BlueDolarBolivia'));
     const BlueRateBolivia = lazy(() => import('./pages/BlueRateBolivia'));
@@ -80,6 +82,10 @@ function AppContent() {
       <Suspense fallback={<LoadingFallback />}>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/guia-dinero-bolivia" element={<TravelersMoneyGuide />} />
+          <Route path="/bolivia-money-guide" element={<TravelersMoneyGuide />} />
+          <Route path="/travelers-guide" element={<Redirect to="/bolivia-money-guide" />} />
+          <Route path="/guia-viajeros" element={<Redirect to="/guia-dinero-bolivia" />} />
           
           {/* Spanish URL Aliases (Primary for SEO) */}
           <Route path="/calculadora" element={<Calculator />} />
@@ -155,6 +161,8 @@ function AppContent() {
           {/* Currency conversion pages */}
           <Route path="/euro-a-boliviano" element={<EuroToBoliviano />} />
           <Route path="/real-a-boliviano" element={<RealToBoliviano />} />
+          <Route path="/peso-a-boliviano" element={<PesoToBoliviano />} />
+          <Route path="/cop-a-boliviano" element={<Redirect to="/peso-a-boliviano" />} />
           
           {/* Unsubscribe page */}
           <Route path="/unsubscribe" element={<Unsubscribe />} />

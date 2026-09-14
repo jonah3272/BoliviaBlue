@@ -498,6 +498,11 @@ function Home() {
                 {language === 'es' ? 'Calculadora completa →' : 'Full calculator →'}
               </Link>
             </div>
+            <p className="mt-2 text-xs text-gray-500 dark:text-gray-400 text-center max-w-md mx-auto">
+              {language === 'es'
+                ? 'Es una mediana P2P, no un precio de ventanilla: confirmá el tipo antes de cambiar.'
+                : 'This is a P2P median, not a cash-desk price — confirm the rate before you trade.'}
+            </p>
             <p className="mt-3 text-center flex flex-wrap justify-center gap-2">
               <Link
                 to="/euro-a-boliviano"

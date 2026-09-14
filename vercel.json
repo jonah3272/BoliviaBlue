@@ -136,6 +136,10 @@
   "installCommand": "npm install && cd frontend && npm install",
   "rewrites": [
     {
+      "source": "/api/card-rate",
+      "destination": "/api/blue-rate?view=card"
+    },
+    {
       "source": "/api/historical-data.csv",
       "destination": "/api/historical-data?format=csv"
     },

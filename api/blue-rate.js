@@ -5,7 +5,7 @@ const {
   isRateStale,
 } = require('./_lib/binanceRefresh');
 const { attachOfficial } = require('./_lib/officialRate');
-const { attachFreshCardRate } = require('./_lib/cardRate');
+const { attachFreshCardRate, toPayload: toCardPayload } = require('./_lib/cardRate');
 
 /** Last cross-source platforms seen on refresh (per serverless instance) */
 let lastSourcesUsed = ['binance'];
@@ -67,6 +67,15 @@ module.exports = async function handler(req, res) {
 
   try {
     const supabase = createSupabaseClient();
+    const view = String(req.query?.view || '').toLowerCase();
+    if (view === 'card') {
+      const row = await attachFreshCardRate(supabase);
+      if (!row) {
+        return res.status(503).json({ error: 'No card rate data available yet' });
+      }
+      return res.status(200).json(toCardPayload(row));
+    }
+
     let { data, error } = await supabase
       .from('rates')
       .select('*')

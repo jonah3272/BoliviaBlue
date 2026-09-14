@@ -370,7 +370,7 @@ function Blog() {
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
-        title={language === 'es' ? 'Blog - Guías y Análisis sobre Dólar Blue y Finanzas' : 'Blog - Guides and Analysis about Blue Dollar and Finance'}
+        title={language === 'es' ? 'Blog | Bolivia Blue' : 'Blog | Bolivia Blue'}
         description={language === 'es'
           ? "Guías prácticas, análisis y estrategias sobre el dólar blue, USDT, Binance P2P y finanzas personales en Bolivia. Contenido actualizado y confiable."
           : "Practical guides, analysis and strategies about the blue dollar, USDT, Binance P2P and personal finance in Bolivia. Updated and reliable content."}

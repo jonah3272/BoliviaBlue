@@ -1,5 +1,10 @@
 const { createClient } = require('@supabase/supabase-js');
 const { fetchBinanceSide, fetchCrossSourceBobRates } = require('./p2pCrossSource');
+const {
+  asPositiveRate,
+  bobPerFiatFromUsdtP2p,
+  bobPerFiatFromUsdtSpot,
+} = require('./fxDerive');
 const { resolveOfficialRate } = require('./officialRate');
 
 const STALE_MS = 20 * 60 * 1000;
@@ -14,15 +19,26 @@ function createSupabaseClient() {
   return createClient(url, key);
 }
 
-function median(values) {
-  const nums = values.filter((n) => Number.isFinite(n)).sort((a, b) => a - b);
-  if (!nums.length) return null;
-  const mid = Math.floor(nums.length / 2);
-  return nums.length % 2 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
-}
-
 async function fetchP2P(tradeType, fiat = 'BOB', rows = 20) {
   return fetchBinanceSide(tradeType, fiat, rows);
+}
+
+async function p2pFiatPerUsdt(fiat) {
+  const [buySide, sellSide] = await Promise.all([
+    fetchP2P('BUY', fiat),
+    fetchP2P('SELL', fiat),
+  ]);
+  const buy = asPositiveRate(buySide);
+  const sell = asPositiveRate(sellSide);
+  if (!buy || !sell) return null;
+  return { buy, sell };
+}
+
+async function fetchEurUsdtSpot() {
+  const res = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=EURUSDT');
+  if (!res.ok) return null;
+  const data = await res.json();
+  return asPositiveRate(data?.price);
 }
 
 async function getOfficialFallback(supabase) {
@@ -45,33 +61,37 @@ async function refreshBlueFromBinance(supabase = createSupabaseClient()) {
   let sellBrl = null;
   let buyEur = null;
   let sellEur = null;
+  let eurDerivation = null;
   try {
-    const [brlBuy, brlSell] = await Promise.all([
-      fetchP2P('BUY', 'BRL'),
-      fetchP2P('SELL', 'BRL'),
-    ]);
-    const bb = median(brlBuy);
-    const bs = median(brlSell);
-    if (bb && bs) {
-      buyBrl = buy / bb;
-      sellBrl = sell / bs;
+    const brl = await p2pFiatPerUsdt('BRL');
+    if (brl) {
+      buyBrl = bobPerFiatFromUsdtP2p(buy, brl.buy);
+      sellBrl = bobPerFiatFromUsdtP2p(sell, brl.sell);
     }
   } catch {
-    /* optional */
+    /* optional — BRL P2P is often thin */
   }
   try {
-    const [eurBuy, eurSell] = await Promise.all([
-      fetchP2P('BUY', 'EUR'),
-      fetchP2P('SELL', 'EUR'),
-    ]);
-    const eb = median(eurBuy);
-    const es = median(eurSell);
-    if (eb && es) {
-      buyEur = buy / eb;
-      sellEur = sell / es;
+    const eur = await p2pFiatPerUsdt('EUR');
+    if (eur) {
+      buyEur = bobPerFiatFromUsdtP2p(buy, eur.buy);
+      sellEur = bobPerFiatFromUsdtP2p(sell, eur.sell);
+      eurDerivation = 'p2p-usdt';
     }
   } catch {
-    /* optional */
+    /* fall through to spot */
+  }
+  if (buyEur == null || sellEur == null) {
+    try {
+      const usdtPerEur = await fetchEurUsdtSpot();
+      if (usdtPerEur) {
+        buyEur = bobPerFiatFromUsdtSpot(buy, usdtPerEur);
+        sellEur = bobPerFiatFromUsdtSpot(sell, usdtPerEur);
+        eurDerivation = 'spot-usdt';
+      }
+    } catch {
+      /* EUR remains unavailable */
+    }
   }
 
   const official = await getOfficialFallback(supabase);
@@ -96,7 +116,7 @@ async function refreshBlueFromBinance(supabase = createSupabaseClient()) {
   const { error } = await supabase.from('rates').insert(row);
   if (error) throw error;
 
-  return { row, buyPrices, sellPrices, sourcesUsed };
+  return { row, buyPrices, sellPrices, sourcesUsed, eurDerivation };
 }
 
 function isRateStale(iso, staleMs = STALE_MS) {

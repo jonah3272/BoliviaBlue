@@ -8,6 +8,7 @@ import BlueRateCards from '../components/BlueRateCards';
 import BinanceBanner from '../components/BinanceBanner';
 import { Link } from 'react-router-dom';
 import { fetchBlueRate } from '../utils/api';
+import { liveBobParts } from '../utils/seoRateMeta';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 
@@ -20,6 +21,7 @@ function BinanceP2PBolivia() {
   const language = languageContext?.language || 'es';
   const [showOfficial, setShowOfficial] = useState(false);
   const [currentRate, setCurrentRate] = useState(null);
+  const live = liveBobParts(currentRate);
 
   useEffect(() => {
     const loadRate = async () => {
@@ -147,7 +149,9 @@ function BinanceP2PBolivia() {
         "name": "¿Cuál es el tipo de cambio en Binance P2P Bolivia?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": `El tipo de cambio en Binance P2P Bolivia varía según la oferta y demanda, pero generalmente está alrededor de ${currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB por USDT. Nuestra plataforma calcula el dólar blue utilizando datos de Binance P2P, actualizándose cada 15 minutos.`
+          "text": live.buyStr
+            ? `El tipo de cambio en Binance P2P Bolivia varía según la oferta y demanda; la mediana de referencia hoy es ${live.buyStr} BOB por USDT (compra). Nuestra plataforma calcula el dólar blue con datos P2P, actualizándose cada 15 minutos.`
+            : 'El tipo de cambio en Binance P2P Bolivia varía según la oferta y demanda. Nuestra plataforma publica la mediana P2P del dólar blue cada ~15 minutos.'
         }
       }
     ] : [
@@ -299,8 +303,8 @@ function BinanceP2PBolivia() {
               </h3>
               <p className="text-gray-700 dark:text-gray-300 mb-4">
                 {language === 'es'
-                  ? <>El tipo de cambio en Binance P2P Bolivia varía según la oferta y demanda, pero generalmente está alrededor de {currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB por USDT. Nuestra plataforma calcula el <strong>dólar blue</strong> utilizando datos de Binance P2P, actualizándose cada 15 minutos para proporcionarte la información más precisa.</>
-                  : <>The exchange rate in Binance P2P Bolivia varies according to supply and demand, but is generally around {currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB per USDT. Our platform calculates the <strong>blue dollar</strong> using Binance P2P data, updating every 15 minutes to provide you with the most accurate information.</>}
+                  ? <>El tipo de cambio en Binance P2P Bolivia varía según la oferta y demanda{live.buyStr ? <>; la mediana de referencia hoy es {live.buyStr} BOB por USDT</> : null}. Nuestra plataforma calcula el <strong>dólar blue</strong> utilizando datos de Binance P2P, actualizándose cada 15 minutos para proporcionarte la información más precisa.</>
+                  : <>The exchange rate in Binance P2P Bolivia varies according to supply and demand{live.buyStr ? <>; today’s reference median is {live.buyStr} BOB per USDT</> : null}. Our platform calculates the <strong>blue dollar</strong> using Binance P2P data, updating every 15 minutes to provide you with the most accurate information.</>}
               </p>
 
               <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 sm:p-6 mt-6 border border-blue-200 dark:border-blue-800">

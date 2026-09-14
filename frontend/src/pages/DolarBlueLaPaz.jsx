@@ -12,6 +12,7 @@ import { lazy, Suspense } from 'react';
 const BlueChart = lazy(() => import('../components/BlueChart'));
 import Breadcrumbs from '../components/Breadcrumbs';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
+import { buildLiveRateSeoMeta, ratesFromBluePayload } from '../utils/seoRateMeta';
 
 function DolarBlueLaPaz() {
   // Signal to AdSense that this page has sufficient content
@@ -29,7 +30,8 @@ function DolarBlueLaPaz() {
       try {
         const data = await fetchBlueRate();
         setCurrentRate(data);
-        setLastUpdated(new Date());
+        const observed = data?.updated_at_iso ? new Date(data.updated_at_iso) : null;
+        if (observed && !Number.isNaN(observed.getTime())) setLastUpdated(observed);
       } catch (err) {
         console.error('Error loading rate:', err);
       }
@@ -38,6 +40,26 @@ function DolarBlueLaPaz() {
     const interval = setInterval(loadRate, 15 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
+
+  const liveSeo = buildLiveRateSeoMeta({
+    ...ratesFromBluePayload(currentRate),
+    language,
+    page: 'la-paz',
+  });
+  const buyStr =
+    Number.isFinite(Number(currentRate?.buy_bob_per_usd)) && Number(currentRate.buy_bob_per_usd) >= 1
+      ? Number(currentRate.buy_bob_per_usd).toFixed(2)
+      : null;
+  const sellStr =
+    Number.isFinite(Number(currentRate?.sell_bob_per_usd)) && Number(currentRate.sell_bob_per_usd) >= 1
+      ? Number(currentRate.sell_bob_per_usd).toFixed(2)
+      : null;
+  const lpRateEs = buyStr && sellStr
+    ? `compra Bs ${buyStr} y venta Bs ${sellStr}`
+    : 'la mediana nacional P2P (actualizada cada 15 minutos en esta página)';
+  const lpRateEn = buyStr && sellStr
+    ? `about Bs ${buyStr} to buy and Bs ${sellStr} to sell`
+    : 'the national P2P median shown on this page (updated every 15 minutes)';
 
   // Structured data
   const articleSchema = {
@@ -74,7 +96,7 @@ function DolarBlueLaPaz() {
         "name": "¿Cuál es el dólar blue en La Paz?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": `El dólar blue en La Paz es actualmente de aproximadamente ${currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB por USD para compra y ${currentRate?.sell_bob_per_usd?.toFixed(2) || '10.60'} BOB por USD para venta. Esta cotización se actualiza cada 15 minutos con datos en tiempo real de Binance P2P.`
+          "text": `El dólar blue en La Paz es actualmente ${lpRateEs}. Es la misma mediana nacional P2P, usada como referencia en La Paz.`
         }
       },
       {
@@ -90,7 +112,7 @@ function DolarBlueLaPaz() {
         "name": "¿Cuál es el tipo de cambio en La Paz hoy?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": `El tipo de cambio del dólar blue en La Paz hoy es de aproximadamente ${currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB por USD. Esta cotización se actualiza cada 15 minutos y refleja el mercado paralelo en Bolivia.`
+          "text": `El tipo de cambio del dólar blue en La Paz hoy es ${lpRateEs}. Esta cotización se actualiza cada 15 minutos y refleja el mercado paralelo nacional.`
         }
       }
     ] : [
@@ -99,7 +121,7 @@ function DolarBlueLaPaz() {
         "name": "What is the blue dollar in La Paz?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": `The blue dollar in La Paz is currently approximately ${currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB per USD for buying and ${currentRate?.sell_bob_per_usd?.toFixed(2) || '10.60'} BOB per USD for selling. This quote is updated every 15 minutes with real-time data from Binance P2P.`
+          "text": `The blue dollar in La Paz is currently ${lpRateEn}. Same national P2P median, used as a La Paz reference.`
         }
       },
       {
@@ -116,12 +138,8 @@ function DolarBlueLaPaz() {
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
-        title={language === 'es'
-          ? 'Dólar Blue La Paz - Cotización en Tiempo Real | Actualizado Cada 15 Min'
-          : 'Blue Dollar La Paz - Real-Time Quote | Updated Every 15 Min'}
-        description={language === 'es'
-          ? 'Dólar blue La Paz actualizado cada 15 minutos. Consulta la cotización del dólar blue en La Paz, Bolivia. Tipo de cambio en tiempo real, gráficos históricos y dónde cambiar dólares en La Paz. Gratis y sin registro.'
-          : 'Blue dollar La Paz updated every 15 minutes. Check the blue dollar quote in La Paz, Bolivia. Real-time exchange rate, historical charts and where to exchange dollars in La Paz. Free and no registration required.'}
+        title={liveSeo.title}
+        description={liveSeo.description}
         keywords={language === 'es'
           ? "dólar blue la paz, dólar blue bolivia la paz, dólar blue hoy bolivia la paz, tipo cambio la paz, cotización dólar blue la paz, precio dólar blue la paz, dónde cambiar dólares la paz, cambio dólares la paz, dólar paralelo la paz"
           : "blue dollar la paz, blue dollar bolivia la paz, blue dollar today la paz, exchange rate la paz, blue dollar quote la paz, blue dollar price la paz, where to exchange dollars la paz, exchange dollars la paz, parallel dollar la paz"}

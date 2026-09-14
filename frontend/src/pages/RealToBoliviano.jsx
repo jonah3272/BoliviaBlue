@@ -31,7 +31,7 @@ function RealToBoliviano() {
         const data = await fetchBlueRate('BRL');
         setCurrentRate(data);
         setRateError(null);
-        setLastUpdated(new Date(data?.updated_at_iso || Date.now()));
+        setLastUpdated(data?.updated_at_iso ? new Date(data.updated_at_iso) : null);
       } catch (err) {
         console.error('Error loading BRL rate:', err);
         setRateError(err?.message || 'rate_error');

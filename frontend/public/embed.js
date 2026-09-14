@@ -2,7 +2,7 @@
  * Bolivia Blue embeddable rate widget.
  * Usage:
  * <div id="bolivia-blue-widget"></div>
- * <script src="https://boliviablue.com/embed.js" async></script>
+ * <script src="https://www.boliviablue.com/embed.js" async></script>
  *
  * Options on the script tag:
  *   data-theme="light|dark"
@@ -18,8 +18,8 @@
   var theme = (script.getAttribute('data-theme') || 'light').toLowerCase();
   var lang = (script.getAttribute('data-lang') || 'es').toLowerCase();
   var targetId = script.getAttribute('data-target') || 'bolivia-blue-widget';
-  var api = script.getAttribute('data-api') || 'https://boliviablue.com/api/blue-rate';
-  var home = 'https://boliviablue.com/';
+  var api = script.getAttribute('data-api') || 'https://www.boliviablue.com/api/blue-rate';
+  var home = 'https://www.boliviablue.com/dolar-blue-hoy';
 
   var el = document.getElementById(targetId);
   if (!el) {
@@ -131,7 +131,7 @@
         '</div>' +
         '<a href="' +
         home +
-        '?utm_source=embed&utm_medium=widget" target="_blank" rel="noopener sponsored" style="font-size:12px;color:' +
+        '?utm_source=embed&utm_medium=widget" target="_blank" rel="noopener" style="font-size:12px;color:' +
         accent +
         ';text-decoration:none;font-weight:600">' +
         courtesy +

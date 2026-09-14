@@ -95,7 +95,7 @@ export default function CurrencyRateSnapshot({
           <p className="text-sm text-red-600 dark:text-red-400 mb-4">{errorMessage}</p>
         ) : null}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
           {(cards || []).map((card, i) => (
             <SnapshotCard
               key={i}

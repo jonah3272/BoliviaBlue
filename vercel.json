@@ -19,6 +19,101 @@
       "source": "/blue-dollar-bolivia",
       "destination": "/bolivian-blue",
       "permanent": true
+    },
+    {
+      "source": "/blue-dolar-bolivia",
+      "destination": "/bolivian-blue",
+      "permanent": true
+    },
+    {
+      "source": "/blue-rate-bolivia",
+      "destination": "/bolivian-blue",
+      "permanent": true
+    },
+    {
+      "source": "/cambio-blue-bolivia",
+      "destination": "/bolivian-blue",
+      "permanent": true
+    },
+    {
+      "source": "/bolivia-blue-rate",
+      "destination": "/bolivian-blue",
+      "permanent": true
+    },
+    {
+      "source": "/bolivia-blue-rate-hoy",
+      "destination": "/bolivian-blue",
+      "permanent": true
+    },
+    {
+      "source": "/bolivia-blue-rate-actual",
+      "destination": "/bolivian-blue",
+      "permanent": true
+    },
+    {
+      "source": "/tipo-cambio-blue-bolivia",
+      "destination": "/bolivian-blue",
+      "permanent": true
+    },
+    {
+      "source": "/calculator",
+      "destination": "/calculadora",
+      "permanent": true
+    },
+    {
+      "source": "/news",
+      "destination": "/noticias",
+      "permanent": true
+    },
+    {
+      "source": "/about",
+      "destination": "/acerca-de",
+      "permanent": true
+    },
+    {
+      "source": "/advertise",
+      "destination": "/publicitar",
+      "permanent": true
+    },
+    {
+      "source": "/contact",
+      "destination": "/contacto",
+      "permanent": true
+    },
+    {
+      "source": "/faq",
+      "destination": "/preguntas-frecuentes",
+      "permanent": true
+    },
+    {
+      "source": "/comparison",
+      "destination": "/comparacion",
+      "permanent": true
+    },
+    {
+      "source": "/buy-dollars",
+      "destination": "/comprar-dolares",
+      "permanent": true
+    },
+    {
+      "source": "/platforms",
+      "destination": "/plataformas",
+      "permanent": true
+    },
+    {
+      "source": "/kit-medios",
+      "destination": "/prensa",
+      "permanent": true
+    },
+    {
+      "source": "/embed",
+      "destination": "/widget",
+      "permanent": true
+    },
+    {
+      "source": "/cuanto-esta-dolar-bolivia-hoy",
+      "destination": "/cuanto-esta-dolar-bolivia",
+      "permanent": true
     }
   ],
   "buildCommand": "cd frontend && npm install && npm run build",
@@ -34,6 +129,10 @@
       "destination": "/api/historical-data?format=json"
     },
     {
+      "source": "/api/badge.svg",
+      "destination": "/api/badge"
+    },
+    {
       "source": "/blog/rss.xml",
       "destination": "/api/rss-blog"
     },
@@ -45,58 +144,47 @@
       "source": "/feed.xml",
       "destination": "/api/rss-blog"
     },
-    {
-      "source": "/dolar-blue-hoy",
-      "destination": "/dolar-blue-hoy/index.html"
-    },
-    {
-      "source": "/dolar-paralelo-bolivia-en-vivo",
-      "destination": "/dolar-paralelo-bolivia-en-vivo/index.html"
-    },
-    {
-      "source": "/cuanto-esta-dolar-bolivia",
-      "destination": "/cuanto-esta-dolar-bolivia/index.html"
-    },
-    {
-      "source": "/bolivian-blue",
-      "destination": "/bolivian-blue/index.html"
-    },
-    {
-      "source": "/que-es-dolar-blue",
-      "destination": "/que-es-dolar-blue/index.html"
-    },
-    {
-      "source": "/datos-historicos",
-      "destination": "/datos-historicos/index.html"
-    },
-    {
-      "source": "/cotiza-dolar-paralelo",
-      "destination": "/cotiza-dolar-paralelo/index.html"
-    },
-    {
-      "source": "/preguntas-frecuentes",
-      "destination": "/preguntas-frecuentes/index.html"
-    },
-    {
-      "source": "/comparacion",
-      "destination": "/comparacion/index.html"
-    },
-    {
-      "source": "/calculadora",
-      "destination": "/calculadora/index.html"
-    },
-    {
-      "source": "/blog",
-      "destination": "/blog/index.html"
-    },
-    {
-      "source": "/noticias",
-      "destination": "/noticias/index.html"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
+    { "source": "/dolar-blue-hoy", "destination": "/dolar-blue-hoy/index.html" },
+    { "source": "/dolar-paralelo-bolivia-en-vivo", "destination": "/dolar-paralelo-bolivia-en-vivo/index.html" },
+    { "source": "/cuanto-esta-dolar-bolivia", "destination": "/cuanto-esta-dolar-bolivia/index.html" },
+    { "source": "/bolivian-blue", "destination": "/bolivian-blue/index.html" },
+    { "source": "/que-es-dolar-blue", "destination": "/que-es-dolar-blue/index.html" },
+    { "source": "/datos-historicos", "destination": "/datos-historicos/index.html" },
+    { "source": "/cotiza-dolar-paralelo", "destination": "/cotiza-dolar-paralelo/index.html" },
+    { "source": "/preguntas-frecuentes", "destination": "/preguntas-frecuentes/index.html" },
+    { "source": "/comparacion", "destination": "/comparacion/index.html" },
+    { "source": "/calculadora", "destination": "/calculadora/index.html" },
+    { "source": "/blog", "destination": "/blog/index.html" },
+    { "source": "/noticias", "destination": "/noticias/index.html" },
+    { "source": "/euro-a-boliviano", "destination": "/euro-a-boliviano/index.html" },
+    { "source": "/real-a-boliviano", "destination": "/real-a-boliviano/index.html" },
+    { "source": "/prensa", "destination": "/prensa/index.html" },
+    { "source": "/api-docs", "destination": "/api-docs/index.html" },
+    { "source": "/acerca-de", "destination": "/acerca-de/index.html" },
+    { "source": "/publicitar", "destination": "/publicitar/index.html" },
+    { "source": "/contacto", "destination": "/contacto/index.html" },
+    { "source": "/politica-de-privacidad", "destination": "/politica-de-privacidad/index.html" },
+    { "source": "/terminos", "destination": "/terminos/index.html" },
+    { "source": "/correcciones", "destination": "/correcciones/index.html" },
+    { "source": "/politica-editorial", "destination": "/politica-editorial/index.html" },
+    { "source": "/equipo", "destination": "/equipo/index.html" },
+    { "source": "/comprar-dolares", "destination": "/comprar-dolares/index.html" },
+    { "source": "/bancos", "destination": "/bancos/index.html" },
+    { "source": "/plataformas", "destination": "/plataformas/index.html" },
+    { "source": "/fuente-de-datos", "destination": "/fuente-de-datos/index.html" },
+    { "source": "/widget", "destination": "/widget/index.html" },
+    { "source": "/dolar-blue-la-paz", "destination": "/dolar-blue-la-paz/index.html" },
+    { "source": "/dolar-blue-santa-cruz", "destination": "/dolar-blue-santa-cruz/index.html" },
+    { "source": "/dolar-blue-cochabamba", "destination": "/dolar-blue-cochabamba/index.html" },
+    { "source": "/binance-p2p-bolivia", "destination": "/binance-p2p-bolivia/index.html" },
+    { "source": "/usdt-bolivia", "destination": "/usdt-bolivia/index.html" },
+    { "source": "/unsubscribe", "destination": "/unsubscribe/index.html" },
+    { "source": "/chat", "destination": "/chat/index.html" },
+    { "source": "/comentarios", "destination": "/chat/index.html" },
+    { "source": "/comunidad", "destination": "/chat/index.html" },
+    { "source": "/blog/:slug", "destination": "/blog/index.html" },
+    { "source": "/noticias/:slug", "destination": "/noticias/index.html" },
+    { "source": "/reporte-mensual/:month/:year", "destination": "/index.html" }
   ],
   "headers": [
     {
@@ -118,6 +206,32 @@
       ]
     },
     {
+      "source": "/api/badge",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, s-maxage=120, stale-while-revalidate=600"
+        },
+        {
+          "key": "Content-Type",
+          "value": "image/svg+xml; charset=utf-8"
+        }
+      ]
+    },
+    {
+      "source": "/embed.html",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "frame-ancestors *"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
+        }
+      ]
+    },
+    {
       "source": "/index.html",
       "headers": [
         {
@@ -131,6 +245,15 @@
         {
           "key": "Expires",
           "value": "0"
+        }
+      ]
+    },
+    {
+      "source": "/404.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
         }
       ]
     }

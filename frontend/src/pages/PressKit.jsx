@@ -8,94 +8,96 @@ import Breadcrumbs from '../components/Breadcrumbs';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import { getWebPage, getBreadcrumbList } from '../utils/seoSchema';
-import { LLMS_TXT_URL, PLAIN_CITE_EN, PLAIN_CITE_ES } from '../utils/citationCopy';
+import { LLMS_TXT_URL, PLAIN_CITE_EN, PLAIN_CITE_ES, buildRateAnswerParagraph } from '../utils/citationCopy';
+import { useRate } from '../contexts/RateContext';
+import { SITE_URL } from '../config/brand';
+import { liveBobParts, ratesFromBluePayload } from '../utils/seoRateMeta';
+import CiteShareBar from '../components/CiteShareBar';
+import OutreachDesk from '../components/OutreachDesk';
 
-const CITE_HTML = `<p>Fuente: <a href="https://boliviablue.com/dolar-blue-hoy">Bolivia Blue</a> — dólar blue / paralelo Bolivia (lectura verificada, mediana multi-P2P: Binance, El Dorado, OKX). Histórico: <a href="https://boliviablue.com/datos-historicos">datos-historicos</a>. Widget: <a href="https://boliviablue.com/widget">boliviablue.com/widget</a>.</p>`;
+const HIST_CSV = `${SITE_URL}/api/historical-data.csv?range=30d`;
 
-const CITE_MD = `Fuente: [Bolivia Blue](https://boliviablue.com/dolar-blue-hoy) — dólar blue / paralelo Bolivia (mediana multi-P2P). Histórico: [datos-historicos](https://boliviablue.com/datos-historicos). Widget: [boliviablue.com/widget](https://boliviablue.com/widget).`;
+function citeHtml(buyStr, sellStr) {
+  const rateBit = buyStr && sellStr ? ` Compra Bs ${buyStr} · venta Bs ${sellStr}.` : '';
+  return `<p>Fuente: <a href="${SITE_URL}/dolar-blue-hoy">Bolivia Blue</a> — dólar blue / paralelo Bolivia.${rateBit} Mediana multi-P2P (Binance, El Dorado, OKX). CSV 30 días: <a href="${HIST_CSV}">historical-data.csv</a>. Metodología: <a href="${SITE_URL}/fuente-de-datos">fuente-de-datos</a>. Widget: <a href="${SITE_URL}/widget">widget</a>.</p>`;
+}
 
-const CITE_METHODOLOGY = `Metodología: https://boliviablue.com/fuente-de-datos — mediana cross-source P2P (Binance, El Dorado, OKX, Bybit cuando disponible), actualización ~15 min.`;
+function citeMd(buyStr, sellStr) {
+  const rateBit = buyStr && sellStr ? ` Compra Bs ${buyStr} · venta Bs ${sellStr}.` : '';
+  return `Fuente: [Bolivia Blue](${SITE_URL}/dolar-blue-hoy) — dólar blue / paralelo Bolivia.${rateBit} Mediana multi-P2P. CSV: [${HIST_CSV}](${HIST_CSV}). Metodología: [${SITE_URL}/fuente-de-datos](${SITE_URL}/fuente-de-datos).`;
+}
 
-const BADGE_HTML = `<a href="https://boliviablue.com/?utm_source=badge" rel="noopener"><img src="https://boliviablue.com/badge.svg" alt="Bolivia Blue live rate" width="200" height="40" /></a>`;
+const CITE_METHODOLOGY = `Metodología: ${SITE_URL}/fuente-de-datos — mediana cross-source P2P (Binance, El Dorado, OKX, Bybit cuando disponible), actualización ~15 min. CSV 30 días: ${HIST_CSV}`;
 
-const PITCH_EMAIL_ES = `Asunto: Datos actualizados del dólar paralelo en Bolivia (fuente gratuita)
+const BADGE_HTML = `<a href="${SITE_URL}/dolar-blue-hoy?utm_source=badge" rel="noopener"><img src="${SITE_URL}/api/badge.svg" alt="Dólar blue Bolivia — Bolivia Blue" width="320" height="40" /></a>`;
+
+const STATIC_BADGE_HTML = `<a href="${SITE_URL}/dolar-blue-hoy?utm_source=badge" rel="noopener"><img src="${SITE_URL}/badge.svg" alt="Bolivia Blue live rate" width="200" height="40" /></a>`;
+
+const IFRAME_HTML = `<iframe src="${SITE_URL}/embed.html" title="Dólar blue Bolivia" width="360" height="190" loading="lazy" style="border:0;max-width:100%"></iframe>
+<p>Fuente: <a href="${SITE_URL}/dolar-blue-hoy">Bolivia Blue</a></p>`;
+
+function pitchEmailEs(cite, liveLine) {
+  return `Asunto: Datos actualizados del dólar paralelo en Bolivia (fuente gratuita)
 
 Hola,
 
-Soy de Bolivia Blue (https://boliviablue.com), un monitor del dólar blue / paralelo en Bolivia basado en Binance P2P (mediana, ~cada 15 min).
+Soy de Bolivia Blue (${SITE_URL}), un monitor del dólar blue / paralelo en Bolivia basado en P2P (mediana, ~cada 15 min).
+
+${liveLine}
 
 Si les sirve para una nota o gráfico, pueden citarnos con este HTML:
-${CITE_HTML}
+${cite}
 
-Datos históricos (CSV 30 días, gratis): https://boliviablue.com/datos-historicos
-Metodología: https://boliviablue.com/fuente-de-datos
-Kit de prensa: https://boliviablue.com/prensa
+Datos históricos (CSV 30 días, gratis): ${HIST_CSV}
+Metodología: ${SITE_URL}/fuente-de-datos
+Kit de prensa: ${SITE_URL}/prensa
 
 Quedo atento si necesitan una serie histórica más larga o una captura para publicación.
 
 Saludos`;
+}
 
-const PITCH_EMAIL_EN = `Subject: Free Bolivia parallel (blue) dollar data for citation
+function pitchEmailEn(cite, liveLine) {
+  return `Subject: Free Bolivia parallel (blue) dollar data for citation
 
 Hello,
 
-Bolivia Blue (https://boliviablue.com) tracks Bolivia’s parallel / blue dollar from Binance P2P (median, ~every 15 minutes).
+Bolivia Blue (${SITE_URL}) tracks Bolivia’s parallel / blue dollar from P2P (median, ~every 15 minutes).
+
+${liveLine}
 
 Ready-to-paste citation:
-${CITE_HTML}
+${cite}
 
-Historical CSV (30 days, free): https://boliviablue.com/datos-historicos
-Methodology: https://boliviablue.com/fuente-de-datos
-Press kit: https://boliviablue.com/prensa
+Historical CSV (30 days, free): ${HIST_CSV}
+Methodology: ${SITE_URL}/fuente-de-datos
+Press kit: ${SITE_URL}/prensa
 
 Happy to share a longer series or a chart for publication.
 
 Best regards`;
-
-const OUTREACH = [
-  {
-    es: 'Red Uno / Unitel / ATB: ofrece “cierre del paralelo hoy + gráfico” con atribución a boliviablue.com (ya citan portales similares).',
-    en: 'National TV/news: offer “today’s parallel close + chart” attributed to boliviablue.com.'
-  },
-  {
-    es: 'Radio Fides / Erbol / RTP: pitch semanal de 30s con la cotización blue vs BCB y link a /dolar-blue-hoy.',
-    en: 'Radio networks: weekly 30s pitch with blue vs BCB and link to /dolar-blue-hoy.'
-  },
-  {
-    es: 'Medios bolivianos (El Deber, Los Tiempos, Opinión, Página Siete, La Razón, Eju): ofrece “datos + gráfico + atribución” para notas de economía.',
-    en: 'Bolivian media: offer “data + chart + attribution” for economy stories.'
-  },
-  {
-    es: 'Grupos de Telegram / WhatsApp de dólares y USDT: comparte el widget o el link diario /dolar-blue-hoy con la cotización.',
-    en: 'Telegram / WhatsApp dollar & USDT groups: share the widget or daily /dolar-blue-hoy link.'
-  },
-  {
-    es: 'YouTubers / TikTok / Instagram Reels de finanzas en Bolivia: kit de prensa + piden “fuente boliviablue.com” en descripción.',
-    en: 'Finance creators (YT/TikTok/Reels): press kit + ask for boliviablue.com in the description.'
-  },
-  {
-    es: 'Universidades (UMSA, UAGRM, UMSS) / tesis de economía: CSV histórico gratis a cambio de cita (página datos históricos).',
-    en: 'Universities / theses: free historical CSV in exchange for a citation.'
-  },
-  {
-    es: 'Directorios y “mejores tools”: Product Hunt alternatives, listas de APIs LatAm, Awesome lists en GitHub, directorios de fintech Bolivia.',
-    en: 'Directories: LatAm API lists, GitHub awesome lists, Bolivia fintech roundups.'
-  },
-  {
-    es: 'Guest posts / columnas: “Cómo leer el dólar paralelo en Bolivia” con enlace a metodología + widget + /prensa.',
-    en: 'Guest posts: “How to read Bolivia’s parallel dollar” linking methodology + widget + /prensa.'
-  },
-  {
-    es: 'Newsletters económicas y blogs de análisis (LatAm FX): ofrece embed del widget o CSV semanal con atribución.',
-    en: 'Economy newsletters / LatAm FX blogs: offer widget embed or weekly CSV with attribution.'
-  }
-];
+}
 
 function PressKit() {
   useAdsenseReady();
   const languageContext = useLanguage();
   const language = languageContext?.language || 'es';
   const [copied, setCopied] = useState('');
+  const { rateData } = useRate();
+  const live = liveBobParts(rateData);
+  const rateBits = ratesFromBluePayload(rateData);
+  const liveLine = buildRateAnswerParagraph({
+    buy: rateBits.buy,
+    sell: rateBits.sell,
+    updatedAt: rateBits.updatedAt,
+    sourcesUsed: rateData?.sources_used,
+    language,
+    citePath: '/dolar-blue-hoy',
+  });
+  const CITE_HTML = citeHtml(live.buyStr, live.sellStr);
+  const CITE_MD = citeMd(live.buyStr, live.sellStr);
+  const PITCH_EMAIL_ES = pitchEmailEs(CITE_HTML, liveLine);
+  const PITCH_EMAIL_EN = pitchEmailEn(CITE_HTML, liveLine);
 
   const copy = async (text, key) => {
     try {
@@ -155,10 +157,32 @@ function PressKit() {
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-300">
             {language === 'es'
-              ? 'Para ser #1 no basta el on-page: necesitás menciones con enlace. Acá está todo lo que un medio o creador necesita para citarte en 30 segundos.'
-              : 'To win #1 you need linked mentions. Everything a journalist or creator needs to cite you in 30 seconds.'}
+              ? 'Menciones con enlace. Cadecocruz ya cita un portal rival: el trabajo es que citen boliviablue.com. Abajo hay pitches listos para Gmail y un checklist de 5 envíos esta semana.'
+              : 'Linked mentions. Cadecocruz already cites a rival portal — the job is to get them citing boliviablue.com. Below: Gmail-ready pitches and a 5-send weekly checklist.'}
           </p>
         </header>
+
+        <section className="rounded-xl border border-sky-200 dark:border-sky-800 bg-sky-50/80 dark:bg-sky-950/30 p-6 space-y-3">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            {language === 'es' ? 'Cita de una línea (con cotización en vivo)' : 'One-line quote (live rate)'}
+          </h2>
+          <p className="text-sm text-gray-700 dark:text-gray-300">{liveLine}</p>
+          <CiteShareBar liveLine={liveLine} htmlCite={CITE_HTML} language={language} />
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            {language === 'es' ? 'CSV 30 días (gratis): ' : '30-day CSV (free): '}
+            <a className="text-blue-600 hover:underline" href="/api/historical-data.csv?range=30d">
+              /api/historical-data.csv?range=30d
+            </a>
+            {' · '}
+            <Link className="text-blue-600 hover:underline" to="/fuente-de-datos">
+              {language === 'es' ? 'Metodología' : 'Methodology'}
+            </Link>
+            {' · '}
+            <Link className="text-blue-600 hover:underline" to="/datos-historicos">
+              {language === 'es' ? 'Gráfico histórico' : 'Historical chart'}
+            </Link>
+          </p>
+        </section>
 
         <section className="rounded-xl border border-violet-200 dark:border-violet-800 bg-violet-50/80 dark:bg-violet-950/30 p-6 space-y-3">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
@@ -265,8 +289,10 @@ function PressKit() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Badge</h2>
-          <img src="/badge.svg" alt="Bolivia Blue badge" width={200} height={40} />
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            {language === 'es' ? 'Badge en vivo (para notas y blogs)' : 'Live badge (for articles and blogs)'}
+          </h2>
+          <img src="/api/badge.svg" alt="Bolivia Blue live badge" width={320} height={40} />
           <pre className="bg-gray-900 text-gray-100 text-sm p-4 rounded-lg overflow-x-auto whitespace-pre-wrap">
             {BADGE_HTML}
           </pre>
@@ -279,15 +305,58 @@ function PressKit() {
           </button>
         </section>
 
-        <section className="space-y-2 text-gray-700 dark:text-gray-300">
+        <section className="space-y-3">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            {language === 'es' ? 'Iframe (WordPress y CMS que no dejan scripts)' : 'Iframe (WordPress / no-script CMS)'}
+          </h2>
+          <pre className="bg-gray-900 text-gray-100 text-sm p-4 rounded-lg overflow-x-auto whitespace-pre-wrap">
+            {IFRAME_HTML}
+          </pre>
+          <button
+            type="button"
+            onClick={() => copy(IFRAME_HTML, 'iframe')}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium"
+          >
+            {copied === 'iframe' ? (language === 'es' ? 'Copiado' : 'Copied') : language === 'es' ? 'Copiar iframe' : 'Copy iframe'}
+          </button>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            <Link className="text-blue-600 hover:underline" to="/widget">
+              {language === 'es' ? 'Más opciones de embed →' : 'More embed options →'}
+            </Link>
+          </p>
+        </section>
+
+        <section className="space-y-3">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Badge estático</h2>
+          <img src="/badge.svg" alt="Bolivia Blue badge" width={200} height={40} />
+          <pre className="bg-gray-900 text-gray-100 text-sm p-4 rounded-lg overflow-x-auto whitespace-pre-wrap">
+            {STATIC_BADGE_HTML}
+          </pre>
+          <button
+            type="button"
+            onClick={() => copy(STATIC_BADGE_HTML, 'badge-static')}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium"
+          >
+            {copied === 'badge-static' ? (language === 'es' ? 'Copiado' : 'Copied') : language === 'es' ? 'Copiar badge estático' : 'Copy static badge'}
+          </button>
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
             {language === 'es' ? 'Assets linkeables' : 'Linkable assets'}
           </h2>
           <ul className="list-disc pl-5 space-y-1">
             <li>
-              <Link className="text-blue-600 hover:underline" to="/widget">
-                Widget embed
-              </Link>
+              <a className="text-blue-600 hover:underline" href="/embed.html">
+                {language === 'es' ? 'Página iframe (/embed.html)' : 'Iframe page (/embed.html)'}
+              </a>
+            </li>
+            <li>
+              <a className="text-blue-600 hover:underline" href="/api/badge.svg">
+                {language === 'es' ? 'Badge SVG en vivo' : 'Live SVG badge'}
+              </a>
+            </li>
+            <li>
+              <a className="text-blue-600 hover:underline" href="/api/historical-data.csv?range=30d">
+                {language === 'es' ? 'Descargar CSV (30 días)' : 'Download CSV (30 days)'}
+              </a>
             </li>
             <li>
               <Link className="text-blue-600 hover:underline" to="/datos-historicos">
@@ -322,16 +391,7 @@ function PressKit() {
           </ul>
         </section>
 
-        <section className="space-y-3">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-            {language === 'es' ? 'Plan de backlinks (hacé esto esta semana)' : 'Backlink plan (do this week)'}
-          </h2>
-          <ol className="list-decimal pl-5 space-y-2 text-gray-700 dark:text-gray-300">
-            {OUTREACH.map((item, i) => (
-              <li key={i}>{language === 'es' ? item.es : item.en}</li>
-            ))}
-          </ol>
-        </section>
+        <OutreachDesk liveLine={liveLine} language={language} />
 
         <section className="bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 rounded-xl p-5">
           <h2 className="font-semibold text-gray-900 dark:text-white mb-2">
@@ -341,6 +401,10 @@ function PressKit() {
             {language === 'es'
               ? '¿Nota, entrevista o partnership de datos? '
               : 'Story, interview or data partnership? '}
+            <a href="mailto:info@boliviablue.com?subject=Prensa%20Bolivia%20Blue" className="text-blue-600 hover:underline font-medium">
+              info@boliviablue.com
+            </a>
+            {' · '}
             <Link to="/contacto" className="text-blue-600 hover:underline font-medium">
               {language === 'es' ? 'Escribinos' : 'Contact us'}
             </Link>

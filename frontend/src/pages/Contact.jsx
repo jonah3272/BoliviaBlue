@@ -114,6 +114,16 @@ function Contact() {
                 info@boliviablue.com
               </a>
             </div>
+            <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-4">
+              {language === 'es' ? 'Prensa y citas: ' : 'Press and citations: '}
+              <Link to="/prensa" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+                {language === 'es' ? 'kit de prensa' : 'press kit'}
+              </Link>
+              {' · '}
+              <a href="mailto:info@boliviablue.com?subject=Prensa%20Bolivia%20Blue" className="text-blue-600 dark:text-blue-400 hover:underline">
+                {language === 'es' ? 'escribir a redacción' : 'email the desk'}
+              </a>
+            </p>
           </div>
 
           {/* FAQ Link */}

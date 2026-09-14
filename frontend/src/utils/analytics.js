@@ -46,21 +46,42 @@ export const trackEvent = (eventName, eventParams = {}) => {
   }
 };
 
+const pendingHits = [];
+
+function flushPendingHits() {
+  if (!isGtagAvailable() || pendingHits.length === 0) return;
+  const queued = pendingHits.splice(0, pendingHits.length);
+  queued.forEach((hit) => hit());
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('bb-gtag-ready', flushPendingHits);
+}
+
 /**
- * Track page views with custom parameters
+ * Track page views with a stable title (route, not live rate tick).
+ * Hits queue until gtag.js finishes loading on window.load.
  */
 export const trackPageView = (pagePath, pageTitle, additionalParams = {}) => {
-  if (!isGtagAvailable()) return;
+  const send = () => {
+    if (!isGtagAvailable()) {
+      pendingHits.push(send);
+      return;
+    }
+    try {
+      window.gtag('event', 'page_view', {
+        page_path: pagePath,
+        page_title: pageTitle,
+        page_location:
+          typeof window !== 'undefined' ? window.location.href : undefined,
+        ...additionalParams,
+      });
+    } catch (error) {
+      console.error('[Analytics Error]', error);
+    }
+  };
 
-  try {
-    window.gtag('config', 'G-WRN4D234F2', {
-      page_path: pagePath,
-      page_title: pageTitle,
-      ...additionalParams,
-    });
-  } catch (error) {
-    console.error('[Analytics Error]', error);
-  }
+  send();
 };
 
 // ============================================================================

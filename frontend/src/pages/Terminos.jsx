@@ -5,6 +5,7 @@ import Footer from '../components/Footer';
 import PageMeta from '../components/PageMeta';
 import Navigation from '../components/Navigation';
 import Breadcrumbs from '../components/Breadcrumbs';
+import { SITE_URL } from '../config/brand';
 
 function Terminos() {
   useAdsenseReady();
@@ -20,13 +21,13 @@ function Terminos() {
         "@type": "ListItem",
         "position": 1,
         "name": language === 'es' ? "Inicio" : "Home",
-        "item": "https://boliviablue.com/"
+        "item": `${SITE_URL}/`
       },
       {
         "@type": "ListItem",
         "position": 2,
-        "name": language === 'es' ? "Términos de Servicio" : "Terms of Service",
-        "item": "https://boliviablue.com/terminos"
+        "name": language === 'es' ? "Términos y Condiciones" : "Terms and Conditions",
+        "item": `${SITE_URL}/terminos`
       }
     ]
   };
@@ -35,8 +36,8 @@ function Terminos() {
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
         title={language === 'es' 
-          ? 'Términos de Servicio - Bolivia Blue | Condiciones de Uso'
-          : 'Terms of Service - Bolivia Blue | Terms of Use'}
+          ? 'Términos y Condiciones | Bolivia Blue'
+          : 'Terms and Conditions | Bolivia Blue'}
         description={language === 'es'
           ? 'Términos de servicio de Bolivia Blue. Condiciones de uso de la plataforma, responsabilidades del usuario y limitaciones de responsabilidad. Información legal y transparencia.'
           : 'Terms of service of Bolivia Blue. Platform terms of use, user responsibilities and liability limitations. Legal information and transparency.'}
@@ -54,13 +55,13 @@ function Terminos() {
         <Breadcrumbs
           items={[
             { name: language === 'es' ? 'Inicio' : 'Home', url: '/' },
-            { name: language === 'es' ? 'Términos de Servicio' : 'Terms of Service', url: '/terminos' }
+            { name: language === 'es' ? 'Términos y Condiciones' : 'Terms and Conditions', url: '/terminos' }
           ]}
         />
 
         <article className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 sm:p-8 lg:p-12">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-            {language === 'es' ? 'Términos de Servicio' : 'Terms of Service'}
+            {language === 'es' ? 'Términos y Condiciones' : 'Terms and Conditions'}
           </h1>
 
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">

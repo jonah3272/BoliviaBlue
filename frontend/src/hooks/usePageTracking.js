@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useLanguage } from '../contexts/LanguageContext';
 import { trackPageView, initScrollDepthTracking, initTimeOnPageTracking } from '../utils/analytics';
+import { analyticsTitleForPath } from '../utils/seoRateMeta';
 
 /**
  * Hook to track page views, scroll depth, and time on page.
@@ -8,6 +10,8 @@ import { trackPageView, initScrollDepthTracking, initTimeOnPageTracking } from '
  */
 export function usePageTracking() {
   const location = useLocation();
+  const languageContext = useLanguage();
+  const language = languageContext?.language || 'es';
 
   useEffect(() => {
     let hashTimer;
@@ -32,7 +36,7 @@ export function usePageTracking() {
     }
 
     const pagePath = location.pathname + location.search;
-    const pageTitle = document.title || 'Bolivia Blue';
+    const pageTitle = analyticsTitleForPath(location.pathname, language);
 
     trackPageView(pagePath, pageTitle);
 
@@ -44,5 +48,5 @@ export function usePageTracking() {
       if (scrollCleanup) scrollCleanup();
       if (timeCleanup) timeCleanup();
     };
-  }, [location]);
+  }, [location, language]);
 }

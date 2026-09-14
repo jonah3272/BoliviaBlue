@@ -21,10 +21,10 @@ import Navigation from '../components/Navigation';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Link } from 'react-router-dom';
 import { articlesEs, articlesEn } from '../data/blogArticles';
-import { fetchBlueRate } from '../utils/api';
 import { formatDateTime } from '../utils/formatters';
+import { useRate } from '../contexts/RateContext';
 import { BASE_URL, getWebPage, getBreadcrumbList, getDataFeedItem, getLiveRateDataset } from '../utils/seoSchema';
-import { buildLiveRateSeoMeta, ratesFromBluePayload } from '../utils/seoRateMeta';
+import { buildLiveRateSeoMeta, ratesFromBluePayload, liveBobParts, fmtLiveBob } from '../utils/seoRateMeta';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import AdSenseAutoAds from '../components/AdSenseAutoAds';
 
@@ -47,9 +47,11 @@ function Home() {
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
   const [showOfficial, setShowOfficial] = useState(false);
+  const { rateData: contextRate, error: rateError } = useRate();
   const [currentRate, setCurrentRate] = useState(null);
   const [isNewsExpanded, setIsNewsExpanded] = useState(false);
   const [isArticlesExpanded, setIsArticlesExpanded] = useState(false);
+  const [quickUsd, setQuickUsd] = useState('100');
 
   const midRate = useMemo(() => {
     const buy = currentRate?.buy ?? currentRate?.buy_bob_per_usd;
@@ -60,25 +62,10 @@ function Home() {
   }, [currentRate]);
 
   useEffect(() => {
-    const loadRate = async () => {
-      try {
-        const data = await fetchBlueRate();
-        if (data && data.buy_bob_per_usd && data.sell_bob_per_usd) {
-          // Transform to expected format with buy/sell properties
-          setCurrentRate({
-            ...data,
-            buy: data.buy_bob_per_usd,
-            sell: data.sell_bob_per_usd
-          });
-        }
-      } catch (error) {
-        console.error('Error loading rate:', error);
-      }
-    };
-    loadRate();
-    const interval = setInterval(loadRate, 5 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, []);
+    if (contextRate?.buy && contextRate?.sell) {
+      setCurrentRate(contextRate);
+    }
+  }, [contextRate]);
   
   // FAQ Schema for homepage (Organization + WebSite injected sitewide via PageMeta)
   const faqSchema = {
@@ -168,6 +155,24 @@ function Home() {
             ? `El bolivia blue exchange rate hoy es aproximadamente ${Number(currentRate.buy).toFixed(2)} BOB por USD (compra) y ${Number(currentRate.sell || currentRate.buy).toFixed(2)} BOB (venta). 1 BOB ≈ ${(1 / Number(currentRate.buy)).toFixed(4)} USD. Se actualiza cada pocos minutos en nuestra plataforma.`
             : 'El bolivia blue exchange rate (dólar paralelo) se actualiza en vivo en boliviablue.com con datos de Binance P2P.'
         }
+      },
+      {
+        "@type": "Question",
+        "name": "¿Cuál es el precio del dólar en el mercado negro en Bolivia hoy?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": currentRate?.buy
+            ? `En Bolivia “mercado negro” del dólar suele referirse al paralelo / blue. Hoy la referencia P2P es compra ~${Number(currentRate.buy).toFixed(2)} y venta ~${Number(currentRate.sell || currentRate.buy).toFixed(2)} Bs por USD — mediana USDT, no un precio de calle observado. Metodología en /fuente-de-datos; Binance P2P en /binance-p2p-bolivia.`
+            : 'En Bolivia “mercado negro” del dólar suele referirse al paralelo / blue. Publicamos la mediana P2P (USDT), no un precio de ventanilla. Ver /dolar-blue-hoy y /fuente-de-datos.'
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "¿Cuánto está el dólar paralelo en Santa Cruz, La Paz y Cochabamba?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Publicamos una mediana nacional P2P como referencia para Santa Cruz, La Paz y Cochabamba: no es un precio de casa de cambio local. Ver /dolar-blue-santa-cruz, /dolar-blue-la-paz y /dolar-blue-cochabamba."
+        }
       }
     ] : [
       {
@@ -245,12 +250,31 @@ function Home() {
             ? `The bolivia blue exchange rate today is about ${Number(currentRate.buy).toFixed(2)} BOB per USD (buy) and ${Number(currentRate.sell || currentRate.buy).toFixed(2)} BOB (sell). 1 BOB ≈ ${(1 / Number(currentRate.buy)).toFixed(4)} USD. Updated every few minutes on our platform.`
             : 'The bolivia blue (parallel) exchange rate is updated live on boliviablue.com from Binance P2P.'
         }
+      },
+      {
+        "@type": "Question",
+        "name": "What is the black-market dollar price in Bolivia today?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": currentRate?.buy
+            ? `In Bolivia the “black market” dollar usually means the parallel / blue rate. Today’s P2P reference is buy ~${Number(currentRate.buy).toFixed(2)} and sell ~${Number(currentRate.sell || currentRate.buy).toFixed(2)} Bs per USD — a USDT median, not a street cash quote. See /fuente-de-datos and /binance-p2p-bolivia.`
+            : 'In Bolivia the “black market” dollar usually means the parallel / blue rate. We publish a P2P (USDT) median, not a cash-desk price. See /dolar-blue-hoy and /fuente-de-datos.'
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is the parallel dollar in Santa Cruz, La Paz and Cochabamba?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "We publish one national P2P median as a reference for Santa Cruz, La Paz and Cochabamba — not a local exchange-house price. See /dolar-blue-santa-cruz, /dolar-blue-la-paz and /dolar-blue-cochabamba."
+        }
       }
     ]
   };
 
   // FinancialProduct schema for rate cards
-  const financialProductSchema = currentRate ? {
+  const liveBuyPrice = fmtLiveBob(currentRate?.buy ?? currentRate?.buy_bob_per_usd);
+  const financialProductSchema = liveBuyPrice ? {
     "@context": "https://schema.org",
     "@type": "FinancialProduct",
     "name": language === 'es' ? "Bolivia Blue Rate" : "Bolivia Blue Rate",
@@ -263,7 +287,7 @@ function Home() {
     },
     "exchangeRate": {
       "@type": "UnitPriceSpecification",
-      "price": currentRate.buy?.toFixed(2) || "0",
+      "price": liveBuyPrice,
       "priceCurrency": "BOB",
       "unitText": "USD"
     }
@@ -310,6 +334,7 @@ function Home() {
     language,
     page: 'home',
   });
+  const live = liveBobParts(currentRate);
   
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
@@ -317,7 +342,7 @@ function Home() {
         title={liveSeo.title}
         description={liveSeo.description}
         keywords={language === 'es'
-          ? "dólar blue hoy, dolar paralelo bolivia, binance p2p bolivia, cuanto esta el dolar en bolivia hoy, dolar blue bolivia, precio del dolar en bolivia hoy, cotizacion dolar bolivia hoy, bolivia blue rate, tipo de cambio bolivia, usdt bob"
+          ? "bolivia blue, dólar blue hoy, dolar paralelo bolivia, binance p2p bolivia, cuanto esta el dolar en bolivia hoy, dolar blue bolivia, precio del dolar en bolivia hoy, cotizacion dolar bolivia hoy, bolivia blue rate, tipo de cambio bolivia, usdt bob"
           : "blue dollar today bolivia, parallel dollar bolivia, binance p2p bolivia, how much is the dollar in bolivia today, bolivia blue rate, exchange rate bolivia, usdt bob"}
         canonical="/"
         structuredData={allStructuredData}
@@ -333,15 +358,40 @@ function Home() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-5 sm:py-8 md:py-10 space-y-6 sm:space-y-8 md:space-y-10 pb-[max(5rem,calc(3.5rem+env(safe-area-inset-bottom)))] md:pb-[max(1.5rem,env(safe-area-inset-bottom))]">
-        {/* Mobile: compact title — rates are the product */}
+        {/* Mobile: compact title + rate + meaning + $100 on the first screen */}
         <div className="md:hidden text-center">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white leading-tight">
             {language === 'es' ? 'Dólar Blue Bolivia Hoy' : 'Bolivia Blue Dollar Today'}
           </h1>
+          {live.buyStr && live.sellStr && (
+            <p className="mt-2 text-2xl font-bold tabular-nums text-gray-900 dark:text-white">
+              {language === 'es' ? 'Compra' : 'Buy'} {live.buyStr}{' '}
+              · {language === 'es' ? 'Venta' : 'Sell'} {live.sellStr}
+            </p>
+          )}
+          <p className="mt-2 text-xs text-gray-600 dark:text-gray-400 max-w-sm mx-auto">
+            {language === 'es'
+              ? 'Precio del dólar hoy (blue / paralelo / mercado negro de referencia P2P). Compra: Bs para obtener 1 USD. Venta: Bs al vender 1 USD. No es ventanilla ni BCB.'
+              : 'Dollar price today (blue / parallel / black-market P2P reference). Buy: Bs to obtain 1 USD. Sell: Bs when selling 1 USD. Not a cash desk and not the BCB rate.'}
+          </p>
+          {live.times(100) && (
+            <p className="mt-2 text-sm font-semibold text-gray-800 dark:text-gray-200">
+              100 USD ≈ {live.times(100)} Bs
+            </p>
+          )}
           {currentRate?.updated_at_iso && (
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              {language === 'es' ? 'Actualizado' : 'Updated'}:{' '}
-              {formatDateTime(currentRate.updated_at_iso, language === 'es' ? 'es-BO' : 'en-US')}
+              {language === 'es' ? 'Lectura P2P' : 'P2P reading'}:{' '}
+              <time dateTime={currentRate.updated_at_iso}>
+                {formatDateTime(currentRate.updated_at_iso, language === 'es' ? 'es-BO' : 'en-US')}
+              </time>
+              {language === 'es' ? ' (hora de Bolivia)' : ' (Bolivia time)'}
+              {currentRate?.is_stale ? (language === 'es' ? ' · dato desactualizado' : ' · stale reading') : ''}
+            </p>
+          )}
+          {rateError && !currentRate && (
+            <p className="text-xs text-amber-700 dark:text-amber-300 mt-1">
+              {language === 'es' ? 'No hay una lectura nueva. Reintentando…' : 'No new reading yet. Retrying…'}
             </p>
           )}
         </div>
@@ -409,8 +459,8 @@ function Home() {
               <RateTrioStrip
                 buy={currentRate?.buy ?? currentRate?.buy_bob_per_usd}
                 sell={currentRate?.sell ?? currentRate?.sell_bob_per_usd}
-                officialBuy={currentRate?.official_buy}
-                officialSell={currentRate?.official_sell}
+                officialBuy={currentRate?.official_buy ?? currentRate?.officialBuy}
+                officialSell={currentRate?.official_sell ?? currentRate?.officialSell}
                 language={language}
                 updatedAt={currentRate?.updated_at_iso}
               />
@@ -424,6 +474,106 @@ function Home() {
               citePath="/"
               className="mt-4 max-w-3xl mx-auto"
             />
+            <p className="mt-3 text-xs sm:text-sm text-gray-600 dark:text-gray-400 text-center max-w-2xl mx-auto">
+              {language === 'es'
+                ? 'Compra: Bs que pagás para obtener 1 USD en P2P (USDT). Venta: Bs que recibís al vender 1 USD. Es una referencia USDT/P2P, no el precio de una casa de cambio en efectivo ni el tipo oficial del BCB.'
+                : 'Buy: Bs you pay to obtain 1 USD on P2P (USDT). Sell: Bs you receive when selling 1 USD. USDT/P2P reference — not a cash desk quote and not the official BCB rate.'}
+            </p>
+            <div className="mt-4 max-w-md mx-auto rounded-xl border border-sky-200 dark:border-sky-800 bg-white/80 dark:bg-gray-800/80 p-3">
+              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1" htmlFor="home-quick-usd">
+                {language === 'es' ? 'Convertir USD → BOB (compra P2P)' : 'Convert USD → BOB (P2P buy)'}
+              </label>
+              <div className="flex gap-2">
+                <input
+                  id="home-quick-usd"
+                  type="number"
+                  min="0"
+                  inputMode="decimal"
+                  value={quickUsd}
+                  onChange={(e) => setQuickUsd(e.target.value)}
+                  className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-base tabular-nums min-h-[44px]"
+                />
+                <div className="flex items-center px-3 rounded-lg bg-sky-50 dark:bg-sky-950 text-sm font-mono font-semibold tabular-nums min-h-[44px] min-w-[7.5rem] justify-end">
+                  {Number.isFinite(Number(quickUsd)) && Number.isFinite(currentRate?.buy)
+                    ? `${(Number(quickUsd) * Number(currentRate.buy)).toFixed(2)} Bs`
+                    : '—'}
+                </div>
+              </div>
+              <Link to="/calculadora" className="mt-2 inline-block text-xs font-medium text-sky-700 dark:text-sky-300">
+                {language === 'es' ? 'Calculadora completa →' : 'Full calculator →'}
+              </Link>
+            </div>
+            <p className="mt-3 text-center">
+              <Link
+                to="/euro-a-boliviano"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-500/10 px-4 py-2 text-sm font-semibold text-indigo-700 hover:bg-indigo-500/20 dark:text-indigo-300"
+              >
+                {language === 'es' ? 'Ver euro blue (EUR a BOB) →' : 'See euro blue (EUR to BOB) →'}
+              </Link>
+            </p>
+            <nav
+              className="mt-4 flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm"
+              aria-label={language === 'es' ? 'Herramientas' : 'Tools'}
+            >
+              <Link to="/dolar-blue-hoy" className="text-sky-700 dark:text-sky-300 hover:underline font-medium">
+                {language === 'es' ? 'Dólar blue hoy' : 'Blue dollar today'}
+              </Link>
+              <Link to="/calculadora" className="text-sky-700 dark:text-sky-300 hover:underline font-medium">
+                {language === 'es' ? 'Calculadora' : 'Calculator'}
+              </Link>
+              <Link to="/datos-historicos" className="text-sky-700 dark:text-sky-300 hover:underline font-medium">
+                {language === 'es' ? 'Datos históricos' : 'Historical data'}
+              </Link>
+              <Link to="/prensa" className="text-sky-700 dark:text-sky-300 hover:underline font-medium">
+                {language === 'es' ? 'Prensa' : 'Press kit'}
+              </Link>
+              <Link to="/fuente-de-datos" className="text-sky-700 dark:text-sky-300 hover:underline font-medium">
+                {language === 'es' ? 'Fuente de datos' : 'Data source'}
+              </Link>
+              <Link to="/binance-p2p-bolivia" className="text-sky-700 dark:text-sky-300 hover:underline font-medium">
+                Binance P2P
+              </Link>
+            </nav>
+            <nav
+              className="mt-3 flex flex-wrap justify-center gap-2 text-xs sm:text-sm"
+              aria-label={language === 'es' ? 'Cotización por ciudad' : 'Rate by city'}
+            >
+              <Link
+                to="/dolar-blue-santa-cruz"
+                className="rounded-full border border-gray-200 dark:border-gray-700 px-3 py-1.5 text-gray-700 dark:text-gray-300 hover:border-sky-400 hover:text-sky-700 dark:hover:text-sky-300"
+              >
+                Santa Cruz
+              </Link>
+              <Link
+                to="/dolar-blue-la-paz"
+                className="rounded-full border border-gray-200 dark:border-gray-700 px-3 py-1.5 text-gray-700 dark:text-gray-300 hover:border-sky-400 hover:text-sky-700 dark:hover:text-sky-300"
+              >
+                La Paz
+              </Link>
+              <Link
+                to="/dolar-blue-cochabamba"
+                className="rounded-full border border-gray-200 dark:border-gray-700 px-3 py-1.5 text-gray-700 dark:text-gray-300 hover:border-sky-400 hover:text-sky-700 dark:hover:text-sky-300"
+              >
+                Cochabamba
+              </Link>
+            </nav>
+            <nav
+              className="mt-4 flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm"
+              aria-label={language === 'es' ? 'Bolivia Blue' : 'Bolivia Blue'}
+            >
+              <Link to="/acerca-de" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium">
+                {language === 'es' ? 'Sobre Bolivia Blue' : 'About Bolivia Blue'}
+              </Link>
+              <Link to="/publicitar" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium">
+                {language === 'es' ? 'Publicitar' : 'Advertise'}
+              </Link>
+              <Link to="/blog" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium">
+                Blog
+              </Link>
+              <Link to="/terminos" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium">
+                {language === 'es' ? 'Términos y Condiciones' : 'Terms'}
+              </Link>
+            </nav>
           </section>
 
           <section id="price-alerts" className="mt-5 sm:mt-6">
@@ -619,14 +769,26 @@ function Home() {
                 <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2">
                   {language === 'es' ? (
                     <>
-                      <li>Si la tasa muestra <strong>10.50 BOB por USD</strong>, y quieres cambiar $100 USD, recibirás aproximadamente <strong>1,050 BOB</strong></li>
+                      <li>
+                        Si la compra de referencia es{' '}
+                        <strong>{Number.isFinite(currentRate?.buy) ? `${Number(currentRate.buy).toFixed(2)} BOB por USD` : 'la tasa mostrada arriba'}</strong>
+                        {Number.isFinite(currentRate?.buy) ? (
+                          <>, $100 USD equivalen a aproximadamente <strong>{(Number(currentRate.buy) * 100).toLocaleString('es-BO', { maximumFractionDigits: 0 })} BOB</strong></>
+                        ) : null}
+                      </li>
                       <li>Para compras internacionales, usa esta tasa para calcular cuántos bolivianos necesitas ahorrar</li>
                       <li>Si recibes remesas, esta tasa te ayuda a saber cuánto recibirás en bolivianos</li>
                       <li>Para inversiones o ahorros, compara esta tasa con la oficial del banco para tomar mejores decisiones</li>
                     </>
                   ) : (
                     <>
-                      <li>If the rate shows <strong>10.50 BOB per USD</strong>, and you want to exchange $100 USD, you'll receive approximately <strong>1,050 BOB</strong></li>
+                      <li>
+                        If the reference buy rate is{' '}
+                        <strong>{Number.isFinite(currentRate?.buy) ? `${Number(currentRate.buy).toFixed(2)} BOB per USD` : 'the rate shown above'}</strong>
+                        {Number.isFinite(currentRate?.buy) ? (
+                          <>, $100 USD is about <strong>{(Number(currentRate.buy) * 100).toLocaleString('en-US', { maximumFractionDigits: 0 })} BOB</strong></>
+                        ) : null}
+                      </li>
                       <li>For international purchases, use this rate to calculate how many bolivianos you need to save</li>
                       <li>If you receive remittances, this rate helps you know how much you'll receive in bolivianos</li>
                       <li>For investments or savings, compare this rate with the official bank rate to make better decisions</li>
@@ -978,6 +1140,18 @@ function Home() {
             </Link>
             <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
               {language === 'es' ? 'Calculadora de divisas' : 'Currency calculator'}
+            </Link>
+            <Link to="/acerca-de" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+              {language === 'es' ? 'Sobre Bolivia Blue' : 'About Bolivia Blue'}
+            </Link>
+            <Link to="/publicitar" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+              {language === 'es' ? 'Publicitar en Bolivia Blue' : 'Advertise'}
+            </Link>
+            <Link to="/blog" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+              Blog
+            </Link>
+            <Link to="/terminos" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+              {language === 'es' ? 'Términos y Condiciones' : 'Terms and Conditions'}
             </Link>
           </div>
         </section>

@@ -12,7 +12,9 @@ import { fetchBlueRate } from '../utils/api';
 import { formatDateTime } from '../utils/formatters';
 import { getWebPage, getBreadcrumbList, getDolarBlueHoyFAQSchema, getLiveRateDataset, getExchangeRateSpecification } from '../utils/seoSchema';
 import AiCitationBlock from '../components/AiCitationBlock';
+import CiteShareBar from '../components/CiteShareBar';
 import { buildLiveRateSeoMeta, ratesFromBluePayload } from '../utils/seoRateMeta';
+import { buildRateAnswerParagraph } from '../utils/citationCopy';
 import { lazy, Suspense } from 'react';
 const BlueChart = lazy(() => import('../components/BlueChart'));
 import Breadcrumbs from '../components/Breadcrumbs';
@@ -133,8 +135,8 @@ function DolarBlueHoy() {
             </span>
             <span className="hidden md:inline">
               {language === 'es'
-                ? `Dólar Blue Hoy ${today}: compra ${currentRate?.buy_bob_per_usd?.toFixed(2) || '—'} · venta ${currentRate?.sell_bob_per_usd?.toFixed(2) || '—'}`
-                : `Blue Dollar Today ${today}: buy ${currentRate?.buy_bob_per_usd?.toFixed(2) || '—'} · sell ${currentRate?.sell_bob_per_usd?.toFixed(2) || '—'}`}
+                ? `Dólar Blue Hoy Bolivia: compra ${currentRate?.buy_bob_per_usd?.toFixed(2) || '—'} · venta ${currentRate?.sell_bob_per_usd?.toFixed(2) || '—'}`
+                : `Blue Dollar Today Bolivia: buy ${currentRate?.buy_bob_per_usd?.toFixed(2) || '—'} · sell ${currentRate?.sell_bob_per_usd?.toFixed(2) || '—'}`}
             </span>
           </h1>
           <p className="text-base text-gray-600 dark:text-gray-400 mb-1 hidden md:block">
@@ -156,8 +158,8 @@ function DolarBlueHoy() {
             <RateTrioStrip
               buy={currentRate?.buy_bob_per_usd}
               sell={currentRate?.sell_bob_per_usd}
-              officialBuy={currentRate?.official_buy}
-              officialSell={currentRate?.official_sell}
+              officialBuy={currentRate?.official_buy ?? currentRate?.officialBuy}
+              officialSell={currentRate?.official_sell ?? currentRate?.officialSell}
               language={language}
               updatedAt={currentRate?.updated_at_iso}
             />
@@ -170,6 +172,18 @@ function DolarBlueHoy() {
             sourcesUsed={currentRate?.sources_used}
             citePath="/dolar-blue-hoy"
             className="mt-4"
+          />
+          <CiteShareBar
+            className="mt-3"
+            language={language}
+            liveLine={buildRateAnswerParagraph({
+              buy: currentRate?.buy_bob_per_usd,
+              sell: currentRate?.sell_bob_per_usd,
+              updatedAt: currentRate?.updated_at_iso,
+              sourcesUsed: currentRate?.sources_used,
+              language,
+              citePath: '/dolar-blue-hoy',
+            })}
           />
         </section>
 

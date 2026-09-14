@@ -108,6 +108,7 @@ export function formatTimeAgo(isoString) {
 export function formatDateTime(isoString, locale = 'es-BO') {
   if (!isoString) return '';
   const date = new Date(isoString);
+  if (Number.isNaN(date.getTime())) return '';
 
   return date.toLocaleString(locale, {
     timeZone: 'America/La_Paz',
@@ -117,6 +118,13 @@ export function formatDateTime(isoString, locale = 'es-BO') {
     hour: '2-digit',
     minute: '2-digit'
   });
+}
+
+/** Bolivia-local clock for readers; pair with <time dateTime={iso}>. */
+export function formatObservedAt(isoString, locale = 'es-BO') {
+  const label = formatDateTime(isoString, locale);
+  if (!label) return { label: '', iso: null };
+  return { label, iso: isoString };
 }
 
 /**

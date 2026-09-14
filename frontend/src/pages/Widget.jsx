@@ -8,12 +8,18 @@ import Breadcrumbs from '../components/Breadcrumbs';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import { getWebPage, getBreadcrumbList } from '../utils/seoSchema';
+import { SITE_URL } from '../config/brand';
 
 const EMBED_SNIPPET = `<div id="bolivia-blue-widget"></div>
-<script src="https://boliviablue.com/embed.js" async></script>`;
+<script src="${SITE_URL}/embed.js" async></script>`;
 
 const EMBED_DARK = `<div id="bolivia-blue-widget"></div>
-<script src="https://boliviablue.com/embed.js" data-theme="dark" data-lang="es" async></script>`;
+<script src="${SITE_URL}/embed.js" data-theme="dark" data-lang="es" async></script>`;
+
+const IFRAME_SNIPPET = `<iframe src="${SITE_URL}/embed.html" title="Dólar blue Bolivia" width="360" height="190" loading="lazy" style="border:0;max-width:100%"></iframe>
+<p>Fuente: <a href="${SITE_URL}/dolar-blue-hoy">Bolivia Blue</a></p>`;
+
+const BADGE_SNIPPET = `<a href="${SITE_URL}/dolar-blue-hoy?utm_source=badge" rel="noopener"><img src="${SITE_URL}/api/badge.svg" alt="Dólar blue Bolivia — Bolivia Blue" width="320" height="40" /></a>`;
 
 function EmbedPreview() {
   useEffect(() => {
@@ -148,6 +154,56 @@ function Widget() {
               : language === 'es'
                 ? 'Copiar código'
                 : 'Copy code'}
+          </button>
+        </section>
+
+        <section className="space-y-3">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            {language === 'es' ? '3. Iframe (WordPress / CMS)' : '3. Iframe (WordPress / CMS)'}
+          </h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            {language === 'es'
+              ? 'Si tu CMS no deja pegar scripts, usá este iframe. El recuadro incluye un enlace a Bolivia Blue.'
+              : 'If your CMS blocks scripts, use this iframe. The box includes a link to Bolivia Blue.'}
+          </p>
+          <pre className="bg-gray-900 text-gray-100 text-sm p-4 rounded-lg overflow-x-auto whitespace-pre-wrap">
+            {IFRAME_SNIPPET}
+          </pre>
+          <button
+            type="button"
+            onClick={() => copy(IFRAME_SNIPPET, 'iframe')}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700"
+          >
+            {copied === 'iframe'
+              ? language === 'es'
+                ? 'Copiado'
+                : 'Copied'
+              : language === 'es'
+                ? 'Copiar iframe'
+                : 'Copy iframe'}
+          </button>
+        </section>
+
+        <section className="space-y-3">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            {language === 'es' ? '4. Badge SVG en vivo' : '4. Live SVG badge'}
+          </h2>
+          <img src="/api/badge.svg" alt="Bolivia Blue live badge" width={320} height={40} />
+          <pre className="bg-gray-900 text-gray-100 text-sm p-4 rounded-lg overflow-x-auto whitespace-pre-wrap">
+            {BADGE_SNIPPET}
+          </pre>
+          <button
+            type="button"
+            onClick={() => copy(BADGE_SNIPPET, 'badge')}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700"
+          >
+            {copied === 'badge'
+              ? language === 'es'
+                ? 'Copiado'
+                : 'Copied'
+              : language === 'es'
+                ? 'Copiar badge'
+                : 'Copy badge'}
           </button>
         </section>
 

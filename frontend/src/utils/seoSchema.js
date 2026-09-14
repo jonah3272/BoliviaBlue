@@ -3,7 +3,7 @@
  * Use these so schema stays consistent and aligned with visible content.
  *
  * Convention:
- * - baseUrl: always https://boliviablue.com (no www)
+ * - baseUrl: always https://www.boliviablue.com (apex redirects here)
  * - inLanguage: "es-BO" or "en-US"
  * - dateModified: ISO 8601; use real rate timestamp when available
  */
@@ -16,10 +16,19 @@ export const BASE_URL = SITE_URL;
 export const PUBLISHER_ORG = {
   '@type': 'Organization',
   name: SITE_NAME,
-  alternateName: [SITE_NAME_ALT, 'boliviablue'],
+  alternateName: [SITE_NAME_ALT, 'bolivia blue', 'boliviablue', 'boliviablue.com'],
   url: BASE_URL,
   logo: { '@type': 'ImageObject', url: `${BASE_URL}/favicon.svg` }
 };
+
+/** Hub pages Google commonly lifts into brand-query sitelinks. Visible in footer + homepage nav. */
+export const SITELINK_CANDIDATES = [
+  { path: '/acerca-de', nameEs: 'Sobre Bolivia Blue', nameEn: 'About Bolivia Blue' },
+  { path: '/publicitar', nameEs: 'Publicitar en Bolivia Blue', nameEn: 'Advertise on Bolivia Blue' },
+  { path: '/blog', nameEs: 'Blog', nameEn: 'Blog' },
+  { path: '/terminos', nameEs: 'Términos y Condiciones', nameEn: 'Terms and Conditions' },
+  { path: '/calculadora', nameEs: 'Calculadora', nameEn: 'Calculator' },
+];
 
 /**
  * Sitewide Organization — brand signals for Knowledge Panel / sitelinks.
@@ -29,7 +38,7 @@ export function getOrganizationSchema(language = 'es') {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: SITE_NAME,
-    alternateName: [SITE_NAME_ALT, 'boliviablue'],
+    alternateName: [SITE_NAME_ALT, 'bolivia blue', 'boliviablue', 'boliviablue.com'],
     url: BASE_URL,
     logo: {
       '@type': 'ImageObject',
@@ -65,31 +74,21 @@ export function getOrganizationSchema(language = 'es') {
  * WebSite schema — helps Google understand the brand homepage for sitelinks.
  */
 export function getWebSiteSchema(language = 'es') {
+  const es = language !== 'en';
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: SITE_NAME,
-    alternateName: [SITE_NAME_ALT],
+    alternateName: [SITE_NAME_ALT, 'bolivia blue', 'boliviablue.com'],
     url: BASE_URL,
-    inLanguage: language === 'es' ? ['es-BO', 'en-US'] : ['en-US', 'es-BO'],
+    inLanguage: es ? ['es-BO', 'en-US'] : ['en-US', 'es-BO'],
     publisher: PUBLISHER_ORG,
-    potentialAction: {
-      '@type': 'ReadAction',
-      target: [
-        `${BASE_URL}/`,
-        `${BASE_URL}/dolar-blue-hoy`,
-        `${BASE_URL}/acerca-de`,
-        `${BASE_URL}/prensa`,
-        `${BASE_URL}/publicitar`,
-        `${BASE_URL}/terminos`,
-        `${BASE_URL}/politica-de-privacidad`,
-        `${BASE_URL}/bolivian-blue`,
-        `${BASE_URL}/fuente-de-datos`,
-        `${BASE_URL}/api-docs`,
-        `${BASE_URL}/widget`,
-        `${BASE_URL}/llms.txt`,
-      ],
-    },
+    hasPart: SITELINK_CANDIDATES.map((page) => ({
+      '@type': 'WebPage',
+      name: es ? page.nameEs : page.nameEn,
+      url: `${BASE_URL}${page.path}`,
+      isPartOf: { '@type': 'WebSite', url: BASE_URL, name: SITE_NAME },
+    })),
   };
 }
 

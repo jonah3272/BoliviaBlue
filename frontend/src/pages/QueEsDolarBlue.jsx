@@ -280,10 +280,10 @@ function QueEsDolarBlue() {
                         {language === 'es' ? 'Precio' : 'Price'}
                       </td>
                       <td className="py-2 px-4 text-gray-700 dark:text-gray-300">
-                        {language === 'es' ? 'Más bajo (~9.00 BOB/USD)' : 'Lower (~9.00 BOB/USD)'}
+                        {language === 'es' ? 'Más bajo (tipo BCB)' : 'Lower (BCB rate)'}
                       </td>
                       <td className="py-2 px-4 text-gray-700 dark:text-gray-300">
-                        {language === 'es' ? 'Más alto (~10.50 BOB/USD)' : 'Higher (~10.50 BOB/USD)'}
+                        {language === 'es' ? 'Más alto (mercado paralelo)' : 'Higher (parallel market)'}
                       </td>
                     </tr>
                     <tr>

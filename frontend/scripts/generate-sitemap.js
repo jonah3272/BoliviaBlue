@@ -8,7 +8,7 @@ const __dirname = path.dirname(__filename);
 
 const now = new Date();
 const currentDate = now.toISOString().split('T')[0] + 'T12:00:00+00:00';
-const baseUrl = 'https://boliviablue.com';
+const baseUrl = 'https://www.boliviablue.com';
 
 const pages = [
   { path: '/', changefreq: 'hourly', priority: '1.0' },

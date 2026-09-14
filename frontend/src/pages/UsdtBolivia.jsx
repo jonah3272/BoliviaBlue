@@ -9,6 +9,7 @@ import BinanceBanner from '../components/BinanceBanner';
 import CurrencyRateSnapshot from '../components/CurrencyRateSnapshot';
 import { Link } from 'react-router-dom';
 import { fetchBlueRate } from '../utils/api';
+import { liveBobParts } from '../utils/seoRateMeta';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 
@@ -24,6 +25,7 @@ function UsdtBolivia() {
   const [currentRate, setCurrentRate] = useState(null);
   const [isRateLoading, setIsRateLoading] = useState(true);
   const [rateError, setRateError] = useState(null);
+  const live = liveBobParts(currentRate);
 
   useEffect(() => {
     const loadRate = async () => {
@@ -90,7 +92,9 @@ function UsdtBolivia() {
         "name": "¿Cómo convertir USDT a BOB en Bolivia?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Para convertir USDT a BOB en Bolivia, puedes usar Binance P2P. Ve a la sección P2P, selecciona el par USDT/BOB, elige una oferta de venta, y sigue las instrucciones. Binance actúa como intermediario para mayor seguridad. El tipo de cambio actual es aproximadamente 10.50 BOB por USDT."
+          "text": live.buyStr
+            ? `Para convertir USDT a BOB en Bolivia, puedes usar Binance P2P. Ve a la sección P2P, selecciona el par USDT/BOB, elige una oferta de venta, y sigue las instrucciones. Binance actúa como intermediario para mayor seguridad. El tipo de cambio de referencia hoy es ${live.buyStr} BOB por USDT.`
+            : 'Para convertir USDT a BOB en Bolivia, puedes usar Binance P2P. El tipo de cambio de referencia es la mediana P2P publicada en vivo en boliviablue.com.'
         }
       },
       {
@@ -98,7 +102,9 @@ function UsdtBolivia() {
         "name": "¿Cuánto es 1 USDT a BOB?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": `1 USDT equivale aproximadamente a ${currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB según el dólar blue actual. Este valor se actualiza cada 15 minutos y refleja el mercado paralelo en Bolivia.`
+          "text": live.buyStr
+            ? `1 USDT equivale aproximadamente a ${live.buyStr} BOB según el dólar blue actual. Este valor se actualiza cada 15 minutos y refleja el mercado paralelo en Bolivia.`
+            : '1 USDT sigue de cerca al dólar blue. La equivalencia en BOB se actualiza cada 15 minutos en boliviablue.com.'
         }
       },
       {
@@ -123,7 +129,9 @@ function UsdtBolivia() {
         "name": "How to convert USDT to BOB in Bolivia?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "To convert USDT to BOB in Bolivia, you can use Binance P2P. Go to the P2P section, select the USDT/BOB pair, choose a sell offer, and follow the instructions. Binance acts as an intermediary for greater security. The current exchange rate is approximately 10.50 BOB per USDT."
+          "text": live.buyStr
+            ? `To convert USDT to BOB in Bolivia, you can use Binance P2P. Go to the P2P section, select the USDT/BOB pair, choose a sell offer, and follow the instructions. Binance acts as an intermediary for greater security. Today’s reference rate is about ${live.buyStr} BOB per USDT.`
+            : 'To convert USDT to BOB in Bolivia, you can use Binance P2P. The reference rate is the live P2P median on boliviablue.com.'
         }
       }
     ]
@@ -248,8 +256,8 @@ function UsdtBolivia() {
               </h3>
               <p className="text-gray-700 dark:text-gray-300 mb-4">
                 {language === 'es'
-                  ? <>El tipo de cambio de <strong>USDT a BOB</strong> varía según el mercado, pero generalmente está alrededor de {currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB por USDT. Este valor refleja el <strong>dólar blue</strong> en Bolivia y se actualiza cada 15 minutos en nuestra plataforma utilizando datos de Binance P2P.</>
-                  : <>The <strong>USDT to BOB</strong> exchange rate varies according to the market, but is generally around {currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB per USDT. This value reflects the <strong>blue dollar</strong> in Bolivia and is updated every 15 minutes on our platform using Binance P2P data.</>}
+                  ? <>El tipo de cambio de <strong>USDT a BOB</strong> varía según el mercado{live.buyStr ? <>; la referencia hoy es {live.buyStr} BOB por USDT</> : null}. Este valor refleja el <strong>dólar blue</strong> en Bolivia y se actualiza cada 15 minutos en nuestra plataforma utilizando datos de Binance P2P.</>
+                  : <>The <strong>USDT to BOB</strong> exchange rate varies according to the market{live.buyStr ? <>; today’s reference is {live.buyStr} BOB per USDT</> : null}. This value reflects the <strong>blue dollar</strong> in Bolivia and is updated every 15 minutes on our platform using Binance P2P data.</>}
               </p>
 
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
@@ -319,22 +327,25 @@ function UsdtBolivia() {
               </p>
               <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-4">
                 <ul className="space-y-2 text-gray-700 dark:text-gray-300">
-                  {language === 'es' ? (
+                  {live.buyStr ? (
                     <>
-                      <li>Si el tipo de cambio es {currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB por USDT:</li>
-                      <li className="ml-4">• 10 USDT = {((currentRate?.buy_bob_per_usd || 10.50) * 10).toFixed(2)} BOB</li>
-                      <li className="ml-4">• 50 USDT = {((currentRate?.buy_bob_per_usd || 10.50) * 50).toFixed(2)} BOB</li>
-                      <li className="ml-4">• 100 USDT = {((currentRate?.buy_bob_per_usd || 10.50) * 100).toFixed(2)} BOB</li>
-                      <li className="ml-4">• 1000 USDT = {((currentRate?.buy_bob_per_usd || 10.50) * 1000).toFixed(2)} BOB</li>
+                      <li>
+                        {language === 'es'
+                          ? `Si el tipo de cambio es ${live.buyStr} BOB por USDT:`
+                          : `If the exchange rate is ${live.buyStr} BOB per USDT:`}
+                      </li>
+                      {[10, 50, 100, 1000].map((n) => (
+                        <li className="ml-4" key={n}>
+                          • {n} USDT = {live.times(n)} BOB
+                        </li>
+                      ))}
                     </>
                   ) : (
-                    <>
-                      <li>If the exchange rate is {currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB per USDT:</li>
-                      <li className="ml-4">• 10 USDT = {((currentRate?.buy_bob_per_usd || 10.50) * 10).toFixed(2)} BOB</li>
-                      <li className="ml-4">• 50 USDT = {((currentRate?.buy_bob_per_usd || 10.50) * 50).toFixed(2)} BOB</li>
-                      <li className="ml-4">• 100 USDT = {((currentRate?.buy_bob_per_usd || 10.50) * 100).toFixed(2)} BOB</li>
-                      <li className="ml-4">• 1000 USDT = {((currentRate?.buy_bob_per_usd || 10.50) * 1000).toFixed(2)} BOB</li>
-                    </>
+                    <li>
+                      {language === 'es'
+                        ? 'Cuando cargue la cotización en vivo, acá aparecen las conversiones de 10, 50, 100 y 1000 USDT.'
+                        : 'When the live rate loads, conversions for 10, 50, 100 and 1000 USDT appear here.'}
+                    </li>
                   )}
                 </ul>
               </div>

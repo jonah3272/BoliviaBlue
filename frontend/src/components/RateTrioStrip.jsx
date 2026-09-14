@@ -219,7 +219,8 @@ export default function RateTrioStrip({
       {updatedAt && (
         <p className="mt-3 text-[11px] text-gray-500 dark:text-gray-500">
           {es ? 'Lectura paralelo' : 'Parallel reading'}:{' '}
-          {new Date(updatedAt).toLocaleString(es ? 'es-BO' : 'en-US')}
+          {new Date(updatedAt).toLocaleString(es ? 'es-BO' : 'en-US', { timeZone: 'America/La_Paz' })}
+          {es ? ' (hora de Bolivia)' : ' (Bolivia time)'}
         </p>
       )}
     </>

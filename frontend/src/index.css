@@ -106,9 +106,12 @@ ins.adsbygoogle {
   overflow: hidden !important;
 }
 
-/* Ensure proper spacing between ads and content */
-section + section {
-  margin-top: 2rem;
+/* Avoid double-spacing between sections.
+   Many pages already use Tailwind `space-y-*` on `main` and also set
+   `main > section { margin-bottom: ... }`. This keeps section-to-section
+   spacing consistent (and prevents the “everything feels squished” look). */
+main > section + section {
+  margin-top: 0;
 }
 
 /* Prevent anchor ads from overlapping main content */

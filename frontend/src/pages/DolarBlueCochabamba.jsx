@@ -12,6 +12,7 @@ import { lazy, Suspense } from 'react';
 const BlueChart = lazy(() => import('../components/BlueChart'));
 import Breadcrumbs from '../components/Breadcrumbs';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
+import { buildLiveRateSeoMeta, ratesFromBluePayload } from '../utils/seoRateMeta';
 
 function DolarBlueCochabamba() {
   // Signal to AdSense that this page has sufficient content
@@ -29,7 +30,8 @@ function DolarBlueCochabamba() {
       try {
         const data = await fetchBlueRate();
         setCurrentRate(data);
-        setLastUpdated(new Date());
+        const observed = data?.updated_at_iso ? new Date(data.updated_at_iso) : null;
+        if (observed && !Number.isNaN(observed.getTime())) setLastUpdated(observed);
       } catch (err) {
         console.error('Error loading rate:', err);
       }
@@ -38,6 +40,26 @@ function DolarBlueCochabamba() {
     const interval = setInterval(loadRate, 15 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
+
+  const liveSeo = buildLiveRateSeoMeta({
+    ...ratesFromBluePayload(currentRate),
+    language,
+    page: 'cochabamba',
+  });
+  const buyStr =
+    Number.isFinite(Number(currentRate?.buy_bob_per_usd)) && Number(currentRate.buy_bob_per_usd) >= 1
+      ? Number(currentRate.buy_bob_per_usd).toFixed(2)
+      : null;
+  const sellStr =
+    Number.isFinite(Number(currentRate?.sell_bob_per_usd)) && Number(currentRate.sell_bob_per_usd) >= 1
+      ? Number(currentRate.sell_bob_per_usd).toFixed(2)
+      : null;
+  const cbRateEs = buyStr && sellStr
+    ? `compra Bs ${buyStr} y venta Bs ${sellStr}`
+    : 'la mediana nacional P2P (actualizada cada 15 minutos en esta página)';
+  const cbRateEn = buyStr && sellStr
+    ? `about Bs ${buyStr} to buy and Bs ${sellStr} to sell`
+    : 'the national P2P median shown on this page (updated every 15 minutes)';
 
   const articleSchema = {
     "@context": "https://schema.org",
@@ -73,7 +95,7 @@ function DolarBlueCochabamba() {
         "name": "¿Cuál es el dólar blue en Cochabamba?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": `El dólar blue en Cochabamba es actualmente de aproximadamente ${currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB por USD para compra y ${currentRate?.sell_bob_per_usd?.toFixed(2) || '10.60'} BOB por USD para venta. Esta cotización se actualiza cada 15 minutos con datos en tiempo real de Binance P2P.`
+          "text": `El dólar blue en Cochabamba es actualmente ${cbRateEs}. Es la misma mediana nacional P2P, usada como referencia en Cochabamba.`
         }
       },
       {
@@ -90,7 +112,7 @@ function DolarBlueCochabamba() {
         "name": "What is the blue dollar in Cochabamba?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": `The blue dollar in Cochabamba is currently approximately ${currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB per USD for buying and ${currentRate?.sell_bob_per_usd?.toFixed(2) || '10.60'} BOB per USD for selling. This quote is updated every 15 minutes with real-time data from Binance P2P.`
+          "text": `The blue dollar in Cochabamba is currently ${cbRateEn}. Same national P2P median, used as a Cochabamba reference.`
         }
       }
     ]
@@ -99,12 +121,8 @@ function DolarBlueCochabamba() {
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
-        title={language === 'es'
-          ? 'Dólar Blue Cochabamba - Cotización en Tiempo Real | Actualizado Cada 15 Min'
-          : 'Blue Dollar Cochabamba - Real-Time Quote | Updated Every 15 Min'}
-        description={language === 'es'
-          ? 'Dólar blue Cochabamba actualizado cada 15 minutos. Consulta la cotización del dólar blue en Cochabamba, Bolivia. Tipo de cambio en tiempo real, gráficos históricos y dónde cambiar dólares en Cochabamba. Gratis y sin registro.'
-          : 'Blue dollar Cochabamba updated every 15 minutes. Check the blue dollar quote in Cochabamba, Bolivia. Real-time exchange rate, historical charts and where to exchange dollars in Cochabamba. Free and no registration required.'}
+        title={liveSeo.title}
+        description={liveSeo.description}
         keywords={language === 'es'
           ? "dólar blue cochabamba, dólar blue bolivia cochabamba, tipo cambio cochabamba, cotización dólar blue cochabamba, precio dólar blue cochabamba, dónde cambiar dólares cochabamba, cambio dólares cochabamba, dólar paralelo cochabamba"
           : "blue dollar cochabamba, blue dollar bolivia cochabamba, exchange rate cochabamba, blue dollar quote cochabamba, blue dollar price cochabamba, where to exchange dollars cochabamba, exchange dollars cochabamba, parallel dollar cochabamba"}

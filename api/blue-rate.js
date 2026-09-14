@@ -8,13 +8,21 @@ const { attachOfficial } = require('./_lib/officialRate');
 
 /** Last cross-source platforms seen on refresh (per serverless instance) */
 let lastSourcesUsed = ['binance'];
+let lastEurDerivation = null;
 
-function toPayload(data) {
+function toPayload(data, extras = {}) {
   const sources = lastSourcesUsed.length ? lastSourcesUsed : ['binance'];
+  const generatedAt = extras.generated_at_iso || new Date().toISOString();
+  const hasEur = data.buy_bob_per_eur != null && data.sell_bob_per_eur != null;
+  const eurDerivation =
+    extras.eur_derivation ||
+    lastEurDerivation ||
+    (hasEur ? 'usdt-cross' : null);
   return {
     source: sources.length > 1 ? 'p2p-cross-median' : 'binance-p2p',
     sources_used: sources,
     source_count: sources.length,
+    quote_kind: 'usdt_p2p_median',
     buy_bob_per_usd: data.buy,
     sell_bob_per_usd: data.sell,
     official_buy: data.official_buy,
@@ -25,7 +33,10 @@ function toPayload(data) {
     buy_bob_per_eur: data.buy_bob_per_eur,
     sell_bob_per_eur: data.sell_bob_per_eur,
     updated_at_iso: data.t,
+    generated_at_iso: generatedAt,
+    eur_updated_at_iso: data.eur_updated_at_iso || (hasEur ? data.t : null),
     is_stale: isRateStale(data.t, STALE_MS),
+    eur_derivation: eurDerivation,
     sample_buy: [],
     sample_sell: [],
   };
@@ -69,8 +80,9 @@ module.exports = async function handler(req, res) {
           .limit(1)
           .maybeSingle();
         if (isRateStale(latest?.t, STALE_MS)) {
-          const { row, sourcesUsed } = await refreshBlueFromBinance(supabase);
+          const { row, sourcesUsed, eurDerivation } = await refreshBlueFromBinance(supabase);
           if (sourcesUsed?.length) lastSourcesUsed = sourcesUsed;
+          if (eurDerivation) lastEurDerivation = eurDerivation;
           data = row;
         } else {
           const { data: fresh } = await supabase
@@ -84,6 +96,30 @@ module.exports = async function handler(req, res) {
       } catch (healErr) {
         console.error('[blue-rate] self-heal failed:', healErr.message || healErr);
         // Fall through with stale row rather than 500ing the public API.
+      }
+    }
+
+    if (data.buy_bob_per_eur == null || data.sell_bob_per_eur == null) {
+      try {
+        const { data: lastEur } = await supabase
+          .from('rates')
+          .select('buy_bob_per_eur, sell_bob_per_eur, t')
+          .not('buy_bob_per_eur', 'is', null)
+          .not('sell_bob_per_eur', 'is', null)
+          .order('t', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        if (lastEur?.buy_bob_per_eur != null && lastEur?.sell_bob_per_eur != null) {
+          data = {
+            ...data,
+            buy_bob_per_eur: lastEur.buy_bob_per_eur,
+            sell_bob_per_eur: lastEur.sell_bob_per_eur,
+            eur_updated_at_iso: lastEur.t,
+          };
+          lastEurDerivation = 'usdt-cross-last-valid';
+        }
+      } catch {
+        /* keep USD row even if EUR lookup fails */
       }
     }
 

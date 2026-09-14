@@ -50,6 +50,7 @@ const MonthlyReport = lazy(() => import('./pages/MonthlyReport'));
 const Chat = lazy(() => import('./pages/Chat'));
 const Widget = lazy(() => import('./pages/Widget'));
 const PressKit = lazy(() => import('./pages/PressKit'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Loading fallback component
 // IMPORTANT: This component signals to the AdSense loader that we're in a loading state
@@ -162,6 +163,7 @@ function AppContent() {
           <Route path="/chat" element={<Chat />} />
           <Route path="/comentarios" element={<Chat />} />
           <Route path="/comunidad" element={<Chat />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
       <MobileBottomNav />

@@ -8,6 +8,7 @@ import BlueRateCards from '../components/BlueRateCards';
 import BinanceBanner from '../components/BinanceBanner';
 import { Link } from 'react-router-dom';
 import { fetchBlueRate } from '../utils/api';
+import { liveBobParts } from '../utils/seoRateMeta';
 import { lazy, Suspense } from 'react';
 const BlueChart = lazy(() => import('../components/BlueChart'));
 import Breadcrumbs from '../components/Breadcrumbs';
@@ -21,6 +22,7 @@ function BlueDollarBolivia() {
   const [showOfficial, setShowOfficial] = useState(false);
   const [currentRate, setCurrentRate] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(new Date());
+  const live = liveBobParts(currentRate);
 
   useEffect(() => {
     const loadRate = async () => {
@@ -67,7 +69,9 @@ function BlueDollarBolivia() {
         "name": "What is the blue dollar in Bolivia?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": `The blue dollar in Bolivia is the exchange rate of the US dollar in the parallel market. Currently, the blue dollar is approximately ${currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB per USD for buying and ${currentRate?.sell_bob_per_usd?.toFixed(2) || '10.60'} BOB per USD for selling. This quote is updated every 15 minutes with real-time data from Binance P2P.`
+          "text": live.buyStr && live.sellStr
+            ? `The blue dollar in Bolivia is the exchange rate of the US dollar in the parallel market. Currently, the blue dollar is ${live.buyStr} BOB per USD for buying and ${live.sellStr} BOB per USD for selling. This quote is updated every 15 minutes with real-time data from Binance P2P.`
+            : 'The blue dollar in Bolivia is the US dollar parallel-market rate, published live on boliviablue.com about every 15 minutes.'
         }
       },
       {
@@ -199,7 +203,10 @@ function BlueDollarBolivia() {
                   What is the blue dollar in Bolivia?
                 </h3>
                 <p className="text-gray-700 dark:text-gray-300">
-                  The blue dollar in Bolivia is the exchange rate of the US dollar in the parallel market. Currently, the blue dollar is approximately {currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB per USD for buying and {currentRate?.sell_bob_per_usd?.toFixed(2) || '10.60'} BOB per USD for selling.
+                  The blue dollar in Bolivia is the exchange rate of the US dollar in the parallel market.
+                  {live.buyStr && live.sellStr
+                    ? ` Currently, the blue dollar is ${live.buyStr} BOB per USD for buying and ${live.sellStr} BOB per USD for selling.`
+                    : ' The live buy and sell rates are on the cards above.'}
                 </p>
               </div>
               <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">

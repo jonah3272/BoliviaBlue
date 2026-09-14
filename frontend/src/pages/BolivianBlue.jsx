@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 import { fetchBlueRate } from '../utils/api';
 import { formatDateTime } from '../utils/formatters';
 import { getWebPage, getBreadcrumbList } from '../utils/seoSchema';
-import { buildLiveRateSeoMeta, ratesFromBluePayload } from '../utils/seoRateMeta';
+import { buildLiveRateSeoMeta, ratesFromBluePayload, liveBobParts } from '../utils/seoRateMeta';
 import PrimaryRateLink from '../components/PrimaryRateLink';
 import AiCitationBlock from '../components/AiCitationBlock';
 import { PRIMARY_RATE_URL } from '../config/seo';
@@ -28,6 +28,7 @@ function BolivianBlue() {
   const language = languageContext?.language || 'es';
   const [showOfficial, setShowOfficial] = useState(false);
   const [currentRate, setCurrentRate] = useState(null);
+  const live = liveBobParts(currentRate);
   const [lastUpdated, setLastUpdated] = useState(new Date());
 
   useEffect(() => {
@@ -83,7 +84,9 @@ function BolivianBlue() {
         "name": "¿Qué es el Bolivian Blue?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": `El Bolivian Blue es el tipo de cambio del dólar estadounidense en el mercado paralelo de Bolivia. Actualmente, el Bolivian Blue es de aproximadamente ${currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB por USD para compra y ${currentRate?.sell_bob_per_usd?.toFixed(2) || '10.60'} BOB por USD para venta. Esta cotización se actualiza cada 15 minutos con datos en tiempo real de Binance P2P.`
+          "text": live.buyStr && live.sellStr
+            ? `El Bolivian Blue es el tipo de cambio del dólar estadounidense en el mercado paralelo de Bolivia. Actualmente, el Bolivian Blue es ${live.buyStr} BOB por USD para compra y ${live.sellStr} BOB por USD para venta. Esta cotización se actualiza cada 15 minutos con datos en tiempo real de Binance P2P.`
+            : 'El Bolivian Blue es el tipo de cambio del dólar estadounidense en el mercado paralelo de Bolivia. La cotización se publica en vivo en boliviablue.com cada ~15 minutos.'
         }
       },
       {
@@ -124,7 +127,9 @@ function BolivianBlue() {
         "name": "What is Bolivian Blue?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": `Bolivian Blue is the exchange rate of the US dollar in Bolivia's parallel market. Currently, the Bolivian Blue is approximately ${currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB per USD for buying and ${currentRate?.sell_bob_per_usd?.toFixed(2) || '10.60'} BOB per USD for selling. This quote is updated every 15 minutes with real-time data from Binance P2P.`
+          "text": live.buyStr && live.sellStr
+            ? `Bolivian Blue is the exchange rate of the US dollar in Bolivia's parallel market. Currently, the Bolivian Blue is ${live.buyStr} BOB per USD for buying and ${live.sellStr} BOB per USD for selling. This quote is updated every 15 minutes with real-time data from Binance P2P.`
+            : 'Bolivian Blue is the US dollar parallel-market rate in Bolivia, published live on boliviablue.com about every 15 minutes.'
         }
       },
       {
@@ -293,8 +298,12 @@ function BolivianBlue() {
                 </h3>
                 <p className="text-gray-700 dark:text-gray-300">
                   {language === 'es'
-                    ? `El Bolivian Blue es el tipo de cambio del dólar estadounidense en el mercado paralelo de Bolivia. Actualmente, el Bolivian Blue es de aproximadamente ${currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB por USD para compra y ${currentRate?.sell_bob_per_usd?.toFixed(2) || '10.60'} BOB por USD para venta.`
-                    : `Bolivian Blue is the exchange rate of the US dollar in Bolivia's parallel market. Currently, the Bolivian Blue is approximately ${currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB per USD for buying and ${currentRate?.sell_bob_per_usd?.toFixed(2) || '10.60'} BOB per USD for selling.`}
+                    ? live.buyStr && live.sellStr
+                      ? `El Bolivian Blue es el tipo de cambio del dólar estadounidense en el mercado paralelo de Bolivia. Actualmente, el Bolivian Blue es ${live.buyStr} BOB por USD para compra y ${live.sellStr} BOB por USD para venta.`
+                      : 'El Bolivian Blue es el tipo de cambio del dólar estadounidense en el mercado paralelo de Bolivia. La cotización se publica en vivo aquí.'
+                    : live.buyStr && live.sellStr
+                      ? `Bolivian Blue is the exchange rate of the US dollar in Bolivia's parallel market. Currently, the Bolivian Blue is ${live.buyStr} BOB per USD for buying and ${live.sellStr} BOB per USD for selling.`
+                      : 'Bolivian Blue is the US dollar parallel-market rate in Bolivia, published live here.'}
                 </p>
               </div>
               <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">

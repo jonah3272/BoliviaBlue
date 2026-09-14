@@ -83,6 +83,7 @@ export async function fetchBlueRate(currency = 'USD') {
   if (cached && cached.expiresAt > now) {
     return cached.data;
   }
+  try {
   const result = await withTimeout(
     retryWithDelay(async () => {
     // Get the latest rate
@@ -136,6 +137,10 @@ export async function fetchBlueRate(currency = 'USD') {
               source: fresh.source ?? data.source,
               sources_used: fresh.sources_used ?? data.sources_used,
               source_count: fresh.source_count ?? data.source_count,
+              eur_derivation: fresh.eur_derivation ?? data.eur_derivation,
+              eur_updated_at_iso: fresh.eur_updated_at_iso ?? data.eur_updated_at_iso,
+              generated_at_iso: fresh.generated_at_iso,
+              is_stale: fresh.is_stale ?? false,
             };
           }
         }
@@ -144,6 +149,31 @@ export async function fetchBlueRate(currency = 'USD') {
       }
     }
     
+    if (data.buy_bob_per_eur == null || data.sell_bob_per_eur == null) {
+      try {
+        const { data: lastEur } = await supabase
+          .from('rates')
+          .select('buy_bob_per_eur, sell_bob_per_eur, t')
+          .not('buy_bob_per_eur', 'is', null)
+          .not('sell_bob_per_eur', 'is', null)
+          .order('t', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        if (lastEur?.buy_bob_per_eur != null && lastEur?.sell_bob_per_eur != null) {
+          data = {
+            ...data,
+            buy_bob_per_eur: lastEur.buy_bob_per_eur,
+            sell_bob_per_eur: lastEur.sell_bob_per_eur,
+            mid_bob_per_eur: (lastEur.buy_bob_per_eur + lastEur.sell_bob_per_eur) / 2,
+            eur_updated_at_iso: lastEur.t,
+            eur_derivation: 'usdt-cross-last-valid',
+          };
+        }
+      } catch (eurErr) {
+        logger.warn('Last-valid EUR lookup failed:', eurErr?.message || eurErr);
+      }
+    }
+
     // Determine which rate fields to use based on currency
     let buyRate, sellRate, midRate, buyField, sellField, midField;
     
@@ -206,7 +236,10 @@ export async function fetchBlueRate(currency = 'USD') {
       source: data.source || 'p2p-cross-median',
       sources_used: data.sources_used || ['binance', 'eldorado', 'okx'],
       source_count: data.source_count || (data.sources_used?.length ?? 3),
+      quote_kind: 'usdt_p2p_median',
       updated_at_iso: data.t,
+      generated_at_iso: new Date().toISOString(),
+      is_stale: Number.isFinite(ageMs) && ageMs > STALE_HEAL_MS,
       buy_change_24h: buyChange,
       sell_change_24h: sellChange,
       sample_buy: [],
@@ -222,6 +255,12 @@ export async function fetchBlueRate(currency = 'USD') {
       response.official_buy = data.official_buy;
       response.official_sell = data.official_sell;
       response.official_mid = data.official_mid;
+      response.buy_bob_per_eur = data.buy_bob_per_eur ?? null;
+      response.sell_bob_per_eur = data.sell_bob_per_eur ?? null;
+      response.buy_bob_per_brl = data.buy_bob_per_brl ?? null;
+      response.sell_bob_per_brl = data.sell_bob_per_brl ?? null;
+      response.eur_derivation = data.eur_derivation || null;
+      response.eur_updated_at_iso = data.eur_updated_at_iso || (data.buy_bob_per_eur != null ? data.t : null);
     } else if (currency === 'BRL') {
       response.buy_bob_per_brl = buyRate;
       response.sell_bob_per_brl = sellRate;
@@ -230,6 +269,8 @@ export async function fetchBlueRate(currency = 'USD') {
       response.buy_bob_per_eur = buyRate;
       response.sell_bob_per_eur = sellRate;
       response.mid_bob_per_eur = midRate;
+      response.eur_derivation = data.eur_derivation || 'usdt-cross';
+      response.eur_updated_at_iso = data.eur_updated_at_iso || data.t;
     }
     
     // Add generic fields for component compatibility
@@ -243,6 +284,13 @@ export async function fetchBlueRate(currency = 'USD') {
     RATE_TIMEOUT_MS
   );
   return result;
+  } catch (err) {
+    if (cached?.data) {
+      logger.warn('Rate fetch failed; returning last valid reading:', err?.message || err);
+      return { ...cached.data, is_stale: true };
+    }
+    throw err;
+  }
 }
 
 /**

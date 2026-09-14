@@ -1,6 +1,8 @@
 import { Helmet } from 'react-helmet-async';
+import { useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { getOrganizationSchema, getWebSiteSchema } from '../utils/seoSchema';
+import { SITE_URL } from '../config/brand';
 
 /**
  * Reusable component for page-specific SEO meta tags
@@ -10,7 +12,7 @@ export default function PageMeta({
   description,
   keywords,
   canonical,
-  ogImage = 'https://boliviablue.com/header-og-image.jpg',
+  ogImage = `${SITE_URL}/header-og-image.jpg`,
   ogType = 'website',
   noindex = false,
   structuredData,
@@ -28,17 +30,19 @@ export default function PageMeta({
 
   const shouldNoindex = noindex || isStage;
 
-  const baseUrl = isStage ? 'https://stage.boliviablue.com' : 'https://boliviablue.com';
+  const baseUrl = isStage ? 'https://stage.boliviablue.com' : 'https://www.boliviablue.com';
 
   const canonicalPath = (canonical || '/').split('?')[0] || '/';
-  const fullCanonical = `${baseUrl}${canonicalPath}`;
-  const fullOgImage = ogImage.startsWith('http') ? ogImage : `${baseUrl}${ogImage}`;
-
-  const alternateEs = `${baseUrl}${canonicalPath}`;
-  const alternateEn =
+  const esUrl = `${baseUrl}${canonicalPath}`;
+  const enUrl =
     canonicalPath === '/'
       ? `${baseUrl}/?lang=en`
       : `${baseUrl}${canonicalPath}?lang=en`;
+  const fullCanonical = language === 'en' ? enUrl : esUrl;
+  const fullOgImage = ogImage.startsWith('http') ? ogImage : `${baseUrl}${ogImage}`;
+
+  const alternateEs = esUrl;
+  const alternateEn = enUrl;
 
   const pageSchemas = structuredData
     ? Array.isArray(structuredData)
@@ -49,6 +53,15 @@ export default function PageMeta({
     ? [getOrganizationSchema(language), getWebSiteSchema(language)]
     : [];
   const allSchemas = [...brandSchemas, ...pageSchemas];
+
+  useEffect(() => {
+    const canons = [...document.querySelectorAll('link[rel="canonical"]')];
+    if (canons.length < 2) return;
+    const keep = canons.find((l) => l.getAttribute('href') === fullCanonical) || canons[canons.length - 1];
+    canons.forEach((l) => {
+      if (l !== keep) l.remove();
+    });
+  }, [fullCanonical]);
 
   return (
     <Helmet>

@@ -22,6 +22,24 @@ export const config = {
     '/cotiza-dolar-paralelo',
     '/cotiza-dolar-paralelo/',
     '/cotiza-dolar-paralelo/index.html',
+    '/euro-a-boliviano',
+    '/euro-a-boliviano/',
+    '/euro-a-boliviano/index.html',
+    '/real-a-boliviano',
+    '/real-a-boliviano/',
+    '/real-a-boliviano/index.html',
+    '/dolar-blue-santa-cruz',
+    '/dolar-blue-santa-cruz/',
+    '/dolar-blue-santa-cruz/index.html',
+    '/dolar-blue-la-paz',
+    '/dolar-blue-la-paz/',
+    '/dolar-blue-la-paz/index.html',
+    '/dolar-blue-cochabamba',
+    '/dolar-blue-cochabamba/',
+    '/dolar-blue-cochabamba/index.html',
+    '/prensa',
+    '/prensa/',
+    '/prensa/index.html',
   ],
 };
 
@@ -76,7 +94,20 @@ export function normalizeRates(rate) {
     }
   }
 
-  return { buy, sell, updatedAt };
+  return {
+    buy,
+    sell,
+    updatedAt,
+    buyEur: fmt(rate.buy_bob_per_eur),
+    sellEur: fmt(rate.sell_bob_per_eur),
+    buyBrl: fmt(rate.buy_bob_per_brl),
+    sellBrl: fmt(rate.sell_bob_per_brl),
+    eurUpdatedAt: (() => {
+      if (typeof rate.eur_updated_at_iso !== 'string') return null;
+      const d = new Date(rate.eur_updated_at_iso);
+      return Number.isNaN(d.getTime()) ? null : rate.eur_updated_at_iso;
+    })(),
+  };
 }
 
 export function formatSnippetTime(iso) {
@@ -120,11 +151,41 @@ export function metaForPath(path, buy, sell) {
         title: `Cotiza el Dólar Paralelo: Compra ${buy} · Venta ${sell}`,
         description: `Cotiza el dólar paralelo en Bolivia: compra Bs ${buy}, venta Bs ${sell}. Datos cada 15 min desde Binance P2P.`,
       };
+    case '/euro-a-boliviano':
+      return {
+        title: `Euro Blue Bolivia Hoy: Compra ${buy} · Venta ${sell}`,
+        description: `Euro blue / paralelo en Bolivia: compra Bs ${buy} y venta Bs ${sell} (derivado vía USDT). Actualizado cada 15 min.`,
+      };
+    case '/real-a-boliviano':
+      return {
+        title: `Real Blue Bolivia Hoy: Compra ${buy} · Venta ${sell}`,
+        description: `Real brasileño blue / paralelo en Bolivia: compra Bs ${buy} y venta Bs ${sell}. Actualizado cada 15 min.`,
+      };
+    case '/dolar-blue-santa-cruz':
+      return {
+        title: `Dólar Blue Santa Cruz Hoy: Compra ${buy} · Venta ${sell}`,
+        description: `Dólar blue en Santa Cruz hoy: compra Bs ${buy}, venta Bs ${sell}. Misma mediana nacional P2P.`,
+      };
+    case '/dolar-blue-la-paz':
+      return {
+        title: `Dólar Blue La Paz Hoy: Compra ${buy} · Venta ${sell}`,
+        description: `Dólar blue en La Paz hoy: compra Bs ${buy}, venta Bs ${sell}. Misma mediana nacional P2P.`,
+      };
+    case '/dolar-blue-cochabamba':
+      return {
+        title: `Dólar Blue Cochabamba Hoy: Compra ${buy} · Venta ${sell}`,
+        description: `Dólar blue en Cochabamba hoy: compra Bs ${buy}, venta Bs ${sell}. Misma mediana nacional P2P.`,
+      };
+    case '/prensa':
+      return {
+        title: 'Prensa Bolivia Blue | Kit de medios, citas y datos',
+        description: `Cita lista: dólar blue Bolivia compra Bs ${buy} · venta Bs ${sell}. CSV histórico, metodología y badge.`,
+      };
     case '/':
     default:
       return {
-        title: `Dólar Blue Bolivia Hoy: Compra ${buy} · Venta ${sell}`,
-        description: `El dólar paralelo (blue) en Bolivia cotiza hoy en Bs ${buy} para la compra y Bs ${sell} para la venta. Actualizado cada 15 min (Binance P2P).`,
+        title: `Bolivia Blue | Dólar Blue Hoy: Compra ${buy} · Venta ${sell}`,
+        description: `Bolivia Blue: el dólar paralelo (blue) en Bolivia cotiza hoy en Bs ${buy} para la compra y Bs ${sell} para la venta. Actualizado cada 15 min (Binance P2P).`,
       };
   }
 }
@@ -162,13 +223,60 @@ export function replaceMeta(html, title, description) {
   return out;
 }
 
+/** Replace every visible compra/venta pair so one snapshot cannot mix with a stale one. */
+export function replaceAllRatePairs(html, buy, sell) {
+  let out = html;
+  out = out.replace(
+    /compra Bs\s+[0-9]+(?:\.[0-9]+)?(\s*[·\/]\s*|\s+y\s+venta Bs\s+)[0-9]+(?:\.[0-9]+)?/gi,
+    (m, sep) => {
+      if (/y\s+venta/i.test(sep)) return `compra Bs ${buy} y venta Bs ${sell}`;
+      if (sep.includes('/')) return `compra Bs ${buy} / ${sell}`;
+      return `compra Bs ${buy} · venta Bs ${sell}`;
+    }
+  );
+  out = out.replace(
+    /Compra\s+[0-9]+(?:\.[0-9]+)?\s*·\s*Venta\s+[0-9]+(?:\.[0-9]+)?/g,
+    `Compra ${buy} · Venta ${sell}`
+  );
+  return out;
+}
+
+function usd100FromBuy(buy) {
+  const n = Number(buy);
+  if (!Number.isFinite(n) || n < 1) return null;
+  return String(Math.round(n * 100));
+}
+
+export function fillLiveRateSlots(html, buy, sell, updatedAt) {
+  if (!html) return html;
+  if (!html.includes('data-live-buy') && !html.includes('data-live-usd100')) return html;
+  const when = formatSnippetTime(updatedAt);
+  let out = html;
+  if (buy != null) out = out.replace(/(data-live-buy[^>]*>)[^<]*/gi, `$1${buy}`);
+  if (sell != null) out = out.replace(/(data-live-sell[^>]*>)[^<]*/gi, `$1${sell}`);
+  const usd100 = usd100FromBuy(buy);
+  if (usd100) out = out.replace(/(data-live-usd100[^>]*>)[^<]*/gi, `$1${usd100}`);
+  if (updatedAt) {
+    out = out.replace(/\sdatetime="[^"]*"/gi, ` datetime="${escapeAttr(updatedAt)}"`);
+  }
+  if (when) {
+    out = out.replace(/(data-live-when[^>]*>)[^<]*/gi, `$1${when}`);
+  }
+  return out;
+}
+
 /** Visible intro inside data-seo-shell="home" — no new H1, keeps nav links. */
 export function injectHomeShellRates(html, buy, sell, updatedAt) {
+  const slotted = fillLiveRateSlots(html, buy, sell, updatedAt);
+  if (slotted !== html) {
+    return replaceAllRatePairs(slotted, buy, sell);
+  }
+
   const when = formatSnippetTime(updatedAt);
   const whenBit = when ? ` Última lectura: ${when}.` : '';
   const sentence =
     `Dólar Blue en Bolivia hoy: compra Bs ${buy} y venta Bs ${sell}. ` +
-    `Cotización actualizada con datos del mercado paralelo.${whenBit}`;
+    `Cotización de referencia P2P (USDT), no ventanilla en efectivo.${whenBit}`;
   const safe = escapeHtml(sentence);
 
   const replaced = html.replace(
@@ -176,8 +284,7 @@ export function injectHomeShellRates(html, buy, sell, updatedAt) {
     `$1${safe}$3`
   );
 
-  // If the shell marker/paragraph was missing, leave HTML unchanged (caller treats as no-op success for meta-only).
-  return replaced;
+  return replaceAllRatePairs(replaced, buy, sell);
 }
 
 export function wantsHtmlDocument(request) {
@@ -205,16 +312,127 @@ function withTimeout(ms) {
  * Apply live rates to homepage (or bot landing) HTML.
  * @returns {{ html: string, live: boolean } | null} null = leave origin response unchanged
  */
+export function metaForPathEn(path, buy, sell) {
+  if (!buy || !sell) return null;
+  switch (path) {
+    case '/dolar-blue-hoy':
+      return {
+        title: `Blue Dollar Today Bolivia: Buy ${buy} · Sell ${sell}`,
+        description: `Blue dollar today in Bolivia: buy Bs ${buy} and sell Bs ${sell}. Parallel market, updated every 15 min.`,
+      };
+    case '/euro-a-boliviano':
+      return {
+        title: `Euro Blue Bolivia Today: Buy ${buy} · Sell ${sell}`,
+        description: `Euro blue / parallel in Bolivia: buy Bs ${buy}, sell Bs ${sell} (derived via USDT). Updated every 15 min.`,
+      };
+    case '/real-a-boliviano':
+      return {
+        title: `Real Blue Bolivia Today: Buy ${buy} · Sell ${sell}`,
+        description: `Brazilian real blue / parallel in Bolivia: buy Bs ${buy}, sell Bs ${sell}. Derived via USDT.`,
+      };
+    case '/dolar-blue-santa-cruz':
+      return {
+        title: `Blue Dollar Santa Cruz Today: Buy ${buy} · Sell ${sell}`,
+        description: `Blue dollar in Santa Cruz today: buy Bs ${buy}, sell Bs ${sell}. Same national P2P median.`,
+      };
+    case '/dolar-blue-la-paz':
+      return {
+        title: `Blue Dollar La Paz Today: Buy ${buy} · Sell ${sell}`,
+        description: `Blue dollar in La Paz today: buy Bs ${buy}, sell Bs ${sell}. Same national P2P median.`,
+      };
+    case '/dolar-blue-cochabamba':
+      return {
+        title: `Blue Dollar Cochabamba Today: Buy ${buy} · Sell ${sell}`,
+        description: `Blue dollar in Cochabamba today: buy Bs ${buy}, sell Bs ${sell}. Same national P2P median.`,
+      };
+    case '/prensa':
+      return {
+        title: 'Bolivia Blue Press | Media kit, citations & data',
+        description: `Ready citation: Bolivia blue dollar buy Bs ${buy} · sell Bs ${sell}. Historical CSV, methodology and badge.`,
+      };
+    case '/':
+    default:
+      return {
+        title: `Bolivia Blue | Blue Dollar Today: Buy ${buy} · Sell ${sell}`,
+        description: `Bolivia Blue: the parallel (blue) dollar in Bolivia is Bs ${buy} to buy and Bs ${sell} to sell. Updated every 15 min (P2P USDT).`,
+      };
+  }
+}
+
+/** Keep English URLs self-canonical. Do not rewrite hreflang es/x-default. */
+export function withLangQuery(url, lang = 'en') {
+  try {
+    const u = new URL(url);
+    if (lang === 'en') u.searchParams.set('lang', 'en');
+    else u.searchParams.delete('lang');
+    return u.toString();
+  } catch {
+    if (lang !== 'en') return url;
+    if (/[?&]lang=en(?:&|$)/.test(url)) return url;
+    return url.includes('?') ? `${url}&lang=en` : `${url}?lang=en`;
+  }
+}
+
+export function applyEnglishAnnotations(html, path, pair) {
+  const canonMatch = html.match(/<link\s+rel=["']canonical["']\s+href=["']([^"']+)["']/i);
+  const esCanon = canonMatch ? canonMatch[1] : null;
+  const enCanon = esCanon ? withLangQuery(esCanon, 'en') : null;
+  let out = html;
+  if (enCanon) {
+    out = out.replace(
+      /<link\s+rel=["']canonical["']\s+href=["'][^"']*["']/i,
+      `<link rel="canonical" href="${escapeAttr(enCanon)}"`
+    );
+    out = out.replace(
+      /<meta\s+property=["']og:url["']\s+content=["'][^"']*["']/i,
+      `<meta property="og:url" content="${escapeAttr(enCanon)}"`
+    );
+    out = out.replace(
+      /<meta\s+name=["']twitter:url["']\s+content=["'][^"']*["']/i,
+      `<meta name="twitter:url" content="${escapeAttr(enCanon)}"`
+    );
+  }
+  if (/<html[^>]*\slang=/i.test(out)) {
+    out = out.replace(/<html([^>]*)\slang=["'][^"']*["']/i, '<html$1 lang="en"');
+  } else {
+    out = out.replace(/<html\b/i, '<html lang="en"');
+  }
+  out = out.replace(/<meta name="language" content="[^"]*"/i, '<meta name="language" content="English"');
+  out = out.replace(/<meta property="og:locale" content="[^"]*"/i, '<meta property="og:locale" content="en_US"');
+  if (pair?.buy && pair?.sell) {
+    const enMeta = metaForPathEn(path, pair.buy, pair.sell);
+    if (enMeta) out = replaceMeta(out, enMeta.title, enMeta.description);
+  }
+  return out;
+}
+
 export function applyLiveSeo(html, path, rates) {
   if (!rates) return null;
-  const meta = metaForPath(path, rates.buy, rates.sell);
+
+  let pair = { buy: rates.buy, sell: rates.sell, updatedAt: rates.updatedAt };
+  if (path === '/euro-a-boliviano') {
+    if (!rates.buyEur || !rates.sellEur) return null;
+    pair = {
+      buy: rates.buyEur,
+      sell: rates.sellEur,
+      updatedAt: rates.eurUpdatedAt || rates.updatedAt,
+    };
+  } else if (path === '/real-a-boliviano') {
+    if (!rates.buyBrl || !rates.sellBrl) return null;
+    pair = { buy: rates.buyBrl, sell: rates.sellBrl, updatedAt: rates.updatedAt };
+  }
+
+  const meta = metaForPath(path, pair.buy, pair.sell);
   if (!meta) return null;
 
   let out = replaceMeta(html, meta.title, meta.description);
+  out = fillLiveRateSlots(out, pair.buy, pair.sell, pair.updatedAt);
   if (path === '/') {
-    out = injectHomeShellRates(out, rates.buy, rates.sell, rates.updatedAt);
+    out = injectHomeShellRates(out, pair.buy, pair.sell, pair.updatedAt);
+  } else {
+    out = replaceAllRatePairs(out, pair.buy, pair.sell);
   }
-  return { html: out, live: true };
+  return { html: out, live: true, rates: pair };
 }
 
 export default async function middleware(request) {
@@ -260,12 +478,20 @@ export default async function middleware(request) {
       return;
     }
 
-    const rates = normalizeRates(rate);
+  const rates = normalizeRates(rate);
     if (!rates) return;
 
     const html = await htmlRes.text();
-    const applied = applyLiveSeo(html, path, rates);
+    const lang = url.searchParams.get('lang');
+    let applied = applyLiveSeo(html, path, rates);
     if (!applied) return;
+
+    if (lang === 'en') {
+      applied = {
+        ...applied,
+        html: applyEnglishAnnotations(applied.html, path, applied.rates),
+      };
+    }
 
     const headers = new Headers(htmlRes.headers);
     headers.set('content-type', 'text/html; charset=utf-8');

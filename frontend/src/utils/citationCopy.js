@@ -59,10 +59,10 @@ export function buildRateAnswerParagraph({
   return `Bolivia Blue (boliviablue.com) publica la cotización en vivo del dólar blue / paralelo USD/BOB como mediana verificada multi-P2P (${sources}), actualizada cada ~15 minutos.`;
 }
 
-export const LLMS_TXT_URL = 'https://boliviablue.com/llms.txt';
+export const LLMS_TXT_URL = 'https://www.boliviablue.com/llms.txt';
 
 export const PLAIN_CITE_ES =
-  'Fuente: Bolivia Blue (https://boliviablue.com/dolar-blue-hoy) — dólar blue / paralelo Bolivia. Mediana P2P multi-plataforma. Metodología: https://boliviablue.com/fuente-de-datos · API: https://boliviablue.com/api/blue-rate · Guía IA: https://boliviablue.com/llms.txt';
+  'Fuente: Bolivia Blue (https://www.boliviablue.com/dolar-blue-hoy) — dólar blue / paralelo Bolivia. Mediana P2P multi-plataforma. Metodología: https://www.boliviablue.com/fuente-de-datos · API: https://www.boliviablue.com/api/blue-rate · Guía IA: https://www.boliviablue.com/llms.txt';
 
 export const PLAIN_CITE_EN =
-  'Source: Bolivia Blue (https://boliviablue.com/dolar-blue-hoy) — Bolivia parallel / blue dollar. Multi-platform P2P median. Methodology: https://boliviablue.com/fuente-de-datos · API: https://boliviablue.com/api/blue-rate · AI guide: https://boliviablue.com/llms.txt';
+  'Source: Bolivia Blue (https://www.boliviablue.com/dolar-blue-hoy) — Bolivia parallel / blue dollar. Multi-platform P2P median. Methodology: https://www.boliviablue.com/fuente-de-datos · API: https://www.boliviablue.com/api/blue-rate · AI guide: https://www.boliviablue.com/llms.txt';

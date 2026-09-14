@@ -12,6 +12,7 @@ import { lazy, Suspense } from 'react';
 const BlueChart = lazy(() => import('../components/BlueChart'));
 import Breadcrumbs from '../components/Breadcrumbs';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
+import { buildLiveRateSeoMeta, ratesFromBluePayload } from '../utils/seoRateMeta';
 
 function DolarBlueSantaCruz() {
   // Signal to AdSense that this page has sufficient content
@@ -29,7 +30,8 @@ function DolarBlueSantaCruz() {
       try {
         const data = await fetchBlueRate();
         setCurrentRate(data);
-        setLastUpdated(new Date());
+        const observed = data?.updated_at_iso ? new Date(data.updated_at_iso) : null;
+        if (observed && !Number.isNaN(observed.getTime())) setLastUpdated(observed);
       } catch (err) {
         console.error('Error loading rate:', err);
       }
@@ -38,6 +40,26 @@ function DolarBlueSantaCruz() {
     const interval = setInterval(loadRate, 15 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
+
+  const liveSeo = buildLiveRateSeoMeta({
+    ...ratesFromBluePayload(currentRate),
+    language,
+    page: 'santa-cruz',
+  });
+  const buyStr =
+    Number.isFinite(Number(currentRate?.buy_bob_per_usd)) && Number(currentRate.buy_bob_per_usd) >= 1
+      ? Number(currentRate.buy_bob_per_usd).toFixed(2)
+      : null;
+  const sellStr =
+    Number.isFinite(Number(currentRate?.sell_bob_per_usd)) && Number(currentRate.sell_bob_per_usd) >= 1
+      ? Number(currentRate.sell_bob_per_usd).toFixed(2)
+      : null;
+  const scRateEs = buyStr && sellStr
+    ? `compra Bs ${buyStr} y venta Bs ${sellStr}`
+    : 'la mediana nacional P2P (actualizada cada 15 minutos en esta página)';
+  const scRateEn = buyStr && sellStr
+    ? `about Bs ${buyStr} to buy and Bs ${sellStr} to sell`
+    : 'the national P2P median shown on this page (updated every 15 minutes)';
 
   const articleSchema = {
     "@context": "https://schema.org",
@@ -73,7 +95,7 @@ function DolarBlueSantaCruz() {
         "name": "¿Cuál es el dólar blue en Santa Cruz?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": `El dólar blue en Santa Cruz es actualmente de aproximadamente ${currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB por USD para compra y ${currentRate?.sell_bob_per_usd?.toFixed(2) || '10.60'} BOB por USD para venta. Esta cotización se actualiza cada 15 minutos con datos en tiempo real de Binance P2P.`
+          "text": `El dólar blue en Santa Cruz es actualmente ${scRateEs}. Es la misma mediana nacional P2P, usada como referencia en Santa Cruz.`
         }
       },
       {
@@ -90,7 +112,7 @@ function DolarBlueSantaCruz() {
         "name": "What is the blue dollar in Santa Cruz?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": `The blue dollar in Santa Cruz is currently approximately ${currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB per USD for buying and ${currentRate?.sell_bob_per_usd?.toFixed(2) || '10.60'} BOB per USD for selling. This quote is updated every 15 minutes with real-time data from Binance P2P.`
+          "text": `The blue dollar in Santa Cruz is currently ${scRateEn}. Same national P2P median, used as a Santa Cruz reference.`
         }
       }
     ]
@@ -99,12 +121,8 @@ function DolarBlueSantaCruz() {
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
-        title={language === 'es'
-          ? 'Dólar Blue Santa Cruz - Cotización en Tiempo Real | Actualizado Cada 15 Min'
-          : 'Blue Dollar Santa Cruz - Real-Time Quote | Updated Every 15 Min'}
-        description={language === 'es'
-          ? 'Dólar blue Santa Cruz actualizado cada 15 minutos. Consulta la cotización del dólar blue en Santa Cruz, Bolivia. Tipo de cambio en tiempo real, gráficos históricos y dónde cambiar dólares en Santa Cruz. Gratis y sin registro.'
-          : 'Blue dollar Santa Cruz updated every 15 minutes. Check the blue dollar quote in Santa Cruz, Bolivia. Real-time exchange rate, historical charts and where to exchange dollars in Santa Cruz. Free and no registration required.'}
+        title={liveSeo.title}
+        description={liveSeo.description}
         keywords={language === 'es'
           ? "dólar blue santa cruz, dólar blue bolivia santa cruz, tipo cambio santa cruz, cotización dólar blue santa cruz, precio dólar blue santa cruz, dónde cambiar dólares santa cruz, cambio dólares santa cruz, dólar paralelo santa cruz"
           : "blue dollar santa cruz, blue dollar bolivia santa cruz, exchange rate santa cruz, blue dollar quote santa cruz, blue dollar price santa cruz, where to exchange dollars santa cruz, exchange dollars santa cruz, parallel dollar santa cruz"}

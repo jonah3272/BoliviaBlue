@@ -357,7 +357,7 @@ function DolarParaleloBoliviaEnVivo() {
             <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 mb-4">
               {language === 'es' ? (
                 <>
-                  <li><strong>Precio de Compra:</strong> Es el precio al que puedes comprar dólares. Si ves 10.50 BOB, significa que necesitas 10.50 bolivianos para comprar 1 dólar.</li>
+                  <li><strong>Precio de Compra:</strong> Es cuántos bolivianos necesitás para obtener 1 USD en P2P. El número de compra en las tarjetas de arriba es esa referencia, no un precio de ventanilla.</li>
                   <li><strong>Precio de Venta:</strong> Es el precio al que puedes vender dólares. Generalmente es ligeramente más bajo que el precio de compra.</li>
                   <li><strong>Spread:</strong> La diferencia entre compra y venta representa el margen de los operadores.</li>
                   <li><strong>Actualización EN VIVO:</strong> Nuestra cotización se actualiza cada 15 minutos, reflejando cambios en tiempo real del mercado.</li>
@@ -365,7 +365,7 @@ function DolarParaleloBoliviaEnVivo() {
                 </>
               ) : (
                 <>
-                  <li><strong>Buy Price:</strong> This is the price at which you can buy dollars. If you see 10.50 BOB, it means you need 10.50 bolivianos to buy 1 dollar.</li>
+                  <li><strong>Buy Price:</strong> How many bolivianos you need to obtain 1 USD on P2P. The buy number on the cards above is that reference, not a cash-desk price.</li>
                   <li><strong>Sell Price:</strong> This is the price at which you can sell dollars. Generally it\'s slightly lower than the buy price.</li>
                   <li><strong>Spread:</strong> The difference between buy and sell represents operators\' margin.</li>
                   <li><strong>LIVE Update:</strong> Our quote is updated every 15 minutes, reflecting real-time market changes.</li>

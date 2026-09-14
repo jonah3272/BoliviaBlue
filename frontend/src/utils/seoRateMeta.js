@@ -30,32 +30,25 @@ function formatSnippetTime(iso, language = 'es') {
 const PAGE_COPY = {
   home: {
     es: {
-      titleWith: (b, s) => `Dólar Blue Hoy Bolivia: Compra ${b} · Venta ${s} | Paralelo`,
-      titleFallback: 'Dólar Blue Hoy Bolivia | Paralelo, Lectura Verificada P2P',
+      titleWith: (b, s) => `Bolivia Blue | Dólar Blue Hoy: Compra ${b} · Venta ${s}`,
+      titleFallback: 'Bolivia Blue | Dólar Blue Hoy, lectura P2P verificada',
       descWith: (b, s, when) =>
-        `Lectura verificada: dólar blue hoy compra Bs ${b} y venta Bs ${s}${when ? ` (${when})` : ''}. Mediana multi-plataforma P2P (Binance, El Dorado, OKX).`,
+        `Bolivia Blue: dólar blue hoy compra Bs ${b} y venta Bs ${s}${when ? ` (${when})` : ''}. Mediana multi-plataforma P2P (Binance, El Dorado, OKX).`,
       descFallback:
-        'Dólar blue hoy en Bolivia: lectura verificada, mediana multi-plataforma P2P. Gratis, sin registro.',
+        'Bolivia Blue: dólar blue hoy en Bolivia, lectura verificada, mediana multi-plataforma P2P. Gratis, sin registro.',
     },
     en: {
-      titleWith: (b, s) => `Bolivia Blue Dollar Today: Buy ${b} · Sell ${s} | Parallel`,
-      titleFallback: 'Bolivia Blue Dollar Today | Verified P2P Reading',
+      titleWith: (b, s) => `Bolivia Blue | Blue Dollar Today: Buy ${b} · Sell ${s}`,
+      titleFallback: 'Bolivia Blue | Blue Dollar Today, verified P2P reading',
       descWith: (b, s, when) =>
-        `Verified reading: blue dollar today buy Bs ${b}, sell Bs ${s}${when ? ` (${when})` : ''}. Multi-platform P2P median (Binance, El Dorado, OKX).`,
+        `Bolivia Blue: blue dollar today buy Bs ${b}, sell Bs ${s}${when ? ` (${when})` : ''}. Multi-platform P2P median (Binance, El Dorado, OKX).`,
       descFallback:
-        'Bolivia blue dollar today: verified multi-platform P2P median. Free, no signup.',
+        'Bolivia Blue: Bolivia blue dollar today, verified multi-platform P2P median. Free, no signup.',
     },
   },
   'dolar-blue-hoy': {
     es: {
-      titleWith: (b, s) => {
-        const d = new Intl.DateTimeFormat('es-BO', {
-          day: 'numeric',
-          month: 'numeric',
-          year: 'numeric',
-        }).format(new Date());
-        return `Dólar Blue Hoy ${d}: Compra ${b} · Venta ${s}`;
-      },
+      titleWith: (b, s) => `Dólar Blue Hoy Bolivia: Compra ${b} · Venta ${s}`,
       titleFallback: 'Dólar Blue Hoy Bolivia | Lectura Verificada Paralelo',
       descWith: (b, s, when) =>
         `Lectura verificada — dólar blue hoy: compra Bs ${b}, venta Bs ${s}${when ? ` (${when})` : ''}. Mediana P2P multi-plataforma.`,
@@ -63,14 +56,7 @@ const PAGE_COPY = {
         'Dólar blue hoy en Bolivia: lectura verificada del paralelo. Mediana P2P actualizada cada pocos minutos.',
     },
     en: {
-      titleWith: (b, s) => {
-        const d = new Intl.DateTimeFormat('en-US', {
-          day: 'numeric',
-          month: 'numeric',
-          year: 'numeric',
-        }).format(new Date());
-        return `Blue Dollar Today ${d}: Buy ${b} · Sell ${s}`;
-      },
+      titleWith: (b, s) => `Blue Dollar Today Bolivia: Buy ${b} · Sell ${s}`,
       titleFallback: 'Blue Dollar Today Bolivia | Parallel Price Now',
       descWith: (b, s, when) =>
         `Blue dollar today in Bolivia (parallel): buy Bs ${b}, sell Bs ${s}${when ? ` (${when})` : ''}. Verified multi-platform P2P median.`,
@@ -153,7 +139,7 @@ const PAGE_COPY = {
   euro: {
     es: {
       titleWith: (b, s) => `Euro Blue Bolivia Hoy: Compra ${b} · Venta ${s}`,
-      titleFallback: 'Euro Blue Bolivia | Mercado Negro EUR a BOB 2026',
+      titleFallback: 'Euro Blue Bolivia | EUR a BOB paralelo (vía USDT)',
       descWith: (b, s, when) =>
         `Euro blue / paralelo en Bolivia: compra Bs ${b} y venta Bs ${s}${when ? ` (${when})` : ''}. Precio del euro en el mercado negro vs oficial. Binance P2P.`,
       descFallback:
@@ -161,7 +147,7 @@ const PAGE_COPY = {
     },
     en: {
       titleWith: (b, s) => `Euro Blue Bolivia Today: Buy ${b} · Sell ${s}`,
-      titleFallback: 'Euro Blue Bolivia | Parallel EUR to BOB 2026',
+      titleFallback: 'Euro Blue Bolivia | Parallel EUR to BOB (via USDT)',
       descWith: (b, s, when) =>
         `Euro blue / parallel in Bolivia: buy Bs ${b}, sell Bs ${s}${when ? ` (as of ${when})` : ''}. Parallel vs official EUR to BOB. Binance P2P.`,
       descFallback:
@@ -171,7 +157,7 @@ const PAGE_COPY = {
   real: {
     es: {
       titleWith: (b, s) => `Real Blue Bolivia Hoy: Compra ${b} · Venta ${s}`,
-      titleFallback: 'Real Blue Bolivia | BRL a BOB Paralelo 2026',
+      titleFallback: 'Real Blue Bolivia | BRL a BOB paralelo',
       descWith: (b, s, when) =>
         `Real brasileño blue / paralelo en Bolivia: compra Bs ${b} y venta Bs ${s}${when ? ` (${when})` : ''}. Mercado paralelo vs oficial. Binance P2P.`,
       descFallback:
@@ -179,14 +165,163 @@ const PAGE_COPY = {
     },
     en: {
       titleWith: (b, s) => `Real Blue Bolivia Today: Buy ${b} · Sell ${s}`,
-      titleFallback: 'Real Blue Bolivia | Parallel BRL to BOB 2026',
+      titleFallback: 'Real Blue Bolivia | Parallel BRL to BOB',
       descWith: (b, s, when) =>
         `Brazilian real blue / parallel in Bolivia: buy Bs ${b}, sell Bs ${s}${when ? ` (as of ${when})` : ''}. Parallel vs official. Binance P2P.`,
       descFallback:
         'Real blue Bolivia: parallel BRL to BOB vs official rate. Updated every 15 min from Binance P2P.',
     },
   },
+  'santa-cruz': {
+    es: {
+      titleWith: (b, s) => `Dólar Blue Santa Cruz Hoy: Compra ${b} · Venta ${s}`,
+      titleFallback: 'Dólar Blue Santa Cruz Hoy | Paralelo Bolivia',
+      descWith: (b, s, when) =>
+        `Dólar blue en Santa Cruz hoy: compra Bs ${b}, venta Bs ${s}${when ? ` (${when})` : ''}. Misma mediana nacional P2P; referencia para Santa Cruz.`,
+      descFallback:
+        'Dólar blue Santa Cruz: cotización paralela nacional (P2P) como referencia para Santa Cruz. Actualizada cada 15 min.',
+    },
+    en: {
+      titleWith: (b, s) => `Blue Dollar Santa Cruz Today: Buy ${b} · Sell ${s}`,
+      titleFallback: 'Blue Dollar Santa Cruz Today | Bolivia Parallel',
+      descWith: (b, s, when) =>
+        `Blue dollar in Santa Cruz today: buy Bs ${b}, sell Bs ${s}${when ? ` (${when})` : ''}. Same national P2P median; Santa Cruz reference.`,
+      descFallback:
+        'Blue dollar Santa Cruz: national parallel (P2P) quote as a Santa Cruz reference. Updated every 15 min.',
+    },
+  },
+  'la-paz': {
+    es: {
+      titleWith: (b, s) => `Dólar Blue La Paz Hoy: Compra ${b} · Venta ${s}`,
+      titleFallback: 'Dólar Blue La Paz Hoy | Paralelo Bolivia',
+      descWith: (b, s, when) =>
+        `Dólar blue en La Paz hoy: compra Bs ${b}, venta Bs ${s}${when ? ` (${when})` : ''}. Misma mediana nacional P2P; referencia para La Paz.`,
+      descFallback:
+        'Dólar blue La Paz: cotización paralela nacional (P2P) como referencia para La Paz. Actualizada cada 15 min.',
+    },
+    en: {
+      titleWith: (b, s) => `Blue Dollar La Paz Today: Buy ${b} · Sell ${s}`,
+      titleFallback: 'Blue Dollar La Paz Today | Bolivia Parallel',
+      descWith: (b, s, when) =>
+        `Blue dollar in La Paz today: buy Bs ${b}, sell Bs ${s}${when ? ` (${when})` : ''}. Same national P2P median; La Paz reference.`,
+      descFallback:
+        'Blue dollar La Paz: national parallel (P2P) quote as a La Paz reference. Updated every 15 min.',
+    },
+  },
+  cochabamba: {
+    es: {
+      titleWith: (b, s) => `Dólar Blue Cochabamba Hoy: Compra ${b} · Venta ${s}`,
+      titleFallback: 'Dólar Blue Cochabamba Hoy | Paralelo Bolivia',
+      descWith: (b, s, when) =>
+        `Dólar blue en Cochabamba hoy: compra Bs ${b}, venta Bs ${s}${when ? ` (${when})` : ''}. Misma mediana nacional P2P; referencia para Cochabamba.`,
+      descFallback:
+        'Dólar blue Cochabamba: cotización paralela nacional (P2P) como referencia para Cochabamba. Actualizada cada 15 min.',
+    },
+    en: {
+      titleWith: (b, s) => `Blue Dollar Cochabamba Today: Buy ${b} · Sell ${s}`,
+      titleFallback: 'Blue Dollar Cochabamba Today | Bolivia Parallel',
+      descWith: (b, s, when) =>
+        `Blue dollar in Cochabamba today: buy Bs ${b}, sell Bs ${s}${when ? ` (${when})` : ''}. Same national P2P median; Cochabamba reference.`,
+      descFallback:
+        'Blue dollar Cochabamba: national parallel (P2P) quote as a Cochabamba reference. Updated every 15 min.',
+    },
+  },
 };
+
+const PATH_TO_PAGE = {
+  '/': 'home',
+  '/dolar-blue-hoy': 'dolar-blue-hoy',
+  '/bolivian-blue': 'bolivian-blue',
+  '/dolar-paralelo-bolivia-en-vivo': 'dolar-paralelo',
+  '/cotiza-dolar-paralelo': 'cotiza',
+  '/cuanto-esta-dolar-bolivia': 'cuanto',
+  '/euro-a-boliviano': 'euro',
+  '/real-a-boliviano': 'real',
+  '/dolar-blue-santa-cruz': 'santa-cruz',
+  '/dolar-blue-la-paz': 'la-paz',
+  '/dolar-blue-cochabamba': 'cochabamba',
+};
+
+/** Stable GA titles for routes that do not use live-rate copy. */
+const STABLE_TITLES = {
+  '/calculadora': {
+    es: 'Calculadora USD/BOB Gratis | Actualizada Cada 15 Min - Bolivia Blue',
+    en: 'Free USD/BOB Calculator | Updated Every 15 Min - Bolivia Blue',
+  },
+  '/datos-historicos': {
+    es: 'Datos Históricos Dólar Blue Bolivia | Archivo 2024-2026',
+    en: 'Bolivia Blue Dollar Historical Data | 2024-2026 Archive',
+  },
+  '/comparacion': {
+    es: 'Dólar Blue vs. Dólar Oficial en Bolivia',
+    en: 'Blue Dollar vs Official Rate in Bolivia',
+  },
+  '/comprar-dolares': {
+    es: 'Cómo Comprar Dólares en Bolivia - Binance, El Dorado, Takenos, Meru - Bolivia Blue',
+    en: 'How to Buy Dollars in Bolivia - Binance, El Dorado, Takenos, Meru - Bolivia Blue',
+  },
+  '/binance-p2p-bolivia': {
+    es: 'Binance P2P Bolivia - Cómo Comprar y Vender USDT | Guía Completa 2026',
+    en: 'Binance P2P Bolivia - How to Buy and Sell USDT | Complete Guide 2026',
+  },
+  '/noticias': {
+    es: 'Noticias del Dólar y Tipo de Cambio en Bolivia',
+    en: 'Bolivia Blue Dollar News',
+  },
+  '/blog': {
+    es: 'Guías y Análisis del Dólar en Bolivia | BoliviaBlue',
+    en: 'Blog - Guides and Analysis about Blue Dollar and Finance',
+  },
+  '/preguntas-frecuentes': {
+    es: 'Preguntas Frecuentes Dólar Blue Bolivia | FAQ Tipo de Cambio',
+    en: 'Bolivia Blue Dollar FAQ',
+  },
+  '/api-docs': {
+    es: 'API del Dólar Blue Bolivia | Documentación Completa',
+    en: 'Bolivia Blue Dollar API | Full Documentation',
+  },
+  '/widget': {
+    es: 'Widget Gratuito Dólar Blue Bolivia | Embed en tu Sitio',
+    en: 'Free Bolivia Blue Dollar Widget | Embed on Your Site',
+  },
+  '/prensa': {
+    es: 'Prensa Bolivia Blue | Kit de medios, citas y datos',
+    en: 'Bolivia Blue Press Kit | Media, quotes and data',
+  },
+  '/acerca-de': {
+    es: 'Sobre Bolivia Blue | Metodología y transparencia del dólar paralelo',
+    en: 'About Bolivia Blue | Parallel dollar methodology',
+  },
+  '/fuente-de-datos': {
+    es: 'Metodología y Fuente de Datos | Dólar Blue Bolivia',
+    en: 'Methodology and Data Source | Bolivia Blue Dollar',
+  },
+};
+
+/**
+ * Keep Google Analytics grouped by route, not by every 0.01 rate tick.
+ * SERP titles can still include live buy/sell.
+ */
+export function analyticsTitleForPath(pathname, language = 'es') {
+  const path = String(pathname || '/').split('?')[0] || '/';
+  const lang = language === 'en' ? 'en' : 'es';
+  const page = PATH_TO_PAGE[path];
+  if (page && PAGE_COPY[page]) return PAGE_COPY[page][lang].titleFallback;
+  const stable = STABLE_TITLES[path];
+  if (stable) return stable[lang];
+  return lang === 'en' ? 'Bolivia Blue' : 'Bolivia Blue';
+}
+
+/** Safety net if a live SERP title leaks into analytics. */
+export function stripLiveRatesFromTitle(title) {
+  return String(title || '')
+    .replace(/\s*:\s*Compra\s+[0-9]+(?:\.[0-9]+)?\s*·\s*Venta\s+[0-9]+(?:\.[0-9]+)?(?:\s*\|[^]*)?/gi, '')
+    .replace(/\s*:\s*Buy\s+[0-9]+(?:\.[0-9]+)?\s*·\s*Sell\s+[0-9]+(?:\.[0-9]+)?(?:\s*\|[^]*)?/gi, '')
+    .replace(/\s+EN VIVO:\s+[0-9]+(?:\.[0-9]+)?\s*\/\s*[0-9]+(?:\.[0-9]+)?/gi, ' EN VIVO')
+    .replace(/\s+LIVE:\s+[0-9]+(?:\.[0-9]+)?\s*\/\s*[0-9]+(?:\.[0-9]+)?/gi, ' LIVE')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
 
 /**
  * @param {{ buy?: number|null, sell?: number|null, updatedAt?: string|null, language?: string, page?: keyof typeof PAGE_COPY }} opts
@@ -210,6 +345,7 @@ export function buildLiveRateSeoMeta({
     description: hasRates
       ? copy.descWith(buyStr, sellStr, when)
       : copy.descFallback,
+    analyticsTitle: copy.titleFallback,
   };
 }
 
@@ -222,4 +358,30 @@ export function ratesFromBluePayload(data) {
   const sell = data.sell ?? data.sell_bob_per_usd ?? null;
   const updatedAt = data.updated_at_iso ?? data.t ?? null;
   return { buy, sell, updatedAt };
+}
+
+/** Display string for a BOB rate, or null if missing/junk (never emit fake 10.50). */
+export function fmtLiveBob(n) {
+  return fmt(n);
+}
+
+/**
+ * Live buy/sell strings for UI and FAQ copy. Multipliers use the formatted buy
+ * so $100 matches the snapshot shown in titles.
+ */
+export function liveBobParts(data) {
+  const { buy, sell, updatedAt } = ratesFromBluePayload(data);
+  const buyStr = fmt(buy);
+  const sellStr = fmt(sell);
+  const buyN = buyStr ? Number(buyStr) : NaN;
+  return {
+    buyStr,
+    sellStr,
+    updatedAt,
+    times(mult) {
+      const m = Number(mult);
+      if (!Number.isFinite(buyN) || !Number.isFinite(m)) return null;
+      return (buyN * m).toFixed(2);
+    },
+  };
 }

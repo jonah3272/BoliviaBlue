@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useRate } from '../contexts/RateContext';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PageMeta from '../components/PageMeta';
@@ -7,7 +8,7 @@ import Navigation from '../components/Navigation';
 import BinanceBanner from '../components/BinanceBanner';
 import CurrencyRateSnapshot, { CurrencyConversionList } from '../components/CurrencyRateSnapshot';
 import { Link } from 'react-router-dom';
-import { fetchBlueRate } from '../utils/api';
+import { fetchBlueHistory } from '../utils/api';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import { buildLiveRateSeoMeta } from '../utils/seoRateMeta';
@@ -20,28 +21,33 @@ function EuroToBoliviano() {
   const t = languageContext?.t || ((key) => key || '');
 
   const language = languageContext?.language || 'es';
-  const [currentRate, setCurrentRate] = useState(null);
-  const [rateError, setRateError] = useState(null);
-  const [isRateLoading, setIsRateLoading] = useState(true);
-  const [lastUpdated, setLastUpdated] = useState(null);
+  const { rateData: currentRate, isLoading: isRateLoading, error: rateCtxError } = useRate();
+  const rateError = rateCtxError;
+  const [convertEur, setConvertEur] = useState('100');
+  const [weekHistory, setWeekHistory] = useState(null);
+
+  const observedIso = currentRate?.eur_updated_at_iso || currentRate?.updated_at_iso || null;
+  const lastUpdated = observedIso && !Number.isNaN(Date.parse(observedIso)) ? new Date(observedIso) : null;
 
   useEffect(() => {
-    const loadRate = async () => {
-      try {
-        const data = await fetchBlueRate('EUR');
-        setCurrentRate(data);
-        setRateError(null);
-        setLastUpdated(new Date(data?.updated_at_iso || Date.now()));
-      } catch (err) {
-        console.error('Error loading EUR rate:', err);
-        setRateError(err?.message || 'rate_error');
-      } finally {
-        setIsRateLoading(false);
-      }
+    let cancelled = false;
+    fetchBlueHistory('1W', 'EUR')
+      .then((hist) => {
+        if (cancelled || !hist?.points?.length) return;
+        const vals = hist.points.map((p) => Number(p.buy)).filter((n) => Number.isFinite(n) && n >= 1);
+        if (vals.length < 2) return;
+        setWeekHistory({
+          min: Math.min(...vals),
+          max: Math.max(...vals),
+          first: vals[0],
+          last: vals[vals.length - 1],
+          n: vals.length,
+        });
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
     };
-    loadRate();
-    const interval = setInterval(loadRate, 15 * 60 * 1000);
-    return () => clearInterval(interval);
   }, []);
 
   const buy = currentRate?.buy_bob_per_eur;
@@ -53,10 +59,24 @@ function EuroToBoliviano() {
   const liveSeo = buildLiveRateSeoMeta({
     buy,
     sell,
-    updatedAt: currentRate?.updated_at_iso || null,
+    updatedAt: currentRate?.eur_updated_at_iso || currentRate?.updated_at_iso || null,
     language,
     page: 'euro',
   });
+
+  const derivation = currentRate?.eur_derivation || 'usdt-cross';
+  const derivationEs =
+    derivation === 'spot-usdt'
+      ? 'Se deriva como USDT/BOB (P2P) × EURUSDT (mercado spot). No hay un libro EUR/BOB de ventanilla.'
+      : derivation === 'usdt-cross-last-valid'
+        ? 'Se muestra la última lectura EUR válida (vía USDT). El horario es el de esa lectura, no el de ahora.'
+        : 'Se deriva como USDT/BOB (P2P) ÷ USDT/EUR (P2P). No es una cotización de euros en efectivo observada directamente.';
+  const derivationEn =
+    derivation === 'spot-usdt'
+      ? 'Derived as USDT/BOB (P2P) × EURUSDT (spot). There is no EUR/BOB cash-desk book.'
+      : derivation === 'usdt-cross-last-valid'
+        ? 'Last valid EUR reading (via USDT). The timestamp is that observation, not “now”.'
+        : 'Derived as USDT/BOB (P2P) ÷ USDT/EUR (P2P). Not a directly observed cash euro quote.';
 
   const articleSchema = {
     "@context": "https://schema.org",
@@ -76,27 +96,25 @@ function EuroToBoliviano() {
       }
     },
     "datePublished": "2025-01-01",
-    "dateModified": new Date().toISOString().split('T')[0]
+    "dateModified": (currentRate?.eur_updated_at_iso || currentRate?.updated_at_iso || '').slice(0, 10) || undefined
   };
 
-  const faqSchema = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": language === 'es' ? [
+  const euroFaqAnswers = buyStr
+    ? (language === 'es' ? [
       {
         "@type": "Question",
         "name": "¿Cuánto es 1 Euro a Boliviano?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": `1 Euro equivale actualmente a aproximadamente ${currentRate?.buy_bob_per_eur?.toFixed(2) || '11.50'} BOB según el tipo de cambio del mercado paralelo en Bolivia. Esta cotización se actualiza cada 15 minutos con datos en tiempo real de Binance P2P.`
+          "text": `1 euro equivale a aproximadamente ${buyStr} BOB según nuestra referencia paralela (derivada vía USDT). No es el tipo oficial ni una cotización de ventanilla.`
         }
       },
       {
         "@type": "Question",
-        "name": "¿Cómo convertir Euros a Bolivianos en Bolivia?",
+        "name": "¿El euro blue se observa en efectivo?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Para convertir Euros a Bolivianos en Bolivia, puedes usar Binance P2P. Ve a la sección P2P, selecciona el par USDT/EUR y USDT/BOB, o usa nuestra calculadora gratuita para ver el tipo de cambio actual. También puedes cambiar euros en casas de cambio o bancos, pero el tipo de cambio puede ser menos favorable."
+          "text": "No. Calculamos EUR/BOB cruzando USDT/BOB y USDT/EUR (o EURUSDT spot si el P2P de euros no tiene liquidez). Es una referencia, no un precio de casa de cambio."
         }
       },
       {
@@ -104,15 +122,7 @@ function EuroToBoliviano() {
         "name": "¿Cuánto es 100 Euros a Bolivianos?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": `Con el tipo de cambio actual (${currentRate?.buy_bob_per_eur?.toFixed(2) || '11.50'} BOB por EUR), 100 Euros equivalen a aproximadamente ${((currentRate?.buy_bob_per_eur || 11.50) * 100).toFixed(2)} BOB. Esta cotización refleja el mercado paralelo y se actualiza cada 15 minutos.`
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "¿Dónde cambiar Euros a Bolivianos en Bolivia?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Puedes cambiar Euros a Bolivianos en Bolivia a través de Binance P2P (la opción más popular), casas de cambio autorizadas, bancos, o plataformas P2P como Airtm. El tipo de cambio varía según el método que elijas, siendo generalmente más favorable en el mercado paralelo."
+          "text": `Con la compra de referencia (${buyStr} BOB por EUR), 100 euros equivalen a aproximadamente ${hundredStr} BOB.`
         }
       }
     ] : [
@@ -121,27 +131,23 @@ function EuroToBoliviano() {
         "name": "How much is 1 Euro to Boliviano?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": `1 Euro is currently worth approximately ${currentRate?.buy_bob_per_eur?.toFixed(2) || '11.50'} BOB according to the parallel market exchange rate in Bolivia. This quote is updated every 15 minutes with real-time data from Binance P2P.`
+          "text": `1 euro is about ${buyStr} BOB on our parallel reference (derived via USDT). Not the official rate and not a cash-desk quote.`
         }
       },
       {
         "@type": "Question",
-        "name": "How to convert Euros to Bolivianos in Bolivia?",
+        "name": "Is the euro blue observed in cash?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "To convert Euros to Bolivianos in Bolivia, you can use Binance P2P. Go to the P2P section, select the USDT/EUR and USDT/BOB pairs, or use our free calculator to see the current exchange rate. You can also exchange euros at exchange houses or banks, but the exchange rate may be less favorable."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "How much is 100 Euros to Bolivianos?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": `With the current exchange rate (${currentRate?.buy_bob_per_eur?.toFixed(2) || '11.50'} BOB per EUR), 100 Euros equal approximately ${((currentRate?.buy_bob_per_eur || 11.50) * 100).toFixed(2)} BOB. This quote reflects the parallel market and is updated every 15 minutes.`
+          "text": "No. We cross USDT/BOB with USDT/EUR (or EURUSDT spot if euro P2P is thin). It is a reference, not an exchange-house price."
         }
       }
-    ]
-  };
+    ])
+    : [];
+
+  const faqSchema = euroFaqAnswers.length
+    ? { "@context": "https://schema.org", "@type": "FAQPage", "mainEntity": euroFaqAnswers }
+    : null;
 
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
@@ -152,7 +158,7 @@ function EuroToBoliviano() {
           ? "euro blue bolivia, euro a boliviano blue, precio del euro mercado negro bolivia, euro paralelo bolivia, eur a bob, convertir euro a boliviano, cotización euro boliviano, binance p2p euro"
           : "euro blue bolivia, parallel euro bolivia, euro black market bolivia, eur to bob, convert euro to boliviano, euro boliviano exchange rate, binance p2p euro"}
         canonical="/euro-a-boliviano"
-        structuredData={[articleSchema, faqSchema]}
+        structuredData={[articleSchema, faqSchema].filter(Boolean)}
       />
       
       <Header />
@@ -176,13 +182,47 @@ function EuroToBoliviano() {
             ? 'Euro Blue Bolivia – EUR a BOB (Mercado Paralelo)'
             : 'Euro Blue Bolivia – EUR to BOB (Parallel Market)'}
         </h1>
-        <p className="text-center text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-3 sm:mb-6 min-h-[1.75rem]">
+        <p className="text-center text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-2 min-h-[1.75rem]">
           {lastUpdated
             ? (language === 'es'
-              ? `Última actualización: ${lastUpdated.toLocaleString('es-BO', { dateStyle: 'long', timeStyle: 'short' })}`
-              : `Last updated: ${lastUpdated.toLocaleString('en-US', { dateStyle: 'long', timeStyle: 'short' })}`)
+              ? <>Lectura: <time dateTime={lastUpdated.toISOString()}>{lastUpdated.toLocaleString('es-BO', { timeZone: 'America/La_Paz', dateStyle: 'long', timeStyle: 'short' })}</time> (hora de Bolivia)</>
+              : <>Reading: <time dateTime={lastUpdated.toISOString()}>{lastUpdated.toLocaleString('en-US', { timeZone: 'America/La_Paz', dateStyle: 'long', timeStyle: 'short' })}</time> (Bolivia time)</>)
             : '\u00a0'}
         </p>
+        {currentRate?.is_stale && (
+          <p className="text-center text-sm text-amber-700 dark:text-amber-300 mb-2">
+            {language === 'es'
+              ? 'Mostramos la última lectura válida; la fuente no respondió ahora.'
+              : 'Showing the last valid reading; the upstream source did not respond just now.'}
+          </p>
+        )}
+        <p className="text-center text-sm text-gray-600 dark:text-gray-400 max-w-xl mx-auto mb-3">
+          {language === 'es' ? derivationEs : derivationEn}{' '}
+          <Link to="/fuente-de-datos" className="text-blue-600 dark:text-blue-400 font-medium hover:underline">
+            {language === 'es' ? 'Metodología' : 'Methodology'}
+          </Link>
+        </p>
+        <div className="max-w-md mx-auto mb-4 rounded-xl border border-blue-200 dark:border-blue-800 bg-white/90 dark:bg-gray-800/90 p-3">
+          <label htmlFor="euro-quick" className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">
+            {language === 'es' ? 'Convertir EUR → BOB (compra de referencia)' : 'Convert EUR → BOB (reference buy)'}
+          </label>
+          <div className="flex gap-2">
+            <input
+              id="euro-quick"
+              type="number"
+              min="0"
+              inputMode="decimal"
+              value={convertEur}
+              onChange={(e) => setConvertEur(e.target.value)}
+              className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-base tabular-nums min-h-[44px]"
+            />
+            <div className="flex items-center px-3 rounded-lg bg-blue-50 dark:bg-blue-950 text-sm font-mono font-semibold tabular-nums min-h-[44px] min-w-[7.5rem] justify-end">
+              {Number.isFinite(Number(convertEur)) && Number.isFinite(buy)
+                ? `${(Number(convertEur) * buy).toFixed(2)} Bs`
+                : '—'}
+            </div>
+          </div>
+        </div>
         <p className="text-center mb-4 sm:mb-6">
           <Link
             to="/dolar-blue-hoy"
@@ -223,8 +263,8 @@ function EuroToBoliviano() {
             ? (language === 'es' ? 'No se pudo cargar la cotización. Reintentando…' : 'Could not load the quote. Retrying…')
             : null}
           footnote={language === 'es'
-            ? 'Tipo de cambio actualizado cada 15 minutos con datos en tiempo real de Binance P2P'
-            : 'Exchange rate updated every 15 minutes with real-time data from Binance P2P'}
+            ? 'Compra: Bs para obtener 1 EUR vía USDT. Venta: Bs al vender 1 EUR. Referencia P2P, no ventanilla.'
+            : 'Buy: Bs to obtain 1 EUR via USDT. Sell: Bs when selling 1 EUR. P2P reference, not a cash desk.'}
         />
 
         {/* Binance Banner */}
@@ -264,6 +304,13 @@ function EuroToBoliviano() {
                 rate={buy}
                 isLoading={isRateLoading}
               />
+              {weekHistory && (
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+                  {language === 'es'
+                    ? `En la última semana (lecturas EUR disponibles): mínimo Bs ${weekHistory.min.toFixed(2)}, máximo Bs ${weekHistory.max.toFixed(2)} por euro.`
+                    : `Over the last week (available EUR readings): low Bs ${weekHistory.min.toFixed(2)}, high Bs ${weekHistory.max.toFixed(2)} per euro.`}
+                </p>
+              )}
 
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
                 {language === 'es' 

@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 import { fetchBlueRate } from '../utils/api';
 import { formatDateTime } from '../utils/formatters';
 import { getWebPage, getBreadcrumbList } from '../utils/seoSchema';
-import { buildLiveRateSeoMeta, ratesFromBluePayload } from '../utils/seoRateMeta';
+import { buildLiveRateSeoMeta, ratesFromBluePayload, liveBobParts } from '../utils/seoRateMeta';
 import { lazy, Suspense } from 'react';
 const BlueChart = lazy(() => import('../components/BlueChart'));
 import PrimaryRateLink from '../components/PrimaryRateLink';
@@ -27,6 +27,7 @@ function CuantoEstaDolarBolivia() {
   const [showOfficial, setShowOfficial] = useState(false);
   const [currentRate, setCurrentRate] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(new Date());
+  const live = liveBobParts(currentRate);
 
   useEffect(() => {
     const loadRate = async () => {
@@ -81,7 +82,9 @@ function CuantoEstaDolarBolivia() {
         "name": "¿Cuánto está el dólar en Bolivia?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": `El dólar blue en Bolivia está actualmente en aproximadamente ${currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB por USD para compra y ${currentRate?.sell_bob_per_usd?.toFixed(2) || '10.60'} BOB por USD para venta. Esta cotización se actualiza cada 15 minutos con datos en tiempo real de Binance P2P.`
+          "text": live.buyStr && live.sellStr
+            ? `El dólar blue en Bolivia está actualmente en ${live.buyStr} BOB por USD para compra y ${live.sellStr} BOB por USD para venta. Esta cotización se actualiza cada 15 minutos con datos en tiempo real de Binance P2P.`
+            : 'El dólar blue (paralelo) en Bolivia se publica en vivo en boliviablue.com como mediana P2P, actualizada cada ~15 minutos.'
         }
       },
       {
@@ -89,7 +92,9 @@ function CuantoEstaDolarBolivia() {
         "name": "¿Cuánto vale el dólar en Bolivia?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": `El dólar blue vale actualmente aproximadamente ${currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB por USD. Esto significa que 1 dólar estadounidense equivale a ${currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} bolivianos en el mercado paralelo.`
+          "text": live.buyStr
+            ? `El dólar blue vale actualmente ${live.buyStr} BOB por USD. Esto significa que 1 dólar estadounidense equivale a ${live.buyStr} bolivianos en el mercado paralelo.`
+            : 'El dólar blue (paralelo) se actualiza en vivo en boliviablue.com. Abrí la página para ver la compra y venta actuales.'
         }
       },
       {
@@ -97,7 +102,9 @@ function CuantoEstaDolarBolivia() {
         "name": "¿Cuánto es $100 USD en Bolivia?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": `Con el dólar blue actual (${currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB por USD), $100 USD equivalen a aproximadamente ${((currentRate?.buy_bob_per_usd || 10.50) * 100).toFixed(2)} BOB. Con la tasa oficial (~9.00 BOB/USD) serían solo 900 BOB. La diferencia puede ser significativa.`
+          "text": live.buyStr
+            ? `Con el dólar blue actual (${live.buyStr} BOB por USD), $100 USD equivalen a aproximadamente ${live.times(100)} BOB. Con la tasa oficial del BCB serían menos. La diferencia puede ser significativa.`
+            : 'Usá la calculadora con la cotización blue en vivo para convertir $100 USD a bolivianos al tipo paralelo.'
         }
       },
       {
@@ -105,7 +112,9 @@ function CuantoEstaDolarBolivia() {
         "name": "¿Cuánto es 1 USD a 1 Boliviano?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": `El dólar blue actualmente fluctúa alrededor de ${currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB por USD. Esto significa que 1 USD equivale a aproximadamente ${currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB, mientras que 1 BOB equivale a aproximadamente ${(1 / (currentRate?.buy_bob_per_usd || 10.50)).toFixed(4)} USD.`
+          "text": live.buyStr
+            ? `El dólar blue actualmente está en ${live.buyStr} BOB por USD. Esto significa que 1 USD equivale a aproximadamente ${live.buyStr} BOB, mientras que 1 BOB equivale a aproximadamente ${(1 / Number(live.buyStr)).toFixed(4)} USD.`
+            : 'El dólar blue (paralelo) se actualiza en vivo en boliviablue.com. 1 USD equivale a varios bolivianos al tipo paralelo, no al tipo oficial del BCB.'
         }
       }
     ] : [
@@ -114,7 +123,9 @@ function CuantoEstaDolarBolivia() {
         "name": "How much is the dollar in Bolivia?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": `The blue dollar in Bolivia is currently approximately ${currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB per USD for buying and ${currentRate?.sell_bob_per_usd?.toFixed(2) || '10.60'} BOB per USD for selling. This quote is updated every 15 minutes with real-time data from Binance P2P.`
+          "text": live.buyStr && live.sellStr
+            ? `The blue dollar in Bolivia is currently ${live.buyStr} BOB per USD for buying and ${live.sellStr} BOB per USD for selling. This quote is updated every 15 minutes with real-time data from Binance P2P.`
+            : 'The Bolivia blue (parallel) dollar is published live on boliviablue.com as a P2P median, updated about every 15 minutes.'
         }
       },
       {
@@ -122,7 +133,9 @@ function CuantoEstaDolarBolivia() {
         "name": "How much is $100 USD in Bolivia?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": `With the current blue dollar (${currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB per USD), $100 USD equals approximately ${((currentRate?.buy_bob_per_usd || 10.50) * 100).toFixed(2)} BOB. With the official rate (~9.00 BOB/USD) it would only be 900 BOB. The difference can be significant.`
+          "text": live.buyStr
+            ? `With the current blue dollar (${live.buyStr} BOB per USD), $100 USD equals approximately ${live.times(100)} BOB. The official BCB rate would convert to fewer bolivianos. The difference can be significant.`
+            : 'Use the calculator with the live blue rate to convert $100 USD to bolivianos at the parallel price.'
         }
       }
     ]
@@ -170,7 +183,7 @@ function CuantoEstaDolarBolivia() {
         </h1>
         <p className="text-center text-base text-gray-600 dark:text-gray-400 mb-1">
           {language === 'es'
-            ? 'Respuesta directa al “¿cuánto está?”: precio blue compra/venta abajo, conversiones comunes ($1, $100, $1000) y calculadora para cualquier monto. No es el monitor EN VIVO ni la guía de cómo cotizar.'
+            ? 'Respuesta directa al “¿cuánto está?” y al precio del dólar hoy: compra/venta blue (paralelo / mercado negro de referencia P2P) abajo, conversiones comunes ($1, $100, $1000) y calculadora. No es el monitor EN VIVO ni la guía de cómo cotizar.'
             : 'Direct answer to “how much is it?”: blue buy/sell below, common conversions ($1, $100, $1000), and a calculator for any amount. Not the LIVE monitor or the how-to-quote guide.'}
         </p>
         <p className="text-center text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-3 sm:mb-6">
@@ -199,7 +212,7 @@ function CuantoEstaDolarBolivia() {
                     {language === 'es' ? 'Compra' : 'Buy'}
                   </div>
                   <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                    {currentRate.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB
+                    {live.buyStr || '—'} BOB
                   </div>
                   <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
                     {language === 'es' ? 'por 1 USD' : 'per 1 USD'}
@@ -210,7 +223,7 @@ function CuantoEstaDolarBolivia() {
                     {language === 'es' ? 'Venta' : 'Sell'}
                   </div>
                   <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                    {currentRate.sell_bob_per_usd?.toFixed(2) || '10.60'} BOB
+                    {live.sellStr || '—'} BOB
                   </div>
                   <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
                     {language === 'es' ? 'por 1 USD' : 'per 1 USD'}
@@ -221,7 +234,7 @@ function CuantoEstaDolarBolivia() {
                     {language === 'es' ? '$100 USD =' : '$100 USD ='}
                   </div>
                   <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                    {((currentRate.buy_bob_per_usd || 10.50) * 100).toFixed(2)} BOB
+                    {live.times(100) || '—'} BOB
                   </div>
                   <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
                     {language === 'es' ? 'Aproximadamente' : 'Approximately'}
@@ -282,28 +295,14 @@ function CuantoEstaDolarBolivia() {
                   ? 'Conversiones Comunes'
                   : 'Common Conversions'}
               </h3>
-              {currentRate && (
+              {live.buyStr && (
                 <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-6">
                   <ul className="space-y-2 text-gray-700 dark:text-gray-300">
-                    {language === 'es' ? (
-                      <>
-                        <li><strong>$1 USD</strong> = {currentRate.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB</li>
-                        <li><strong>$10 USD</strong> = {((currentRate.buy_bob_per_usd || 10.50) * 10).toFixed(2)} BOB</li>
-                        <li><strong>$50 USD</strong> = {((currentRate.buy_bob_per_usd || 10.50) * 50).toFixed(2)} BOB</li>
-                        <li><strong>$100 USD</strong> = {((currentRate.buy_bob_per_usd || 10.50) * 100).toFixed(2)} BOB</li>
-                        <li><strong>$500 USD</strong> = {((currentRate.buy_bob_per_usd || 10.50) * 500).toFixed(2)} BOB</li>
-                        <li><strong>$1000 USD</strong> = {((currentRate.buy_bob_per_usd || 10.50) * 1000).toFixed(2)} BOB</li>
-                      </>
-                    ) : (
-                      <>
-                        <li><strong>$1 USD</strong> = {currentRate.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB</li>
-                        <li><strong>$10 USD</strong> = {((currentRate.buy_bob_per_usd || 10.50) * 10).toFixed(2)} BOB</li>
-                        <li><strong>$50 USD</strong> = {((currentRate.buy_bob_per_usd || 10.50) * 50).toFixed(2)} BOB</li>
-                        <li><strong>$100 USD</strong> = {((currentRate.buy_bob_per_usd || 10.50) * 100).toFixed(2)} BOB</li>
-                        <li><strong>$500 USD</strong> = {((currentRate.buy_bob_per_usd || 10.50) * 500).toFixed(2)} BOB</li>
-                        <li><strong>$1000 USD</strong> = {((currentRate.buy_bob_per_usd || 10.50) * 1000).toFixed(2)} BOB</li>
-                      </>
-                    )}
+                    {[1, 10, 50, 100, 500, 1000].map((n) => (
+                      <li key={n}>
+                        <strong>${n} USD</strong> = {live.times(n)} BOB
+                      </li>
+                    ))}
                   </ul>
                 </div>
               )}
@@ -354,14 +353,14 @@ function CuantoEstaDolarBolivia() {
                 <ul className="space-y-3 text-gray-700 dark:text-gray-300">
                   {language === 'es' ? (
                     <>
-                      <li><strong>Precio de Compra:</strong> Es el precio al que puedes comprar dólares. Si ves que el dólar está a 10.50 BOB, significa que necesitas 10.50 bolivianos para comprar 1 dólar.</li>
+                      <li><strong>Precio de Compra:</strong> Es cuántos bolivianos necesitás para obtener 1 USD en el paralelo. El número de compra en las tarjetas de arriba es esa referencia P2P, no un precio de ventanilla.</li>
                       <li><strong>Precio de Venta:</strong> Es el precio al que puedes vender dólares. Generalmente es ligeramente más bajo que el precio de compra.</li>
                       <li><strong>Precio Promedio (Mid):</strong> Es el promedio entre compra y venta, útil para estimaciones generales.</li>
                       <li><strong>Brecha Cambiaria:</strong> La diferencia entre el dólar blue y el dólar oficial indica la presión sobre la moneda local.</li>
                     </>
                   ) : (
                     <>
-                      <li><strong>Buy Price:</strong> This is the price at which you can buy dollars. If you see the dollar is at 10.50 BOB, it means you need 10.50 bolivianos to buy 1 dollar.</li>
+                      <li><strong>Buy Price:</strong> How many bolivianos you need to obtain 1 USD on the parallel market. The buy number on the cards above is that P2P reference, not a cash-desk price.</li>
                       <li><strong>Sell Price:</strong> This is the price at which you can sell dollars. Generally it\'s slightly lower than the buy price.</li>
                       <li><strong>Average Price (Mid):</strong> This is the average between buy and sell, useful for general estimates.</li>
                       <li><strong>Exchange Gap:</strong> The difference between the blue dollar and the official dollar indicates pressure on the local currency.</li>
@@ -382,8 +381,12 @@ function CuantoEstaDolarBolivia() {
                   </h4>
                   <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
                     {language === 'es'
-                      ? `El dólar blue en Bolivia hoy está aproximadamente en ${currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB por USD para compra y ${currentRate?.sell_bob_per_usd?.toFixed(2) || '10.60'} BOB por USD para venta. Esta cotización se actualiza cada 15 minutos en nuestra plataforma.`
-                      : `The blue dollar in Bolivia today is approximately ${currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB per USD for buying and ${currentRate?.sell_bob_per_usd?.toFixed(2) || '10.60'} BOB per USD for selling. This quote is updated every 15 minutes on our platform.`}
+                      ? live.buyStr && live.sellStr
+                        ? `El dólar blue en Bolivia hoy está en ${live.buyStr} BOB por USD para compra y ${live.sellStr} BOB por USD para venta. Esta cotización se actualiza cada 15 minutos en nuestra plataforma.`
+                        : 'El dólar blue (paralelo) en Bolivia se publica en vivo aquí. La cotización se actualiza cada 15 minutos.'
+                      : live.buyStr && live.sellStr
+                        ? `The blue dollar in Bolivia today is ${live.buyStr} BOB per USD for buying and ${live.sellStr} BOB per USD for selling. This quote is updated every 15 minutes on our platform.`
+                        : 'The blue dollar in Bolivia is published live here. The quote updates every 15 minutes.'}
                   </p>
                 </div>
 

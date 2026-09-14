@@ -12,7 +12,7 @@ import { lazy, Suspense } from 'react';
 const BlueChart = lazy(() => import('../components/BlueChart'));
 import Breadcrumbs from '../components/Breadcrumbs';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
-import { buildLiveRateSeoMeta, ratesFromBluePayload } from '../utils/seoRateMeta';
+import { buildLiveRateSeoMeta, ratesFromBluePayload, liveBobParts } from '../utils/seoRateMeta';
 
 function CotizaDolarParalelo() {
   // Signal to AdSense that this page has sufficient content
@@ -24,6 +24,7 @@ function CotizaDolarParalelo() {
   const [showOfficial, setShowOfficial] = useState(false);
   const [currentRate, setCurrentRate] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(new Date());
+  const live = liveBobParts(currentRate);
 
   useEffect(() => {
     const loadRate = async () => {
@@ -91,7 +92,9 @@ function CotizaDolarParalelo() {
         "name": "¿Cuál es la cotización actual del dólar paralelo?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": `La cotización actual del dólar paralelo en Bolivia es de aproximadamente ${currentRate?.buy_bob_per_usd?.toFixed(2) || '10.50'} BOB por USD para compra y ${currentRate?.sell_bob_per_usd?.toFixed(2) || '10.60'} BOB por USD para venta. Esta cotización se actualiza cada 15 minutos con datos en tiempo real de Binance P2P.`
+          "text": live.buyStr && live.sellStr
+            ? `La cotización actual del dólar paralelo en Bolivia es ${live.buyStr} BOB por USD para compra y ${live.sellStr} BOB por USD para venta. Esta cotización se actualiza cada 15 minutos con datos en tiempo real de Binance P2P.`
+            : 'La cotización del dólar paralelo en Bolivia se publica en vivo en boliviablue.com cada ~15 minutos con datos P2P.'
         }
       },
       {

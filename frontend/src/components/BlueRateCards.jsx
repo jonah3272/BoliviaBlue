@@ -166,8 +166,9 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
 
   const abortControllerRef = React.useRef(null);
   const currentCurrencyRef = React.useRef(currency);
+  const dataRef = React.useRef(null);
 
-  const loadData = useCallback(async (targetCurrency) => {
+  const loadData = useCallback(async (targetCurrency, { silent = false } = {}) => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
@@ -176,7 +177,9 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
     abortControllerRef.current = abortController;
     currentCurrencyRef.current = targetCurrency;
 
-    setIsLoading(true);
+    if (!silent) {
+      setIsLoading(true);
+    }
     setError(null);
 
     try {
@@ -191,6 +194,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
       
       if (!abortController.signal.aborted && currentCurrencyRef.current === targetCurrency) {
         setData(result);
+        dataRef.current = result;
         setError(null);
         if (cards) {
           setCardRates(cards);
@@ -213,7 +217,12 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
       
       if (currentCurrencyRef.current === targetCurrency) {
         console.error('Error loading rate:', err);
-        setError(err.message || t('error'));
+        if (dataRef.current) {
+          setData({ ...dataRef.current, is_stale: true });
+          setError(null);
+        } else {
+          setError(err.message || t('error'));
+        }
       }
     } finally {
       if (!abortController.signal.aborted && currentCurrencyRef.current === targetCurrency) {
@@ -228,7 +237,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
     }, 100);
     
     const interval = setInterval(() => {
-      loadData(currency);
+      loadData(currency, { silent: true });
     }, 60000);
     
     return () => {

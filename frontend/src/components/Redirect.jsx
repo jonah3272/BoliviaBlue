@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { blockAdsOnThisPage } from '../utils/adsenseLoader';
+import { SITE_URL } from '../config/brand';
 
 /**
  * Redirect component for Spanish URL aliases
@@ -13,9 +14,9 @@ function Redirect({ to }) {
   const location = useLocation();
   
   // Get base URL
-  const baseUrl = typeof window !== 'undefined' 
-    ? (window.location.hostname.includes('stage') ? 'https://stage.boliviablue.com' : 'https://boliviablue.com')
-    : 'https://boliviablue.com';
+  const baseUrl = typeof window !== 'undefined'
+    ? (window.location.hostname.includes('stage') ? 'https://stage.boliviablue.com' : SITE_URL)
+    : SITE_URL;
   
   // Canonical URL should point to destination
   const canonicalUrl = `${baseUrl}${to}`;

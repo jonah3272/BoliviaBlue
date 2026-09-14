@@ -35,7 +35,7 @@ function Publicitar() {
       <PageMeta
         title={
           es
-            ? 'Publicitar en Bolivia Blue | Anuncios para casas de cambio y fintech'
+            ? 'Publicitar en Bolivia Blue | Casas de cambio y fintech'
             : 'Advertise on Bolivia Blue | Ads for exchange houses & fintech'
         }
         description={

@@ -14,6 +14,10 @@ import middleware, {
   replaceMeta,
   injectHomeShellRates,
   applyLiveSeo,
+  applyEnglishAnnotations,
+  withLangQuery,
+  replaceAllRatePairs,
+  fillLiveRateSlots,
   shouldTransformPath,
   wantsHtmlDocument,
 } from './middleware.js';
@@ -46,11 +50,11 @@ describe('normalizeRates', () => {
       sell_bob_per_usd: 12.678,
       updated_at_iso: '2026-08-01T20:00:00.000Z',
     });
-    assert.deepEqual(rates, {
-      buy: '12.35',
-      sell: '12.68',
-      updatedAt: '2026-08-01T20:00:00.000Z',
-    });
+    assert.equal(rates.buy, '12.35');
+    assert.equal(rates.sell, '12.68');
+    assert.equal(rates.updatedAt, '2026-08-01T20:00:00.000Z');
+    assert.equal(rates.buyEur, null);
+    assert.equal(rates.sellEur, null);
   });
 
   it('accepts buy / sell aliases', () => {
@@ -114,7 +118,7 @@ describe('homepage shell injection', () => {
     const out = injectHomeShellRates(SHELL_FIXTURE, '12.35', '12.68', '2026-08-01T20:00:00.000Z');
     assert.match(out, /data-seo-shell="home"/);
     assert.match(out, /compra Bs 12\.35 y venta Bs 12\.68/);
-    assert.match(out, /mercado paralelo/);
+    assert.match(out, /Referencia P2P|mercado paralelo|USDT/);
     assert.match(out, /Última lectura:/);
     assert.match(out, /href="\/dolar-blue-hoy"/);
     assert.match(out, /id="root"/);
@@ -143,8 +147,8 @@ describe('applyLiveSeo', () => {
     const meta = metaForPath('/', rates.buy, rates.sell);
     assert.match(html, new RegExp(`<title>${meta.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</title>`));
     assert.match(html, /compra Bs 12\.34 y venta Bs 12\.56/);
-    assert.match(html, /og:title" content="Dólar Blue Bolivia Hoy: Compra 12\.34 · Venta 12\.56"/);
-    assert.match(html, /twitter:description" content="El dólar paralelo/);
+    assert.match(html, new RegExp(`og:title" content="${meta.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`));
+    assert.match(html, /twitter:description" content="Bolivia Blue:/);
   });
 
   it('returns null when rates are missing (caller must keep original shell)', () => {
@@ -245,5 +249,76 @@ describe('GET vs HEAD homepage handling', () => {
     } finally {
       globalThis.fetch = originalFetch;
     }
+  });
+});
+
+describe('single snapshot', () => {
+  it('rewrites every compra/venta pair to the same live numbers', () => {
+    const html = `<p>compra Bs 12.05 y venta Bs 12.02.</p><p>compra Bs 12.48 · venta Bs 12.44</p>`;
+    const out = replaceAllRatePairs(html, '12.48', '12.44');
+    assert.equal((out.match(/12\.05/g) || []).length, 0);
+    assert.equal((out.match(/12\.02/g) || []).length, 0);
+    assert.match(out, /compra Bs 12\.48 y venta Bs 12\.44/);
+    assert.match(out, /compra Bs 12\.48 · venta Bs 12\.44/);
+  });
+
+  it('does not put USD rates on the euro page when EUR is missing', () => {
+    const rates = normalizeRates({
+      buy_bob_per_usd: 12.48,
+      sell_bob_per_usd: 12.44,
+      updated_at_iso: '2026-09-07T19:00:00.000Z',
+    });
+    assert.equal(applyLiveSeo('<html></html>', '/euro-a-boliviano', rates), null);
+  });
+
+  it('uses EUR fields on the euro path', () => {
+    const html = `<html><head><title>x</title><meta name="description" content="d" /><meta property="og:title" content="x" /><meta property="og:description" content="d" /><meta name="twitter:title" content="x" /><meta name="twitter:description" content="d" /></head><body><p>compra Bs 0.00 · venta Bs 0.00</p></body></html>`;
+    const rates = normalizeRates({
+      buy_bob_per_usd: 12.48,
+      sell_bob_per_usd: 12.44,
+      buy_bob_per_eur: 14.2,
+      sell_bob_per_eur: 14.1,
+      updated_at_iso: '2026-09-07T19:00:00.000Z',
+    });
+    const applied = applyLiveSeo(html, '/euro-a-boliviano', rates);
+    assert.ok(applied?.live);
+    assert.match(applied.html, /Compra 14\.20/);
+    assert.doesNotMatch(applied.html, /Compra 12\.48/);
+  });
+
+  it('fills data-live-usd100 from the buy snapshot', () => {
+    const html = `<p>compra <span data-live-buy>—</span> · 100 USD ≈ <span data-live-usd100>—</span></p>`;
+    const out = fillLiveRateSlots(html, '11.61', '11.50', '2026-09-12T15:00:00.000Z');
+    assert.match(out, /data-live-buy[^>]*>11\.61/);
+    assert.match(out, /data-live-usd100[^>]*>1161/);
+  });
+
+  it('keeps the press-kit title stable and puts rates in the description', () => {
+    const meta = metaForPath('/prensa', '11.61', '11.50');
+    assert.equal(meta.title, 'Prensa Bolivia Blue | Kit de medios, citas y datos');
+    assert.match(meta.description, /11\.61/);
+    assert.match(meta.description, /11\.50/);
+  });
+
+  it('puts live Santa Cruz rates in the city title', () => {
+    const html = `<html><head><title>x</title><meta name="description" content="d" /><meta property="og:title" content="x" /><meta property="og:description" content="d" /><meta name="twitter:title" content="x" /><meta name="twitter:description" content="d" /></head><body><p>compra Bs 0.00 · venta Bs 0.00</p></body></html>`;
+    const rates = normalizeRates({
+      buy_bob_per_usd: 11.87,
+      sell_bob_per_usd: 11.75,
+    });
+    const applied = applyLiveSeo(html, '/dolar-blue-santa-cruz', rates);
+    assert.ok(applied?.live);
+    assert.match(applied.html, /<title>Dólar Blue Santa Cruz Hoy: Compra 11\.87 · Venta 11\.75<\/title>/);
+    assert.doesNotMatch(applied.html, /<title>[^<]*0\.00/);
+  });
+
+  it('keeps English euro URLs self-canonical instead of pointing at Spanish', () => {
+    const html = `<html lang="es"><head><link rel="canonical" href="https://www.boliviablue.com/euro-a-boliviano" /><link rel="alternate" hreflang="es" href="https://www.boliviablue.com/euro-a-boliviano" /><link rel="alternate" hreflang="en" href="https://www.boliviablue.com/euro-a-boliviano?lang=en" /><title>x</title><meta name="description" content="d" /><meta property="og:url" content="https://www.boliviablue.com/euro-a-boliviano" /><meta property="og:title" content="x" /><meta property="og:description" content="d" /><meta name="twitter:title" content="x" /><meta name="twitter:description" content="d" /></head><body></body></html>`;
+    const out = applyEnglishAnnotations(html, '/euro-a-boliviano', { buy: '14.20', sell: '14.10' });
+    assert.match(out, /rel="canonical" href="https:\/\/www\.boliviablue\.com\/euro-a-boliviano\?lang=en"/);
+    assert.match(out, /hreflang="es" href="https:\/\/www\.boliviablue\.com\/euro-a-boliviano"/);
+    assert.match(out, /lang="en"/);
+    assert.match(out, /Euro Blue Bolivia Today: Buy 14\.20/);
+    assert.equal(withLangQuery('https://www.boliviablue.com/', 'en'), 'https://www.boliviablue.com/?lang=en');
   });
 });

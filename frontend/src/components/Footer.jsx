@@ -15,6 +15,7 @@ function Footer() {
       title: es ? 'Bolivia Blue' : 'Bolivia Blue',
       links: [
         { path: '/acerca-de', label: es ? 'Sobre Bolivia Blue' : 'About Bolivia Blue' },
+        { path: '/blog', label: 'Blog' },
         { path: '/bolivian-blue', label: 'Bolivian Blue' },
         { path: '/contacto', label: es ? 'Contacto' : 'Contact' },
         { path: '/preguntas-frecuentes', label: 'FAQ' },
@@ -28,6 +29,11 @@ function Footer() {
         { path: '/dolar-paralelo-bolivia-en-vivo', label: es ? 'En vivo' : 'Live' },
         { path: '/calculadora', label: es ? 'Calculadora' : 'Calculator' },
         { path: '/datos-historicos', label: es ? 'Datos históricos' : 'Historical data' },
+        { path: '/binance-p2p-bolivia', label: 'Binance P2P' },
+        { path: '/comparacion', label: es ? 'Blue vs oficial' : 'Blue vs official' },
+        { path: '/dolar-blue-santa-cruz', label: 'Santa Cruz' },
+        { path: '/dolar-blue-la-paz', label: 'La Paz' },
+        { path: '/dolar-blue-cochabamba', label: 'Cochabamba' },
       ],
     },
     {
@@ -42,7 +48,7 @@ function Footer() {
     {
       title: es ? 'Legal' : 'Legal',
       links: [
-        { path: '/terminos', label: es ? 'Términos' : 'Terms' },
+        { path: '/terminos', label: es ? 'Términos y Condiciones' : 'Terms' },
         { path: '/politica-de-privacidad', label: es ? 'Privacidad' : 'Privacy' },
         { path: '/politica-editorial', label: es ? 'Política editorial' : 'Editorial policy' },
       ],

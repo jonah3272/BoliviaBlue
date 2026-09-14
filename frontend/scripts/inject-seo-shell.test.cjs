@@ -17,6 +17,7 @@ const {
   replaceMeta,
   injectRootShell,
   injectStaticJsonLd,
+  fillLiveRateSlots,
 } = require('./inject-seo-shell.cjs');
 
 const NEW_ROUTES = [
@@ -36,8 +37,8 @@ const NEW_ROUTES = [
   },
   {
     path: '/blog',
-    title: 'Guías y Análisis del Dólar en Bolivia | BoliviaBlue',
-    h1: 'Guías y Análisis',
+    title: 'Blog | Bolivia Blue',
+    h1: 'Blog',
     shellId: 'blog',
     mustInclude: ['/noticias', '/comparacion', '/datos-historicos'],
   },
@@ -50,7 +51,7 @@ const NEW_ROUTES = [
   },
 ];
 
-const HOME_H1 = 'Dólar Blue Bolivia – Cotización en Tiempo Real y Herramientas';
+const HOME_H1 = 'Dólar Blue Bolivia Hoy';
 
 const FIXTURE = `<!DOCTYPE html>
 <html lang="es">
@@ -58,13 +59,13 @@ const FIXTURE = `<!DOCTYPE html>
 <title>Dólar Blue Bolivia Hoy | Cotización en Vivo Cada 15 Min</title>
 <meta name="title" content="Dólar Blue Bolivia Hoy | Cotización en Vivo Cada 15 Min" />
 <meta name="description" content="Homepage description" />
-<link rel="canonical" href="https://boliviablue.com/" />
+<link rel="canonical" href="https://www.boliviablue.com/" />
 <meta property="og:title" content="Dólar Blue Bolivia Hoy | Cotización en Vivo Cada 15 Min" />
 <meta property="og:description" content="Homepage description" />
-<meta property="og:url" content="https://boliviablue.com/" />
+<meta property="og:url" content="https://www.boliviablue.com/" />
 <meta name="twitter:title" content="Dólar Blue Bolivia Hoy | Cotización en Vivo Cada 15 Min" />
 <meta name="twitter:description" content="Homepage description" />
-<meta name="twitter:url" content="https://boliviablue.com/" />
+<meta name="twitter:url" content="https://www.boliviablue.com/" />
 </head>
 <body>
 <div id="root"></div>
@@ -110,13 +111,16 @@ describe('replaceMeta + shell injection for new routes', () => {
 
       assert.match(html, new RegExp(`<title>${expected.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</title>`));
       assert.match(html, new RegExp(`rel="canonical" href="${BASE_URL}${expected.path}"`));
+      assert.match(html, new RegExp(`hreflang="es" href="${BASE_URL}${expected.path}"`));
+      assert.match(html, new RegExp(`hreflang="en" href="${BASE_URL}${expected.path}\\?lang=en"`));
+      assert.match(html, new RegExp(`hreflang="x-default" href="${BASE_URL}${expected.path}"`));
       assert.match(html, new RegExp(`property="og:url" content="${BASE_URL}${expected.path}"`));
       assert.match(html, new RegExp(`name="twitter:url" content="${BASE_URL}${expected.path}"`));
       assert.match(html, /lang="es"/);
       assert.match(html, /id="root"/);
       assert.match(html, new RegExp(`<h1[^>]*>${expected.h1.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</h1>`));
-      assert.doesNotMatch(html, /rel="canonical" href="https:\/\/boliviablue\.com\/"/);
-      assert.doesNotMatch(html, /property="og:url" content="https:\/\/boliviablue\.com\/"/);
+      assert.doesNotMatch(html, new RegExp(`rel="canonical" href="${BASE_URL}/"`));
+      assert.doesNotMatch(html, new RegExp(`property="og:url" content="${BASE_URL}/"`));
       assert.doesNotMatch(html, new RegExp(HOME_H1.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
       assert.equal((html.match(/<h1\b/gi) || []).length, 1);
     });
@@ -143,8 +147,8 @@ describe('generated dist output for new routes', () => {
       assert.match(html, /lang="es"/);
       assert.match(html, /id="root"/);
       assert.doesNotMatch(html, new RegExp(HOME_H1.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-      assert.doesNotMatch(html, /rel="canonical" href="https:\/\/boliviablue\.com\/"/);
-      assert.doesNotMatch(html, /property="og:url" content="https:\/\/boliviablue\.com\/"/);
+      assert.doesNotMatch(html, new RegExp(`rel="canonical" href="${BASE_URL}/"`));
+      assert.doesNotMatch(html, new RegExp(`property="og:url" content="${BASE_URL}/"`));
       assert.doesNotMatch(html, /2024|2025/);
       for (const snippet of expected.mustInclude) {
         assert.match(html, new RegExp(snippet.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'));
@@ -159,5 +163,64 @@ describe('generated dist output for new routes', () => {
       assert.doesNotMatch(html, new RegExp(`<h1[^>]*>${expected.h1.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</h1>`));
     }
     assert.match(html, /data-seo-shell="home"/);
+  });
+});
+
+describe('homepage brand sitelink candidates', () => {
+  it('exposes About, Advertise, Blog and Terms in the crawlable home shell', () => {
+    const shell = ROUTES['/'].shell;
+    for (const href of ['/acerca-de', '/publicitar', '/blog', '/terminos']) {
+      assert.match(shell, new RegExp(`href="${href}"`));
+    }
+    assert.match(shell, /Sobre Bolivia Blue/);
+    assert.match(shell, /Publicitar en Bolivia Blue/);
+    assert.match(shell, /Términos y Condiciones/);
+    assert.match(shell, /href="\/dolar-blue-santa-cruz"/);
+    assert.match(shell, /href="\/dolar-blue-la-paz"/);
+    assert.match(shell, /href="\/dolar-blue-cochabamba"/);
+  });
+
+  it('exposes product sitelinks, $100 converter slot and mercado negro copy', () => {
+    const shell = ROUTES['/'].shell;
+    for (const href of ['/prensa', '/fuente-de-datos', '/binance-p2p-bolivia', '/calculadora', '/datos-historicos']) {
+      assert.match(shell, new RegExp(`href="${href}"`));
+    }
+    assert.match(shell, /data-live-usd100/);
+    assert.match(shell, /data-live-buy/);
+    assert.match(shell, /mercado negro/);
+    assert.match(shell, /100 USD/);
+  });
+});
+
+describe('priority crawl shells', () => {
+  for (const expected of [
+    { path: '/euro-a-boliviano', h1: 'Euro Blue Bolivia – EUR a BOB', shellId: 'euro-a-boliviano', must: ['USDT', '/dolar-blue-hoy', '/calculadora'] },
+    { path: '/prensa', h1: 'Kit de prensa y backlinks', shellId: 'prensa', must: ['medios', '/api-docs', 'data-live-buy', 'historical-data.csv', '/embed.html'] },
+    { path: '/api-docs', h1: 'API del Dólar Blue Bolivia', shellId: 'api-docs', must: ['REST', '/dolar-blue-hoy'] },
+    { path: '/real-a-boliviano', h1: 'Real Blue Bolivia – BRL a BOB', shellId: 'real-a-boliviano', must: ['USDT', '/euro-a-boliviano'] },
+    { path: '/dolar-blue-santa-cruz', h1: 'Dólar Blue Santa Cruz Hoy', shellId: 'dolar-blue-santa-cruz', must: ['data-live-buy', '/calculadora', '/dolar-blue-la-paz'] },
+    { path: '/dolar-blue-la-paz', h1: 'Dólar Blue La Paz Hoy', shellId: 'dolar-blue-la-paz', must: ['data-live-buy', '/dolar-blue-santa-cruz'] },
+    { path: '/dolar-blue-cochabamba', h1: 'Dólar Blue Cochabamba Hoy', shellId: 'dolar-blue-cochabamba', must: ['data-live-buy', '/dolar-blue-la-paz'] },
+  ]) {
+    it(`defines ${expected.path} without homepage identity`, () => {
+      const route = ROUTES[expected.path];
+      assert.ok(route);
+      assert.match(route.shell, new RegExp(`data-seo-shell="${expected.shellId}"`));
+      assert.match(route.shell, new RegExp(expected.h1.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+      assert.doesNotMatch(route.shell, new RegExp(HOME_H1.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+      assert.equal(route.canonical, `${BASE_URL}${expected.path}`);
+      for (const snippet of expected.must) {
+        assert.match(route.shell, new RegExp(snippet.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'));
+      }
+    });
+  }
+});
+
+describe('fillLiveRateSlots', () => {
+  it('fills buy/sell and rounds 100 USD from the buy snapshot', () => {
+    const html = 'compra <span data-live-buy>—</span> · 100 USD ≈ <span data-live-usd100>—</span>';
+    const out = fillLiveRateSlots(html, '11.61', '11.50', '2026-09-12T15:00:00.000Z');
+    assert.match(out, /data-live-buy[^>]*>11\.61/);
+    assert.match(out, /data-live-usd100[^>]*>1161/);
   });
 });

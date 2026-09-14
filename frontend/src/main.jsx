@@ -8,6 +8,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { CurrencyProvider } from './contexts/CurrencyContext';
 import { ToastProvider } from './contexts/ToastContext';
+import { RateProvider } from './contexts/RateContext';
 import { loadAdSense, blockAdsOnThisPage } from './utils/adsenseLoader';
 
 // Global error handler for mobile debugging
@@ -199,9 +200,11 @@ if (!rootElement) {
           <ThemeProvider>
             <LanguageProvider>
               <CurrencyProvider>
-                <ToastProvider>
-                  <App />
-                </ToastProvider>
+                <RateProvider>
+                  <ToastProvider>
+                    <App />
+                  </ToastProvider>
+                </RateProvider>
               </CurrencyProvider>
             </LanguageProvider>
           </ThemeProvider>

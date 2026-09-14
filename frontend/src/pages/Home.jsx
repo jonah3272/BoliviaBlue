@@ -16,7 +16,6 @@ const NewsTabs = lazy(() => import('../components/NewsTabs'));
 const SentimentNewsCard = lazy(() => import('../components/SentimentNewsCard'));
 const RateAlertForm = lazy(() => import('../components/RateAlertForm'));
 
-import About from '../components/About';
 import PageMeta from '../components/PageMeta';
 import Navigation from '../components/Navigation';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -24,7 +23,7 @@ import { Link } from 'react-router-dom';
 import { articlesEs, articlesEn } from '../data/blogArticles';
 import { formatDateTime } from '../utils/formatters';
 import { useRate } from '../contexts/RateContext';
-import { BASE_URL, getWebPage, getBreadcrumbList, getDataFeedItem, getLiveRateDataset } from '../utils/seoSchema';
+import { getWebPage, getBreadcrumbList, getDataFeedItem, getLiveRateDataset } from '../utils/seoSchema';
 import { buildLiveRateSeoMeta, ratesFromBluePayload, liveBobParts, fmtLiveBob } from '../utils/seoRateMeta';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import AdSenseAutoAds from '../components/AdSenseAutoAds';
@@ -475,11 +474,6 @@ function Home() {
               citePath="/"
               className="mt-4 max-w-3xl mx-auto"
             />
-            <p className="mt-3 text-xs sm:text-sm text-gray-600 dark:text-gray-400 text-center max-w-2xl mx-auto">
-              {language === 'es'
-                ? 'Compra: Bs que pagás para obtener 1 USD en P2P (USDT). Venta: Bs que recibís al vender 1 USD. Es una referencia USDT/P2P, no el precio de una casa de cambio en efectivo ni el tipo oficial del BCB.'
-                : 'Buy: Bs you pay to obtain 1 USD on P2P (USDT). Sell: Bs you receive when selling 1 USD. USDT/P2P reference — not a cash desk quote and not the official BCB rate.'}
-            </p>
             <div className="mt-4 max-w-md mx-auto rounded-xl border border-sky-200 dark:border-sky-800 bg-white/80 dark:bg-gray-800/80 p-3">
               <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1" htmlFor="home-quick-usd">
                 {language === 'es' ? 'Convertir USD → BOB (compra P2P)' : 'Convert USD → BOB (P2P buy)'}
@@ -519,29 +513,6 @@ function Home() {
               </Link>
             </p>
             <nav
-              className="mt-4 flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm"
-              aria-label={language === 'es' ? 'Herramientas' : 'Tools'}
-            >
-              <Link to="/dolar-blue-hoy" className="text-sky-700 dark:text-sky-300 hover:underline font-medium">
-                {language === 'es' ? 'Dólar blue hoy' : 'Blue dollar today'}
-              </Link>
-              <Link to="/calculadora" className="text-sky-700 dark:text-sky-300 hover:underline font-medium">
-                {language === 'es' ? 'Calculadora' : 'Calculator'}
-              </Link>
-              <Link to="/datos-historicos" className="text-sky-700 dark:text-sky-300 hover:underline font-medium">
-                {language === 'es' ? 'Datos históricos' : 'Historical data'}
-              </Link>
-              <Link to="/prensa" className="text-sky-700 dark:text-sky-300 hover:underline font-medium">
-                {language === 'es' ? 'Prensa' : 'Press kit'}
-              </Link>
-              <Link to="/fuente-de-datos" className="text-sky-700 dark:text-sky-300 hover:underline font-medium">
-                {language === 'es' ? 'Fuente de datos' : 'Data source'}
-              </Link>
-              <Link to="/binance-p2p-bolivia" className="text-sky-700 dark:text-sky-300 hover:underline font-medium">
-                Binance P2P
-              </Link>
-            </nav>
-            <nav
               className="mt-3 flex flex-wrap justify-center gap-2 text-xs sm:text-sm"
               aria-label={language === 'es' ? 'Cotización por ciudad' : 'Rate by city'}
             >
@@ -564,37 +535,10 @@ function Home() {
                 Cochabamba
               </Link>
             </nav>
-            <nav
-              className="mt-4 flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm"
-              aria-label={language === 'es' ? 'Bolivia Blue' : 'Bolivia Blue'}
-            >
-              <Link to="/acerca-de" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium">
-                {language === 'es' ? 'Sobre Bolivia Blue' : 'About Bolivia Blue'}
-              </Link>
-              <Link to="/publicitar" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium">
-                {language === 'es' ? 'Publicitar' : 'Advertise'}
-              </Link>
-              <Link to="/blog" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium">
-                Blog
-              </Link>
-              <Link to="/terminos" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium">
-                {language === 'es' ? 'Términos y Condiciones' : 'Terms'}
-              </Link>
-            </nav>
             <TravelersGuideTeaser language={language} />
           </section>
 
           <section id="price-alerts" className="mt-5 sm:mt-6">
-            <div className="mb-3 text-center sm:text-left">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                {language === 'es' ? 'Alerta de precio' : 'Price alert'}
-              </h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                {language === 'es'
-                  ? 'Avisanos a qué tasa querés que te avisemos.'
-                  : 'Tell us which rate should trigger a notification.'}
-              </p>
-            </div>
             <LazyErrorBoundary>
               <Suspense fallback={<ComponentLoader />}>
                 <RateAlertForm />
@@ -605,11 +549,6 @@ function Home() {
 
         {/* Chart */}
         <section>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-            {language === 'es'
-              ? 'Evolución del tipo de cambio (arriba: cotización actual).'
-              : 'Exchange rate evolution (above: current quote).'}
-          </p>
           <LazyErrorBoundary>
             <Suspense fallback={
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 animate-pulse">
@@ -647,234 +586,6 @@ function Home() {
           />
         </section>
 
-        {/* How It Works Section */}
-        <section className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-gray-800 dark:to-gray-900 rounded-xl sm:rounded-2xl p-4 sm:p-8 md:p-10 shadow-xl">
-          <div className="text-center mb-4 sm:mb-8">
-            <h2 className="text-2xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3">
-              {language === 'es' ? 'Cómo funciona' : 'How it works'}
-            </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              {language === 'es' 
-                ? 'Te mostramos el tipo de cambio real del dólar en Bolivia en 3 simples pasos'
-                : 'We show you the real dollar exchange rate in Bolivia in 3 simple steps'}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-6 md:gap-8">
-            {/* Step 1 */}
-            <div className="relative">
-              <div className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-lg hover:shadow-2xl transition-all border-2 border-blue-200 dark:border-blue-800">
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center text-xl font-bold shadow-lg">
-                    1
-                  </div>
-                </div>
-                <div className="mt-6 text-center">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
-                    {language === 'es' ? 'Recopilamos Datos' : 'We Collect Data'}
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-                    {language === 'es' 
-                      ? 'Monitoreamos Binance P2P cada 15 minutos para obtener el precio real de USDT/BOB en el mercado paralelo'
-                      : 'We monitor Binance P2P every 15 minutes to get the real USDT/BOB price in the parallel market'}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Step 2 */}
-            <div className="relative">
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg hover:shadow-2xl transition-all border-2 border-green-200 dark:border-green-800">
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <div className="w-12 h-12 bg-green-600 text-white rounded-full flex items-center justify-center text-xl font-bold shadow-lg">
-                    2
-                  </div>
-                </div>
-                <div className="mt-6 text-center">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
-                    {language === 'es' ? 'Analizamos con IA' : 'We Analyze with AI'}
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-                    {language === 'es' 
-                      ? 'Nuestra IA analiza noticias económicas y calcula el sentimiento del mercado para predecir tendencias'
-                      : 'Our AI analyzes economic news and calculates market sentiment to predict trends'}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Step 3 */}
-            <div className="relative">
-              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg hover:shadow-2xl transition-all border-2 border-sky-200 dark:border-sky-900">
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <div className="w-12 h-12 bg-sky-700 text-white rounded-full flex items-center justify-center text-xl font-bold shadow-lg">
-                    3
-                  </div>
-                </div>
-                <div className="mt-6 text-center">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
-                    {language === 'es' ? 'Te Lo Mostramos' : 'We Show You'}
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-                    {language === 'es' 
-                      ? 'Visualizamos todo en gráficos fáciles de entender, con noticias relevantes y herramientas prácticas'
-                      : 'We visualize everything in easy-to-understand charts, with relevant news and practical tools'}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Additional Info */}
-          <div className="mt-4 sm:mt-8 bg-white/50 dark:bg-gray-800/50 rounded-lg sm:rounded-xl p-3 sm:p-6 backdrop-blur-sm">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 text-center">
-              <div>
-                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">15 min</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  {language === 'es' ? 'Actualización' : 'Update Frequency'}
-                </div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-green-600 dark:text-green-400">100%</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  {language === 'es' ? 'Gratis' : 'Free'}
-                </div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                  {language === 'es' ? '2 idiomas' : '2 Languages'}
-                </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  {language === 'es' ? 'ES & EN' : 'ES & EN'}
-                </div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">24/7</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  {language === 'es' ? 'Disponible' : 'Available'}
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Cómo usar esta tasa - Human Voice Section */}
-        <section className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl p-4 sm:p-8 md:p-10 shadow-lg">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">
-              {language === 'es' ? 'Cómo usar esta tasa' : 'How to use this rate'}
-            </h2>
-            <div className="prose prose-lg dark:prose-invert max-w-none">
-              <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
-                {language === 'es'
-                  ? 'La tasa que mostramos es un promedio calculado del mercado paralelo. Cuando vayas a cambiar dólares en persona o por Binance P2P, el precio puede variar ligeramente según la ubicación, el método de pago, y la cantidad que cambies.'
-                  : 'The rate we show is an average calculated from the parallel market. When you go to exchange dollars in person or via Binance P2P, the price may vary slightly depending on location, payment method, and the amount you exchange.'}
-              </p>
-              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 sm:p-6 mb-4 border border-blue-200 dark:border-blue-800">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
-                  {language === 'es' ? 'Ejemplos prácticos:' : 'Practical examples:'}
-                </h3>
-                <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2">
-                  {language === 'es' ? (
-                    <>
-                      <li>
-                        Si la compra de referencia es{' '}
-                        <strong>{Number.isFinite(currentRate?.buy) ? `${Number(currentRate.buy).toFixed(2)} BOB por USD` : 'la tasa mostrada arriba'}</strong>
-                        {Number.isFinite(currentRate?.buy) ? (
-                          <>, $100 USD equivalen a aproximadamente <strong>{(Number(currentRate.buy) * 100).toLocaleString('es-BO', { maximumFractionDigits: 0 })} BOB</strong></>
-                        ) : null}
-                      </li>
-                      <li>Para compras internacionales, usa esta tasa para calcular cuántos bolivianos necesitas ahorrar</li>
-                      <li>Si recibes remesas, esta tasa te ayuda a saber cuánto recibirás en bolivianos</li>
-                      <li>Para inversiones o ahorros, compara esta tasa con la oficial del banco para tomar mejores decisiones</li>
-                    </>
-                  ) : (
-                    <>
-                      <li>
-                        If the reference buy rate is{' '}
-                        <strong>{Number.isFinite(currentRate?.buy) ? `${Number(currentRate.buy).toFixed(2)} BOB per USD` : 'the rate shown above'}</strong>
-                        {Number.isFinite(currentRate?.buy) ? (
-                          <>, $100 USD is about <strong>{(Number(currentRate.buy) * 100).toLocaleString('en-US', { maximumFractionDigits: 0 })} BOB</strong></>
-                        ) : null}
-                      </li>
-                      <li>For international purchases, use this rate to calculate how many bolivianos you need to save</li>
-                      <li>If you receive remittances, this rate helps you know how much you'll receive in bolivianos</li>
-                      <li>For investments or savings, compare this rate with the official bank rate to make better decisions</li>
-                    </>
-                  )}
-                </ul>
-              </div>
-              <p className="text-gray-700 dark:text-gray-300 text-sm">
-                {language === 'es'
-                  ? <><strong>Consejo:</strong> Siempre verifica el precio exacto con tu cambista o en la plataforma antes de realizar la transacción. Nuestra tasa es una guía, no una garantía.</>
-                  : <><strong>Tip:</strong> Always verify the exact price with your exchanger or on the platform before making the transaction. Our rate is a guide, not a guarantee.</>}
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Qué hace diferente a BoliviaBlue - Human Voice Section */}
-        <section className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 rounded-xl sm:rounded-2xl p-4 sm:p-8 md:p-10 shadow-lg">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">
-              {language === 'es' ? 'Qué hace diferente a BoliviaBlue' : 'What makes BoliviaBlue different'}
-            </h2>
-            <div className="prose prose-lg dark:prose-invert max-w-none">
-              <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
-                {language === 'es'
-                  ? 'No somos solo otro sitio de tipos de cambio. Somos una plataforma construida específicamente para bolivianos que necesitan información confiable y actualizada sobre el dólar blue.'
-                  : 'We\'re not just another exchange rate site. We\'re a platform built specifically for Bolivians who need reliable and up-to-date information about the blue dollar.'}
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-4 sm:p-6 border border-indigo-200 dark:border-indigo-800">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                    {language === 'es' ? 'Transparencia total' : 'Total transparency'}
-                  </h3>
-                  <p className="text-gray-700 dark:text-gray-300 text-sm">
-                    {language === 'es'
-                      ? <>Explicamos exactamente cómo calculamos nuestras tasas. No hay cajas negras. Puedes ver nuestra metodología completa en <Link to="/acerca-de" className="text-blue-600 dark:text-blue-400 hover:underline">Acerca de</Link>.</>
-                      : <>We explain exactly how we calculate our rates. No black boxes. You can see our complete methodology on <Link to="/acerca-de" className="text-blue-600 dark:text-blue-400 hover:underline">About</Link>.</>}
-                  </p>
-                </div>
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-4 sm:p-6 border border-purple-200 dark:border-purple-800">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                    {language === 'es' ? '🤖 Análisis inteligente' : '🤖 Smart analysis'}
-                  </h3>
-                  <p className="text-gray-700 dark:text-gray-300 text-sm">
-                    {language === 'es'
-                      ? 'Usamos inteligencia artificial para analizar noticias económicas y predecir tendencias. No solo mostramos números, te ayudamos a entender qué los mueve.'
-                      : 'We use artificial intelligence to analyze economic news and predict trends. We don\'t just show numbers, we help you understand what moves them.'}
-                  </p>
-                </div>
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-4 sm:p-6 border border-indigo-200 dark:border-indigo-800">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                    {language === 'es' ? '⚡ Actualización constante' : '⚡ Constant updates'}
-                  </h3>
-                  <p className="text-gray-700 dark:text-gray-300 text-sm">
-                    {language === 'es'
-                      ? 'Mientras otros sitios actualizan cada hora o diariamente, nosotros actualizamos cada 15 minutos. El mercado cambia rápido, y tú necesitas información actualizada.'
-                      : 'While other sites update hourly or daily, we update every 15 minutes. The market changes fast, and you need up-to-date information.'}
-                  </p>
-                </div>
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-4 sm:p-6 border border-purple-200 dark:border-purple-800">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                    {language === 'es' ? '🛠️ Herramientas prácticas' : '🛠️ Practical tools'}
-                  </h3>
-                  <p className="text-gray-700 dark:text-gray-300 text-sm">
-                    {language === 'es'
-                      ? 'Calculadora de divisas, gráficos históricos, alertas de precio, y guías educativas. Todo lo que necesitas en un solo lugar, sin complicaciones.'
-                      : 'Currency calculator, historical charts, price alerts, and educational guides. Everything you need in one place, without complications.'}
-                  </p>
-                </div>
-              </div>
-              <p className="text-gray-700 dark:text-gray-300 text-sm italic">
-                {language === 'es'
-                  ? 'Construido por bolivianos, para bolivianos. Sin intereses ocultos, sin afiliaciones bancarias, solo información honesta y útil.'
-                  : 'Built by Bolivians, for Bolivians. No hidden interests, no bank affiliations, just honest and useful information.'}
-              </p>
-            </div>
-          </div>
-        </section>
 
         {/* News & Twitter Tabs - Collapsible on Mobile */}
         <section>
@@ -1006,166 +717,12 @@ function Home() {
           </div>
         </section>
 
-        {/* About */}
-        <section>
-          <About />
-        </section>
-
-        {/* Comparison Section - Why Choose Us */}
-        <section className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-gray-800 dark:to-gray-900 rounded-xl sm:rounded-2xl p-4 sm:p-8 md:p-10 shadow-xl border-2 border-green-200 dark:border-green-800">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              {language === 'es' 
-                ? '¿Por qué elegir boliviablue.com?' 
-                : 'Why choose boliviablue.com?'}
-            </h2>
-            <p className="text-gray-600 dark:text-gray-300 mb-6">
-              {language === 'es'
-                ? 'La plataforma más precisa y actualizada para el tipo de cambio del dólar blue en Bolivia'
-                : 'The most accurate and up-to-date platform for Bolivia blue dollar exchange rate'}
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-4 shadow-md">
-                <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2">
-                  {language === 'es' ? '✅ Actualización cada 15 minutos' : '✅ Updates every 15 minutes'}
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-300">
-                  {language === 'es'
-                    ? 'Actualizamos cada 15 minutos con datos en tiempo real de Binance P2P — la mediana del mercado paralelo, no un promedio atrasado.'
-                    : 'We update every 15 minutes with live Binance P2P data — the parallel-market median, not a stale average.'}
-                </p>
-              </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md">
-                <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2">
-                  {language === 'es' ? '✅ URL simple y memorable' : '✅ Simple, memorable URL'}
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-300">
-                  {language === 'es'
-                    ? 'boliviablue.com — corto, .com, fácil de compartir por WhatsApp.'
-                    : 'boliviablue.com — short, .com, easy to share on WhatsApp.'}
-                </p>
-              </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md">
-                <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2">
-                  {language === 'es' ? '✅ Análisis de sentimiento con IA' : '✅ AI-powered sentiment analysis'}
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-300">
-                  {language === 'es'
-                    ? 'Única plataforma con análisis de sentimiento de noticias financieras para predecir tendencias del dólar blue.'
-                    : 'Only platform with AI sentiment analysis of financial news to predict blue dollar trends.'}
-                </p>
-              </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md">
-                <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2">
-                  {language === 'es' ? '✅ Herramientas avanzadas' : '✅ Advanced tools'}
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-300">
-                  {language === 'es'
-                    ? 'Calculadora de divisas, gráficos históricos, alertas de precio y más. Todo en un solo lugar.'
-                    : 'Currency calculator, historical charts, price alerts and more. All in one place.'}
-                </p>
-              </div>
-            </div>
-            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
-              <p className="text-sm text-gray-700 dark:text-gray-300">
-                {language === 'es'
-                  ? <>Cotización cada 15 min, gráficos, calculadora y alertas en un solo lugar. <Link to="/comparacion" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Ver qué ofrece Bolivia Blue</Link></>
-                  : <>Quote every 15 min, charts, calculator and alerts in one place. <Link to="/comparacion" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">See what Bolivia Blue offers</Link></>}
-              </p>
-            </div>
-          </div>
-        </section>
-
 
         {/* Social Share Section */}
         <SocialShare
           title={language === 'es' ? '🔴 Bolivia Blue Rate EN VIVO - Actualizado Cada 15 Min' : '🔴 Bolivia Blue Rate LIVE - Updated Every 15 Min'}
           description={language === 'es' ? "Dólar Blue Bolivia actualizado cada 15 minutos." : "Blue Dollar Bolivia updated every 15 minutes."}
         />
-
-        {/* Content Section with Keywords - Moved to Bottom */}
-        <section className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-lg p-4 sm:p-8 md:p-10">
-          <div className="max-w-4xl mx-auto">
-            <div className="flex items-center justify-between mb-3 sm:mb-4">
-              <h2 className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-                {language === 'es' ? '¿Qué es el Bolivia Blue Rate?' : 'What is Bolivia Blue Rate?'}
-              </h2>
-              {currentRate?.updated_at_iso && (
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                {language === 'es' ? 'Datos:' : 'Data:'} {formatDateTime(currentRate.updated_at_iso, language === 'es' ? 'es-BO' : 'en-US')}
-              </span>
-            )}
-            </div>
-            <div className="prose prose-lg dark:prose-invert max-w-none">
-              <p className="text-gray-700 dark:text-gray-300 mb-4">
-                {language === 'es' 
-                  ? <>El <strong>Bolivian Blue</strong> (también conocido como <strong>Bolivia blue rate</strong> o <strong>bolivia blue exchange rate</strong>) es el tipo de cambio del dólar estadounidense en el mercado paralelo de Bolivia. Este valor refleja la tasa real a la que los bolivianos intercambian dólares fuera del sistema bancario oficial. A diferencia de la tasa oficial del Banco Central de Bolivia, el <strong>Bolivian Blue</strong> fluctúa constantemente según la oferta y demanda del mercado.</>
-                  : <>The <strong>Bolivian Blue</strong> (also known as <strong>Bolivia blue rate</strong> or <strong>bolivia blue exchange rate</strong>) is the exchange rate of the US dollar in Bolivia's parallel market. This value reflects the real rate at which Bolivians exchange dollars outside the official banking system. Unlike the official rate from the Central Bank of Bolivia, the <strong>Bolivian Blue</strong> fluctuates constantly according to market supply and demand.</>}
-              </p>
-              <p className="text-gray-700 dark:text-gray-300 mb-4">
-                {language === 'es'
-                  ? <>Nuestra plataforma rastrea el <strong>Bolivian Blue</strong> en tiempo real con datos de Binance P2P y actualiza el <strong>bolivian blue rate</strong> cada 15 minutos. <Link to="/bolivian-blue" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Aprende más sobre el Bolivian Blue</Link>, <Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">consulta el dólar blue hoy</Link>, <Link to="/que-es-dolar-blue" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">qué es el dólar blue</Link>, <Link to="/cuanto-esta-dolar-bolivia" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">cuánto está el dólar</Link>, <Link to="/dolar-paralelo-bolivia-en-vivo" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">dólar paralelo en vivo</Link>, <Link to="/binance-p2p-bolivia" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Binance P2P Bolivia</Link>, <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">usa la calculadora</Link> o <Link to="/datos-historicos" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">descarga datos históricos</Link>.</>
-                  : <>Our platform tracks the <strong>Bolivian Blue</strong> in real time with Binance P2P data and updates the <strong>bolivian blue rate</strong> every 15 minutes. <Link to="/bolivian-blue" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Learn more about Bolivian Blue</Link>, <Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">check the blue dollar today</Link>, <Link to="/que-es-dolar-blue" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">what is blue dollar</Link>, <Link to="/cuanto-esta-dolar-bolivia" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">how much is the dollar</Link>, <Link to="/dolar-paralelo-bolivia-en-vivo" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">parallel dollar live</Link>, <Link to="/binance-p2p-bolivia" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Binance P2P Bolivia</Link>, <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">use the calculator</Link> or <Link to="/datos-historicos" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">download historical data</Link>.</>}
-              </p>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
-                {language === 'es' ? '¿Por qué es importante el Bolivia Blue Rate?' : 'Why is Bolivia Blue Rate Important?'}
-              </h3>
-              <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 mb-4">
-                {language === 'es' ? (
-                  <>
-                    <li>El <strong>bolivia blue rate</strong> refleja la realidad del mercado cambiario boliviano</li>
-                    <li>El <strong>bolivia blue exchange rate</strong> es utilizado por millones de bolivianos para transacciones diarias</li>
-                    <li>Conocer el <strong>bolivia blue rate</strong> te ayuda a tomar mejores decisiones financieras</li>
-                    <li>El <strong>bolivia blue exchange rate</strong> puede diferir significativamente de la tasa oficial</li>
-                  </>
-                ) : (
-                  <>
-                    <li>The <strong>Bolivia blue rate</strong> reflects the reality of Bolivia's exchange market</li>
-                    <li>The <strong>Bolivia blue exchange rate</strong> is used by millions of Bolivians for daily transactions</li>
-                    <li>Knowing the <strong>Bolivia blue rate</strong> helps you make better financial decisions</li>
-                    <li>The <strong>Bolivia blue exchange rate</strong> can differ significantly from the official rate</li>
-                  </>
-                )}
-              </ul>
-            </div>
-          </div>
-        </section>
-
-        {/* Related: reinforce hub and topical clusters */}
-        <section className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 sm:p-6">
-          <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
-            {language === 'es' ? 'También en esta web' : 'More on this site'}
-          </h2>
-          <div className="flex flex-wrap gap-3">
-            <Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
-              {language === 'es' ? 'Cotización del dólar blue hoy' : 'Blue dollar quote today'}
-            </Link>
-            <Link to="/cuanto-esta-dolar-bolivia" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
-              {language === 'es' ? '¿Cuánto está el dólar en Bolivia?' : 'How much is the dollar in Bolivia?'}
-            </Link>
-            <Link to="/datos-historicos" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
-              {language === 'es' ? 'Datos históricos del dólar blue' : 'Historical blue dollar data'}
-            </Link>
-            <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
-              {language === 'es' ? 'Calculadora de divisas' : 'Currency calculator'}
-            </Link>
-            <Link to="/acerca-de" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
-              {language === 'es' ? 'Sobre Bolivia Blue' : 'About Bolivia Blue'}
-            </Link>
-            <Link to="/publicitar" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
-              {language === 'es' ? 'Publicitar en Bolivia Blue' : 'Advertise'}
-            </Link>
-            <Link to="/blog" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
-              Blog
-            </Link>
-            <Link to={language === 'en' ? '/bolivia-money-guide' : '/guia-dinero-bolivia'} className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
-              {language === 'es' ? 'Guía de dinero para viajeros' : 'Traveler money guide'}
-            </Link>
-            <Link to="/terminos" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
-              {language === 'es' ? 'Términos y Condiciones' : 'Terms and Conditions'}
-            </Link>
-          </div>
-        </section>
 
         {/* Link magnets for media / partners */}
         <section className="mt-10 rounded-2xl border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/30 p-5 sm:p-6">
@@ -1199,220 +756,6 @@ function Home() {
           </div>
         </section>
 
-        {/* Modern Quick Access Links - Clean Design */}
-        <section className="mt-12">
-          <div className="text-center mb-6">
-            <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-              {language === 'es' ? 'Acceso Rápido' : 'Quick Access'}
-            </h2>
-          </div>
-          
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-            {/* EN VIVO - Featured with pulse */}
-            <Link
-              to="/dolar-paralelo-bolivia-en-vivo"
-              className="group relative bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-xl p-4 transition-all duration-200 hover:shadow-lg hover:scale-105"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <span className="flex items-center gap-2 text-sm font-bold">
-                  <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
-                  {language === 'es' ? 'EN VIVO' : 'LIVE'}
-                </span>
-              </div>
-              <div className="text-xs opacity-90">
-                {language === 'es' ? 'Actualizaciones en tiempo real' : 'Real-time updates'}
-              </div>
-            </Link>
-
-            {/* Regular Links */}
-            <Link
-              to="/dolar-blue-hoy"
-              className="group bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 rounded-xl p-4 transition-all duration-200 hover:shadow-md hover:scale-105 border border-gray-200 dark:border-gray-700"
-            >
-              <div className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
-                {language === 'es' ? 'Hoy' : 'Today'}
-              </div>
-              <div className="text-xs text-gray-600 dark:text-gray-400">
-                {language === 'es' ? 'Cotización actual' : 'Current rate'}
-              </div>
-            </Link>
-
-            <Link
-              to="/dolar-paralelo-bolivia-en-vivo"
-              className="group bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 rounded-xl p-4 transition-all duration-200 hover:shadow-md hover:scale-105 border border-gray-200 dark:border-gray-700"
-            >
-              <div className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
-                {language === 'es' ? 'En vivo' : 'Live'}
-              </div>
-              <div className="text-xs text-gray-600 dark:text-gray-400">
-                {language === 'es' ? 'Dólar paralelo' : 'Parallel dollar'}
-              </div>
-            </Link>
-
-            <Link
-              to="/cuanto-esta-dolar-bolivia"
-              className="group bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 rounded-xl p-4 transition-all duration-200 hover:shadow-md hover:scale-105 border border-gray-200 dark:border-gray-700"
-            >
-              <div className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
-                {language === 'es' ? '¿Cuánto está?' : 'How much?'}
-              </div>
-              <div className="text-xs text-gray-600 dark:text-gray-400">
-                {language === 'es' ? 'Precio actual' : 'Current price'}
-              </div>
-            </Link>
-
-            <Link
-              to="/datos-historicos"
-              className="group bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 rounded-xl p-4 transition-all duration-200 hover:shadow-md hover:scale-105 border border-gray-200 dark:border-gray-700"
-            >
-              <div className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
-                {language === 'es' ? 'Histórico' : 'History'}
-              </div>
-              <div className="text-xs text-gray-600 dark:text-gray-400">
-                {language === 'es' ? 'Datos y descargas' : 'Data & downloads'}
-              </div>
-            </Link>
-
-            <Link
-              to="/cotiza-dolar-paralelo"
-              className="group bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 rounded-xl p-4 transition-all duration-200 hover:shadow-md hover:scale-105 border border-gray-200 dark:border-gray-700"
-            >
-              <div className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
-                {language === 'es' ? 'Cotiza' : 'Quote'}
-              </div>
-              <div className="text-xs text-gray-600 dark:text-gray-400">
-                {language === 'es' ? 'Paralelo ahora' : 'Parallel now'}
-              </div>
-            </Link>
-
-            <Link
-              to="/binance-p2p-bolivia"
-              className="group bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 rounded-xl p-4 transition-all duration-200 hover:shadow-md hover:scale-105 border border-gray-200 dark:border-gray-700"
-            >
-              <div className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
-                Binance P2P
-              </div>
-              <div className="text-xs text-gray-600 dark:text-gray-400">
-                {language === 'es' ? 'Compra/venta' : 'Buy/sell'}
-              </div>
-            </Link>
-
-            <Link
-              to="/usdt-bolivia"
-              className="group bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 rounded-xl p-4 transition-all duration-200 hover:shadow-md hover:scale-105 border border-gray-200 dark:border-gray-700"
-            >
-              <div className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
-                USDT
-              </div>
-              <div className="text-xs text-gray-600 dark:text-gray-400">
-                {language === 'es' ? 'Cripto estable' : 'Stablecoin'}
-              </div>
-            </Link>
-
-            <Link
-              to="/que-es-dolar-blue"
-              className="group bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 rounded-xl p-4 transition-all duration-200 hover:shadow-md hover:scale-105 border border-gray-200 dark:border-gray-700"
-            >
-              <div className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
-                {language === 'es' ? '¿Qué es?' : 'What is it?'}
-              </div>
-              <div className="text-xs text-gray-600 dark:text-gray-400">
-                {language === 'es' ? 'Aprende más' : 'Learn more'}
-              </div>
-            </Link>
-
-            <Link
-              to="/cuanto-esta-dolar-bolivia"
-              className="group bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 rounded-xl p-4 transition-all duration-200 hover:shadow-md hover:scale-105 border border-gray-200 dark:border-gray-700"
-            >
-              <div className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
-                {language === 'es' ? '¿Cuánto está?' : 'How much?'}
-              </div>
-              <div className="text-xs text-gray-600 dark:text-gray-400">
-                {language === 'es' ? 'Consulta rápida' : 'Quick check'}
-              </div>
-            </Link>
-          </div>
-        </section>
-        {/* Introduction Section - Substantial Content for AdSense - Moved to bottom, collapsible */}
-        <section className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 sm:p-8 md:p-10">
-          <details className="group">
-            <summary className="cursor-pointer list-none">
-              <div className="flex items-center justify-between">
-                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-0">
-                  {language === 'es' 
-                    ? '📚 ¿Qué es el Dólar Blue en Bolivia?'
-                    : '📚 What is the Blue Dollar in Bolivia?'}
-                </h2>
-                <svg className="w-6 h-6 text-gray-600 dark:text-gray-400 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
-            </summary>
-            <div className="prose prose-lg dark:prose-invert max-w-none mt-6">
-              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
-                {language === 'es' 
-                  ? 'El dólar blue, también conocido como dólar paralelo o dólar informal, es el tipo de cambio del dólar estadounidense que se negocia fuera del sistema bancario oficial en Bolivia. A diferencia del tipo de cambio oficial establecido por el Banco Central de Bolivia (BCB), el dólar blue refleja la tasa real a la que los bolivianos intercambian dólares en el mercado paralelo, principalmente a través de plataformas como Binance P2P y casas de cambio informales.'
-                  : 'The blue dollar, also known as the parallel dollar or informal dollar, is the exchange rate of the US dollar traded outside the official banking system in Bolivia. Unlike the official exchange rate set by the Central Bank of Bolivia (BCB), the blue dollar reflects the real rate at which Bolivians exchange dollars in the parallel market, primarily through platforms like Binance P2P and informal exchange houses.'}
-              </p>
-              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
-                {language === 'es' 
-                  ? 'Este mercado paralelo existe cuando la demanda de dólares supera la oferta oficial o hay restricciones cambiarias. El dólar blue suele cotizar por encima del tipo oficial del BCB, reflejando escasez de divisas y el precio real que pagan compradores y vendedores en el mercado informal.'
-                  : 'This parallel market exists when dollar demand exceeds official supply or exchange restrictions apply. The blue dollar usually trades above the BCB official rate, reflecting currency scarcity and the real price buyers and sellers pay in the informal market.'}
-              </p>
-              <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
-                {language === 'es' 
-                  ? '¿Por Qué es Importante Conocer el Dólar Blue?'
-                  : 'Why is it Important to Know the Blue Dollar?'}
-              </h3>
-              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
-                {language === 'es' 
-                  ? 'Conocer el tipo de cambio del dólar blue es esencial para cualquier persona que necesite comprar o vender dólares en Bolivia. Ya sea para remesas, inversiones, viajes, o transacciones comerciales, el dólar blue representa el precio real al que se pueden realizar estas operaciones. Nuestra plataforma proporciona actualizaciones en tiempo real cada 15 minutos, utilizando datos de Binance P2P, la plataforma más confiable para transacciones de USDT/BOB en el mercado paralelo.'
-                  : 'Knowing the blue dollar exchange rate is essential for anyone who needs to buy or sell dollars in Bolivia. Whether for remittances, investments, travel, or commercial transactions, the blue dollar represents the real price at which these operations can be performed. Our platform provides real-time updates every 15 minutes, using data from Binance P2P, the most reliable platform for USDT/BOB transactions in the parallel market.'}
-              </p>
-              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
-                {language === 'es' 
-                  ? 'Además, el dólar blue sirve como un indicador económico importante. Cuando la diferencia entre el dólar blue y el dólar oficial (conocida como "brecha cambiaria") es grande, generalmente indica presión sobre la moneda local, restricciones de acceso a divisas, o falta de confianza en las políticas económicas. Monitorear esta brecha ayuda a entender mejor la situación económica del país.'
-                  : 'Additionally, the blue dollar serves as an important economic indicator. When the difference between the blue dollar and the official dollar (known as the "exchange gap") is large, it generally indicates pressure on the local currency, restrictions on foreign exchange access, or lack of confidence in economic policies. Monitoring this gap helps better understand the country\'s economic situation.'}
-              </p>
-              <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
-                {language === 'es' 
-                  ? 'Cómo Utilizar Esta Plataforma'
-                  : 'How to Use This Platform'}
-              </h3>
-              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
-                {language === 'es' 
-                  ? 'Bolivia Blue es la plataforma más confiable para monitorear el tipo de cambio del dólar blue en tiempo real. Ofrecemos:'
-                  : 'Bolivia Blue is the most reliable platform for monitoring the blue dollar exchange rate in real-time. We offer:'}
-              </p>
-              <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 mb-4">
-                <li>{language === 'es' 
-                  ? 'Actualizaciones cada 15 minutos con datos de Binance P2P'
-                  : 'Updates every 15 minutes with data from Binance P2P'}</li>
-                <li>{language === 'es' 
-                  ? 'Gráficos históricos para analizar tendencias'
-                  : 'Historical charts to analyze trends'}</li>
-                <li>{language === 'es' 
-                  ? 'Análisis de sentimiento con IA basado en noticias económicas'
-                  : 'AI-powered sentiment analysis based on economic news'}</li>
-                <li>{language === 'es' 
-                  ? 'Calculadora de divisas para conversiones rápidas'
-                  : 'Currency calculator for quick conversions'}</li>
-                <li>{language === 'es' 
-                  ? 'Alertas de precio para no perder oportunidades'
-                  : 'Price alerts so you don\'t miss opportunities'}</li>
-                <li>{language === 'es' 
-                  ? 'Noticias financieras relevantes de Bolivia'
-                  : 'Relevant financial news from Bolivia'}</li>
-              </ul>
-              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                {language === 'es' 
-                  ? 'Todo nuestro servicio es completamente gratuito y sin registro. Nuestro objetivo es proporcionar transparencia y acceso a información precisa sobre el mercado cambiario boliviano, ayudando a los usuarios a tomar decisiones informadas sobre sus transacciones en dólares.'
-                  : 'All our service is completely free and requires no registration. Our goal is to provide transparency and access to accurate information about the Bolivian exchange market, helping users make informed decisions about their dollar transactions.'}
-              </p>
-            </div>
-          </details>
-        </section>
       </main>
 
       <Footer />

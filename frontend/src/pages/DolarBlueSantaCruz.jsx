@@ -11,6 +11,7 @@ import { fetchBlueRate } from '../utils/api';
 import { lazy, Suspense } from 'react';
 const BlueChart = lazy(() => import('../components/BlueChart'));
 import Breadcrumbs from '../components/Breadcrumbs';
+import SantaCruzPartnerLinks from '../components/SantaCruzPartnerLinks';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import { buildLiveRateSeoMeta, ratesFromBluePayload } from '../utils/seoRateMeta';
 
@@ -343,6 +344,10 @@ function DolarBlueSantaCruz() {
                     : <>The <strong>blue dollar in Santa Cruz</strong> quote is updated every 15 minutes. This quote is for informational purposes only and may vary by specific location and payment method. Always verify the quote before making transactions. <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Use our calculator</Link> to convert currencies or <Link to="/comprar-dolares" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">learn how to buy dollars</Link>.</>}
                 </p>
               </div>
+              <SantaCruzPartnerLinks
+                language={language}
+                className="mt-6 text-gray-700 dark:text-gray-300"
+              />
             </div>
           </div>
         </section>

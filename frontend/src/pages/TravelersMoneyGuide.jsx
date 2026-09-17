@@ -13,6 +13,7 @@ import { formatRate } from '../utils/formatters';
 import { liveBobParts } from '../utils/seoRateMeta';
 import { TRAVEL_GUIDE_EN, TRAVEL_GUIDE_ES } from '../config/travelGuide';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
+import SantaCruzPartnerLinks from '../components/SantaCruzPartnerLinks';
 import { SITE_URL } from '../config/brand';
 
 const PUBLISHED = '2026-09-14';
@@ -489,6 +490,10 @@ export default function TravelersMoneyGuide() {
                 </>
               )}
             </p>
+            <SantaCruzPartnerLinks
+              language={language}
+              className="text-gray-700 dark:text-gray-300"
+            />
             <p>
               {es ? (
                 <>

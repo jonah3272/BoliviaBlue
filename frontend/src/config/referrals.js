@@ -3,8 +3,8 @@
 export const BINANCE_REFERRAL_LINK =
   'https://www.binance.com/referral/earn-together/refer2earn-usdc/claim?hl=en&ref=GRO_28502_RNV8W&utm_source=default';
 
-/** P2P board (no referral credit). Prefer signup link for new users. */
-export const BINANCE_P2P_LINK = 'https://www.binance.com/en/p2p';
+/** @deprecated P2P board does not pay. Always send users to BINANCE_REFERRAL_LINK. */
+export const BINANCE_P2P_LINK = BINANCE_REFERRAL_LINK;
 
 export const AIRTM_REFERRAL_LINK = 'https://app.airtm.io/ivt/dasyl1sfs6fzr';
 
@@ -28,6 +28,28 @@ export function getPartnerAds(language = 'es') {
   const es = language === 'es';
   return [
     {
+      id: 'binance',
+      partner: 'binance',
+      href: BINANCE_REFERRAL_LINK,
+      brand: 'Binance',
+      highlight: es ? 'USDT al paralelo' : 'USDT at parallel',
+      headlineRest: es ? 'vía P2P' : 'via P2P',
+      headline: es ? 'Comprá USDT al dólar paralelo' : 'Buy USDT at the parallel rate',
+      sub: es
+        ? 'La vía más usada en Bolivia para acercarte a la cotización blue.'
+        : 'The most used path in Bolivia to the blue market rate.',
+      pathLabel: es ? 'P2P más líquido' : 'Most liquid P2P',
+      pathDesc: es
+        ? 'La vía más usada en Bolivia para comprar/vender USDT cerca del dólar blue.'
+        : 'The most used path in Bolivia to buy/sell USDT near the blue rate.',
+      bestFor: es ? 'Comprar cerca del blue' : 'Buy near the blue rate',
+      badge: es ? 'Más usado' : 'Most used',
+      cta: es ? 'Crear cuenta Binance' : 'Create Binance account',
+      theme: 'binance',
+      surface: 'light',
+      showQr: false,
+    },
+    {
       id: 'eldorado',
       partner: 'eldorado',
       href: ELDORADO_REFERRAL_LINK,
@@ -43,7 +65,7 @@ export function getPartnerAds(language = 'es') {
         ? 'Ideal si querés recibir transferencias ACH/wire y mover USDT con una cuenta en dólares.'
         : 'Best if you want ACH/wire deposits and USDT with a real USD account.',
       bestFor: es ? 'Freelancers y remesas ACH' : 'Freelancers & ACH remittances',
-      badge: es ? 'Recomendado' : 'Recommended',
+      badge: es ? 'Cuenta USD' : 'USD account',
       cta: es ? 'Abrir El Dorado' : 'Open El Dorado',
       theme: 'eldorado',
       surface: 'light',
@@ -115,28 +137,6 @@ export function getPartnerAds(language = 'es') {
       cta: es ? 'Crear cuenta Airtm' : 'Create Airtm account',
       theme: 'airtm',
       surface: 'dark',
-      showQr: false,
-    },
-    {
-      id: 'binance',
-      partner: 'binance',
-      href: BINANCE_REFERRAL_LINK,
-      brand: 'Binance',
-      highlight: es ? 'USDT al paralelo' : 'USDT at parallel',
-      headlineRest: es ? 'vía P2P' : 'via P2P',
-      headline: es ? 'Comprá USDT al dólar paralelo' : 'Buy USDT at the parallel rate',
-      sub: es
-        ? 'La vía más usada en Bolivia para acercarte a la cotización blue.'
-        : 'The most used path in Bolivia to the blue market rate.',
-      pathLabel: es ? 'P2P más líquido' : 'Most liquid P2P',
-      pathDesc: es
-        ? 'La vía más usada en Bolivia para comprar/vender USDT cerca del dólar blue.'
-        : 'The most used path in Bolivia to buy/sell USDT near the blue rate.',
-      bestFor: es ? 'Comprar cerca del blue' : 'Buy near the blue rate',
-      badge: es ? 'Más usado' : 'Most used',
-      cta: es ? 'Crear cuenta Binance' : 'Create Binance account',
-      theme: 'binance',
-      surface: 'light',
       showQr: false,
     },
   ];

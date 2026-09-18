@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import PartnerAdCarousel from './PartnerAdCarousel';
+import RateBinanceCta from './RateBinanceCta';
 import { fetchBlueRate } from '../utils/api';
 
 /**
- * Sitewide monetization slot: rotating partner funnel
- * (El Dorado → Takenos → Airtm → Binance).
+ * Sitewide rate-page monetization: one Binance referral, not a partner rotator.
  */
 function BinanceBanner({ placement: placementProp, midRate: midRateProp = null }) {
   const location = useLocation();
@@ -37,7 +36,7 @@ function BinanceBanner({ placement: placementProp, midRate: midRateProp = null }
     };
   }, [midRateProp]);
 
-  return <PartnerAdCarousel placement={placement} midRate={midRate} />;
+  return <RateBinanceCta placement={placement} midRate={midRate} />;
 }
 
 export default BinanceBanner;

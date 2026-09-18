@@ -210,8 +210,7 @@ export default function PartnerAdCarousel({
         : `Parallel ~${rateLabel} Bs · P2P at market rate`
       : ad.sub;
 
-  const openPartner = (e) => {
-    e.preventDefault();
+  const trackPartnerClick = () => {
     trackReferralClicked({
       language,
       partner: ad.partner,
@@ -219,7 +218,6 @@ export default function PartnerAdCarousel({
       destination: ad.href,
       link_label: `carousel_${ad.partner}`,
     });
-    window.open(ad.href, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -239,7 +237,7 @@ export default function PartnerAdCarousel({
         href={ad.href}
         target="_blank"
         rel="noopener noreferrer sponsored"
-        onClick={openPartner}
+        onClick={trackPartnerClick}
         onTouchStart={(e) => {
           touchX.current = e.touches[0].clientX;
           pausedRef.current = true;

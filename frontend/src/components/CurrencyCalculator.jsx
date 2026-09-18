@@ -4,6 +4,7 @@ import { fetchBlueRate } from '../utils/api';
 import { useLanguage } from '../contexts/LanguageContext';
 import { trackCalculatorUsage, trackCalculatorCurrencySwitch, trackCalculatorSwap } from '../utils/analytics';
 import { trackCalculatorUsed } from '../utils/analyticsEvents';
+import { BinanceButton } from './BrandButton';
 
 function CurrencyCalculator() {
   const languageContext = useLanguage();
@@ -580,6 +581,15 @@ function CurrencyCalculator() {
                     {copied ? (es ? 'Copiado' : 'Copied') : (es ? 'Copiar' : 'Copy')}
                   </button>
                 </div>
+              )}
+
+              {bobAmount && usdAmount && !isLoading && !useOfficial && (
+                <BinanceButton
+                  placement="calculator_result"
+                  className="h-12 w-full justify-center text-sm sm:text-base"
+                >
+                  {es ? 'Comprá este monto en Binance' : 'Buy this amount on Binance'}
+                </BinanceButton>
               )}
 
               {comparisonMode && !isLoading && rateData && (

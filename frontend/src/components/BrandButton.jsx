@@ -19,7 +19,7 @@ export function BinanceButton({
     <a
       href={BINANCE_REFERRAL_LINK}
       target="_blank"
-      rel="noopener noreferrer"
+      rel="noopener noreferrer sponsored"
       onClick={() =>
         trackReferralClicked({
           language,
@@ -60,7 +60,7 @@ export function AirtmButton({
     <a
       href={AIRTM_REFERRAL_LINK}
       target="_blank"
-      rel="noopener noreferrer"
+      rel="noopener noreferrer sponsored"
       onClick={() =>
         trackReferralClicked({
           language,

@@ -344,8 +344,8 @@ function Calculator() {
           <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} />
         </section>
 
-        <section className="hidden md:block">
-          <BinanceBanner />
+        <section>
+          <BinanceBanner placement="calculator" />
         </section>
 
         <section className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 p-4 sm:p-6">

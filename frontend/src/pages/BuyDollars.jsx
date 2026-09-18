@@ -124,8 +124,7 @@ function BuyDollars() {
     })),
   };
 
-  const openPartner = (ad, placement, e) => {
-    e.preventDefault();
+  const trackPartnerClick = (ad, placement) => {
     trackReferralClicked({
       language,
       partner: ad.partner,
@@ -133,7 +132,6 @@ function BuyDollars() {
       destination: ad.href,
       link_label: `buy_page_${ad.partner}`,
     });
-    window.open(ad.href, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -231,7 +229,7 @@ function BuyDollars() {
                 href={ad.href}
                 target="_blank"
                 rel="noopener noreferrer sponsored"
-                onClick={(e) => openPartner(ad, 'buy_page_paths', e)}
+                onClick={() => trackPartnerClick(ad, 'buy_page_paths')}
                 className={`group relative flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 p-5 sm:p-6 transition-all duration-300 hover:-translate-y-0.5 hover:bg-gray-50 dark:hover:bg-gray-800 ${pathGlow(ad.theme)}`}
               >
                 <div className="flex items-start gap-4 min-w-0 flex-1">
@@ -408,7 +406,7 @@ function BuyDollars() {
                 href={ad.href}
                 target="_blank"
                 rel="noopener noreferrer sponsored"
-                onClick={(e) => openPartner(ad, 'buy_page_bottom', e)}
+                onClick={() => trackPartnerClick(ad, 'buy_page_bottom')}
                 className={`inline-flex h-10 items-center justify-center rounded-lg px-4 text-sm font-bold transition hover:opacity-90 ${pathCta(ad.theme)}`}
               >
                 {ad.brand}
@@ -425,6 +423,15 @@ function BuyDollars() {
               className="underline underline-offset-2 hover:text-white/70"
               target="_blank"
               rel="noopener noreferrer sponsored"
+              onClick={() =>
+                trackReferralClicked({
+                  language,
+                  partner: 'binance',
+                  placement: 'buy_page_footer',
+                  destination: BINANCE_REFERRAL_LINK,
+                  link_label: 'buy_page_footer_binance',
+                })
+              }
             >
               binance.com
             </a>
@@ -433,12 +440,12 @@ function BuyDollars() {
       </main>
 
       <div className="fixed bottom-[calc(3.5rem+env(safe-area-inset-bottom))] inset-x-0 z-40 p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] bg-white/95 dark:bg-gray-900/95 border-t border-gray-200 dark:border-gray-700 sm:hidden backdrop-blur">
-        <a
-          href="#opciones"
-          className="flex w-full min-h-[44px] items-center justify-center rounded-xl bg-sky-500 text-white text-sm font-bold shadow-md touch-manipulation"
+        <BinanceButton
+          placement="buy_page_sticky"
+          className="flex w-full min-h-[44px] justify-center text-sm"
         >
-          {es ? 'Ver opciones para comprar' : 'See buy options'}
-        </a>
+          {es ? 'Comprá USDT en Binance' : 'Buy USDT on Binance'}
+        </BinanceButton>
       </div>
       <div className="h-[calc(7rem+env(safe-area-inset-bottom))] sm:hidden" aria-hidden />
 

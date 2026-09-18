@@ -137,7 +137,7 @@ function MobileMenu() {
             <a
               href={BINANCE_REFERRAL_LINK}
               target="_blank"
-              rel="noopener noreferrer"
+              rel="noopener noreferrer sponsored"
               onClick={() =>
                 trackReferralClicked({
                   language,
@@ -157,7 +157,7 @@ function MobileMenu() {
             <a
               href={AIRTM_REFERRAL_LINK}
               target="_blank"
-              rel="noopener noreferrer"
+              rel="noopener noreferrer sponsored"
               onClick={() =>
                 trackReferralClicked({
                   language,

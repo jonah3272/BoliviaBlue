@@ -23,7 +23,7 @@ const quietBtn =
 
 /**
  * Compact monetization block (rate → Binance + partner chips).
- * Prefer PartnerAdCarousel for the primary rotating funnel.
+ * Prefer RateBinanceCta on rate/SEO pages; PartnerAdCarousel only on /comprar-dolares.
  */
 function BuyFunnelCTA({
   placement = 'unknown',

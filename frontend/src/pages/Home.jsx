@@ -1,7 +1,7 @@
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import BlueRateCards from '../components/BlueRateCards';
-import PartnerAdCarousel from '../components/PartnerAdCarousel';
+import RateBinanceCta from '../components/RateBinanceCta';
 import RateTrioStrip from '../components/RateTrioStrip';
 import TravelersGuideTeaser from '../components/TravelersGuideTeaser';
 import AiCitationBlock from '../components/AiCitationBlock';
@@ -10,6 +10,7 @@ import { travelGuidePath } from '../config/travelGuide';
 import NewsletterSignup from '../components/NewsletterSignup';
 import SocialShare from '../components/SocialShare';
 import LazyErrorBoundary from '../components/LazyErrorBoundary';
+import { BinanceButton } from '../components/BrandButton';
 import { lazy, Suspense, useState, useEffect, useMemo } from 'react';
 
 // Lazy load heavy components for better performance
@@ -493,6 +494,9 @@ function Home() {
                 updatedAt={currentRate?.updated_at_iso}
               />
             </div>
+            <div className="mt-4 max-w-3xl mx-auto">
+              <RateBinanceCta placement="home_after_rates" midRate={midRate} />
+            </div>
             <AiCitationBlock
               language={language}
               buy={currentRate?.buy ?? currentRate?.buy_bob_per_usd}
@@ -525,6 +529,16 @@ function Home() {
               <Link to="/calculadora" className="mt-2 inline-block text-xs font-medium text-sky-700 dark:text-sky-300">
                 {language === 'es' ? 'Calculadora completa →' : 'Full calculator →'}
               </Link>
+              {Number.isFinite(Number(quickUsd)) && Number.isFinite(currentRate?.buy) && (
+                <BinanceButton
+                  placement="home_quick_convert"
+                  className="mt-2 h-11 w-full justify-center text-sm"
+                >
+                  {language === 'es'
+                    ? `Comprá $${quickUsd} en Binance`
+                    : `Buy $${quickUsd} on Binance`}
+                </BinanceButton>
+              )}
             </div>
             <p className="mt-2 text-xs text-gray-500 dark:text-gray-400 text-center max-w-md mx-auto">
               {language === 'es'
@@ -616,10 +630,6 @@ function Home() {
           </LazyErrorBoundary>
         </section>
 
-        <section>
-          <PartnerAdCarousel placement="home_after_rates" midRate={midRate} />
-        </section>
-
         {/* Combined Sentiment + News Card — after chart on mobile */}
         <section>
           <LazyErrorBoundary>
@@ -627,17 +637,6 @@ function Home() {
               <SentimentNewsCard />
             </Suspense>
           </LazyErrorBoundary>
-        </section>
-
-        {/* Second partner rotation */}
-        <section>
-          <PartnerAdCarousel
-            placement="home_after_chart"
-            midRate={midRate}
-            intervalMs={7500}
-            startOffset={2}
-            reverse
-          />
         </section>
 
 

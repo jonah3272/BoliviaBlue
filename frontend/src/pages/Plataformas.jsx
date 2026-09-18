@@ -9,8 +9,8 @@ import Breadcrumbs from '../components/Breadcrumbs';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import { trackNavigation } from '../utils/analytics';
 import { trackReferralClicked } from '../utils/analyticsEvents';
-import { BINANCE_REFERRAL_LINK, AIRTM_REFERRAL_LINK, BINANCE_P2P_LINK } from '../config/referrals';
-import PartnerAdCarousel from '../components/PartnerAdCarousel';
+import { BINANCE_REFERRAL_LINK, AIRTM_REFERRAL_LINK, ELDORADO_REFERRAL_LINK } from '../config/referrals';
+import RateBinanceCta from '../components/RateBinanceCta';
 
 function Plataformas() {
   // Signal to AdSense that this page has sufficient content
@@ -55,8 +55,9 @@ function Plataformas() {
         'Can be complex for beginners'
       ],
       bestFor: language === 'es' ? 'Usuarios que buscan las mejores tasas y mayor seguridad' : 'Users seeking best rates and highest security',
-      link: BINANCE_P2P_LINK,
+      link: BINANCE_REFERRAL_LINK,
       referralLink: BINANCE_REFERRAL_LINK,
+      paidReferral: true,
       rate: language === 'es' ? 'Mejor tasa del mercado' : 'Best market rate',
       security: language === 'es' ? 'Muy alta' : 'Very high',
       speed: language === 'es' ? 'Rápido (5-15 min)' : 'Fast (5-15 min)',
@@ -90,8 +91,9 @@ function Plataformas() {
         'Transaction fees'
       ],
       bestFor: language === 'es' ? 'Usuarios que buscan facilidad de uso' : 'Users seeking ease of use',
-      link: 'https://www.airtm.io',
+      link: AIRTM_REFERRAL_LINK,
       referralLink: AIRTM_REFERRAL_LINK,
+      paidReferral: true,
       rate: language === 'es' ? 'Buena' : 'Good',
       security: language === 'es' ? 'Alta' : 'High',
       speed: language === 'es' ? 'Moderado (15-30 min)' : 'Moderate (15-30 min)',
@@ -124,7 +126,8 @@ function Plataformas() {
       ],
       bestFor: language === 'es' ? 'Usuarios que prefieren plataformas locales' : 'Users preferring local platforms',
       link: 'https://wallbit.com',
-      referralLink: 'https://wallbit.com',
+      referralLink: null,
+      paidReferral: false,
       rate: language === 'es' ? 'Buena' : 'Good',
       security: language === 'es' ? 'Alta' : 'High',
       speed: language === 'es' ? 'Rápido (10-20 min)' : 'Fast (10-20 min)',
@@ -156,8 +159,9 @@ function Plataformas() {
         'Limited support'
       ],
       bestFor: language === 'es' ? 'Usuarios experimentados' : 'Experienced users',
-      link: 'https://eldoradop2p.com',
-      referralLink: 'https://eldoradop2p.com',
+      link: ELDORADO_REFERRAL_LINK,
+      referralLink: ELDORADO_REFERRAL_LINK,
+      paidReferral: true,
       rate: language === 'es' ? 'Moderada' : 'Moderate',
       security: language === 'es' ? 'Media-Alta' : 'Medium-High',
       speed: language === 'es' ? 'Moderado (20-40 min)' : 'Moderate (20-40 min)',
@@ -190,7 +194,8 @@ function Plataformas() {
       ],
       bestFor: language === 'es' ? 'Usuarios que buscan alternativas a Binance' : 'Users seeking Binance alternatives',
       link: 'https://www.bitget.com',
-      referralLink: 'https://www.bitget.com',
+      referralLink: null,
+      paidReferral: false,
       rate: language === 'es' ? 'Buena' : 'Good',
       security: language === 'es' ? 'Alta' : 'High',
       speed: language === 'es' ? 'Rápido (10-20 min)' : 'Fast (10-20 min)',
@@ -223,7 +228,8 @@ function Plataformas() {
       ],
       bestFor: language === 'es' ? 'Usuarios que buscan diversificar' : 'Users seeking diversification',
       link: 'https://www.bybit.com',
-      referralLink: 'https://www.bybit.com',
+      referralLink: null,
+      paidReferral: false,
       rate: language === 'es' ? 'Buena' : 'Good',
       security: language === 'es' ? 'Alta' : 'High',
       speed: language === 'es' ? 'Rápido (10-25 min)' : 'Fast (10-25 min)',
@@ -279,8 +285,8 @@ function Plataformas() {
       <main className="max-w-7xl mx-auto px-4 py-8">
         <Breadcrumbs items={breadcrumbs} />
 
-        <div className="mb-8 min-h-[15.5rem]">
-          <PartnerAdCarousel placement="plataformas_top" />
+        <div className="mb-8">
+          <RateBinanceCta placement="plataformas_top" />
         </div>
 
         {/* Header */}
@@ -477,28 +483,31 @@ function Plataformas() {
                     </div>
                   </div>
 
-                  <a
-                    href={platform.referralLink || platform.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => {
-                      const dest = platform.referralLink || platform.link;
-                      if (platform.id === 'binance' || platform.id === 'airtm') {
+                  {platform.paidReferral && platform.referralLink ? (
+                    <a
+                      href={platform.referralLink}
+                      target="_blank"
+                      rel="noopener noreferrer sponsored"
+                      onClick={() => {
                         trackReferralClicked({
                           language,
-                          partner: platform.id,
+                          partner: platform.id === 'eldoradop2p' ? 'eldorado' : platform.id,
                           placement: 'plataformas',
-                          destination: dest,
+                          destination: platform.referralLink,
                           link_label: `plataformas_${platform.id}`,
                         });
-                      } else {
-                        trackNavigation(platform.link, platform.name, 'external');
-                      }
-                    }}
-                    className="block w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3 px-6 rounded-lg text-center transition-all transform hover:scale-105 shadow-lg"
-                  >
-                    {language === 'es' ? `Ir a ${platform.name}` : `Go to ${platform.name}`}
-                  </a>
+                      }}
+                      className="block w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3 px-6 rounded-lg text-center transition-all transform hover:scale-105 shadow-lg"
+                    >
+                      {language === 'es' ? `Ir a ${platform.name}` : `Go to ${platform.name}`}
+                    </a>
+                  ) : (
+                    <p className="text-center text-xs text-gray-500 dark:text-gray-400 py-2">
+                      {language === 'es'
+                        ? 'Sin programa de referidos — comparación informativa.'
+                        : 'No referral program — informational comparison.'}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>

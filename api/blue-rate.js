@@ -11,12 +11,77 @@ const { attachFreshCardRate, toPayload: toCardPayload } = require('./_lib/cardRa
 let lastSourcesUsed = ['binance'];
 let lastEurDerivation = null;
 let lastCopDerivation = null;
+let lastPenDerivation = null;
+let lastArsDerivation = null;
+let lastClpDerivation = null;
+
+const LAST_VALID_PAIRS = [
+  {
+    buy: 'buy_bob_per_eur',
+    sell: 'sell_bob_per_eur',
+    iso: 'eur_updated_at_iso',
+    setDeriv: () => { lastEurDerivation = 'usdt-cross-last-valid'; },
+  },
+  {
+    buy: 'buy_bob_per_cop',
+    sell: 'sell_bob_per_cop',
+    iso: 'cop_updated_at_iso',
+    setDeriv: () => { lastCopDerivation = 'usdt-cross-last-valid'; },
+  },
+  {
+    buy: 'buy_bob_per_pen',
+    sell: 'sell_bob_per_pen',
+    iso: 'pen_updated_at_iso',
+    setDeriv: () => { lastPenDerivation = 'usdt-cross-last-valid'; },
+  },
+  {
+    buy: 'buy_bob_per_ars',
+    sell: 'sell_bob_per_ars',
+    iso: 'ars_updated_at_iso',
+    setDeriv: () => { lastArsDerivation = 'usdt-cross-last-valid'; },
+  },
+  {
+    buy: 'buy_bob_per_clp',
+    sell: 'sell_bob_per_clp',
+    iso: 'clp_updated_at_iso',
+    setDeriv: () => { lastClpDerivation = 'usdt-cross-last-valid'; },
+  },
+];
+
+async function attachLastValidPair(supabase, data, spec) {
+  if (data[spec.buy] != null && data[spec.sell] != null) return data;
+  try {
+    const { data: last } = await supabase
+      .from('rates')
+      .select(`${spec.buy}, ${spec.sell}, t`)
+      .not(spec.buy, 'is', null)
+      .not(spec.sell, 'is', null)
+      .order('t', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (last?.[spec.buy] != null && last?.[spec.sell] != null) {
+      spec.setDeriv();
+      return {
+        ...data,
+        [spec.buy]: last[spec.buy],
+        [spec.sell]: last[spec.sell],
+        [spec.iso]: last.t,
+      };
+    }
+  } catch {
+    /* keep USD row even if this fiat lookup fails */
+  }
+  return data;
+}
 
 function toPayload(data, extras = {}) {
   const sources = lastSourcesUsed.length ? lastSourcesUsed : ['binance'];
   const generatedAt = extras.generated_at_iso || new Date().toISOString();
   const hasEur = data.buy_bob_per_eur != null && data.sell_bob_per_eur != null;
   const hasCop = data.buy_bob_per_cop != null && data.sell_bob_per_cop != null;
+  const hasPen = data.buy_bob_per_pen != null && data.sell_bob_per_pen != null;
+  const hasArs = data.buy_bob_per_ars != null && data.sell_bob_per_ars != null;
+  const hasClp = data.buy_bob_per_clp != null && data.sell_bob_per_clp != null;
   const eurDerivation =
     extras.eur_derivation ||
     lastEurDerivation ||
@@ -25,6 +90,18 @@ function toPayload(data, extras = {}) {
     extras.cop_derivation ||
     lastCopDerivation ||
     (hasCop ? 'p2p-usdt' : null);
+  const penDerivation =
+    extras.pen_derivation ||
+    lastPenDerivation ||
+    (hasPen ? 'p2p-usdt' : null);
+  const arsDerivation =
+    extras.ars_derivation ||
+    lastArsDerivation ||
+    (hasArs ? 'p2p-usdt' : null);
+  const clpDerivation =
+    extras.clp_derivation ||
+    lastClpDerivation ||
+    (hasClp ? 'p2p-usdt' : null);
   return {
     source: sources.length > 1 ? 'p2p-cross-median' : 'binance-p2p',
     sources_used: sources,
@@ -41,13 +118,25 @@ function toPayload(data, extras = {}) {
     sell_bob_per_eur: data.sell_bob_per_eur,
     buy_bob_per_cop: data.buy_bob_per_cop,
     sell_bob_per_cop: data.sell_bob_per_cop,
+    buy_bob_per_pen: data.buy_bob_per_pen,
+    sell_bob_per_pen: data.sell_bob_per_pen,
+    buy_bob_per_ars: data.buy_bob_per_ars,
+    sell_bob_per_ars: data.sell_bob_per_ars,
+    buy_bob_per_clp: data.buy_bob_per_clp,
+    sell_bob_per_clp: data.sell_bob_per_clp,
     updated_at_iso: data.t,
     generated_at_iso: generatedAt,
     eur_updated_at_iso: data.eur_updated_at_iso || (hasEur ? data.t : null),
     cop_updated_at_iso: data.cop_updated_at_iso || (hasCop ? data.t : null),
+    pen_updated_at_iso: data.pen_updated_at_iso || (hasPen ? data.t : null),
+    ars_updated_at_iso: data.ars_updated_at_iso || (hasArs ? data.t : null),
+    clp_updated_at_iso: data.clp_updated_at_iso || (hasClp ? data.t : null),
     is_stale: isRateStale(data.t, STALE_MS),
     eur_derivation: eurDerivation,
     cop_derivation: copDerivation,
+    pen_derivation: penDerivation,
+    ars_derivation: arsDerivation,
+    clp_derivation: clpDerivation,
     sample_buy: [],
     sample_sell: [],
   };
@@ -100,10 +189,14 @@ module.exports = async function handler(req, res) {
           .limit(1)
           .maybeSingle();
         if (isRateStale(latest?.t, STALE_MS)) {
-          const { row, sourcesUsed, eurDerivation, copDerivation } = await refreshBlueFromBinance(supabase);
+          const refreshed = await refreshBlueFromBinance(supabase);
+          const { row, sourcesUsed } = refreshed;
           if (sourcesUsed?.length) lastSourcesUsed = sourcesUsed;
-          if (eurDerivation) lastEurDerivation = eurDerivation;
-          if (copDerivation) lastCopDerivation = copDerivation;
+          if (refreshed.eurDerivation) lastEurDerivation = refreshed.eurDerivation;
+          if (refreshed.copDerivation) lastCopDerivation = refreshed.copDerivation;
+          if (refreshed.penDerivation) lastPenDerivation = refreshed.penDerivation;
+          if (refreshed.arsDerivation) lastArsDerivation = refreshed.arsDerivation;
+          if (refreshed.clpDerivation) lastClpDerivation = refreshed.clpDerivation;
           data = row;
         } else {
           const { data: fresh } = await supabase
@@ -120,52 +213,8 @@ module.exports = async function handler(req, res) {
       }
     }
 
-    if (data.buy_bob_per_eur == null || data.sell_bob_per_eur == null) {
-      try {
-        const { data: lastEur } = await supabase
-          .from('rates')
-          .select('buy_bob_per_eur, sell_bob_per_eur, t')
-          .not('buy_bob_per_eur', 'is', null)
-          .not('sell_bob_per_eur', 'is', null)
-          .order('t', { ascending: false })
-          .limit(1)
-          .maybeSingle();
-        if (lastEur?.buy_bob_per_eur != null && lastEur?.sell_bob_per_eur != null) {
-          data = {
-            ...data,
-            buy_bob_per_eur: lastEur.buy_bob_per_eur,
-            sell_bob_per_eur: lastEur.sell_bob_per_eur,
-            eur_updated_at_iso: lastEur.t,
-          };
-          lastEurDerivation = 'usdt-cross-last-valid';
-        }
-      } catch {
-        /* keep USD row even if EUR lookup fails */
-      }
-    }
-
-    if (data.buy_bob_per_cop == null || data.sell_bob_per_cop == null) {
-      try {
-        const { data: lastCop } = await supabase
-          .from('rates')
-          .select('buy_bob_per_cop, sell_bob_per_cop, t')
-          .not('buy_bob_per_cop', 'is', null)
-          .not('sell_bob_per_cop', 'is', null)
-          .order('t', { ascending: false })
-          .limit(1)
-          .maybeSingle();
-        if (lastCop?.buy_bob_per_cop != null && lastCop?.sell_bob_per_cop != null) {
-          data = {
-            ...data,
-            buy_bob_per_cop: lastCop.buy_bob_per_cop,
-            sell_bob_per_cop: lastCop.sell_bob_per_cop,
-            cop_updated_at_iso: lastCop.t,
-          };
-          lastCopDerivation = 'usdt-cross-last-valid';
-        }
-      } catch {
-        /* keep USD row even if COP lookup fails */
-      }
+    for (const spec of LAST_VALID_PAIRS) {
+      data = await attachLastValidPair(supabase, data, spec);
     }
 
     data = await attachOfficial(data, supabase);

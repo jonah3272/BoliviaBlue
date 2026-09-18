@@ -46,6 +46,12 @@ const EXCLUDED_ROUTES = [
   '/real-a-boliviano',
   '/peso-a-boliviano',
   '/cop-a-boliviano',
+  '/sol-a-boliviano',
+  '/pen-a-boliviano',
+  '/peso-argentino-a-boliviano',
+  '/ars-a-boliviano',
+  '/peso-chileno-a-boliviano',
+  '/clp-a-boliviano',
   '/usdt-bolivia',
   '/usdt-en-bolivia',
   '/calculadora',
@@ -211,7 +217,8 @@ export function loadAdSense(publisherId) {
       script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${publisherId}`;
       script.crossOrigin = 'anonymous';
       script.setAttribute('data-ad-client', publisherId);
-      // Enable Auto Ads (in-article, anchor, vignette, sidebar)
+      // Auto Ads: keep in-article/anchor. Vignettes are blocked per-link via
+      // suppressVignetteTriggers() (data-google-vignette="false") plus the AdSense UI toggle.
       script.setAttribute('data-auto-ads', 'true');
       
       script.onload = () => {
@@ -259,6 +266,54 @@ export function markPageAsReady() {
   // Mark as having sufficient content
   document.body.setAttribute('data-has-sufficient-content', 'true');
   console.log('[AdSense] Page marked as ready for ads');
+}
+
+/**
+ * Google-documented way to stop a click from opening a vignette:
+ * data-google-vignette="false" on the <a>. We apply it to every link so
+ * Auto ads cannot mint /#google_vignette on internal nav. Overlay formats
+ * still need Ads → Auto ads → Vignette off in the AdSense UI.
+ * @see https://support.google.com/adsense/answer/17016693
+ */
+export function suppressVignetteTriggers() {
+  if (typeof document === 'undefined') return;
+  if (window.__bbVignetteSuppressed) return;
+  window.__bbVignetteSuppressed = true;
+
+  const markAnchor = (a) => {
+    if (a && a.tagName === 'A' && a.getAttribute('data-google-vignette') !== 'false') {
+      a.setAttribute('data-google-vignette', 'false');
+    }
+  };
+
+  const markTree = (root) => {
+    if (!root) return;
+    if (root.tagName === 'A') markAnchor(root);
+    root.querySelectorAll?.('a').forEach(markAnchor);
+  };
+
+  document.addEventListener(
+    'click',
+    (e) => {
+      markAnchor(e.target?.closest?.('a'));
+    },
+    true
+  );
+
+  const start = () => {
+    markTree(document);
+    const obs = new MutationObserver((mutations) => {
+      for (const m of mutations) {
+        for (const node of m.addedNodes) {
+          if (node.nodeType === 1) markTree(node);
+        }
+      }
+    });
+    obs.observe(document.documentElement, { childList: true, subtree: true });
+  };
+
+  if (document.body) start();
+  else document.addEventListener('DOMContentLoaded', start, { once: true });
 }
 
 /**

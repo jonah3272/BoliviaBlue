@@ -9,7 +9,9 @@ import { LanguageProvider } from './contexts/LanguageContext';
 import { CurrencyProvider } from './contexts/CurrencyContext';
 import { ToastProvider } from './contexts/ToastContext';
 import { RateProvider } from './contexts/RateContext';
-import { loadAdSense, blockAdsOnThisPage } from './utils/adsenseLoader';
+import { loadAdSense, blockAdsOnThisPage, suppressVignetteTriggers } from './utils/adsenseLoader';
+
+suppressVignetteTriggers();
 
 // Global error handler for mobile debugging
 window.addEventListener('error', (event) => {

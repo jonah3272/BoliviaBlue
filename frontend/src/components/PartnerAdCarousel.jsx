@@ -145,10 +145,11 @@ export default function PartnerAdCarousel({
   }, [language, reverse]);
   const [index, setIndex] = useState(0);
   const [slideDir, setSlideDir] = useState(1);
-  const viewed = useRef(new Set());
   const pausedRef = useRef(false);
   const touchX = useRef(null);
   const startApplied = useRef(false);
+  const rootRef = useRef(null);
+  const impressionSent = useRef(false);
 
   // Apply startOffset once ads are ready (supports reverse order).
   useEffect(() => {
@@ -170,15 +171,20 @@ export default function PartnerAdCarousel({
   );
 
   useEffect(() => {
-    trackBuyFunnelViewed({ language, placement });
+    const el = rootRef.current;
+    if (!el || impressionSent.current) return undefined;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting || impressionSent.current) return;
+        impressionSent.current = true;
+        trackBuyFunnelViewed({ language, placement });
+        observer.disconnect();
+      },
+      { threshold: 0.35 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
   }, [language, placement]);
-
-  useEffect(() => {
-    const ad = ads[index];
-    if (!ad || viewed.current.has(ad.id)) return;
-    viewed.current.add(ad.id);
-    trackBuyFunnelViewed({ language, placement: `${placement}_${ad.partner}` });
-  }, [ads, index, language, placement]);
 
   useEffect(() => {
     if (ads.length < 2) return undefined;
@@ -218,6 +224,7 @@ export default function PartnerAdCarousel({
 
   return (
     <div
+      ref={rootRef}
       className="relative z-20 w-full isolate"
       data-partner-carousel={placement}
       onMouseEnter={() => {

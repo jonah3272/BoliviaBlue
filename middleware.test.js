@@ -286,6 +286,60 @@ describe('single snapshot', () => {
     assert.doesNotMatch(applied.html, /Compra 12\.48/);
   });
 
+  it('does not put USD rates on the sol page when PEN is missing', () => {
+    const rates = normalizeRates({
+      buy_bob_per_usd: 12.48,
+      sell_bob_per_usd: 12.44,
+      updated_at_iso: '2026-09-18T19:00:00.000Z',
+    });
+    assert.equal(applyLiveSeo('<html></html>', '/sol-a-boliviano', rates), null);
+  });
+
+  it('uses PEN unit rates on the sol path', () => {
+    const html = `<html><head><title>x</title><meta name="description" content="d" /><meta property="og:title" content="x" /><meta property="og:description" content="d" /><meta name="twitter:title" content="x" /><meta name="twitter:description" content="d" /></head><body><p>compra Bs 0.00 · venta Bs 0.00</p></body></html>`;
+    const rates = normalizeRates({
+      buy_bob_per_usd: 12.48,
+      sell_bob_per_usd: 12.44,
+      buy_bob_per_pen: 3.19,
+      sell_bob_per_pen: 3.17,
+      updated_at_iso: '2026-09-18T19:00:00.000Z',
+    });
+    const applied = applyLiveSeo(html, '/sol-a-boliviano', rates);
+    assert.ok(applied?.live);
+    assert.match(applied.html, /Compra 3\.19/);
+    assert.doesNotMatch(applied.html, /Compra 12\.48/);
+  });
+
+  it('uses 1.000 ARS in Bs on the Argentine peso path', () => {
+    const html = `<html><head><title>x</title><meta name="description" content="d" /><meta property="og:title" content="x" /><meta property="og:description" content="d" /><meta name="twitter:title" content="x" /><meta name="twitter:description" content="d" /></head><body><p>compra Bs 0.00 · venta Bs 0.00</p></body></html>`;
+    const rates = normalizeRates({
+      buy_bob_per_usd: 12.48,
+      sell_bob_per_usd: 12.44,
+      buy_bob_per_ars: 0.0086,
+      sell_bob_per_ars: 0.0084,
+      updated_at_iso: '2026-09-18T19:00:00.000Z',
+    });
+    const applied = applyLiveSeo(html, '/peso-argentino-a-boliviano', rates);
+    assert.ok(applied?.live);
+    assert.match(applied.html, /1\.000 ARS ≈ 8\.60 \/ 8\.40 Bs/);
+    assert.doesNotMatch(applied.html, /Compra 12\.48/);
+  });
+
+  it('uses 1.000 CLP in Bs on the Chilean peso path', () => {
+    const html = `<html><head><title>x</title><meta name="description" content="d" /><meta property="og:title" content="x" /><meta property="og:description" content="d" /><meta name="twitter:title" content="x" /><meta name="twitter:description" content="d" /></head><body><p>compra Bs 0.00 · venta Bs 0.00</p></body></html>`;
+    const rates = normalizeRates({
+      buy_bob_per_usd: 12.48,
+      sell_bob_per_usd: 12.44,
+      buy_bob_per_clp: 0.0132,
+      sell_bob_per_clp: 0.0130,
+      updated_at_iso: '2026-09-18T19:00:00.000Z',
+    });
+    const applied = applyLiveSeo(html, '/peso-chileno-a-boliviano', rates);
+    assert.ok(applied?.live);
+    assert.match(applied.html, /1\.000 CLP ≈ 13\.20 \/ 13\.00 Bs/);
+    assert.doesNotMatch(applied.html, /Compra 12\.48/);
+  });
+
   it('does not put USD rates on the euro page when EUR is missing', () => {
     const rates = normalizeRates({
       buy_bob_per_usd: 12.48,

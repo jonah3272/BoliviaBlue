@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import {
@@ -33,9 +33,23 @@ function BuyFunnelCTA({
 }) {
   const languageContext = useLanguage();
   const language = languageContext?.language || 'es';
+  const rootRef = useRef(null);
+  const viewedRef = useRef(false);
 
   useEffect(() => {
-    trackBuyFunnelViewed({ language, placement });
+    const el = rootRef.current;
+    if (!el || viewedRef.current) return undefined;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting || viewedRef.current) return;
+        viewedRef.current = true;
+        trackBuyFunnelViewed({ language, placement });
+        observer.disconnect();
+      },
+      { threshold: 0.35 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
   }, [language, placement]);
 
   const waUrl = useMemo(
@@ -50,6 +64,7 @@ function BuyFunnelCTA({
 
   return (
     <div
+      ref={rootRef}
       className={`relative overflow-hidden rounded-xl border border-amber-200/60 dark:border-amber-900/40 bg-white/95 dark:bg-gray-800/95 ${
         compact ? 'p-4 sm:p-5' : 'p-5 sm:p-6'
       }`}

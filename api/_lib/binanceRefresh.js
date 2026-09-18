@@ -42,12 +42,45 @@ async function fetchEurUsdtSpot() {
   return asPositiveRate(data?.price);
 }
 
-/** USDTCOP is COP per 1 USDT (same units as Binance P2P COP). */
-async function fetchUsdtCopSpot() {
-  const res = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=USDTCOP');
+/** Spot quote in fiat-per-USDT units (same as Binance P2P fiat books). */
+async function fetchUsdtFiatSpot(symbol) {
+  const res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`);
   if (!res.ok) return null;
   const data = await res.json();
   return asPositiveRate(data?.price);
+}
+
+/**
+ * BOB per 1 fiat: P2P book first, then optional spot (fiat per USDT).
+ * Never invents a fixed multiplier.
+ */
+async function deriveBobPerFiat(bobBuy, bobSell, fiat, spotSymbol = null) {
+  let buyFiat = null;
+  let sellFiat = null;
+  let derivation = null;
+  try {
+    const p2p = await p2pFiatPerUsdt(fiat);
+    if (p2p) {
+      buyFiat = bobPerFiatFromUsdtP2p(bobBuy, p2p.buy);
+      sellFiat = bobPerFiatFromUsdtP2p(bobSell, p2p.sell);
+      derivation = 'p2p-usdt';
+    }
+  } catch {
+    /* fall through to spot */
+  }
+  if ((buyFiat == null || sellFiat == null) && spotSymbol) {
+    try {
+      const fiatPerUsdt = await fetchUsdtFiatSpot(spotSymbol);
+      if (fiatPerUsdt) {
+        buyFiat = bobPerFiatFromUsdtP2p(bobBuy, fiatPerUsdt);
+        sellFiat = bobPerFiatFromUsdtP2p(bobSell, fiatPerUsdt);
+        derivation = `spot-${spotSymbol.toLowerCase()}`;
+      }
+    } catch {
+      /* leave unavailable */
+    }
+  }
+  return { buy: buyFiat, sell: sellFiat, derivation };
 }
 
 async function getOfficialFallback(supabase) {
@@ -74,6 +107,15 @@ async function refreshBlueFromBinance(supabase = createSupabaseClient()) {
   let buyCop = null;
   let sellCop = null;
   let copDerivation = null;
+  let buyPen = null;
+  let sellPen = null;
+  let penDerivation = null;
+  let buyArs = null;
+  let sellArs = null;
+  let arsDerivation = null;
+  let buyClp = null;
+  let sellClp = null;
+  let clpDerivation = null;
   try {
     const brl = await p2pFiatPerUsdt('BRL');
     if (brl) {
@@ -106,28 +148,25 @@ async function refreshBlueFromBinance(supabase = createSupabaseClient()) {
     }
   }
 
-  try {
-    const cop = await p2pFiatPerUsdt('COP');
-    if (cop) {
-      buyCop = bobPerFiatFromUsdtP2p(buy, cop.buy);
-      sellCop = bobPerFiatFromUsdtP2p(sell, cop.sell);
-      copDerivation = 'p2p-usdt';
-    }
-  } catch {
-    /* fall through to spot */
-  }
-  if (buyCop == null || sellCop == null) {
-    try {
-      const copPerUsdt = await fetchUsdtCopSpot();
-      if (copPerUsdt) {
-        buyCop = bobPerFiatFromUsdtP2p(buy, copPerUsdt);
-        sellCop = bobPerFiatFromUsdtP2p(sell, copPerUsdt);
-        copDerivation = 'spot-usdtcop';
-      }
-    } catch {
-      /* COP remains unavailable */
-    }
-  }
+  const copPair = await deriveBobPerFiat(buy, sell, 'COP', 'USDTCOP');
+  buyCop = copPair.buy;
+  sellCop = copPair.sell;
+  copDerivation = copPair.derivation;
+
+  const [penPair, arsPair, clpPair] = await Promise.all([
+    deriveBobPerFiat(buy, sell, 'PEN', 'USDTPEN'),
+    deriveBobPerFiat(buy, sell, 'ARS', 'USDTARS'),
+    deriveBobPerFiat(buy, sell, 'CLP', 'USDTCLP'),
+  ]);
+  buyPen = penPair.buy;
+  sellPen = penPair.sell;
+  penDerivation = penPair.derivation;
+  buyArs = arsPair.buy;
+  sellArs = arsPair.sell;
+  arsDerivation = arsPair.derivation;
+  buyClp = clpPair.buy;
+  sellClp = clpPair.sell;
+  clpDerivation = clpPair.derivation;
 
   const official = await getOfficialFallback(supabase);
   const mid = (buy + sell) / 2;
@@ -149,6 +188,15 @@ async function refreshBlueFromBinance(supabase = createSupabaseClient()) {
     buy_bob_per_cop: buyCop,
     sell_bob_per_cop: sellCop,
     mid_bob_per_cop: buyCop != null && sellCop != null ? (buyCop + sellCop) / 2 : null,
+    buy_bob_per_pen: buyPen,
+    sell_bob_per_pen: sellPen,
+    mid_bob_per_pen: buyPen != null && sellPen != null ? (buyPen + sellPen) / 2 : null,
+    buy_bob_per_ars: buyArs,
+    sell_bob_per_ars: sellArs,
+    mid_bob_per_ars: buyArs != null && sellArs != null ? (buyArs + sellArs) / 2 : null,
+    buy_bob_per_clp: buyClp,
+    sell_bob_per_clp: sellClp,
+    mid_bob_per_clp: buyClp != null && sellClp != null ? (buyClp + sellClp) / 2 : null,
   };
 
   const { error } = await supabase.from('rates').insert(row);
@@ -161,7 +209,18 @@ async function refreshBlueFromBinance(supabase = createSupabaseClient()) {
     console.warn('[refresh] card rates failed:', err.message || err);
   }
 
-  return { row, buyPrices, sellPrices, sourcesUsed, eurDerivation, copDerivation, cardRate };
+  return {
+    row,
+    buyPrices,
+    sellPrices,
+    sourcesUsed,
+    eurDerivation,
+    copDerivation,
+    penDerivation,
+    arsDerivation,
+    clpDerivation,
+    cardRate,
+  };
 }
 
 function isRateStale(iso, staleMs = STALE_MS) {
@@ -176,4 +235,5 @@ module.exports = {
   createSupabaseClient,
   refreshBlueFromBinance,
   isRateStale,
+  deriveBobPerFiat,
 };

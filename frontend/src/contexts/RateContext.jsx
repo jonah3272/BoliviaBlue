@@ -54,6 +54,12 @@ export function RateProvider({ children }) {
         sell_bob_per_eur: data.sell_bob_per_eur,
         buy_bob_per_cop: data.buy_bob_per_cop,
         sell_bob_per_cop: data.sell_bob_per_cop,
+        buy_bob_per_pen: data.buy_bob_per_pen,
+        sell_bob_per_pen: data.sell_bob_per_pen,
+        buy_bob_per_ars: data.buy_bob_per_ars,
+        sell_bob_per_ars: data.sell_bob_per_ars,
+        buy_bob_per_clp: data.buy_bob_per_clp,
+        sell_bob_per_clp: data.sell_bob_per_clp,
         source: data.source,
         quoteKind: data.quote_kind || 'usdt_p2p_median',
         updatedAt: data.updated_at_iso,
@@ -70,6 +76,12 @@ export function RateProvider({ children }) {
         eur_updated_at_iso: data.eur_updated_at_iso || null,
         cop_derivation: data.cop_derivation || null,
         cop_updated_at_iso: data.cop_updated_at_iso || null,
+        pen_derivation: data.pen_derivation || null,
+        pen_updated_at_iso: data.pen_updated_at_iso || null,
+        ars_derivation: data.ars_derivation || null,
+        ars_updated_at_iso: data.ars_updated_at_iso || null,
+        clp_derivation: data.clp_derivation || null,
+        clp_updated_at_iso: data.clp_updated_at_iso || null,
       };
 
       lastValidRef.current = standardized;

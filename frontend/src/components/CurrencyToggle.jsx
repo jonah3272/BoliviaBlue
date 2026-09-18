@@ -10,7 +10,10 @@ function CurrencyToggle() {
     { code: 'USD', label: 'USD', flag: '🇺🇸' },
     { code: 'BRL', label: 'BRL', flag: '🇧🇷' },
     { code: 'EUR', label: 'EUR', flag: '🇪🇺' },
-    { code: 'COP', label: 'COP', flag: '🇨🇴' }
+    { code: 'COP', label: 'COP', flag: '🇨🇴' },
+    { code: 'PEN', label: 'PEN', flag: '🇵🇪' },
+    { code: 'ARS', label: 'ARS', flag: '🇦🇷' },
+    { code: 'CLP', label: 'CLP', flag: '🇨🇱' }
   ];
 
   const currentCurrency = currencies.find(c => c.code === currency) || currencies[0];

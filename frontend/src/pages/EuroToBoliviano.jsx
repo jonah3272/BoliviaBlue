@@ -12,6 +12,7 @@ import { fetchBlueHistory } from '../utils/api';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import { buildLiveRateSeoMeta } from '../utils/seoRateMeta';
+import NewsletterSignup from '../components/NewsletterSignup';
 
 function EuroToBoliviano() {
   // Signal to AdSense that this page has sufficient content
@@ -435,6 +436,10 @@ function EuroToBoliviano() {
               </div>
             </div>
           </div>
+        </section>
+
+        <section className="mt-4">
+          <NewsletterSignup source="euro-a-boliviano" compact />
         </section>
 
         {/* Related Links */}

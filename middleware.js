@@ -12,9 +12,9 @@ export const config = {
   matcher: [
     '/',
     '/index.html',
-    '/:page(dolar-blue-hoy|dolar-paralelo-bolivia-en-vivo|cuanto-esta-dolar-bolivia|cotiza-dolar-paralelo|euro-a-boliviano|real-a-boliviano|peso-a-boliviano|dolar-blue-santa-cruz|dolar-blue-la-paz|dolar-blue-cochabamba|prensa|guia-dinero-bolivia|bolivia-money-guide)',
-    '/:page(dolar-blue-hoy|dolar-paralelo-bolivia-en-vivo|cuanto-esta-dolar-bolivia|cotiza-dolar-paralelo|euro-a-boliviano|real-a-boliviano|peso-a-boliviano|dolar-blue-santa-cruz|dolar-blue-la-paz|dolar-blue-cochabamba|prensa|guia-dinero-bolivia|bolivia-money-guide)/',
-    '/:page(dolar-blue-hoy|dolar-paralelo-bolivia-en-vivo|cuanto-esta-dolar-bolivia|cotiza-dolar-paralelo|euro-a-boliviano|real-a-boliviano|peso-a-boliviano|dolar-blue-santa-cruz|dolar-blue-la-paz|dolar-blue-cochabamba|prensa|guia-dinero-bolivia|bolivia-money-guide)/index.html',
+    '/:page(dolar-blue-hoy|dolar-paralelo-bolivia-en-vivo|cuanto-esta-dolar-bolivia|cotiza-dolar-paralelo|euro-a-boliviano|real-a-boliviano|peso-a-boliviano|sol-a-boliviano|peso-argentino-a-boliviano|peso-chileno-a-boliviano|dolar-blue-santa-cruz|dolar-blue-la-paz|dolar-blue-cochabamba|prensa|guia-dinero-bolivia|bolivia-money-guide)',
+    '/:page(dolar-blue-hoy|dolar-paralelo-bolivia-en-vivo|cuanto-esta-dolar-bolivia|cotiza-dolar-paralelo|euro-a-boliviano|real-a-boliviano|peso-a-boliviano|sol-a-boliviano|peso-argentino-a-boliviano|peso-chileno-a-boliviano|dolar-blue-santa-cruz|dolar-blue-la-paz|dolar-blue-cochabamba|prensa|guia-dinero-bolivia|bolivia-money-guide)/',
+    '/:page(dolar-blue-hoy|dolar-paralelo-bolivia-en-vivo|cuanto-esta-dolar-bolivia|cotiza-dolar-paralelo|euro-a-boliviano|real-a-boliviano|peso-a-boliviano|sol-a-boliviano|peso-argentino-a-boliviano|peso-chileno-a-boliviano|dolar-blue-santa-cruz|dolar-blue-la-paz|dolar-blue-cochabamba|prensa|guia-dinero-bolivia|bolivia-money-guide)/index.html',
   ],
 };
 
@@ -88,10 +88,21 @@ export function normalizeRates(rate) {
     sellBrl: fmt(rate.sell_bob_per_brl),
     buyCopThousand: fmtCopThousand(rate.buy_bob_per_cop),
     sellCopThousand: fmtCopThousand(rate.sell_bob_per_cop),
+    buyPen: fmt(rate.buy_bob_per_pen),
+    sellPen: fmt(rate.sell_bob_per_pen),
+    buyArsThousand: fmtCopThousand(rate.buy_bob_per_ars),
+    sellArsThousand: fmtCopThousand(rate.sell_bob_per_ars),
+    buyClpThousand: fmtCopThousand(rate.buy_bob_per_clp),
+    sellClpThousand: fmtCopThousand(rate.sell_bob_per_clp),
     eurUpdatedAt: (() => {
       if (typeof rate.eur_updated_at_iso !== 'string') return null;
       const d = new Date(rate.eur_updated_at_iso);
       return Number.isNaN(d.getTime()) ? null : rate.eur_updated_at_iso;
+    })(),
+    penUpdatedAt: (() => {
+      if (typeof rate.pen_updated_at_iso !== 'string') return null;
+      const d = new Date(rate.pen_updated_at_iso);
+      return Number.isNaN(d.getTime()) ? null : rate.pen_updated_at_iso;
     })(),
   };
 }
@@ -151,6 +162,21 @@ export function metaForPath(path, buy, sell) {
       return {
         title: `Peso colombiano a boliviano: 1.000 COP ≈ ${buy} / ${sell} Bs`,
         description: `Peso colombiano (COP) a boliviano: 1.000 COP ≈ compra Bs ${buy} · venta Bs ${sell}. Derivado de USDT/COP en vivo, no un tipo inventado.`,
+      };
+    case '/sol-a-boliviano':
+      return {
+        title: `Sol peruano a boliviano: Compra ${buy} · Venta ${sell}`,
+        description: `Sol peruano (PEN) a boliviano: compra Bs ${buy} y venta Bs ${sell}. Derivado de USDT/PEN en vivo, no un tipo inventado.`,
+      };
+    case '/peso-argentino-a-boliviano':
+      return {
+        title: `Peso argentino a boliviano: 1.000 ARS ≈ ${buy} / ${sell} Bs`,
+        description: `Peso argentino (ARS) a boliviano: 1.000 ARS ≈ compra Bs ${buy} · venta Bs ${sell}. Derivado de USDT/ARS en vivo, no un tipo inventado.`,
+      };
+    case '/peso-chileno-a-boliviano':
+      return {
+        title: `Peso chileno a boliviano: 1.000 CLP ≈ ${buy} / ${sell} Bs`,
+        description: `Peso chileno (CLP) a boliviano: 1.000 CLP ≈ compra Bs ${buy} · venta Bs ${sell}. Derivado de USDT/CLP en vivo, no un tipo inventado.`,
       };
     case '/dolar-blue-santa-cruz':
       return {
@@ -336,6 +362,21 @@ export function metaForPathEn(path, buy, sell) {
         title: `Colombian peso to boliviano: 1,000 COP ≈ ${buy} / ${sell} Bs`,
         description: `Colombian peso (COP) to boliviano: 1,000 COP ≈ buy Bs ${buy} · sell Bs ${sell}. Live USDT/COP cross, never an invented rate.`,
       };
+    case '/sol-a-boliviano':
+      return {
+        title: `Peruvian sol to boliviano: Buy ${buy} · Sell ${sell}`,
+        description: `Peruvian sol (PEN) to boliviano: buy Bs ${buy}, sell Bs ${sell}. Live USDT/PEN cross, never an invented rate.`,
+      };
+    case '/peso-argentino-a-boliviano':
+      return {
+        title: `Argentine peso to boliviano: 1,000 ARS ≈ ${buy} / ${sell} Bs`,
+        description: `Argentine peso (ARS) to boliviano: 1,000 ARS ≈ buy Bs ${buy} · sell Bs ${sell}. Live USDT/ARS cross, never an invented rate.`,
+      };
+    case '/peso-chileno-a-boliviano':
+      return {
+        title: `Chilean peso to boliviano: 1,000 CLP ≈ ${buy} / ${sell} Bs`,
+        description: `Chilean peso (CLP) to boliviano: 1,000 CLP ≈ buy Bs ${buy} · sell Bs ${sell}. Live USDT/CLP cross, never an invented rate.`,
+      };
     case '/dolar-blue-santa-cruz':
       return {
         title: `Blue Dollar Santa Cruz Today: Buy ${buy} · Sell ${sell}`,
@@ -431,6 +472,27 @@ export function applyLiveSeo(html, path, rates) {
     pair = {
       buy: rates.buyCopThousand,
       sell: rates.sellCopThousand,
+      updatedAt: rates.updatedAt,
+    };
+  } else if (path === '/sol-a-boliviano') {
+    if (!rates.buyPen || !rates.sellPen) return null;
+    pair = {
+      buy: rates.buyPen,
+      sell: rates.sellPen,
+      updatedAt: rates.penUpdatedAt || rates.updatedAt,
+    };
+  } else if (path === '/peso-argentino-a-boliviano') {
+    if (!rates.buyArsThousand || !rates.sellArsThousand) return null;
+    pair = {
+      buy: rates.buyArsThousand,
+      sell: rates.sellArsThousand,
+      updatedAt: rates.updatedAt,
+    };
+  } else if (path === '/peso-chileno-a-boliviano') {
+    if (!rates.buyClpThousand || !rates.sellClpThousand) return null;
+    pair = {
+      buy: rates.buyClpThousand,
+      sell: rates.sellClpThousand,
       updatedAt: rates.updatedAt,
     };
   }

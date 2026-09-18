@@ -710,6 +710,69 @@ const ROUTES = {
 </main>`.replace(/\n/g, '').trim(),
     getJsonLd: () => buildStaticJsonLd('/peso-a-boliviano', 'Peso a Boliviano', 'Peso colombiano a boliviano – COP a BOB', 'COP a BOB derivado vía USDT. No es tipo oficial ni de ventanilla.', [])
   },
+  '/sol-a-boliviano': {
+    title: 'Sol peruano a boliviano | PEN a BOB paralelo (vía USDT)',
+    description: 'PEN a BOB en Bolivia: sol peruano paralelo derivado de USDT/PEN (P2P o spot). Nunca un multiplicador fijo.',
+    canonical: BASE_URL + '/sol-a-boliviano',
+    shell: `
+<main class="max-w-7xl mx-auto px-4 py-8" data-seo-shell="sol-a-boliviano">
+  <div class="text-center space-y-4 mb-8">
+    <h1 class="text-3xl sm:text-5xl font-bold text-gray-900">Sol peruano a boliviano – PEN a BOB</h1>
+    <p class="text-base text-gray-700 max-w-2xl mx-auto">Sol peruano hoy: compra <span data-live-buy>—</span> · venta <span data-live-sell>—</span> Bs por PEN. Derivado de USDT/PEN en vivo (P2P o spot USDTPEN), nunca un tipo inventado.</p>
+    <p class="text-sm text-gray-600">Lectura: <time data-live-when datetime="">—</time> (hora de Bolivia). <a href="/fuente-de-datos">Metodología</a> · <a href="/calculadora">Calculadora</a></p>
+    <nav class="flex flex-wrap justify-center gap-3 mt-4" aria-label="Enlaces relacionados">
+      <a href="/" class="text-blue-600 font-medium">Dólar blue</a>
+      <a href="/euro-a-boliviano" class="text-blue-600 font-medium">Euro blue</a>
+      <a href="/peso-a-boliviano" class="text-blue-600 font-medium">Peso colombiano</a>
+      <a href="/peso-argentino-a-boliviano" class="text-blue-600 font-medium">Peso argentino</a>
+      <a href="/calculadora" class="text-blue-600 font-medium">Calculadora</a>
+    </nav>
+  </div>
+</main>`.replace(/\n/g, '').trim(),
+    getJsonLd: () => buildStaticJsonLd('/sol-a-boliviano', 'Sol a Boliviano', 'Sol peruano a boliviano – PEN a BOB', 'PEN a BOB derivado vía USDT. No es tipo oficial ni de ventanilla.', [])
+  },
+  '/peso-argentino-a-boliviano': {
+    title: 'Peso argentino a boliviano | ARS a BOB paralelo (vía USDT)',
+    description: 'ARS a BOB en Bolivia: peso argentino paralelo derivado de USDT/ARS (P2P o spot). Nunca un multiplicador fijo.',
+    canonical: BASE_URL + '/peso-argentino-a-boliviano',
+    shell: `
+<main class="max-w-7xl mx-auto px-4 py-8" data-seo-shell="peso-argentino-a-boliviano">
+  <div class="text-center space-y-4 mb-8">
+    <h1 class="text-3xl sm:text-5xl font-bold text-gray-900">Peso argentino a boliviano – ARS a BOB</h1>
+    <p class="text-base text-gray-700 max-w-2xl mx-auto">1.000 ARS ≈ compra <span data-live-buy>—</span> · venta <span data-live-sell>—</span> Bs. Derivado de USDT/ARS en vivo (P2P o spot USDTARS), nunca un tipo inventado.</p>
+    <p class="text-sm text-gray-600">Lectura: <time data-live-when datetime="">—</time> (hora de Bolivia). <a href="/fuente-de-datos">Metodología</a> · <a href="/calculadora">Calculadora</a></p>
+    <nav class="flex flex-wrap justify-center gap-3 mt-4" aria-label="Enlaces relacionados">
+      <a href="/" class="text-blue-600 font-medium">Dólar blue</a>
+      <a href="/euro-a-boliviano" class="text-blue-600 font-medium">Euro blue</a>
+      <a href="/peso-a-boliviano" class="text-blue-600 font-medium">Peso colombiano</a>
+      <a href="/sol-a-boliviano" class="text-blue-600 font-medium">Sol peruano</a>
+      <a href="/calculadora" class="text-blue-600 font-medium">Calculadora</a>
+    </nav>
+  </div>
+</main>`.replace(/\n/g, '').trim(),
+    getJsonLd: () => buildStaticJsonLd('/peso-argentino-a-boliviano', 'Peso argentino a Boliviano', 'Peso argentino a boliviano – ARS a BOB', 'ARS a BOB derivado vía USDT. No es tipo oficial ni de ventanilla.', [])
+  },
+  '/peso-chileno-a-boliviano': {
+    title: 'Peso chileno a boliviano | CLP a BOB paralelo (vía USDT)',
+    description: 'CLP a BOB en Bolivia: peso chileno paralelo derivado de USDT/CLP (P2P o spot). Nunca un multiplicador fijo.',
+    canonical: BASE_URL + '/peso-chileno-a-boliviano',
+    shell: `
+<main class="max-w-7xl mx-auto px-4 py-8" data-seo-shell="peso-chileno-a-boliviano">
+  <div class="text-center space-y-4 mb-8">
+    <h1 class="text-3xl sm:text-5xl font-bold text-gray-900">Peso chileno a boliviano – CLP a BOB</h1>
+    <p class="text-base text-gray-700 max-w-2xl mx-auto">1.000 CLP ≈ compra <span data-live-buy>—</span> · venta <span data-live-sell>—</span> Bs. Derivado de USDT/CLP en vivo (P2P o spot USDTCLP), nunca un tipo inventado.</p>
+    <p class="text-sm text-gray-600">Lectura: <time data-live-when datetime="">—</time> (hora de Bolivia). <a href="/fuente-de-datos">Metodología</a> · <a href="/calculadora">Calculadora</a></p>
+    <nav class="flex flex-wrap justify-center gap-3 mt-4" aria-label="Enlaces relacionados">
+      <a href="/" class="text-blue-600 font-medium">Dólar blue</a>
+      <a href="/euro-a-boliviano" class="text-blue-600 font-medium">Euro blue</a>
+      <a href="/peso-a-boliviano" class="text-blue-600 font-medium">Peso colombiano</a>
+      <a href="/sol-a-boliviano" class="text-blue-600 font-medium">Sol peruano</a>
+      <a href="/calculadora" class="text-blue-600 font-medium">Calculadora</a>
+    </nav>
+  </div>
+</main>`.replace(/\n/g, '').trim(),
+    getJsonLd: () => buildStaticJsonLd('/peso-chileno-a-boliviano', 'Peso chileno a Boliviano', 'Peso chileno a boliviano – CLP a BOB', 'CLP a BOB derivado vía USDT. No es tipo oficial ni de ventanilla.', [])
+  },
   '/prensa': {
     title: 'Prensa Bolivia Blue | Kit de medios, citas y datos',
     description: 'Recursos gratis para periodistas: cómo citar el dólar blue, badge SVG, widget embed, CSV histórico y metodología.',
@@ -940,6 +1003,9 @@ async function main() {
     '/euro-a-boliviano',
     '/real-a-boliviano',
     '/peso-a-boliviano',
+    '/sol-a-boliviano',
+    '/peso-argentino-a-boliviano',
+    '/peso-chileno-a-boliviano',
     '/prensa',
     '/guia-dinero-bolivia',
     '/bolivia-money-guide',

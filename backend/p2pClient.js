@@ -119,6 +119,32 @@ async function getCurrentBlueRateForFiat(fiat = 'BOB') {
   }
 }
 
+async function attachFiatCross(result, bobRate, fiatRate, code, spotSymbol) {
+  const key = code.toLowerCase();
+  if (fiatRate) {
+    result[`buy_bob_per_${key}`] = bobRate.buy / fiatRate.buy;
+    result[`sell_bob_per_${key}`] = bobRate.sell / fiatRate.sell;
+    result[`mid_bob_per_${key}`] = (result[`buy_bob_per_${key}`] + result[`sell_bob_per_${key}`]) / 2;
+    result[`${key}_derivation`] = 'p2p-usdt';
+    return;
+  }
+  try {
+    const spotRes = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${spotSymbol}`);
+    if (spotRes.ok) {
+      const spot = await spotRes.json();
+      const fiatPerUsdt = parseFloat(spot?.price);
+      if (Number.isFinite(fiatPerUsdt) && fiatPerUsdt > 0) {
+        result[`buy_bob_per_${key}`] = bobRate.buy / fiatPerUsdt;
+        result[`sell_bob_per_${key}`] = bobRate.sell / fiatPerUsdt;
+        result[`mid_bob_per_${key}`] = (result[`buy_bob_per_${key}`] + result[`sell_bob_per_${key}`]) / 2;
+        result[`${key}_derivation`] = `spot-${spotSymbol.toLowerCase()}`;
+      }
+    }
+  } catch (err) {
+    console.warn(`${code} spot fallback failed:`, err.message);
+  }
+}
+
 /**
  * Get current blue market rates from Binance P2P (USD/BOB - default)
  * @returns {Promise<Object>} Buy and sell rates with metadata
@@ -159,7 +185,7 @@ export async function getCurrentBlueRate() {
 export async function getAllCurrentBlueRates() {
   try {
     // Fetch all currencies in parallel
-    const [bobRate, brlRate, eurRate, copRate] = await Promise.all([
+    const [bobRate, brlRate, eurRate, copRate, penRate, arsRate, clpRate] = await Promise.all([
       getCurrentBlueRateForFiat('BOB').catch(err => {
         console.warn('Failed to fetch BOB rate:', err.message);
         return null;
@@ -179,6 +205,18 @@ export async function getAllCurrentBlueRates() {
       }),
       getCurrentBlueRateForFiat('COP').catch(err => {
         console.warn('Failed to fetch COP rate:', err.message);
+        return null;
+      }),
+      getCurrentBlueRateForFiat('PEN').catch(err => {
+        console.warn('Failed to fetch PEN rate:', err.message);
+        return null;
+      }),
+      getCurrentBlueRateForFiat('ARS').catch(err => {
+        console.warn('Failed to fetch ARS rate:', err.message);
+        return null;
+      }),
+      getCurrentBlueRateForFiat('CLP').catch(err => {
+        console.warn('Failed to fetch CLP rate:', err.message);
         return null;
       })
     ]);
@@ -252,6 +290,12 @@ export async function getAllCurrentBlueRates() {
         console.warn('COP spot fallback failed:', err.message);
       }
     }
+
+    await Promise.all([
+      attachFiatCross(result, bobRate, penRate, 'PEN', 'USDTPEN'),
+      attachFiatCross(result, bobRate, arsRate, 'ARS', 'USDTARS'),
+      attachFiatCross(result, bobRate, clpRate, 'CLP', 'USDTCLP'),
+    ]);
 
     // Calculate mid rate for USD
     result.mid_bob_per_usd = (result.buy_bob_per_usd + result.sell_bob_per_usd) / 2;

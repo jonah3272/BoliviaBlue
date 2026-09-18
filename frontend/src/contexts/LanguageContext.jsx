@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { trackLanguageSwitched } from '../utils/analyticsEvents';
+import { applySanitizedLangUrl } from '../utils/urlLang';
 
 const LanguageContext = createContext();
 
@@ -666,6 +667,7 @@ export function LanguageProvider({ children }) {
   // Keep URL ?lang= in sync on first paint / navigation without waiting for a toggle
   useEffect(() => {
     try {
+      applySanitizedLangUrl();
       const params = new URLSearchParams(window.location.search);
       const langParam = params.get('lang');
       if ((langParam === 'en' || langParam === 'es') && langParam !== language) {

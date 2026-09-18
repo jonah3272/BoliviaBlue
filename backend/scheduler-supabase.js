@@ -83,7 +83,18 @@ export async function refreshBlueRate() {
       blueRateData.mid_bob_per_eur || null,
       blueRateData.buy_bob_per_cop || null,
       blueRateData.sell_bob_per_cop || null,
-      blueRateData.mid_bob_per_cop || null
+      blueRateData.mid_bob_per_cop || null,
+      {
+        buy_bob_per_pen: blueRateData.buy_bob_per_pen || null,
+        sell_bob_per_pen: blueRateData.sell_bob_per_pen || null,
+        mid_bob_per_pen: blueRateData.mid_bob_per_pen || null,
+        buy_bob_per_ars: blueRateData.buy_bob_per_ars || null,
+        sell_bob_per_ars: blueRateData.sell_bob_per_ars || null,
+        mid_bob_per_ars: blueRateData.mid_bob_per_ars || null,
+        buy_bob_per_clp: blueRateData.buy_bob_per_clp || null,
+        sell_bob_per_clp: blueRateData.sell_bob_per_clp || null,
+        mid_bob_per_clp: blueRateData.mid_bob_per_clp || null,
+      }
     );
     
     // Update cache with both rates

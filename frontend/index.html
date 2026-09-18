@@ -179,10 +179,12 @@
       AdSense loading is now handled in src/main.jsx to ensure proper module bundling
       See frontend/src/main.jsx for implementation details
       
-      Auto Ads Configuration:
+      Overlay formats:
       - In-article ads: Enabled (ads between content paragraphs)
       - Anchor ads: Enabled (sticky bottom ads on mobile)
-      - Vignette ads: Optional (full-screen interstitials - can be disabled if too intrusive)
+      - Vignette ads: OFF. Links get data-google-vignette="false" so Auto ads
+        cannot open /#google_vignette on nav. Also turn Vignette off in
+        AdSense → Ads → site → Overlay formats.
       - Sidebar ads: Enabled (on desktop)
       
       Configure in AdSense dashboard: Ads > Auto ads > Edit

@@ -10,7 +10,7 @@ export function formatRate(value, currency = 'USD') {
   if (!Number.isFinite(num)) return '—';
   // BRL rates are smaller, so show 3 decimal places (thousandths) for better precision
   // USD and EUR show 2 decimal places (hundredths)
-  if (currency === 'COP') return num.toFixed(4);
+  if (currency === 'COP' || currency === 'ARS' || currency === 'CLP') return num.toFixed(4);
   if (currency === 'BRL') return num.toFixed(3);
   return num.toFixed(2);
 }

@@ -5,7 +5,7 @@ const CurrencyContext = createContext(null);
 
 const CURRENCY_STORAGE_KEY = 'bolivia-blue-currency';
 
-export const SUPPORTED_CURRENCIES = ['USD', 'BRL', 'EUR', 'COP'];
+export const SUPPORTED_CURRENCIES = ['USD', 'BRL', 'EUR', 'COP', 'PEN', 'ARS', 'CLP'];
 
 export function CurrencyProvider({ children }) {
   const [currency, setCurrencyState] = useState(() => {

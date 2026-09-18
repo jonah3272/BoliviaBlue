@@ -15,8 +15,12 @@ import { useEffect } from 'react';
  * 
  * Configuration is done in AdSense dashboard:
  * 1. Go to Ads > Auto ads
- * 2. Enable the ad types you want
- * 3. Set ad density (recommended: Medium)
+ * 2. Enable in-article / anchor as needed
+ * 3. DISABLE vignette (full-screen interstitial) ads in Overlay formats.
+ *    Site code also sets data-google-vignette="false" on every link.
+ *
+ * Vignettes showed up as `/#google_vignette` (134 views, Aug 21–Sep 17 2026)
+ * on a ~70% mobile audience and inflate pageviews without adding sessions.
  */
 function AdSenseAutoAds() {
   useEffect(() => {

@@ -190,6 +190,60 @@ const PAGE_COPY = {
         'COP to BOB in Bolivia: Colombian peso derived from live USDT/COP (P2P or spot). Never a fixed multiplier.',
     },
   },
+  sol: {
+    es: {
+      titleWith: (b, s) => `Sol peruano a boliviano: Compra ${b} · Venta ${s}`,
+      titleFallback: 'Sol peruano a boliviano | PEN a BOB paralelo (vía USDT)',
+      descWith: (b, s, when) =>
+        `Sol peruano (PEN) a boliviano: compra Bs ${b} · venta Bs ${s}${when ? ` (${when})` : ''}. Derivado de USDT/PEN en vivo, no un tipo inventado.`,
+      descFallback:
+        'PEN a BOB en Bolivia: sol peruano paralelo derivado de USDT/PEN (P2P o spot). Nunca un multiplicador fijo.',
+    },
+    en: {
+      titleWith: (b, s) => `Peruvian sol to boliviano: Buy ${b} · Sell ${s}`,
+      titleFallback: 'Peruvian sol to boliviano | Parallel PEN to BOB (via USDT)',
+      descWith: (b, s, when) =>
+        `Peruvian sol (PEN) to boliviano: buy Bs ${b} · sell Bs ${s}${when ? ` (as of ${when})` : ''}. Live USDT/PEN cross, never an invented rate.`,
+      descFallback:
+        'PEN to BOB in Bolivia: Peruvian sol derived from live USDT/PEN (P2P or spot). Never a fixed multiplier.',
+    },
+  },
+  'peso-ars': {
+    es: {
+      titleWith: (b, s) => `Peso argentino a boliviano: 1.000 ARS ≈ ${b} / ${s} Bs`,
+      titleFallback: 'Peso argentino a boliviano | ARS a BOB paralelo (vía USDT)',
+      descWith: (b, s, when) =>
+        `Peso argentino (ARS) a boliviano: 1.000 ARS ≈ compra Bs ${b} · venta Bs ${s}${when ? ` (${when})` : ''}. Derivado de USDT/ARS en vivo, no un tipo inventado.`,
+      descFallback:
+        'ARS a BOB en Bolivia: peso argentino paralelo derivado de USDT/ARS (P2P o spot). Nunca un multiplicador fijo.',
+    },
+    en: {
+      titleWith: (b, s) => `Argentine peso to boliviano: 1,000 ARS ≈ ${b} / ${s} Bs`,
+      titleFallback: 'Argentine peso to boliviano | Parallel ARS to BOB (via USDT)',
+      descWith: (b, s, when) =>
+        `Argentine peso (ARS) to boliviano: 1,000 ARS ≈ buy Bs ${b} · sell Bs ${s}${when ? ` (as of ${when})` : ''}. Live USDT/ARS cross, never an invented rate.`,
+      descFallback:
+        'ARS to BOB in Bolivia: Argentine peso derived from live USDT/ARS (P2P or spot). Never a fixed multiplier.',
+    },
+  },
+  'peso-clp': {
+    es: {
+      titleWith: (b, s) => `Peso chileno a boliviano: 1.000 CLP ≈ ${b} / ${s} Bs`,
+      titleFallback: 'Peso chileno a boliviano | CLP a BOB paralelo (vía USDT)',
+      descWith: (b, s, when) =>
+        `Peso chileno (CLP) a boliviano: 1.000 CLP ≈ compra Bs ${b} · venta Bs ${s}${when ? ` (${when})` : ''}. Derivado de USDT/CLP en vivo, no un tipo inventado.`,
+      descFallback:
+        'CLP a BOB en Bolivia: peso chileno paralelo derivado de USDT/CLP (P2P o spot). Nunca un multiplicador fijo.',
+    },
+    en: {
+      titleWith: (b, s) => `Chilean peso to boliviano: 1,000 CLP ≈ ${b} / ${s} Bs`,
+      titleFallback: 'Chilean peso to boliviano | Parallel CLP to BOB (via USDT)',
+      descWith: (b, s, when) =>
+        `Chilean peso (CLP) to boliviano: 1,000 CLP ≈ buy Bs ${b} · sell Bs ${s}${when ? ` (as of ${when})` : ''}. Live USDT/CLP cross, never an invented rate.`,
+      descFallback:
+        'CLP to BOB in Bolivia: Chilean peso derived from live USDT/CLP (P2P or spot). Never a fixed multiplier.',
+    },
+  },
   'santa-cruz': {
     es: {
       titleWith: (b, s) => `Dólar Blue Santa Cruz Hoy: Compra ${b} · Venta ${s}`,
@@ -274,6 +328,9 @@ const PATH_TO_PAGE = {
   '/euro-a-boliviano': 'euro',
   '/real-a-boliviano': 'real',
   '/peso-a-boliviano': 'peso',
+  '/sol-a-boliviano': 'sol',
+  '/peso-argentino-a-boliviano': 'peso-ars',
+  '/peso-chileno-a-boliviano': 'peso-clp',
   '/dolar-blue-santa-cruz': 'santa-cruz',
   '/dolar-blue-la-paz': 'la-paz',
   '/dolar-blue-cochabamba': 'cochabamba',

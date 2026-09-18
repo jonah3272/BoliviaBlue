@@ -15,6 +15,7 @@ import { TRAVEL_GUIDE_EN, TRAVEL_GUIDE_ES } from '../config/travelGuide';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import SantaCruzPartnerLinks from '../components/SantaCruzPartnerLinks';
 import { SITE_URL } from '../config/brand';
+import NewsletterSignup from '../components/NewsletterSignup';
 
 const PUBLISHED = '2026-09-14';
 
@@ -536,6 +537,29 @@ export default function TravelersMoneyGuide() {
               </div>
             ))}
           </dl>
+        </section>
+
+        <section className="mt-12">
+          <NewsletterSignup source="bolivia-money-guide" />
+          <p className="mt-3 text-center text-sm text-gray-600 dark:text-gray-400">
+            {es ? (
+              <>
+                ¿Querés un aviso cuando se mueva el paralelo?{' '}
+                <Link to="/#price-alerts" className="font-medium text-blue-700 dark:text-blue-300 hover:underline">
+                  Creá una alerta de precio
+                </Link>
+                .
+              </>
+            ) : (
+              <>
+                Want a ping when the parallel rate moves?{' '}
+                <Link to="/#price-alerts" className="font-medium text-blue-700 dark:text-blue-300 hover:underline">
+                  Set a price alert
+                </Link>
+                .
+              </>
+            )}
+          </p>
         </section>
 
         <section className="mt-12 rounded-xl border border-gray-200 dark:border-gray-700 p-5">

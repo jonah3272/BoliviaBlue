@@ -124,7 +124,7 @@ export function CurrencyConversionList({
   isLoading = false,
 }) {
   const n = Number(rate);
-  const hasRate = Number.isFinite(n);
+  const hasRate = Number.isFinite(n) && n > 0;
 
   return (
     <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-6 min-h-[12rem]">
@@ -138,7 +138,7 @@ export function CurrencyConversionList({
             {isLoading && !hasRate ? (
               <span className="inline-block skeleton h-4 w-24 align-middle" aria-hidden="true" />
             ) : (
-              <>{(hasRate ? n * amt : 0).toFixed(2)} BOB</>
+              <>{hasRate ? `${(n * amt).toFixed(2)} BOB` : '—'}</>
             )}
           </li>
         ))}

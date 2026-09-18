@@ -6,6 +6,8 @@ import RateTrioStrip from '../components/RateTrioStrip';
 import TravelersGuideTeaser from '../components/TravelersGuideTeaser';
 import AiCitationBlock from '../components/AiCitationBlock';
 import { PRIMARY_RATE_URL } from '../config/seo';
+import { travelGuidePath } from '../config/travelGuide';
+import NewsletterSignup from '../components/NewsletterSignup';
 import SocialShare from '../components/SocialShare';
 import LazyErrorBoundary from '../components/LazyErrorBoundary';
 import { lazy, Suspense, useState, useEffect, useMemo } from 'react';
@@ -394,6 +396,32 @@ function Home() {
               {language === 'es' ? 'No hay una lectura nueva. Reintentando…' : 'No new reading yet. Retrying…'}
             </p>
           )}
+          <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+            <Link
+              to={PRIMARY_RATE_URL}
+              className="inline-flex h-10 items-center justify-center rounded-xl bg-sky-500 px-3.5 text-xs font-bold text-white"
+            >
+              {language === 'es' ? 'Cotización hoy' : 'Today’s quote'}
+            </Link>
+            <Link
+              to="/calculadora"
+              className="inline-flex h-10 items-center justify-center rounded-xl border border-gray-300 dark:border-gray-600 bg-white/80 dark:bg-gray-800/80 px-3.5 text-xs font-semibold text-gray-800 dark:text-gray-100"
+            >
+              {language === 'es' ? 'Calculadora' : 'Calculator'}
+            </Link>
+            <a
+              href="#price-alerts"
+              className="inline-flex h-10 items-center justify-center rounded-xl border border-gray-300 dark:border-gray-600 bg-white/80 dark:bg-gray-800/80 px-3.5 text-xs font-semibold text-gray-800 dark:text-gray-100"
+            >
+              {language === 'es' ? 'Crear alerta' : 'Set alert'}
+            </a>
+            <Link
+              to={travelGuidePath(language)}
+              className="inline-flex h-10 items-center justify-center rounded-xl border border-gray-300 dark:border-gray-600 bg-white/80 dark:bg-gray-800/80 px-3.5 text-xs font-semibold text-gray-800 dark:text-gray-100"
+            >
+              {language === 'es' ? 'Guía' : 'Guide'}
+            </Link>
+          </div>
         </div>
 
         {/* Hero — desktop only */}
@@ -516,6 +544,24 @@ function Home() {
               >
                 {language === 'es' ? 'Ver peso colombiano (COP a BOB) →' : 'See Colombian peso (COP to BOB) →'}
               </Link>
+              <Link
+                to="/sol-a-boliviano"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-amber-500/10 px-4 py-2 text-sm font-semibold text-amber-800 hover:bg-amber-500/20 dark:text-amber-300"
+              >
+                {language === 'es' ? 'Sol peruano (PEN a BOB) →' : 'Peruvian sol (PEN to BOB) →'}
+              </Link>
+              <Link
+                to="/peso-argentino-a-boliviano"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-sky-500/10 px-4 py-2 text-sm font-semibold text-sky-800 hover:bg-sky-500/20 dark:text-sky-300"
+              >
+                {language === 'es' ? 'Peso argentino (ARS a BOB) →' : 'Argentine peso (ARS to BOB) →'}
+              </Link>
+              <Link
+                to="/peso-chileno-a-boliviano"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-rose-500/10 px-4 py-2 text-sm font-semibold text-rose-800 hover:bg-rose-500/20 dark:text-rose-300"
+              >
+                {language === 'es' ? 'Peso chileno (CLP a BOB) →' : 'Chilean peso (CLP to BOB) →'}
+              </Link>
             </p>
             <nav
               className="mt-3 flex flex-wrap justify-center gap-2 text-xs sm:text-sm"
@@ -549,6 +595,9 @@ function Home() {
                 <RateAlertForm />
               </Suspense>
             </LazyErrorBoundary>
+            <div className="mt-4 max-w-2xl mx-auto">
+              <NewsletterSignup source="homepage" compact />
+            </div>
           </section>
         </div>
 

@@ -20,12 +20,19 @@ This document describes the **product-level** custom events implemented via `fro
 
 | Event | Rationale |
 |--------|-----------|
-| `rate_alert_submitted` | Strong intent: user created a price alert. |
+| `referral_clicked` | Actual monetization click (Binance / El Dorado / Takenos / Meru / Airtm). |
+| `rate_alert_submitted` | Strong intent: user created a price alert (email lead). |
 | `newsletter_signup_completed` | Lead / retention signal. |
-| `historical_download_csv` | Data product engagement (researchers, power users). |
-| `historical_download_json` | Same as CSV; JSON often indicates API/integration interest. |
+| `export_lead_submitted` | Historical-data email unlock. |
+| `calculator_used` | Tool engagement — only after a real user edit, not auto-calc on load. |
 
-Optional secondary key events (depending on business priorities): `calculator_used`, `comparison_page_viewed`, `outbound_source_clicked` (affiliate funnel).
+**Do not mark as key events:** `buy_funnel_viewed`, `rate_card_view`, `rate_update`, `page_view`, `scroll`, `time_on_page`. Those are impressions or noise. `buy_funnel_viewed` fired ~6.9k times in Aug 21–Sep 17 2026 while `referral_clicked` did not even make the top 10 — treating the view as a conversion would train Google Ads on people who merely saw a banner.
+
+Site code already fires the named events above. Marking them as key events still has to happen in **Admin → Data display → Events** (Google does not allow this from the website). Direct: [GA4 Events](https://analytics.google.com/analytics/web/).
+
+AdSense vignettes: every `<a>` gets `data-google-vignette="false"` so nav cannot open `/#google_vignette`. Overlay vignettes still need **AdSense → Ads → Overlay formats → Vignette off**.
+
+Optional secondary: `comparison_page_viewed`, `historical_download_csv`, `historical_download_json`.
 
 ---
 

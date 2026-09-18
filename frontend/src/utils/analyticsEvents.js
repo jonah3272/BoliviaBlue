@@ -117,6 +117,7 @@ export function trackNewsletterSignupStarted({ language, source }) {
 
 export function trackNewsletterSignupCompleted({ language, source }) {
   trackEvent('newsletter_signup_completed', baseParams({ language, source: source || 'unknown' }));
+  trackConversion('newsletter_signup_completed');
 }
 
 export function trackOutboundSourceClicked({ language, destination, link_label }) {
@@ -154,6 +155,7 @@ export function trackReferralClicked({
 }
 
 export function trackBuyFunnelViewed({ language, placement }) {
+  // Impression only — never mark this as a GA4 key event. Use referral_clicked.
   trackEvent('buy_funnel_viewed', baseParams({
     language,
     placement: placement || 'unknown',
@@ -194,6 +196,7 @@ export function trackExportLeadSubmitted({ language, source }) {
     page_type: 'historical',
     source: source || 'historical_extended_form',
   }));
+  trackConversion('export_lead_submitted');
 }
 
 export function trackCommercialAccessClicked({ language, destination, link_label }) {

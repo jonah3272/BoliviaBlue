@@ -129,6 +129,21 @@
       "source": "/cop-a-boliviano",
       "destination": "/peso-a-boliviano",
       "permanent": true
+    },
+    {
+      "source": "/pen-a-boliviano",
+      "destination": "/sol-a-boliviano",
+      "permanent": true
+    },
+    {
+      "source": "/ars-a-boliviano",
+      "destination": "/peso-argentino-a-boliviano",
+      "permanent": true
+    },
+    {
+      "source": "/clp-a-boliviano",
+      "destination": "/peso-chileno-a-boliviano",
+      "permanent": true
     }
   ],
   "buildCommand": "cd frontend && npm install && npm run build",
@@ -178,6 +193,9 @@
     { "source": "/euro-a-boliviano", "destination": "/euro-a-boliviano/index.html" },
     { "source": "/real-a-boliviano", "destination": "/real-a-boliviano/index.html" },
     { "source": "/peso-a-boliviano", "destination": "/peso-a-boliviano/index.html" },
+    { "source": "/sol-a-boliviano", "destination": "/sol-a-boliviano/index.html" },
+    { "source": "/peso-argentino-a-boliviano", "destination": "/peso-argentino-a-boliviano/index.html" },
+    { "source": "/peso-chileno-a-boliviano", "destination": "/peso-chileno-a-boliviano/index.html" },
     { "source": "/prensa", "destination": "/prensa/index.html" },
     { "source": "/guia-dinero-bolivia", "destination": "/guia-dinero-bolivia/index.html" },
     { "source": "/bolivia-money-guide", "destination": "/bolivia-money-guide/index.html" },

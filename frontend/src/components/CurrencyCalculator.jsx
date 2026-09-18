@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { fetchBlueRate } from '../utils/api';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -12,10 +12,12 @@ function CurrencyCalculator() {
   const [rateData, setRateData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [useOfficial, setUseOfficial] = useState(false);
-  const [convertFromBOB, setConvertFromBOB] = useState(true); // true = BOB->USD, false = USD->BOB
+  const [convertFromBOB, setConvertFromBOB] = useState(false); // false = USD->BOB (search intent)
   
-  const [bobAmount, setBobAmount] = useState('100');
-  const [usdAmount, setUsdAmount] = useState('');
+  const [bobAmount, setBobAmount] = useState('');
+  const [usdAmount, setUsdAmount] = useState('100');
+  const userTouchedRef = useRef(false);
+  const usedTrackedRef = useRef(false);
   
   // New features state
   const [selectedCurrency, setSelectedCurrency] = useState('USD');
@@ -32,10 +34,12 @@ function CurrencyCalculator() {
     EUR: { symbol: '€', name: 'Euro', flag: '🇪🇺' },
     BRL: { symbol: 'R$', name: 'Brazilian Real', flag: '🇧🇷' },
     COP: { symbol: '$', name: 'Colombian Peso', flag: '🇨🇴' },
-    ARS: { symbol: '$', name: 'Argentine Peso', flag: '🇦🇷' }
+    PEN: { symbol: 'S/', name: 'Peruvian Sol', flag: '🇵🇪' },
+    ARS: { symbol: '$', name: 'Argentine Peso', flag: '🇦🇷' },
+    CLP: { symbol: '$', name: 'Chilean Peso', flag: '🇨🇱' }
   };
 
-  // 1 USD = X of this currency. EUR/BRL/COP are filled from live BOB crosses; ARS stays approximate.
+  // 1 USD = X of this currency. Live BOB crosses fill EUR/BRL/COP/PEN/ARS/CLP. Never invent ARS=1000.
   const [exchangeRates, setExchangeRates] = useState({
     USD: 1,
     USDT: 1,
@@ -43,7 +47,9 @@ function CurrencyCalculator() {
     EUR: null,
     BRL: null,
     COP: null,
-    ARS: 1000
+    PEN: null,
+    ARS: null,
+    CLP: null
   });
 
   // Load history from localStorage on mount
@@ -96,9 +102,15 @@ function CurrencyCalculator() {
         const eur = Number(data.buy_bob_per_eur);
         const brl = Number(data.buy_bob_per_brl);
         const cop = Number(data.buy_bob_per_cop);
+        const pen = Number(data.buy_bob_per_pen);
+        const ars = Number(data.buy_bob_per_ars);
+        const clp = Number(data.buy_bob_per_clp);
         if (usdBuy > 0 && eur > 0) next.EUR = usdBuy / eur;
         if (usdBuy > 0 && brl > 0) next.BRL = usdBuy / brl;
         if (usdBuy > 0 && cop > 0) next.COP = usdBuy / cop;
+        if (usdBuy > 0 && pen > 0) next.PEN = usdBuy / pen;
+        if (usdBuy > 0 && ars > 0) next.ARS = usdBuy / ars;
+        if (usdBuy > 0 && clp > 0) next.CLP = usdBuy / clp;
         return next;
       });
       setIsLoading(false);
@@ -109,16 +121,17 @@ function CurrencyCalculator() {
   };
 
   const fiatBobPerUnit = (side) => {
-    if (selectedCurrency === 'EUR') {
-      return side === 'sell' ? Number(rateData?.sell_bob_per_eur) : Number(rateData?.buy_bob_per_eur);
-    }
-    if (selectedCurrency === 'BRL') {
-      return side === 'sell' ? Number(rateData?.sell_bob_per_brl) : Number(rateData?.buy_bob_per_brl);
-    }
-    if (selectedCurrency === 'COP') {
-      return side === 'sell' ? Number(rateData?.sell_bob_per_cop) : Number(rateData?.buy_bob_per_cop);
-    }
-    return null;
+    const field = {
+      EUR: 'eur',
+      BRL: 'brl',
+      COP: 'cop',
+      PEN: 'pen',
+      ARS: 'ars',
+      CLP: 'clp',
+    }[selectedCurrency];
+    if (!field) return null;
+    const key = side === 'sell' ? `sell_bob_per_${field}` : `buy_bob_per_${field}`;
+    return Number(rateData?.[key]);
   };
 
   const getRate = () => {
@@ -188,14 +201,16 @@ function CurrencyCalculator() {
     // Save to history if it's a meaningful calculation
     if (bob >= 1) {
       saveToHistory('BOB', selectedCurrency, bob.toFixed(2), usd.toFixed(4), rate.toFixed(4));
-      // Track calculator usage
-      trackCalculatorUsage(bob, 'BOB', selectedCurrency, usd);
-      trackCalculatorUsed({
-        language,
-        from_currency: 'BOB',
-        to_currency: selectedCurrency,
-        use_official: useOfficial,
-      });
+      if (userTouchedRef.current && !usedTrackedRef.current) {
+        usedTrackedRef.current = true;
+        trackCalculatorUsage(bob, 'BOB', selectedCurrency, usd);
+        trackCalculatorUsed({
+          language,
+          from_currency: 'BOB',
+          to_currency: selectedCurrency,
+          use_official: useOfficial,
+        });
+      }
     }
   };
 
@@ -218,20 +233,23 @@ function CurrencyCalculator() {
     // Save to history if it's a meaningful calculation
     if (usd >= 0.01) {
       saveToHistory(selectedCurrency, 'BOB', usd.toFixed(4), bob.toFixed(2), rate.toFixed(4));
-      // Track calculator usage
-      trackCalculatorUsage(usd, selectedCurrency, 'BOB', bob);
-      trackCalculatorUsed({
-        language,
-        from_currency: selectedCurrency,
-        to_currency: 'BOB',
-        use_official: useOfficial,
-      });
+      if (userTouchedRef.current && !usedTrackedRef.current) {
+        usedTrackedRef.current = true;
+        trackCalculatorUsage(usd, selectedCurrency, 'BOB', bob);
+        trackCalculatorUsed({
+          language,
+          from_currency: selectedCurrency,
+          to_currency: 'BOB',
+          use_official: useOfficial,
+        });
+      }
     }
   };
 
   const handleBobChange = (e) => {
     const value = e.target.value;
     if (value === '' || /^\d*\.?\d*$/.test(value)) {
+      userTouchedRef.current = true;
       setBobAmount(value);
       setConvertFromBOB(true);
     }
@@ -240,12 +258,14 @@ function CurrencyCalculator() {
   const handleUsdChange = (e) => {
     const value = e.target.value;
     if (value === '' || /^\d*\.?\d*$/.test(value)) {
+      userTouchedRef.current = true;
       setUsdAmount(value);
       setConvertFromBOB(false);
     }
   };
 
   const handleSwap = () => {
+    userTouchedRef.current = true;
     const prevFromCurrency = convertFromBOB ? 'BOB' : selectedCurrency;
     const prevToCurrency = convertFromBOB ? selectedCurrency : 'BOB';
     
@@ -262,7 +282,7 @@ function CurrencyCalculator() {
 
   const getBuyRate = () => {
     if (useOfficial) {
-      if (selectedCurrency === 'COP' || selectedCurrency === 'EUR' || selectedCurrency === 'BRL') {
+      if (['COP', 'EUR', 'BRL', 'PEN', 'ARS', 'CLP'].includes(selectedCurrency)) {
         const usdBlue = Number(rateData?.buy_bob_per_usd);
         const usdOff = Number(rateData?.official_buy);
         const fiat = fiatBobPerUnit('buy');
@@ -275,11 +295,14 @@ function CurrencyCalculator() {
     if (selectedCurrency === 'EUR') return rateData?.buy_bob_per_eur;
     if (selectedCurrency === 'BRL') return rateData?.buy_bob_per_brl;
     if (selectedCurrency === 'COP') return rateData?.buy_bob_per_cop;
+    if (selectedCurrency === 'PEN') return rateData?.buy_bob_per_pen;
+    if (selectedCurrency === 'ARS') return rateData?.buy_bob_per_ars;
+    if (selectedCurrency === 'CLP') return rateData?.buy_bob_per_clp;
     return rateData?.buy_bob_per_usd;
   };
   const getSellRate = () => {
     if (useOfficial) {
-      if (selectedCurrency === 'COP' || selectedCurrency === 'EUR' || selectedCurrency === 'BRL') {
+      if (['COP', 'EUR', 'BRL', 'PEN', 'ARS', 'CLP'].includes(selectedCurrency)) {
         const usdBlue = Number(rateData?.sell_bob_per_usd);
         const usdOff = Number(rateData?.official_sell);
         const fiat = fiatBobPerUnit('sell');
@@ -292,15 +315,20 @@ function CurrencyCalculator() {
     if (selectedCurrency === 'EUR') return rateData?.sell_bob_per_eur;
     if (selectedCurrency === 'BRL') return rateData?.sell_bob_per_brl;
     if (selectedCurrency === 'COP') return rateData?.sell_bob_per_cop;
+    if (selectedCurrency === 'PEN') return rateData?.sell_bob_per_pen;
+    if (selectedCurrency === 'ARS') return rateData?.sell_bob_per_ars;
+    if (selectedCurrency === 'CLP') return rateData?.sell_bob_per_clp;
     return rateData?.sell_bob_per_usd;
   };
 
   const applyUsdPreset = useCallback((amount) => {
+    userTouchedRef.current = true;
     setUsdAmount(String(amount));
     setConvertFromBOB(false);
   }, []);
 
   const applyBobPreset = useCallback((amount) => {
+    userTouchedRef.current = true;
     setBobAmount(String(amount));
     setConvertFromBOB(true);
   }, []);
@@ -325,8 +353,8 @@ function CurrencyCalculator() {
 
   const es = language === 'es';
   const rate = getRate();
-  const rateDecimals = selectedCurrency === 'COP' ? 4 : selectedCurrency === 'BRL' ? 3 : 2;
-  const usdPresets = selectedCurrency === 'COP'
+  const rateDecimals = ['COP', 'ARS', 'CLP'].includes(selectedCurrency) ? 4 : selectedCurrency === 'BRL' ? 3 : 2;
+  const usdPresets = ['COP', 'ARS', 'CLP'].includes(selectedCurrency)
     ? [10000, 50000, 100000, 500000, 1000000]
     : [20, 50, 100, 500, 1000];
   const bobPresets = [500, 1000, 5000, 10000];

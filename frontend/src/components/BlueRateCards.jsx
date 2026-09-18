@@ -20,15 +20,15 @@ const CARD_FEE_OPTIONS = [
 function sideRate(data, currency, side) {
   const direct = Number(data?.[side]);
   if (Number.isFinite(direct) && direct > 0) return direct;
-  const field =
-    currency === 'BRL'
-      ? `${side}_bob_per_brl`
-      : currency === 'EUR'
-        ? `${side}_bob_per_eur`
-        : currency === 'COP'
-          ? `${side}_bob_per_cop`
-          : `${side}_bob_per_usd`;
-  const n = Number(data?.[field]);
+  const suffix = {
+    BRL: 'brl',
+    EUR: 'eur',
+    COP: 'cop',
+    PEN: 'pen',
+    ARS: 'ars',
+    CLP: 'clp',
+  }[currency] || 'usd';
+  const n = Number(data?.[`${side}_bob_per_${suffix}`]);
   return Number.isFinite(n) && n > 0 ? n : null;
 }
 
@@ -88,11 +88,11 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
             {language === 'es' ? 'BRL puede no estar disponible en Binance P2P en este momento.' : 'BRL may not be available on Binance P2P at this time.'}
           </div>
         )}
-        {currency === 'COP' && (
+        {['COP', 'PEN', 'ARS', 'CLP'].includes(currency) && (
           <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
             {language === 'es'
-              ? 'El peso colombiano se deriva de USDT/COP en vivo. Si no hay ofertas P2P, usamos el spot USDTCOP — nunca un tipo inventado.'
-              : 'Colombian peso is derived from live USDT/COP. If P2P is empty we use USDTCOP spot — never an invented rate.'}
+              ? `${currency} se deriva de USDT/${currency} en vivo. Si no hay ofertas P2P, usamos el spot — nunca un tipo inventado.`
+              : `${currency} is derived from live USDT/${currency}. If P2P is empty we use the spot ticker — never an invented rate.`}
           </div>
         )}
       </div>
@@ -127,11 +127,11 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
         </div>
         <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium min-h-[1.25rem]">
           {language === 'es' ? `Bs. por ${currency}` : `Bs. per ${currency}`}
-          {currency === 'COP' && Number.isFinite(Number(rate)) ? (
+          {['COP', 'ARS', 'CLP'].includes(currency) && Number.isFinite(Number(rate)) ? (
             <span className="block text-xs font-normal mt-0.5">
               {language === 'es'
-                ? `1.000 COP ≈ ${formatCopThousand(rate)} Bs`
-                : `1,000 COP ≈ ${formatCopThousand(rate)} Bs`}
+                ? `1.000 ${currency} ≈ ${formatCopThousand(rate)} Bs`
+                : `1,000 ${currency} ≈ ${formatCopThousand(rate)} Bs`}
             </span>
           ) : null}
         </div>

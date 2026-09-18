@@ -4,6 +4,7 @@ import Redirect from './components/Redirect';
 import MobileBottomNav from './components/MobileBottomNav';
 import RateAlertFab from './components/RateAlertFab';
 import { usePageTracking } from './hooks/usePageTracking';
+import { NEIGHBOR_FIATS } from './config/neighborFiats';
 
 // Lazy load routes for code splitting
 const Home = lazy(() => import('./pages/Home'));
@@ -39,6 +40,7 @@ const QueEsDolarBlue = lazy(() => import('./pages/QueEsDolarBlue'));
     const EuroToBoliviano = lazy(() => import('./pages/EuroToBoliviano'));
     const RealToBoliviano = lazy(() => import('./pages/RealToBoliviano'));
     const PesoToBoliviano = lazy(() => import('./pages/PesoToBoliviano'));
+    const NeighborFiatPage = lazy(() => import('./pages/NeighborFiatPage'));
     const BolivianBlue = lazy(() => import('./pages/BolivianBlue'));
     const BlueDolarBolivia = lazy(() => import('./pages/BlueDolarBolivia'));
     const BlueRateBolivia = lazy(() => import('./pages/BlueRateBolivia'));
@@ -163,6 +165,12 @@ function AppContent() {
           <Route path="/real-a-boliviano" element={<RealToBoliviano />} />
           <Route path="/peso-a-boliviano" element={<PesoToBoliviano />} />
           <Route path="/cop-a-boliviano" element={<Redirect to="/peso-a-boliviano" />} />
+          <Route path="/sol-a-boliviano" element={<NeighborFiatPage config={NEIGHBOR_FIATS.PEN} />} />
+          <Route path="/pen-a-boliviano" element={<Redirect to="/sol-a-boliviano" />} />
+          <Route path="/peso-argentino-a-boliviano" element={<NeighborFiatPage config={NEIGHBOR_FIATS.ARS} />} />
+          <Route path="/ars-a-boliviano" element={<Redirect to="/peso-argentino-a-boliviano" />} />
+          <Route path="/peso-chileno-a-boliviano" element={<NeighborFiatPage config={NEIGHBOR_FIATS.CLP} />} />
+          <Route path="/clp-a-boliviano" element={<Redirect to="/peso-chileno-a-boliviano" />} />
           
           {/* Unsubscribe page */}
           <Route path="/unsubscribe" element={<Unsubscribe />} />

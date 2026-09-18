@@ -7,22 +7,10 @@ import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Link } from 'react-router-dom';
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { useState, useEffect } from 'react';
 import { fetchBlueRate, fetchBlueHistory } from '../utils/api';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
-
-// Lazy load the calculator for better performance
-const CurrencyCalculator = lazy(() => import('../components/CurrencyCalculator'));
-
-const ComponentLoader = () => (
-  <div
-    className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-8 min-h-[20rem] flex items-center justify-center"
-    aria-busy="true"
-    aria-label="Loading calculator"
-  >
-    <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-blue-600" />
-  </div>
-);
+import CurrencyCalculator from '../components/CurrencyCalculator';
 
 function CalculatorStats({ language, currentRate, weekChangePct }) {
   const es = language === 'es';
@@ -335,9 +323,7 @@ function Calculator() {
 
         <CalculatorStats language={language} currentRate={currentRate} weekChangePct={weekChangePct} />
 
-        <Suspense fallback={<ComponentLoader />}>
-          <CurrencyCalculator />
-        </Suspense>
+        <CurrencyCalculator />
 
         {currentRate && (
           <RateTrioStrip

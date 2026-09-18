@@ -49,6 +49,44 @@ function downsampleByInterval(points, intervalMs) {
   return out;
 }
 
+const LAST_VALID_FIATS = [
+  { buy: 'buy_bob_per_eur', sell: 'sell_bob_per_eur', mid: 'mid_bob_per_eur', iso: 'eur_updated_at_iso', deriv: 'eur_derivation' },
+  { buy: 'buy_bob_per_cop', sell: 'sell_bob_per_cop', mid: 'mid_bob_per_cop', iso: 'cop_updated_at_iso', deriv: 'cop_derivation' },
+  { buy: 'buy_bob_per_pen', sell: 'sell_bob_per_pen', mid: 'mid_bob_per_pen', iso: 'pen_updated_at_iso', deriv: 'pen_derivation' },
+  { buy: 'buy_bob_per_ars', sell: 'sell_bob_per_ars', mid: 'mid_bob_per_ars', iso: 'ars_updated_at_iso', deriv: 'ars_derivation' },
+  { buy: 'buy_bob_per_clp', sell: 'sell_bob_per_clp', mid: 'mid_bob_per_clp', iso: 'clp_updated_at_iso', deriv: 'clp_derivation' },
+];
+
+async function attachLastValidFiats(data) {
+  let next = data;
+  for (const spec of LAST_VALID_FIATS) {
+    if (next[spec.buy] != null && next[spec.sell] != null) continue;
+    try {
+      const { data: last } = await supabase
+        .from('rates')
+        .select(`${spec.buy}, ${spec.sell}, t`)
+        .not(spec.buy, 'is', null)
+        .not(spec.sell, 'is', null)
+        .order('t', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (last?.[spec.buy] != null && last?.[spec.sell] != null) {
+        next = {
+          ...next,
+          [spec.buy]: last[spec.buy],
+          [spec.sell]: last[spec.sell],
+          [spec.mid]: (last[spec.buy] + last[spec.sell]) / 2,
+          [spec.iso]: last.t,
+          [spec.deriv]: 'usdt-cross-last-valid',
+        };
+      }
+    } catch (err) {
+      logger.warn(`Last-valid ${spec.buy} lookup failed:`, err?.message || err);
+    }
+  }
+  return next;
+}
+
 function withTimeout(promise, ms, message = 'Connection timed out. Please check your network.') {
   return Promise.race([
     promise,
@@ -177,11 +215,37 @@ export async function fetchBlueRate(currency = 'USD') {
                 fresh.buy_bob_per_cop != null && fresh.sell_bob_per_cop != null
                   ? (fresh.buy_bob_per_cop + fresh.sell_bob_per_cop) / 2
                   : data.mid_bob_per_cop,
+              buy_bob_per_pen: fresh.buy_bob_per_pen ?? data.buy_bob_per_pen,
+              sell_bob_per_pen: fresh.sell_bob_per_pen ?? data.sell_bob_per_pen,
+              mid_bob_per_pen:
+                fresh.buy_bob_per_pen != null && fresh.sell_bob_per_pen != null
+                  ? (fresh.buy_bob_per_pen + fresh.sell_bob_per_pen) / 2
+                  : data.mid_bob_per_pen,
+              buy_bob_per_ars: fresh.buy_bob_per_ars ?? data.buy_bob_per_ars,
+              sell_bob_per_ars: fresh.sell_bob_per_ars ?? data.sell_bob_per_ars,
+              mid_bob_per_ars:
+                fresh.buy_bob_per_ars != null && fresh.sell_bob_per_ars != null
+                  ? (fresh.buy_bob_per_ars + fresh.sell_bob_per_ars) / 2
+                  : data.mid_bob_per_ars,
+              buy_bob_per_clp: fresh.buy_bob_per_clp ?? data.buy_bob_per_clp,
+              sell_bob_per_clp: fresh.sell_bob_per_clp ?? data.sell_bob_per_clp,
+              mid_bob_per_clp:
+                fresh.buy_bob_per_clp != null && fresh.sell_bob_per_clp != null
+                  ? (fresh.buy_bob_per_clp + fresh.sell_bob_per_clp) / 2
+                  : data.mid_bob_per_clp,
               source: fresh.source ?? data.source,
               sources_used: fresh.sources_used ?? data.sources_used,
               source_count: fresh.source_count ?? data.source_count,
               eur_derivation: fresh.eur_derivation ?? data.eur_derivation,
               eur_updated_at_iso: fresh.eur_updated_at_iso ?? data.eur_updated_at_iso,
+              cop_derivation: fresh.cop_derivation ?? data.cop_derivation,
+              cop_updated_at_iso: fresh.cop_updated_at_iso ?? data.cop_updated_at_iso,
+              pen_derivation: fresh.pen_derivation ?? data.pen_derivation,
+              pen_updated_at_iso: fresh.pen_updated_at_iso ?? data.pen_updated_at_iso,
+              ars_derivation: fresh.ars_derivation ?? data.ars_derivation,
+              ars_updated_at_iso: fresh.ars_updated_at_iso ?? data.ars_updated_at_iso,
+              clp_derivation: fresh.clp_derivation ?? data.clp_derivation,
+              clp_updated_at_iso: fresh.clp_updated_at_iso ?? data.clp_updated_at_iso,
               generated_at_iso: fresh.generated_at_iso,
               is_stale: fresh.is_stale ?? false,
             };
@@ -192,55 +256,7 @@ export async function fetchBlueRate(currency = 'USD') {
       }
     }
     
-    if (data.buy_bob_per_eur == null || data.sell_bob_per_eur == null) {
-      try {
-        const { data: lastEur } = await supabase
-          .from('rates')
-          .select('buy_bob_per_eur, sell_bob_per_eur, t')
-          .not('buy_bob_per_eur', 'is', null)
-          .not('sell_bob_per_eur', 'is', null)
-          .order('t', { ascending: false })
-          .limit(1)
-          .maybeSingle();
-        if (lastEur?.buy_bob_per_eur != null && lastEur?.sell_bob_per_eur != null) {
-          data = {
-            ...data,
-            buy_bob_per_eur: lastEur.buy_bob_per_eur,
-            sell_bob_per_eur: lastEur.sell_bob_per_eur,
-            mid_bob_per_eur: (lastEur.buy_bob_per_eur + lastEur.sell_bob_per_eur) / 2,
-            eur_updated_at_iso: lastEur.t,
-            eur_derivation: 'usdt-cross-last-valid',
-          };
-        }
-      } catch (eurErr) {
-        logger.warn('Last-valid EUR lookup failed:', eurErr?.message || eurErr);
-      }
-    }
-
-    if (data.buy_bob_per_cop == null || data.sell_bob_per_cop == null) {
-      try {
-        const { data: lastCop } = await supabase
-          .from('rates')
-          .select('buy_bob_per_cop, sell_bob_per_cop, t')
-          .not('buy_bob_per_cop', 'is', null)
-          .not('sell_bob_per_cop', 'is', null)
-          .order('t', { ascending: false })
-          .limit(1)
-          .maybeSingle();
-        if (lastCop?.buy_bob_per_cop != null && lastCop?.sell_bob_per_cop != null) {
-          data = {
-            ...data,
-            buy_bob_per_cop: lastCop.buy_bob_per_cop,
-            sell_bob_per_cop: lastCop.sell_bob_per_cop,
-            mid_bob_per_cop: (lastCop.buy_bob_per_cop + lastCop.sell_bob_per_cop) / 2,
-            cop_updated_at_iso: lastCop.t,
-            cop_derivation: 'usdt-cross-last-valid',
-          };
-        }
-      } catch (copErr) {
-        logger.warn('Last-valid COP lookup failed:', copErr?.message || copErr);
-      }
-    }
+    data = await attachLastValidFiats(data);
 
     data = await fillMissingOfficial(data);
 
@@ -277,6 +293,27 @@ export async function fetchBlueRate(currency = 'USD') {
       buyField = 'buy_bob_per_cop';
       sellField = 'sell_bob_per_cop';
       midField = 'mid_bob_per_cop';
+    } else if (currency === 'PEN') {
+      buyRate = data.buy_bob_per_pen;
+      sellRate = data.sell_bob_per_pen;
+      midRate = data.mid_bob_per_pen;
+      buyField = 'buy_bob_per_pen';
+      sellField = 'sell_bob_per_pen';
+      midField = 'mid_bob_per_pen';
+    } else if (currency === 'ARS') {
+      buyRate = data.buy_bob_per_ars;
+      sellRate = data.sell_bob_per_ars;
+      midRate = data.mid_bob_per_ars;
+      buyField = 'buy_bob_per_ars';
+      sellField = 'sell_bob_per_ars';
+      midField = 'mid_bob_per_ars';
+    } else if (currency === 'CLP') {
+      buyRate = data.buy_bob_per_clp;
+      sellRate = data.sell_bob_per_clp;
+      midRate = data.mid_bob_per_clp;
+      buyField = 'buy_bob_per_clp';
+      sellField = 'sell_bob_per_clp';
+      midField = 'mid_bob_per_clp';
     } else {
       throw new Error(`Unsupported currency: ${currency}`);
     }
@@ -287,8 +324,8 @@ export async function fetchBlueRate(currency = 'USD') {
       if (currency === 'BRL') {
         throw new Error(`BRL rate data is not available. This may be because Binance P2P doesn't have sufficient BRL/USDT trading pairs at the moment. Please try USD or EUR instead.`);
       }
-      if (currency === 'COP') {
-        throw new Error(`COP rate data is not available yet. We derive it from live USDT/COP (Binance P2P or spot), not a fixed multiplier.`);
+      if (['COP', 'PEN', 'ARS', 'CLP'].includes(currency)) {
+        throw new Error(`${currency} rate data is not available yet. We derive it from live USDT/${currency} (Binance P2P or spot), not a fixed multiplier.`);
       }
       throw new Error(`Rate data not available for ${currency}. The backend may not have fetched this currency yet.`);
     }
@@ -343,10 +380,22 @@ export async function fetchBlueRate(currency = 'USD') {
       response.sell_bob_per_brl = data.sell_bob_per_brl ?? null;
       response.buy_bob_per_cop = data.buy_bob_per_cop ?? null;
       response.sell_bob_per_cop = data.sell_bob_per_cop ?? null;
+      response.buy_bob_per_pen = data.buy_bob_per_pen ?? null;
+      response.sell_bob_per_pen = data.sell_bob_per_pen ?? null;
+      response.buy_bob_per_ars = data.buy_bob_per_ars ?? null;
+      response.sell_bob_per_ars = data.sell_bob_per_ars ?? null;
+      response.buy_bob_per_clp = data.buy_bob_per_clp ?? null;
+      response.sell_bob_per_clp = data.sell_bob_per_clp ?? null;
       response.eur_derivation = data.eur_derivation || null;
       response.eur_updated_at_iso = data.eur_updated_at_iso || (data.buy_bob_per_eur != null ? data.t : null);
       response.cop_derivation = data.cop_derivation || null;
       response.cop_updated_at_iso = data.cop_updated_at_iso || (data.buy_bob_per_cop != null ? data.t : null);
+      response.pen_derivation = data.pen_derivation || null;
+      response.pen_updated_at_iso = data.pen_updated_at_iso || (data.buy_bob_per_pen != null ? data.t : null);
+      response.ars_derivation = data.ars_derivation || null;
+      response.ars_updated_at_iso = data.ars_updated_at_iso || (data.buy_bob_per_ars != null ? data.t : null);
+      response.clp_derivation = data.clp_derivation || null;
+      response.clp_updated_at_iso = data.clp_updated_at_iso || (data.buy_bob_per_clp != null ? data.t : null);
     } else if (currency === 'BRL') {
       response.buy_bob_per_brl = buyRate;
       response.sell_bob_per_brl = sellRate;
@@ -363,6 +412,25 @@ export async function fetchBlueRate(currency = 'USD') {
       response.mid_bob_per_cop = midRate;
       response.cop_derivation = data.cop_derivation || 'p2p-usdt';
       response.cop_updated_at_iso = data.cop_updated_at_iso || data.t;
+      const usdBuy = Number(data.buy);
+      const usdSell = Number(data.sell);
+      const offBuy = Number(data.official_buy);
+      const offSell = Number(data.official_sell);
+      if (usdBuy > 0 && Number.isFinite(buyRate) && Number.isFinite(offBuy) && offBuy >= 1) {
+        response.official_buy = offBuy * (buyRate / usdBuy);
+        response.official_sell =
+          usdSell > 0 && Number.isFinite(sellRate) && Number.isFinite(offSell) && offSell >= 1
+            ? offSell * (sellRate / usdSell)
+            : response.official_buy;
+        response.official_mid = (response.official_buy + response.official_sell) / 2;
+      }
+    } else if (currency === 'PEN' || currency === 'ARS' || currency === 'CLP') {
+      const key = currency.toLowerCase();
+      response[`buy_bob_per_${key}`] = buyRate;
+      response[`sell_bob_per_${key}`] = sellRate;
+      response[`mid_bob_per_${key}`] = midRate;
+      response[`${key}_derivation`] = data[`${key}_derivation`] || 'p2p-usdt';
+      response[`${key}_updated_at_iso`] = data[`${key}_updated_at_iso`] || data.t;
       const usdBuy = Number(data.buy);
       const usdSell = Number(data.sell);
       const offBuy = Number(data.official_buy);
@@ -447,6 +515,12 @@ export async function fetchBlueHistory(range = '1W', currency = 'USD') {
     selectFields = 't, buy_bob_per_eur, sell_bob_per_eur, mid_bob_per_eur';
   } else if (currency === 'COP') {
     selectFields = 't, buy_bob_per_cop, sell_bob_per_cop, mid_bob_per_cop';
+  } else if (currency === 'PEN') {
+    selectFields = 't, buy_bob_per_pen, sell_bob_per_pen, mid_bob_per_pen';
+  } else if (currency === 'ARS') {
+    selectFields = 't, buy_bob_per_ars, sell_bob_per_ars, mid_bob_per_ars';
+  } else if (currency === 'CLP') {
+    selectFields = 't, buy_bob_per_clp, sell_bob_per_clp, mid_bob_per_clp';
   }
   
   let points = [];
@@ -652,6 +726,27 @@ export async function fetchBlueHistory(range = '1W', currency = 'USD') {
         buy: point.buy_bob_per_cop,
         sell: point.sell_bob_per_cop,
         mid: point.mid_bob_per_cop
+      };
+    } else if (currency === 'PEN') {
+      return {
+        t: point.t,
+        buy: point.buy_bob_per_pen,
+        sell: point.sell_bob_per_pen,
+        mid: point.mid_bob_per_pen
+      };
+    } else if (currency === 'ARS') {
+      return {
+        t: point.t,
+        buy: point.buy_bob_per_ars,
+        sell: point.sell_bob_per_ars,
+        mid: point.mid_bob_per_ars
+      };
+    } else if (currency === 'CLP') {
+      return {
+        t: point.t,
+        buy: point.buy_bob_per_clp,
+        sell: point.sell_bob_per_clp,
+        mid: point.mid_bob_per_clp
       };
     }
     return point;

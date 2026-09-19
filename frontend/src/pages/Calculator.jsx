@@ -1,7 +1,6 @@
 import Header from '../components/Header';
 import BlueRateCards from '../components/BlueRateCards';
 import RateTrioStrip from '../components/RateTrioStrip';
-import BinanceBanner from '../components/BinanceBanner';
 import PageMeta from '../components/PageMeta';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
@@ -342,10 +341,6 @@ function Calculator() {
 
         <section className="hidden md:block">
           <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} />
-        </section>
-
-        <section>
-          <BinanceBanner placement="calculator" />
         </section>
 
         <section className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 p-4 sm:p-6">

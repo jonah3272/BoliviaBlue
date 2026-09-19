@@ -366,36 +366,36 @@ function CurrencyCalculator() {
         <div className={`${showHistory ? 'lg:col-span-2' : 'lg:col-span-3 w-full'}`}>
           <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm overflow-hidden">
             {/* Rate type + tools */}
-            <div className="flex items-center justify-between gap-2 px-4 py-3 border-b border-gray-100 dark:border-gray-700/80 bg-gray-50/80 dark:bg-gray-900/40">
+            <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2.5 border-b border-gray-100 dark:border-gray-700/80 bg-gray-50/80 dark:bg-gray-900/40">
               <div className="inline-flex rounded-lg border border-gray-200 dark:border-gray-600 p-0.5 bg-white dark:bg-gray-800">
                 <button
                   type="button"
                   onClick={() => setUseOfficial(false)}
-                  className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
+                  className={`px-2.5 py-1.5 rounded-md text-xs font-semibold transition-colors ${
                     !useOfficial
                       ? 'bg-sky-500 text-white'
                       : 'text-gray-600 dark:text-gray-400'
                   }`}
                 >
-                  {t('unofficialRates')}
+                  {es ? 'Blue' : 'Blue'}
                 </button>
                 <button
                   type="button"
                   onClick={() => setUseOfficial(true)}
-                  className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
+                  className={`px-2.5 py-1.5 rounded-md text-xs font-semibold transition-colors ${
                     useOfficial
                       ? 'bg-sky-500 text-white'
                       : 'text-gray-600 dark:text-gray-400'
                   }`}
                 >
-                  {t('officialRates')}
+                  {es ? 'Oficial' : 'Official'}
                 </button>
               </div>
-              <div className="flex gap-1.5">
+              <div className="flex gap-1">
                 <button
                   type="button"
                   onClick={() => setComparisonMode(!comparisonMode)}
-                  className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  className={`px-2 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                     comparisonMode
                       ? 'bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300'
                       : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -406,7 +406,7 @@ function CurrencyCalculator() {
                 <button
                   type="button"
                   onClick={() => setShowHistory(!showHistory)}
-                  className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  className={`px-2 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                     showHistory
                       ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
                       : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -419,8 +419,8 @@ function CurrencyCalculator() {
             </div>
 
             <div className="p-4 sm:p-6 space-y-4">
-              {/* Currency pills */}
-              <div className="flex flex-wrap gap-1.5">
+              {/* Currency pills — scroll instead of wrapping into a messy grid */}
+              <div className="flex gap-1.5 overflow-x-auto hide-scrollbar -mx-1 px-1 pb-0.5">
                 {Object.entries(currencies).map(([code, data]) => (
                   <button
                     key={code}
@@ -432,7 +432,7 @@ function CurrencyCalculator() {
                         trackCalculatorCurrencySwitch(prevCurrency, code);
                       }
                     }}
-                    className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-semibold transition-colors touch-manipulation ${
+                    className={`inline-flex shrink-0 items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-semibold transition-colors touch-manipulation ${
                       selectedCurrency === code
                         ? 'bg-sky-500 text-white'
                         : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
@@ -549,47 +549,48 @@ function CurrencyCalculator() {
                 )}
               </div>
 
-              {/* Result + copy */}
+              {/* Result + copy + one paid CTA */}
               {bobAmount && usdAmount && !isLoading && (
-                <div className="flex items-center justify-between gap-3 rounded-xl border border-emerald-200 dark:border-emerald-800/50 bg-emerald-50/80 dark:bg-emerald-950/20 px-4 py-3">
-                  <p className="text-sm font-medium text-gray-800 dark:text-gray-100 leading-snug">
-                    {convertFromBOB ? (
-                      <>
-                        <span className="font-mono tabular-nums">{bobAmount} Bs</span>
-                        {' → '}
-                        <span className="font-mono tabular-nums font-bold text-emerald-700 dark:text-emerald-300">
-                          {currencies[selectedCurrency].symbol}{usdAmount} {selectedCurrency}
-                        </span>
-                      </>
-                    ) : (
-                      <>
-                        <span className="font-mono tabular-nums">
-                          {currencies[selectedCurrency].symbol}{usdAmount} {selectedCurrency}
-                        </span>
-                        {' → '}
-                        <span className="font-mono tabular-nums font-bold text-emerald-700 dark:text-emerald-300">
-                          {bobAmount} Bs
-                        </span>
-                      </>
-                    )}
-                  </p>
-                  <button
-                    type="button"
-                    onClick={copyResult}
-                    className="shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 touch-manipulation"
-                  >
-                    {copied ? (es ? 'Copiado' : 'Copied') : (es ? 'Copiar' : 'Copy')}
-                  </button>
+                <div className="rounded-xl border border-emerald-200 dark:border-emerald-800/50 bg-emerald-50/80 dark:bg-emerald-950/20 px-3 py-3 sm:px-4 space-y-2.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="min-w-0 text-sm font-medium text-gray-800 dark:text-gray-100 leading-snug break-words">
+                      {convertFromBOB ? (
+                        <>
+                          <span className="font-mono tabular-nums">{bobAmount} Bs</span>
+                          {' → '}
+                          <span className="font-mono tabular-nums font-bold text-emerald-700 dark:text-emerald-300">
+                            {currencies[selectedCurrency].symbol}{usdAmount} {selectedCurrency}
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="font-mono tabular-nums">
+                            {currencies[selectedCurrency].symbol}{usdAmount} {selectedCurrency}
+                          </span>
+                          {' → '}
+                          <span className="font-mono tabular-nums font-bold text-emerald-700 dark:text-emerald-300">
+                            {bobAmount} Bs
+                          </span>
+                        </>
+                      )}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={copyResult}
+                      className="shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 touch-manipulation"
+                    >
+                      {copied ? (es ? 'Copiado' : 'Copied') : (es ? 'Copiar' : 'Copy')}
+                    </button>
+                  </div>
+                  {!useOfficial && (
+                    <BinanceButton
+                      placement="calculator_result"
+                      className="h-11 w-full text-sm"
+                    >
+                      {es ? 'Comprá en Binance' : 'Buy on Binance'}
+                    </BinanceButton>
+                  )}
                 </div>
-              )}
-
-              {bobAmount && usdAmount && !isLoading && !useOfficial && (
-                <BinanceButton
-                  placement="calculator_result"
-                  className="h-12 w-full justify-center text-sm sm:text-base"
-                >
-                  {es ? 'Comprá este monto en Binance' : 'Buy this amount on Binance'}
-                </BinanceButton>
               )}
 
               {comparisonMode && !isLoading && rateData && (

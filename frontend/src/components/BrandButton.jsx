@@ -29,7 +29,7 @@ export function BinanceButton({
           link_label: 'binance_referral',
         })
       }
-      className={`inline-flex items-center gap-2 rounded-lg font-bold whitespace-nowrap relative overflow-hidden group shadow-md hover:shadow-lg transition-shadow duration-200 ${sizeClasses[size]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-lg font-bold relative overflow-hidden group shadow-md hover:shadow-lg transition-shadow duration-200 ${sizeClasses[size]} ${className}`}
       style={{
         background: 'linear-gradient(135deg, #F3BA2F 0%, #FCD535 100%)',
         color: '#000000',
@@ -70,7 +70,7 @@ export function AirtmButton({
           link_label: 'airtm_referral',
         })
       }
-      className={`inline-flex items-center gap-2 rounded-lg font-bold whitespace-nowrap relative overflow-hidden group shadow-md hover:shadow-lg transition-shadow duration-200 ${sizeClasses[size]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-lg font-bold relative overflow-hidden group shadow-md hover:shadow-lg transition-shadow duration-200 ${sizeClasses[size]} ${className}`}
       style={{
         background: 'linear-gradient(135deg, #00D9FF 0%, #00A8CC 100%)',
         color: '#FFFFFF',

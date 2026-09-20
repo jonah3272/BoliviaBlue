@@ -318,13 +318,20 @@ function buildStaticJsonLd(routePath, routeName, pageName, pageDescription, extr
 /** Shell HTML for homepage (/) - Spanish — one rate snapshot, no duplicate "today" figures */
 const SHELL_HOME = `
 <main class="max-w-7xl mx-auto px-4 py-8" data-seo-shell="home">
-  <div class="text-center space-y-3 mb-8">
-    <h1 class="text-3xl sm:text-5xl font-bold text-gray-900">Dólar blue hoy</h1>
+  <div class="text-center space-y-4 mb-8">
+    <h1 class="text-3xl sm:text-5xl font-bold text-gray-900">Dólar Blue Bolivia Hoy</h1>
     <p class="text-2xl sm:text-3xl font-bold text-gray-900 tabular-nums">
       Compra <span data-live-buy>—</span> · Venta <span data-live-sell>—</span>
     </p>
-    <p class="text-base text-gray-700">
-      100 USD ≈ <span data-live-usd100>—</span> Bs · <time data-live-when datetime="">—</time>
+    <p class="text-base sm:text-lg text-gray-700 max-w-2xl mx-auto" data-seo-rate-sentence>
+      Precio del dólar hoy en Bolivia (blue / paralelo / mercado negro de referencia P2P):
+      Compra = Bs para obtener 1 USD en P2P (USDT). Venta = Bs al vender 1 USD.
+      No es ventanilla en efectivo ni el tipo oficial del BCB.
+      Lectura: <time data-live-when datetime="">—</time> (hora de Bolivia).
+    </p>
+    <p class="text-lg font-semibold text-gray-800">
+      100 USD ≈ <span data-live-usd100>—</span> Bs (compra P2P).
+      <a href="/calculadora" class="text-blue-600 font-medium">Calculadora</a>
     </p>
     <nav class="flex flex-wrap justify-center gap-3 mt-4" aria-label="Enlaces principales">
       <a href="/dolar-blue-hoy" class="text-blue-600 font-medium">Dólar blue hoy</a>
@@ -426,7 +433,7 @@ const ROUTES = {
 <main class="max-w-7xl mx-auto px-4 py-8" data-seo-shell="cuanto-esta-dolar-bolivia">
   <div class="text-center space-y-4 mb-8">
     <h1 class="text-3xl sm:text-5xl font-bold text-gray-900">¿Cuánto Está el Dólar en Bolivia?</h1>
-    <p class="text-base text-gray-600">Compra <span data-live-buy>—</span> · venta <span data-live-sell>—</span> Bs. 100 USD ≈ <span data-live-usd100>—</span> Bs.</p>
+    <p class="text-base text-gray-600">Precio del dólar hoy (blue / paralelo / mercado negro de referencia P2P): compra <span data-live-buy>—</span> · venta <span data-live-sell>—</span> Bs. 100 USD ≈ <span data-live-usd100>—</span> Bs. No es ventanilla ni BCB. Usá la calculadora para cualquier monto.</p>
     <nav class="flex flex-wrap justify-center gap-3 mt-4" aria-label="Enlaces relacionados">
       <a href="/" class="text-blue-600 font-medium">Inicio</a>
       <a href="/dolar-blue-hoy" class="text-blue-600 font-medium">Dólar blue hoy</a>
@@ -774,7 +781,7 @@ const ROUTES = {
 <main class="max-w-3xl mx-auto px-4 py-8" data-seo-shell="prensa">
   <div class="text-center space-y-4 mb-8">
     <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">Kit de prensa y backlinks</h1>
-    <p class="text-base text-gray-700 max-w-2xl mx-auto">Hoy: compra <span data-live-buy>—</span> · venta <span data-live-sell>—</span> Bs por USD. <time data-live-when datetime="">—</time>. 100 USD ≈ <span data-live-usd100>—</span> Bs.</p>
+    <p class="text-base text-gray-700 max-w-2xl mx-auto">Cita lista para medios: el dólar blue (paralelo) en Bolivia cotiza hoy compra <span data-live-buy>—</span> · venta <span data-live-sell>—</span> Bs por USD. Lectura: <time data-live-when datetime="">—</time>. 100 USD ≈ <span data-live-usd100>—</span> Bs (compra P2P, no efectivo ni BCB).</p>
     <p class="text-sm text-gray-600 max-w-2xl mx-auto">CSV 30 días: <a href="/api/historical-data.csv?range=30d" class="text-blue-600 font-medium">descargar CSV</a>. Metodología: <a href="/fuente-de-datos" class="text-blue-600 font-medium">fuente de datos</a>. Widget: <a href="/widget" class="text-blue-600 font-medium">embed</a>. Iframe: <a href="/embed.html" class="text-blue-600 font-medium">embed.html</a>.</p>
     <nav class="flex flex-wrap justify-center gap-3 mt-4" aria-label="Enlaces relacionados">
       <a href="/" class="text-blue-600 font-medium">Inicio</a>
@@ -794,7 +801,7 @@ const ROUTES = {
     shell: `
 <main class="max-w-3xl mx-auto px-4 py-8" data-seo-shell="guia-dinero-bolivia">
   <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">Guía de dinero para viajeros en Bolivia (2026)</h1>
-  <p class="text-base text-gray-700 mt-3">Dólar blue hoy: compra <span data-live-buy>—</span> · venta <span data-live-sell>—</span> Bs. <time data-live-when datetime="">—</time>. 100 USD ≈ <span data-live-usd100>—</span> Bs.</p>
+  <p class="text-base text-gray-700 mt-3">Dólar blue hoy: compra <span data-live-buy>—</span> · venta <span data-live-sell>—</span> Bs por USD. Lectura: <time data-live-when datetime="">—</time>. 100 USD ≈ <span data-live-usd100>—</span> Bs (compra P2P, no ventanilla).</p>
   <p class="text-sm text-gray-600 mt-2">Efectivo USD impecable, tarjetas como respaldo, cajeros que no pagan el paralelo, y Binance P2P si te quedás semanas. El oficial ya no está clavado en 6,96.</p>
   <nav class="flex flex-wrap gap-3 mt-4" aria-label="Enlaces">
     <a href="/" class="text-blue-600 font-medium">Inicio</a>
@@ -813,7 +820,7 @@ const ROUTES = {
     shell: `
 <main class="max-w-3xl mx-auto px-4 py-8" data-seo-shell="bolivia-money-guide">
   <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">The Bolivia money guide for travelers (2026)</h1>
-  <p class="text-base text-gray-700 mt-3">Blue dollar today: buy <span data-live-buy>—</span> · sell <span data-live-sell>—</span> Bs. <time data-live-when datetime="">—</time>. 100 USD ≈ <span data-live-usd100>—</span> Bs.</p>
+  <p class="text-base text-gray-700 mt-3">Blue dollar today: buy <span data-live-buy>—</span> · sell <span data-live-sell>—</span> Bs per USD. Reading: <time data-live-when datetime="">—</time>. 100 USD ≈ <span data-live-usd100>—</span> Bs (P2P buy, not a cash desk).</p>
   <p class="text-sm text-gray-600 mt-2">Pristine USD cash, cards as backup, ATMs that do not pay the parallel rate, and Binance P2P if you stay weeks. The official rate is no longer stuck at 6.96.</p>
   <nav class="flex flex-wrap gap-3 mt-4" aria-label="Links">
     <a href="/" class="text-blue-600 font-medium">Home</a>

@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
 import Redirect from './components/Redirect';
 import MobileBottomNav from './components/MobileBottomNav';
@@ -78,8 +78,6 @@ function LoadingFallback() {
 function AppContent() {
   // Track page views, scroll depth, and time on page
   usePageTracking();
-  const { pathname } = useLocation();
-  const showAlertFab = pathname !== '/' && pathname !== '/calculadora';
   
   return (
     <>
@@ -185,7 +183,7 @@ function AppContent() {
         </Routes>
       </Suspense>
       <MobileBottomNav />
-      {showAlertFab && <RateAlertFab />}
+      <RateAlertFab />
     </>
   );
 }

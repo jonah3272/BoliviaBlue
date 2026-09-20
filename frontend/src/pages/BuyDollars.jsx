@@ -439,7 +439,7 @@ function BuyDollars() {
         </section>
       </main>
 
-      <div className="fixed bottom-[calc(3.75rem+env(safe-area-inset-bottom))] inset-x-0 z-[25] p-3 pr-20 bg-white/95 dark:bg-gray-900/95 border-t border-gray-200 dark:border-gray-700 sm:hidden backdrop-blur">
+      <div className="fixed bottom-[calc(3.5rem+env(safe-area-inset-bottom))] inset-x-0 z-40 p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] bg-white/95 dark:bg-gray-900/95 border-t border-gray-200 dark:border-gray-700 sm:hidden backdrop-blur">
         <BinanceButton
           placement="buy_page_sticky"
           className="flex w-full min-h-[44px] justify-center text-sm"

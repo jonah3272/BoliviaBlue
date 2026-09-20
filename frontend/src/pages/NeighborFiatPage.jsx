@@ -280,11 +280,11 @@ export default function NeighborFiatPage({ config }) {
             : null}
           footnote={language === 'es'
             ? (config.thousandScale
-              ? `1.000 ${config.code} ≈ ${thousandBuy || '—'} Bs. P2P, no el banco.`
-              : 'Mediana P2P vía USDT. No es el banco.')
+              ? `Compra: Bs para obtener 1 ${config.code} vía USDT (~${thousandBuy || '—'} Bs por 1.000 ${config.code}). Venta: Bs al vender 1 ${config.code}. Referencia P2P, no ventanilla.`
+              : `Compra: Bs para obtener 1 ${config.code} vía USDT. Venta: Bs al vender 1 ${config.code}. Referencia P2P, no ventanilla.`)
             : (config.thousandScale
-              ? `1,000 ${config.code} ≈ ${thousandBuy || '—'} Bs. P2P, not the bank.`
-              : 'P2P median via USDT. Not the bank.')}
+              ? `Buy: Bs to obtain 1 ${config.code} via USDT (~${thousandBuy || '—'} Bs per 1,000 ${config.code}). Sell: Bs when selling 1 ${config.code}. P2P reference, not a cash desk.`
+              : `Buy: Bs to obtain 1 ${config.code} via USDT. Sell: Bs when selling 1 ${config.code}. P2P reference, not a cash desk.`)}
         />
 
         <section className="min-h-[12rem] sm:min-h-[11rem]">

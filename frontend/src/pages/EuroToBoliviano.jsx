@@ -264,8 +264,8 @@ function EuroToBoliviano() {
             ? (language === 'es' ? 'No se pudo cargar la cotización. Reintentando…' : 'Could not load the quote. Retrying…')
             : null}
           footnote={language === 'es'
-            ? 'Mediana P2P vía USDT. No es el banco.'
-            : 'P2P median via USDT. Not the bank.'}
+            ? 'Compra: Bs para obtener 1 EUR vía USDT. Venta: Bs al vender 1 EUR. Referencia P2P, no ventanilla.'
+            : 'Buy: Bs to obtain 1 EUR via USDT. Sell: Bs when selling 1 EUR. P2P reference, not a cash desk.'}
         />
 
         {/* Binance Banner */}

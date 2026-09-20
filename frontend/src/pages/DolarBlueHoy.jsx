@@ -79,6 +79,13 @@ function DolarBlueHoy() {
   const faqSchema = getDolarBlueHoyFAQSchema(currentRate, language);
   const datasetSchema = getLiveRateDataset(currentRate, language, '/dolar-blue-hoy');
 
+  const today = new Date().toLocaleDateString(language === 'es' ? 'es-BO' : 'en-US', { 
+    weekday: 'long', 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  });
+
   const liveSeo = buildLiveRateSeoMeta({
     ...ratesFromBluePayload(currentRate),
     language,
@@ -113,29 +120,41 @@ function DolarBlueHoy() {
               ]}
         />
 
-        <div className="text-center mb-3">
-          <h1 className="text-xl sm:text-4xl font-bold text-gray-900 dark:text-white leading-tight">
-            {language === 'es' ? 'Dólar blue hoy' : 'Blue dollar today'}
+        <div className="text-center mb-4">
+          <div className="text-sm text-gray-500 dark:text-gray-400 mb-2 hidden sm:block">
+            {language === 'es' ? 'Hoy es' : 'Today is'} {today}
+          </div>
+          <h1 className="text-xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2 leading-tight">
+            <span className="md:hidden">
+              {language === 'es' ? 'Dólar Blue Hoy' : 'Blue Dollar Today'}
+              {currentRate?.buy_bob_per_usd != null && (
+                <span className="block text-lg font-mono text-sky-600 dark:text-sky-400 mt-1">
+                  {currentRate.buy_bob_per_usd.toFixed(2)} / {currentRate.sell_bob_per_usd?.toFixed(2) || '—'} Bs
+                </span>
+              )}
+            </span>
+            <span className="hidden md:inline">
+              {language === 'es'
+                ? `Dólar Blue Hoy Bolivia: compra ${currentRate?.buy_bob_per_usd?.toFixed(2) || '—'} · venta ${currentRate?.sell_bob_per_usd?.toFixed(2) || '—'}`
+                : `Blue Dollar Today Bolivia: buy ${currentRate?.buy_bob_per_usd?.toFixed(2) || '—'} · sell ${currentRate?.sell_bob_per_usd?.toFixed(2) || '—'}`}
+            </span>
           </h1>
-          {currentRate?.updated_at_iso && (
-            <p className="mt-1 text-[11px] sm:text-sm text-gray-500 dark:text-gray-400 tabular-nums">
-              P2P ·{' '}
-              <time dateTime={currentRate.updated_at_iso}>
-                {formatDateTime(currentRate.updated_at_iso, language === 'es' ? 'es-BO' : 'en-US')}
-              </time>
-            </p>
-          )}
+          <p className="text-base text-gray-600 dark:text-gray-400 mb-1 hidden md:block">
+            {language === 'es'
+              ? 'Foto del día con fecha: compra/venta blue de hoy, máximo/mínimo del gráfico y comparación vs BCB. Para el monitor continuo ve a paralelo EN VIVO; para convertir un monto, a ¿Cuánto está?'
+              : 'Dated daily snapshot: today’s blue buy/sell, chart high/low, and vs BCB. For continuous monitoring go to parallel LIVE; to convert an amount, How Much Is the Dollar?'}
+          </p>
+          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">
+            {language === 'es' ? 'Última actualización' : 'Last updated'}: {currentRate?.updated_at_iso
+              ? formatDateTime(currentRate.updated_at_iso, language === 'es' ? 'es-BO' : 'en-US')
+              : lastUpdated.toLocaleTimeString(language === 'es' ? 'es-BO' : 'en-US', { hour: '2-digit', minute: '2-digit' })}
+          </p>
         </div>
 
+        {/* Rate Cards — first on mobile */}
         <section>
-          <BlueRateCards
-            showOfficial={showOfficial}
-            setShowOfficial={setShowOfficial}
-            showTimestampInCards={false}
-            showCrossSourceBadge={false}
-            compact
-          />
-          <div className="hidden md:block mt-4">
+          <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} showCrossSourceBadge={false} />
+          <div className="mt-4">
             <RateTrioStrip
               buy={currentRate?.buy_bob_per_usd}
               sell={currentRate?.sell_bob_per_usd}
@@ -152,10 +171,10 @@ function DolarBlueHoy() {
             updatedAt={currentRate?.updated_at_iso}
             sourcesUsed={currentRate?.sources_used}
             citePath="/dolar-blue-hoy"
-            className="hidden md:block mt-4"
+            className="mt-4"
           />
           <CiteShareBar
-            className="hidden md:flex mt-3"
+            className="mt-3"
             language={language}
             liveLine={buildRateAnswerParagraph({
               buy: currentRate?.buy_bob_per_usd,
@@ -192,7 +211,8 @@ function DolarBlueHoy() {
           <BinanceBanner />
         </section>
 
-        <section className="hidden md:block bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-lg p-4 sm:p-8 md:p-10">
+        {/* Main Content */}
+        <section className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-lg p-4 sm:p-8 md:p-10">
           <div className="max-w-4xl mx-auto">
             <div className="prose prose-lg dark:prose-invert max-w-none">
               <h2 className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">

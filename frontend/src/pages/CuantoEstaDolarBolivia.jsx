@@ -183,8 +183,8 @@ function CuantoEstaDolarBolivia() {
         </h1>
         <p className="text-center text-base text-gray-600 dark:text-gray-400 mb-1">
           {language === 'es'
-            ? 'Compra y venta blue abajo. P2P, no el banco.'
-            : 'Buy and sell below. P2P, not the bank.'}
+            ? 'Respuesta directa al “¿cuánto está?” y al precio del dólar hoy: compra/venta blue (paralelo / mercado negro de referencia P2P) abajo, conversiones comunes ($1, $100, $1000) y calculadora. No es el monitor EN VIVO ni la guía de cómo cotizar.'
+            : 'Direct answer to “how much is it?”: blue buy/sell below, common conversions ($1, $100, $1000), and a calculator for any amount. Not the LIVE monitor or the how-to-quote guide.'}
         </p>
         <p className="text-center text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-3 sm:mb-6">
           {language === 'es' ? 'Última actualización' : 'Last updated'}: {currentRate?.updated_at_iso

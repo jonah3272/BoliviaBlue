@@ -261,8 +261,8 @@ function PesoToBoliviano() {
             ? (language === 'es' ? 'No se pudo cargar la cotización. Reintentando…' : 'Could not load the quote. Retrying…')
             : null}
           footnote={language === 'es'
-            ? `1.000 COP ≈ ${thousandBuy || '—'} Bs. P2P, no el banco.`
-            : `1,000 COP ≈ ${thousandBuy || '—'} Bs. P2P, not the bank.`}
+            ? `Compra: Bs para obtener 1 COP vía USDT (~${thousandBuy || '—'} Bs por 1.000 COP). Venta: Bs al vender 1 COP. Referencia P2P, no ventanilla.`
+            : `Buy: Bs to obtain 1 COP via USDT (~${thousandBuy || '—'} Bs per 1,000 COP). Sell: Bs when selling 1 COP. P2P reference, not a cash desk.`}
         />
 
         <section className="min-h-[12rem] sm:min-h-[11rem]">

@@ -203,7 +203,6 @@ export function loadAdSense(publisherId) {
     return;
   }
 
-  const startChecks = () => {
   let checkCount = 0;
 
   const checkAndLoad = () => {
@@ -245,27 +244,6 @@ export function loadAdSense(publisherId) {
   // Start checking
   console.log('[AdSense] 🚀 Starting content validation...');
   checkAndLoad();
-  };
-
-  // Homepage first screen is the product. Wait for scroll (or 8s) so Auto Ads
-  // land below the live rate instead of on top of it. Other routes load as before.
-  if (window.location.pathname === '/') {
-    let released = false;
-    const release = () => {
-      if (released) return;
-      released = true;
-      window.removeEventListener('scroll', onScroll);
-      startChecks();
-    };
-    const onScroll = () => {
-      if (window.scrollY > 120) release();
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    setTimeout(release, 8000);
-    return;
-  }
-
-  startChecks();
 }
 
 /**

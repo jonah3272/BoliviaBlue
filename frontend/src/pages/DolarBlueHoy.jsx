@@ -158,7 +158,7 @@ function DolarBlueHoy() {
             className="hidden md:flex mt-3"
             language={language}
             liveLine={buildRateAnswerParagraph({
-              buy: currentRate?.buy_bob_per_usd}
+              buy: currentRate?.buy_bob_per_usd,
               sell: currentRate?.sell_bob_per_usd,
               updatedAt: currentRate?.updated_at_iso,
               sourcesUsed: currentRate?.sources_used,

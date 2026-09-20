@@ -448,7 +448,7 @@ function CurrencyCalculator() {
               <div className="space-y-3">
                 <div>
                   <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
-                    {t('bolivianos')} (BOB)
+                    {t('bolivianos')}
                   </label>
                   <div className="relative">
                     <input

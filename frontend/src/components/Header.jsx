@@ -13,7 +13,7 @@ function Header() {
   const language = languageContext?.language || 'es';
 
   return (
-    <header className="sticky top-0 z-40 border-b border-gray-200/80 dark:border-gray-700/80 bg-white dark:bg-gray-800 md:bg-white/90 md:dark:bg-gray-800/90 md:backdrop-blur-md pt-[env(safe-area-inset-top,0px)]">
+    <header className="relative md:sticky md:top-0 z-40 border-b border-gray-200/80 dark:border-gray-700/80 bg-white dark:bg-gray-800 md:bg-white/90 md:dark:bg-gray-800/90 md:backdrop-blur-md pt-[env(safe-area-inset-top,0px)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3">
         <div className="flex items-center justify-between gap-3">
           <Link to="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity min-w-0 flex-1">
@@ -43,8 +43,7 @@ function Header() {
             </div>
           </Link>
 
-          <div className="md:hidden flex items-center gap-1 flex-shrink-0">
-            <CurrencyToggle />
+          <div className="md:hidden flex items-center flex-shrink-0">
             <MobileMenu />
           </div>
 

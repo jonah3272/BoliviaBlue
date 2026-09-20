@@ -5,8 +5,6 @@ import RateBinanceCta from '../components/RateBinanceCta';
 import RateTrioStrip from '../components/RateTrioStrip';
 import TravelersGuideTeaser from '../components/TravelersGuideTeaser';
 import AiCitationBlock from '../components/AiCitationBlock';
-import { PRIMARY_RATE_URL } from '../config/seo';
-import { travelGuidePath } from '../config/travelGuide';
 import NewsletterSignup from '../components/NewsletterSignup';
 import SocialShare from '../components/SocialShare';
 import LazyErrorBoundary from '../components/LazyErrorBoundary';
@@ -27,7 +25,7 @@ import { articlesEs, articlesEn } from '../data/blogArticles';
 import { formatDateTime } from '../utils/formatters';
 import { useRate } from '../contexts/RateContext';
 import { getWebPage, getBreadcrumbList, getDataFeedItem, getLiveRateDataset } from '../utils/seoSchema';
-import { buildLiveRateSeoMeta, ratesFromBluePayload, liveBobParts, fmtLiveBob } from '../utils/seoRateMeta';
+import { buildLiveRateSeoMeta, ratesFromBluePayload, fmtLiveBob } from '../utils/seoRateMeta';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import AdSenseAutoAds from '../components/AdSenseAutoAds';
 
@@ -52,9 +50,8 @@ function Home() {
   const [showOfficial, setShowOfficial] = useState(false);
   const { rateData: contextRate, error: rateError } = useRate();
   const [currentRate, setCurrentRate] = useState(null);
-  const [isNewsExpanded, setIsNewsExpanded] = useState(false);
-  const [isArticlesExpanded, setIsArticlesExpanded] = useState(false);
   const [quickUsd, setQuickUsd] = useState('100');
+  const [heroMode, setHeroMode] = useState('blue');
 
   const midRate = useMemo(() => {
     const buy = currentRate?.buy ?? currentRate?.buy_bob_per_usd;
@@ -337,7 +334,6 @@ function Home() {
     language,
     page: 'home',
   });
-  const live = liveBobParts(currentRate);
   
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
@@ -360,36 +356,18 @@ function Home() {
       <AdSenseAutoAds />
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-5 sm:py-8 md:py-10 space-y-6 sm:space-y-8 md:space-y-10 pb-[max(5rem,calc(3.5rem+env(safe-area-inset-bottom)))] md:pb-[max(1.5rem,env(safe-area-inset-bottom))]">
-        {/* Mobile: compact title + rate + meaning + $100 on the first screen */}
+      <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-3 sm:py-8 md:py-10 space-y-5 sm:space-y-8 md:space-y-10 pb-[max(5rem,calc(3.5rem+env(safe-area-inset-bottom)))] md:pb-[max(1.5rem,env(safe-area-inset-bottom))]">
         <div className="md:hidden text-center">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white leading-tight">
-            {language === 'es' ? 'Dólar Blue Bolivia Hoy' : 'Bolivia Blue Dollar Today'}
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white tracking-tight">
+            {language === 'es' ? 'Dólar blue hoy' : 'Blue dollar today'}
           </h1>
-          {live.buyStr && live.sellStr && (
-            <p className="mt-2 text-2xl font-bold tabular-nums text-gray-900 dark:text-white">
-              {language === 'es' ? 'Compra' : 'Buy'} {live.buyStr}{' '}
-              · {language === 'es' ? 'Venta' : 'Sell'} {live.sellStr}
-            </p>
-          )}
-          <p className="mt-2 text-xs text-gray-600 dark:text-gray-400 max-w-sm mx-auto">
-            {language === 'es'
-              ? 'Precio del dólar hoy (blue / paralelo / mercado negro de referencia P2P). Compra: Bs para obtener 1 USD. Venta: Bs al vender 1 USD. No es ventanilla ni BCB.'
-              : 'Dollar price today (blue / parallel / black-market P2P reference). Buy: Bs to obtain 1 USD. Sell: Bs when selling 1 USD. Not a cash desk and not the BCB rate.'}
-          </p>
-          {live.times(100) && (
-            <p className="mt-2 text-sm font-semibold text-gray-800 dark:text-gray-200">
-              100 USD ≈ {live.times(100)} Bs
-            </p>
-          )}
           {currentRate?.updated_at_iso && (
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              {language === 'es' ? 'Lectura P2P' : 'P2P reading'}:{' '}
+            <p className="mt-1 text-[11px] text-gray-500 dark:text-gray-400 tabular-nums">
+              P2P ·{' '}
               <time dateTime={currentRate.updated_at_iso}>
                 {formatDateTime(currentRate.updated_at_iso, language === 'es' ? 'es-BO' : 'en-US')}
               </time>
-              {language === 'es' ? ' (hora de Bolivia)' : ' (Bolivia time)'}
-              {currentRate?.is_stale ? (language === 'es' ? ' · dato desactualizado' : ' · stale reading') : ''}
+              {currentRate?.is_stale ? (language === 'es' ? ' · desactualizado' : ' · stale') : ''}
             </p>
           )}
           {rateError && !currentRate && (
@@ -397,32 +375,6 @@ function Home() {
               {language === 'es' ? 'No hay una lectura nueva. Reintentando…' : 'No new reading yet. Retrying…'}
             </p>
           )}
-          <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
-            <Link
-              to={PRIMARY_RATE_URL}
-              className="inline-flex h-10 items-center justify-center rounded-xl bg-sky-500 px-3.5 text-xs font-bold text-white"
-            >
-              {language === 'es' ? 'Cotización hoy' : 'Today’s quote'}
-            </Link>
-            <Link
-              to="/calculadora"
-              className="inline-flex h-10 items-center justify-center rounded-xl border border-gray-300 dark:border-gray-600 bg-white/80 dark:bg-gray-800/80 px-3.5 text-xs font-semibold text-gray-800 dark:text-gray-100"
-            >
-              {language === 'es' ? 'Calculadora' : 'Calculator'}
-            </Link>
-            <a
-              href="#price-alerts"
-              className="inline-flex h-10 items-center justify-center rounded-xl border border-gray-300 dark:border-gray-600 bg-white/80 dark:bg-gray-800/80 px-3.5 text-xs font-semibold text-gray-800 dark:text-gray-100"
-            >
-              {language === 'es' ? 'Crear alerta' : 'Set alert'}
-            </a>
-            <Link
-              to={travelGuidePath(language)}
-              className="inline-flex h-10 items-center justify-center rounded-xl border border-gray-300 dark:border-gray-600 bg-white/80 dark:bg-gray-800/80 px-3.5 text-xs font-semibold text-gray-800 dark:text-gray-100"
-            >
-              {language === 'es' ? 'Guía' : 'Guide'}
-            </Link>
-          </div>
         </div>
 
         {/* Hero — desktop only */}
@@ -445,36 +397,14 @@ function Home() {
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight">
               {language === 'es' ? 'Dólar Blue Bolivia Hoy' : 'Bolivia Blue Dollar Today'}
             </h1>
-            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 max-w-lg mx-auto">
-              {language === 'es'
-                ? 'Mediana de varias plataformas P2P. Sin registro.'
-                : 'Median across P2P platforms. No signup.'}
+            <p className="text-sm text-gray-600 dark:text-gray-300">
+              {language === 'es' ? 'Mediana P2P. Sin registro.' : 'P2P median. No signup.'}
             </p>
-            <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
-              <Link
-                to={PRIMARY_RATE_URL}
-                className="inline-flex h-11 items-center justify-center rounded-xl bg-sky-500 px-5 text-sm font-bold text-white shadow-md shadow-sky-500/25 transition hover:bg-sky-400"
-              >
-                {language === 'es' ? 'Cotización completa de hoy' : 'Full quote for today'}
-              </Link>
-              <Link
-                to="/comprar-dolares"
-                className="inline-flex h-11 items-center justify-center rounded-xl border border-gray-300 dark:border-gray-600 bg-white/70 dark:bg-gray-800/70 px-5 text-sm font-semibold text-gray-800 dark:text-gray-100 backdrop-blur transition hover:bg-white dark:hover:bg-gray-800"
-              >
-                {language === 'es' ? 'Cómo comprar dólares' : 'How to buy dollars'}
-              </Link>
-              <a
-                href="#price-alerts"
-                className="inline-flex h-11 items-center justify-center rounded-xl border border-gray-300 dark:border-gray-600 bg-white/70 dark:bg-gray-800/70 px-5 text-sm font-semibold text-gray-800 dark:text-gray-100 backdrop-blur transition hover:bg-white dark:hover:bg-gray-800"
-              >
-                {language === 'es' ? 'Crear alerta' : 'Set a price alert'}
-              </a>
-            </div>
           </div>
         </div>
 
         {/* Rates + buy CTA — first composition */}
-        <div className="relative rounded-2xl px-1 py-4 sm:px-4 sm:py-6 -mx-1 sm:mx-0 bg-gradient-to-b from-sky-50/90 via-transparent to-transparent dark:from-sky-950/40 dark:via-transparent">
+        <div className="relative rounded-2xl px-1 py-2 sm:px-4 sm:py-6 -mx-1 sm:mx-0 bg-gradient-to-b from-sky-50/90 via-transparent to-transparent dark:from-sky-950/40 dark:via-transparent">
           <section>
             {currentRate?.updated_at_iso && (
               <p className="hidden md:flex text-sm text-gray-500 dark:text-gray-400 mb-3 text-center items-center justify-center gap-2">
@@ -483,33 +413,25 @@ function Home() {
                 {formatDateTime(currentRate.updated_at_iso, language === 'es' ? 'es-BO' : 'en-US')}
               </p>
             )}
-            <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} showTimestampInCards={false} showCrossSourceBadge={false} />
-            <div className="mt-4 max-w-5xl mx-auto">
-              <RateTrioStrip
-                buy={currentRate?.buy ?? currentRate?.buy_bob_per_usd}
-                sell={currentRate?.sell ?? currentRate?.sell_bob_per_usd}
-                officialBuy={currentRate?.official_buy ?? currentRate?.officialBuy}
-                officialSell={currentRate?.official_sell ?? currentRate?.officialSell}
-                language={language}
-                updatedAt={currentRate?.updated_at_iso}
-              />
-            </div>
-            <div className="mt-4 max-w-3xl mx-auto">
-              <RateBinanceCta placement="home_after_rates" midRate={midRate} />
-            </div>
-            <AiCitationBlock
-              language={language}
-              buy={currentRate?.buy ?? currentRate?.buy_bob_per_usd}
-              sell={currentRate?.sell ?? currentRate?.sell_bob_per_usd}
-              updatedAt={currentRate?.updated_at_iso}
-              sourcesUsed={currentRate?.sources_used}
-              citePath="/"
-              className="mt-4 max-w-3xl mx-auto"
+            <BlueRateCards
+              showOfficial={showOfficial}
+              setShowOfficial={setShowOfficial}
+              showTimestampInCards={false}
+              showCrossSourceBadge={false}
+              compact
+              onRateModeChange={setHeroMode}
             />
-            <div className="mt-4 max-w-md mx-auto rounded-xl border border-sky-200 dark:border-sky-800 bg-white/80 dark:bg-gray-800/80 p-3">
-              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1" htmlFor="home-quick-usd">
-                {language === 'es' ? 'Convertir USD → BOB (compra P2P)' : 'Convert USD → BOB (P2P buy)'}
-              </label>
+            {heroMode === 'blue' && (
+              <>
+            <div className="mt-3 max-w-md mx-auto rounded-xl border border-sky-200 dark:border-sky-800 bg-white/80 dark:bg-gray-800/80 p-2.5">
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-xs font-semibold text-gray-600 dark:text-gray-300" htmlFor="home-quick-usd">
+                  {language === 'es' ? 'USD → Bs' : 'USD → Bs'}
+                </label>
+                <Link to="/calculadora" className="text-[11px] font-medium text-sky-700 dark:text-sky-300">
+                  {language === 'es' ? 'Calculadora →' : 'Calculator →'}
+                </Link>
+              </div>
               <div className="flex gap-2">
                 <input
                   id="home-quick-usd"
@@ -526,26 +448,40 @@ function Home() {
                     : '—'}
                 </div>
               </div>
-              <Link to="/calculadora" className="mt-2 inline-block text-xs font-medium text-sky-700 dark:text-sky-300">
-                {language === 'es' ? 'Calculadora completa →' : 'Full calculator →'}
-              </Link>
               {Number.isFinite(Number(quickUsd)) && Number.isFinite(currentRate?.buy) && (
                 <BinanceButton
                   placement="home_quick_convert"
                   className="mt-2 h-11 w-full justify-center text-sm"
                 >
-                  {language === 'es'
-                    ? `Comprá $${quickUsd} en Binance`
-                    : `Buy $${quickUsd} on Binance`}
+                  {language === 'es' ? 'Comprá en Binance' : 'Buy on Binance'}
                 </BinanceButton>
               )}
             </div>
-            <p className="mt-2 text-xs text-gray-500 dark:text-gray-400 text-center max-w-md mx-auto">
-              {language === 'es'
-                ? 'Es una mediana P2P, no un precio de ventanilla: confirmá el tipo antes de cambiar.'
-                : 'This is a P2P median, not a cash-desk price — confirm the rate before you trade.'}
-            </p>
-            <p className="mt-3 text-center flex flex-wrap justify-center gap-2">
+            <div className="hidden md:block mt-4 max-w-3xl mx-auto">
+              <RateBinanceCta placement="home_after_rates" midRate={midRate} />
+            </div>
+              </>
+            )}
+            <div className="hidden md:block mt-5 max-w-5xl mx-auto">
+              <RateTrioStrip
+                buy={currentRate?.buy ?? currentRate?.buy_bob_per_usd}
+                sell={currentRate?.sell ?? currentRate?.sell_bob_per_usd}
+                officialBuy={currentRate?.official_buy ?? currentRate?.officialBuy}
+                officialSell={currentRate?.official_sell ?? currentRate?.officialSell}
+                language={language}
+                updatedAt={currentRate?.updated_at_iso}
+              />
+            </div>
+            <AiCitationBlock
+              language={language}
+              buy={currentRate?.buy ?? currentRate?.buy_bob_per_usd}
+              sell={currentRate?.sell ?? currentRate?.sell_bob_per_usd}
+              updatedAt={currentRate?.updated_at_iso}
+              sourcesUsed={currentRate?.sources_used}
+              citePath="/"
+              className="hidden md:block mt-4 max-w-3xl mx-auto"
+            />
+            <p className="hidden md:flex mt-3 text-center flex-wrap justify-center gap-2">
               <Link
                 to="/euro-a-boliviano"
                 className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-500/10 px-4 py-2 text-sm font-semibold text-indigo-700 hover:bg-indigo-500/20 dark:text-indigo-300"
@@ -578,7 +514,7 @@ function Home() {
               </Link>
             </p>
             <nav
-              className="mt-3 flex flex-wrap justify-center gap-2 text-xs sm:text-sm"
+              className="hidden md:flex mt-3 flex-wrap justify-center gap-2 text-xs sm:text-sm"
               aria-label={language === 'es' ? 'Cotización por ciudad' : 'Rate by city'}
             >
               <Link
@@ -600,10 +536,12 @@ function Home() {
                 Cochabamba
               </Link>
             </nav>
-            <TravelersGuideTeaser language={language} />
+            <div className="hidden md:block">
+              <TravelersGuideTeaser language={language} />
+            </div>
           </section>
 
-          <section id="price-alerts" className="mt-5 sm:mt-6">
+          <section id="price-alerts" className="hidden md:block mt-5 sm:mt-6">
             <LazyErrorBoundary>
               <Suspense fallback={<ComponentLoader />}>
                 <RateAlertForm />
@@ -615,8 +553,7 @@ function Home() {
           </section>
         </div>
 
-        {/* Chart */}
-        <section>
+        <section className="hidden md:block">
           <LazyErrorBoundary>
             <Suspense fallback={
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 animate-pulse">
@@ -640,64 +577,28 @@ function Home() {
         </section>
 
 
-        {/* News & Twitter Tabs - Collapsible on Mobile */}
-        <section>
-          <div className="md:hidden">
-            <button
-              onClick={() => setIsNewsExpanded(!isNewsExpanded)}
-              className="w-full flex items-center justify-between p-4 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors mb-2"
-            >
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">
-                {language === 'es' ? 'Noticias y Twitter' : 'News & Twitter'}
-              </h2>
-              <svg
-                className={`w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform ${isNewsExpanded ? 'rotate-180' : ''}`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-          </div>
-          <div className={`${isNewsExpanded ? 'block' : 'hidden'} md:block`}>
-            <LazyErrorBoundary>
-              <Suspense fallback={<ComponentLoader />}>
-                <NewsTabs />
-              </Suspense>
-            </LazyErrorBoundary>
-          </div>
+        <p className="md:hidden text-center text-sm text-gray-500 dark:text-gray-400">
+          <Link to="/noticias" className="font-medium text-sky-700 dark:text-sky-300">
+            {language === 'es' ? 'Noticias' : 'News'}
+          </Link>
+          <span aria-hidden> · </span>
+          <Link to="/blog" className="font-medium text-sky-700 dark:text-sky-300">
+            {language === 'es' ? 'Guías' : 'Guides'}
+          </Link>
+        </p>
+
+        {/* News & Twitter Tabs */}
+        <section className="hidden md:block">
+          <LazyErrorBoundary>
+            <Suspense fallback={<ComponentLoader />}>
+              <NewsTabs />
+            </Suspense>
+          </LazyErrorBoundary>
         </section>
 
-        {/* Featured Blog Articles - Collapsible on Mobile */}
-        <section className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-800 dark:to-gray-900 rounded-xl sm:rounded-2xl p-4 sm:p-8 shadow-xl">
-          <div className="md:hidden mb-3">
-            <button
-              onClick={() => setIsArticlesExpanded(!isArticlesExpanded)}
-              className="w-full flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-            >
-              <div className="text-left">
-                <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
-                  {language === 'es' ? 'Guías y Recursos' : 'Guides & Resources'}
-                </h2>
-                <p className="text-sm text-gray-600 dark:text-gray-300">
-                  {language === 'es' 
-                    ? 'Aprende todo sobre el dólar blue, USDT y finanzas en Bolivia'
-                    : 'Learn everything about the blue dollar, USDT and finance in Bolivia'}
-                </p>
-              </div>
-              <svg
-                className={`w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform flex-shrink-0 ml-2 ${isArticlesExpanded ? 'rotate-180' : ''}`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-          </div>
-          <div className={`${isArticlesExpanded ? 'block' : 'hidden'} md:block`}>
-            <div className="hidden md:flex items-center justify-between mb-6">
+        {/* Featured Blog Articles */}
+        <section className="hidden md:block bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-800 dark:to-gray-900 rounded-xl sm:rounded-2xl p-4 sm:p-8 shadow-xl">
+            <div className="flex items-center justify-between mb-6">
               <div>
                 <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
                   {language === 'es' ? 'Guías y Recursos' : 'Guides & Resources'}
@@ -757,28 +658,16 @@ function Home() {
                 </Link>
               ))}
           </div>
-
-            <Link
-              to="/blog"
-              className="sm:hidden mt-3 w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors font-medium"
-            >
-              {language === 'es' ? 'Ver Todos los Artículos' : 'View All Articles'}
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
-          </div>
         </section>
 
-
-        {/* Social Share Section */}
+        <div className="hidden md:block">
         <SocialShare
           title={language === 'es' ? '🔴 Bolivia Blue Rate EN VIVO - Actualizado Cada 15 Min' : '🔴 Bolivia Blue Rate LIVE - Updated Every 15 Min'}
           description={language === 'es' ? "Dólar Blue Bolivia actualizado cada 15 minutos." : "Blue Dollar Bolivia updated every 15 minutes."}
         />
+        </div>
 
-        {/* Link magnets for media / partners */}
-        <section className="mt-10 rounded-2xl border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/30 p-5 sm:p-6">
+        <section className="hidden md:block mt-10 rounded-2xl border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/30 p-5 sm:p-6">
           <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
             {language === 'es' ? 'Para medios y sitios web' : 'For media and websites'}
           </h2>

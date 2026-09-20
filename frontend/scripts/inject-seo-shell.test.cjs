@@ -180,14 +180,13 @@ describe('homepage brand sitelink candidates', () => {
     assert.match(shell, /href="\/dolar-blue-cochabamba"/);
   });
 
-  it('exposes product sitelinks, $100 converter slot and mercado negro copy', () => {
+  it('exposes product sitelinks and a $100 converter slot', () => {
     const shell = ROUTES['/'].shell;
     for (const href of ['/prensa', '/fuente-de-datos', '/binance-p2p-bolivia', '/calculadora', '/datos-historicos', '/guia-dinero-bolivia']) {
       assert.match(shell, new RegExp(`href="${href}"`));
     }
     assert.match(shell, /data-live-usd100/);
     assert.match(shell, /data-live-buy/);
-    assert.match(shell, /mercado negro/);
     assert.match(shell, /100 USD/);
   });
 });

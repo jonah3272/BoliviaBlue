@@ -42,7 +42,7 @@ function sharedCardBobPerUsd(cardRates) {
   return Number.isFinite(rate) ? rate : null;
 }
 
-const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, isLoading, error, dailyChange, isOfficial, currency, language, showTimestampInCards = true }) {
+const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, isLoading, error, dailyChange, isOfficial, currency, language, showTimestampInCards = true, compact = false }) {
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const isBuy = type === 'buy';
@@ -66,7 +66,7 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
 
   if (isLoading) {
     return (
-      <div className={`bg-white/80 dark:bg-gray-800/80 rounded-xl border border-gray-200/80 dark:border-gray-700 border-l-4 ${accent} p-4 sm:p-6 min-h-[168px] sm:min-h-[196px]`}>
+      <div className={`bg-white/80 dark:bg-gray-800/80 rounded-xl border border-gray-200/80 dark:border-gray-700 border-l-4 ${accent} ${compact ? 'p-3 min-h-0' : 'p-4 sm:p-6 min-h-[168px] sm:min-h-[196px]'}`}>
         <div className="flex items-center justify-between mb-2 min-h-[1.25rem]">
           <div className="skeleton h-3 w-16" />
           <div className="skeleton h-3 w-12" />
@@ -80,7 +80,7 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
 
   if (error) {
     return (
-      <div className={`bg-white/80 dark:bg-gray-800/80 rounded-xl border border-gray-200/80 dark:border-gray-700 border-l-4 ${accent} p-4 sm:p-6 min-h-[168px] sm:min-h-[196px]`}>
+      <div className={`bg-white/80 dark:bg-gray-800/80 rounded-xl border border-gray-200/80 dark:border-gray-700 border-l-4 ${accent} ${compact ? 'p-3 min-h-0' : 'p-4 sm:p-6 min-h-[168px] sm:min-h-[196px]'}`}>
         <div className={`text-xs font-semibold uppercase tracking-wider ${labelColor} mb-1`}>{label}</div>
         <div className="text-red-500 text-xs">{error}</div>
         {currency === 'BRL' && (
@@ -101,11 +101,11 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
 
   return (
     <div
-      className={`bg-white/90 dark:bg-gray-800/90 rounded-xl border border-gray-200/70 dark:border-gray-700/80 border-l-4 ${accent} p-4 sm:p-6 transition-colors min-h-[168px] sm:min-h-[196px]`}
+      className={`bg-white/90 dark:bg-gray-800/90 rounded-xl border border-gray-200/70 dark:border-gray-700/80 border-l-4 ${accent} transition-colors ${compact ? 'p-2.5 min-h-0 md:p-6 md:min-h-[196px]' : 'p-4 sm:p-6 min-h-[168px] sm:min-h-[196px]'}`}
       role="region"
       aria-label={`${label} rate: ${formatRate(rate, currency)} bolivianos per ${currency}`}
     >
-      <div className="flex items-center justify-between mb-2 min-h-[1.25rem]">
+      <div className={`flex items-center justify-between ${compact ? 'mb-1' : 'mb-2 min-h-[1.25rem]'}`}>
         <div className={`text-xs font-semibold uppercase tracking-wider ${labelColor}`}>{label}</div>
         <div className="flex gap-1.5 min-h-[1.25rem]">
           {isStaleData && (
@@ -122,10 +122,10 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
       </div>
 
       <div className="mb-1">
-        <div className="font-mono text-5xl sm:text-6xl md:text-7xl font-bold text-gray-900 dark:text-white leading-none tracking-tight tabular-nums min-h-[3rem] sm:min-h-[3.75rem] md:min-h-[4.5rem]">
+        <div className={`font-mono font-bold text-gray-900 dark:text-white leading-none tracking-tight tabular-nums ${compact ? 'text-[1.75rem] md:text-6xl lg:text-7xl' : 'text-5xl sm:text-6xl md:text-7xl min-h-[3rem] sm:min-h-[3.75rem] md:min-h-[4.5rem]'}`}>
           {formatRate(rate, currency)}
         </div>
-        <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-2 font-medium min-h-[1.25rem]">
+        <div className={`text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium ${compact ? 'hidden md:block mt-2' : 'mt-2 min-h-[1.25rem]'}`}>
           {language === 'es' ? `Bs. por ${currency}` : `Bs. per ${currency}`}
           {['COP', 'ARS', 'CLP'].includes(currency) && Number.isFinite(Number(rate)) ? (
             <span className="block text-xs font-normal mt-0.5">
@@ -137,16 +137,16 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
         </div>
       </div>
 
-      <div className="text-xs text-gray-500 dark:text-gray-400 mt-3 min-h-[1rem]">
-        {showTimestampInCards && timestamp
-          ? `${t('updated')}: ${formatDateTime(timestamp)}`
-          : '\u00a0'}
-      </div>
+      {showTimestampInCards && timestamp ? (
+        <div className="text-xs text-gray-500 dark:text-gray-400 mt-3">
+          {`${t('updated')}: ${formatDateTime(timestamp)}`}
+        </div>
+      ) : null}
     </div>
   );
 });
 
-function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInCards = true, showCrossSourceBadge = true }) {
+function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInCards = true, showCrossSourceBadge = true, compact = false, onRateModeChange }) {
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
@@ -175,6 +175,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
 
   const setMode = useCallback((mode) => {
     setRateMode(mode);
+    onRateModeChange?.(mode);
     if (mode === 'official') {
       effectiveSetShowOfficial(true);
       trackOfficialRateToggle(true);
@@ -182,7 +183,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
       effectiveSetShowOfficial(false);
       if (mode === 'blue') trackOfficialRateToggle(false);
     }
-  }, [effectiveSetShowOfficial]);
+  }, [effectiveSetShowOfficial, onRateModeChange]);
 
   useEffect(() => {
     const onMode = (e) => {
@@ -327,7 +328,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
       key={mode}
       type="button"
       onClick={() => setMode(mode)}
-      className={`px-3 sm:px-5 py-2.5 sm:py-3 rounded-lg font-semibold text-xs sm:text-sm transition-all duration-200 min-w-[96px] sm:min-w-[140px] touch-manipulation ${
+      className={`${compact ? 'px-2.5 py-1.5 min-w-0 text-[11px] md:px-5 md:py-3 md:min-w-[140px] md:text-sm' : 'px-3 sm:px-5 py-2.5 sm:py-3 min-w-[96px] sm:min-w-[140px] text-xs sm:text-sm'} rounded-lg font-semibold transition-all duration-200 touch-manipulation ${
         active
           ? mode === 'blue'
             ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-md border-2 border-blue-200 dark:border-blue-600'
@@ -343,15 +344,24 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
     </button>
   );
 
-  const description =
-    rateMode === 'card'
+  const description = compact
+    ? rateMode === 'card'
+      ? language === 'es'
+        ? 'Wise + comisión FX'
+        : 'Wise + FX fee'
+      : rateMode === 'official'
+        ? 'BCB'
+        : language === 'es'
+          ? 'Mediana P2P'
+          : 'P2P median'
+    : rateMode === 'card'
       ? t('cardRateDescription')
       : rateMode === 'official'
         ? t('officialRateDescription')
         : t('blueMarketTitle');
 
   return (
-    <div className="space-y-6">
+    <div className={compact ? 'space-y-3' : 'space-y-6'}>
       {exchangeRateSchema && (
         <Helmet>
           <script type="application/ld+json">
@@ -360,7 +370,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
         </Helmet>
       )}
       
-      <div className="flex items-center justify-center mb-6 min-h-[3.25rem]" data-rate-mode-tabs>
+      <div className={`${compact ? 'hidden md:flex' : 'flex'} items-center justify-center ${compact ? 'md:mb-6' : 'mb-6 min-h-[3.25rem]'}`} data-rate-mode-tabs>
         <div className="inline-flex flex-wrap items-center justify-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-xl p-1.5 shadow-inner border border-gray-200 dark:border-gray-700">
           {modeBtn(
             'blue',
@@ -383,9 +393,11 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
         </div>
       </div>
 
-      <p className="mt-3 text-center text-xs leading-relaxed text-gray-600 dark:text-gray-400 max-w-3xl mx-auto min-h-[2.5rem]">
-        {description}
-      </p>
+      {(!compact || rateMode !== 'blue') && (
+        <p className={`mt-2 text-center text-xs leading-snug text-gray-600 dark:text-gray-400 max-w-3xl mx-auto ${compact ? 'md:min-h-0' : 'min-h-[2.5rem] leading-relaxed mt-3'}`}>
+          {description}
+        </p>
+      )}
       {rateMode === 'blue' && showCrossSourceBadge && (
         <CrossSourceBadge
           sourcesUsed={data?.sources_used}
@@ -395,7 +407,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
 
       {rateMode === 'blue' && (
         <div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+          <div className={`grid max-w-4xl mx-auto ${compact ? 'grid-cols-2 gap-2' : 'grid-cols-1 md:grid-cols-2 gap-4'}`}>
             <RateCard
               type="buy"
               rate={sideRate(data, currency, 'buy')}
@@ -407,6 +419,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
               currency={currency}
               language={language}
               showTimestampInCards={showTimestampInCards}
+              compact={compact}
             />
             <RateCard
               type="sell"
@@ -419,6 +432,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
               currency={currency}
               language={language}
               showTimestampInCards={showTimestampInCards}
+              compact={compact}
             />
           </div>
         </div>
@@ -426,7 +440,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
 
       {rateMode === 'official' && (
         <div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+          <div className={`grid max-w-4xl mx-auto ${compact ? 'grid-cols-2 gap-2' : 'grid-cols-1 md:grid-cols-2 gap-4'}`}>
             <RateCard
               type="buy"
               rate={data?.official_buy}
@@ -438,6 +452,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
               currency={currency}
               language={language}
               showTimestampInCards={showTimestampInCards}
+              compact={compact}
             />
             <RateCard
               type="sell"
@@ -450,13 +465,14 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
               currency={currency}
               language={language}
               showTimestampInCards={showTimestampInCards}
+              compact={compact}
             />
           </div>
         </div>
       )}
 
       {rateMode === 'card' && (
-        <div className="max-w-4xl mx-auto space-y-4">
+        <div className={`max-w-4xl mx-auto ${compact ? 'space-y-2' : 'space-y-4'}`}>
           {currency !== 'USD' && (
             <p className="text-center text-xs text-amber-700 dark:text-amber-300">
               {language === 'es'
@@ -465,7 +481,11 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
             </p>
           )}
 
-          <div className="flex flex-wrap justify-center gap-2" role="listbox" aria-label={t('cardRateSelectFee')}>
+          <div
+            className={`flex gap-2 ${compact ? 'flex-nowrap overflow-x-auto pb-1 -mx-1 px-1 justify-start' : 'flex-wrap justify-center'}`}
+            role="listbox"
+            aria-label={t('cardRateSelectFee')}
+          >
             {CARD_FEE_OPTIONS.map((item) => {
               const active = item.id === issuerId;
               const label = language === 'es' ? item.labelEs : item.labelEn;
@@ -476,7 +496,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
                   role="option"
                   aria-selected={active}
                   onClick={() => setIssuerId(item.id)}
-                  className={`px-3 py-2 rounded-lg text-xs font-medium touch-manipulation transition-colors border ${
+                  className={`px-3 py-2 rounded-lg text-xs font-medium touch-manipulation transition-colors border shrink-0 ${
                     active
                       ? 'bg-emerald-600 text-white border-emerald-600'
                       : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:border-emerald-400'
@@ -489,76 +509,104 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
           </div>
 
           <div
-            className="bg-white/90 dark:bg-gray-800/90 rounded-xl border border-emerald-300/70 dark:border-emerald-800 p-4 sm:p-6 transition-opacity duration-300"
+            className={`bg-emerald-50/80 dark:bg-emerald-950/30 rounded-xl border border-emerald-300/70 dark:border-emerald-800 transition-opacity duration-300 ${compact ? 'p-3' : 'p-4 sm:p-6'}`}
             key={`${issuerId}-${effectiveRate}`}
           >
-            <div className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 uppercase tracking-wider mb-2">
-              {t('cardRateEffective')}
+            <div className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 uppercase tracking-wider mb-1">
+              {language === 'es' ? 'Tarjeta US · no es P2P' : 'US card · not P2P'}
             </div>
 
             {isLoading ? (
-              <div className="skeleton h-14 w-40 mb-2" />
+              <div className="skeleton h-10 w-32 mb-2" />
             ) : effectiveRate == null ? (
               <div className="text-sm text-gray-600 dark:text-gray-400">
                 {cardError || t('cardRateUnavailable')}
               </div>
             ) : (
               <>
-                <div className="font-mono text-5xl sm:text-6xl md:text-7xl font-bold text-gray-900 dark:text-white leading-none tracking-tight tabular-nums">
-                  {formatRate(effectiveRate, 'USD')}
-                </div>
-                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1 font-medium">
-                  {language === 'es' ? 'Bs. por USD' : 'Bs. per USD'}
-                </div>
-                <div className="mt-3 text-xs text-gray-600 dark:text-gray-400 space-y-1">
+                <div className="flex items-end justify-between gap-3">
                   <div>
-                    {t('cardRateBase')}: {networkRate != null ? formatRate(networkRate, 'USD') : '—'}
-                    {' · '}
-                    {t('cardRateFee')}: {(feeOption.feePct * 100).toFixed(feeOption.feePct ? 1 : 0)}%
+                    <div className={`font-mono font-bold text-emerald-900 dark:text-emerald-200 leading-none tracking-tight tabular-nums ${compact ? 'text-3xl' : 'text-4xl sm:text-5xl'}`}>
+                      {formatRate(effectiveRate, 'USD')}
+                    </div>
+                    <div className="text-xs text-emerald-800/80 dark:text-emerald-300/80 mt-1 font-medium">
+                      {language === 'es' ? 'Bs por USD, con comisión FX' : 'Bs per USD, after FX fee'}
+                    </div>
                   </div>
-                  {String(cardRates?.source || '').includes('wise') && (
-                    <div className="text-amber-700 dark:text-amber-300">{t('cardRateEstimateNote')}</div>
-                  )}
-                  {cardRates?.source &&
-                    !String(cardRates.source).includes('wise') &&
-                    !String(cardRates.source).includes('mid-market') &&
-                    cardRates.source !== 'none' && (
-                    <div className="text-emerald-700 dark:text-emerald-300">{t('cardRateNetworkNote')}</div>
-                  )}
-                  {vsBluePct != null && (
-                    <div className="text-sm font-semibold text-gray-800 dark:text-gray-200">
-                      {t('cardRateVsBlue')}:{' '}
-                      <span className={vsBluePct >= 0 ? 'text-green-600' : 'text-red-600'}>
+                  {vsBluePct != null && blueMid != null && (
+                    <div className="text-right shrink-0">
+                      <div className="text-[11px] uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                        vs blue
+                      </div>
+                      <div className="font-mono text-sm font-semibold tabular-nums text-gray-800 dark:text-gray-200">
+                        {formatRate(blueMid, 'USD')}
+                      </div>
+                      <div className={`text-sm font-bold tabular-nums ${vsBluePct >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                         {vsBluePct >= 0 ? '+' : ''}
-                        {vsBluePct.toFixed(2)}%{' '}
-                        ({vsBluePct >= 0 ? t('cardRateBetter') : t('cardRateWorse')})
-                      </span>
-                      <div className="mt-1 text-xs font-normal text-gray-600 dark:text-gray-400">
-                        {vsBluePct >= 0.3
-                          ? (language === 'es'
-                            ? 'Señal: pagar con tarjeta suele rendir más Bs por USD que cambiar cash al paralelo.'
-                            : 'Signal: paying by card often yields more Bs per USD than cash at the parallel rate.')
-                          : vsBluePct <= -0.3
-                            ? (language === 'es'
-                              ? 'Señal: el cash blue está más “rico” que la tarjeta hoy.'
-                              : 'Signal: cash blue is richer than card today.')
-                            : (language === 'es'
-                              ? 'Brecha chica — mira comisión FX y comodidad.'
-                              : 'Small gap — check FX fee and convenience.')}
+                        {vsBluePct.toFixed(0)}%
                       </div>
                     </div>
                   )}
-                  {showTimestampInCards && cardRates?.t && (
-                    <div>
-                      {t('updated')}: {formatDateTime(cardRates.t)}
-                      {cardRates.source ? ` · ${cardRates.source}` : ''}
-                    </div>
-                  )}
                 </div>
+                <div className="mt-2 text-xs text-gray-600 dark:text-gray-400">
+                  {t('cardRateBase')}: {networkRate != null ? formatRate(networkRate, 'USD') : '—'}
+                  {' · '}
+                  {t('cardRateFee')}: {(feeOption.feePct * 100).toFixed(feeOption.feePct ? 1 : 0)}%
+                  {String(cardRates?.source || '').includes('wise')
+                    ? language === 'es'
+                      ? ' · proxy Wise, no liquidación Visa'
+                      : ' · Wise proxy, not Visa settlement'
+                    : ''}
+                </div>
+                {!compact && vsBluePct != null && (
+                  <div className="mt-2 text-xs text-gray-600 dark:text-gray-400">
+                    {vsBluePct >= 0.3
+                      ? (language === 'es'
+                        ? 'Señal: pagar con tarjeta suele rendir más Bs por USD que cambiar cash al paralelo.'
+                        : 'Signal: paying by card often yields more Bs per USD than cash at the parallel rate.')
+                      : vsBluePct <= -0.3
+                        ? (language === 'es'
+                          ? 'Señal: el cash blue está más “rico” que la tarjeta hoy.'
+                          : 'Signal: cash blue is richer than card today.')
+                        : (language === 'es'
+                          ? 'Brecha chica — mira comisión FX y comodidad.'
+                          : 'Small gap — check FX fee and convenience.')}
+                  </div>
+                )}
+                {showTimestampInCards && cardRates?.t && (
+                  <div className="mt-2 text-xs text-gray-500">
+                    {t('updated')}: {formatDateTime(cardRates.t)}
+                    {cardRates.source ? ` · ${cardRates.source}` : ''}
+                  </div>
+                )}
               </>
             )}
           </div>
         </div>
+      )}
+
+      {compact && (
+        <p className="md:hidden flex justify-center gap-3 text-[12px] text-gray-500 dark:text-gray-400">
+          {[
+            ['blue', language === 'es' ? 'Paralelo' : 'Parallel'],
+            ['official', language === 'es' ? 'Oficial' : 'Official'],
+            ['card', language === 'es' ? 'Tarjeta' : 'Card'],
+          ].map(([mode, label]) => (
+            <button
+              key={mode}
+              type="button"
+              onClick={() => setMode(mode)}
+              className={`bg-transparent p-0 border-0 font-medium ${
+                rateMode === mode
+                  ? 'text-sky-700 dark:text-sky-300'
+                  : 'text-gray-500 dark:text-gray-400'
+              }`}
+              aria-pressed={rateMode === mode}
+            >
+              {label}
+            </button>
+          ))}
+        </p>
       )}
     </div>
   );

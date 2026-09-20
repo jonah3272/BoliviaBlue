@@ -12,8 +12,8 @@ export const translations = {
     subtitle: 'Cotización del dólar blue en Bolivia, actualizada cada 15 minutos',
     
     // Rate Cards
-    buy: 'COMPRAR',
-    sell: 'VENDER',
+    buy: 'Compra',
+    sell: 'Venta',
     perUSD: 'Bs. por USD',
     updated: 'Actualizado',
     stale: 'Desactualizado',
@@ -333,8 +333,8 @@ export const translations = {
     subtitle: 'Bolivia blue dollar rates, updated every 15 minutes',
     
     // Rate Cards
-    buy: 'BUY',
-    sell: 'SELL',
+    buy: 'Buy',
+    sell: 'Sell',
     perUSD: 'Bs. per USD',
     updated: 'Updated',
     stale: 'Stale',

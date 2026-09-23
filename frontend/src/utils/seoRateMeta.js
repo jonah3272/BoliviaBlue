@@ -30,10 +30,10 @@ function formatSnippetTime(iso, language = 'es') {
 const PAGE_COPY = {
   home: {
     es: {
-      titleWith: (b, s) => `Bolivia Blue | Dólar Blue Hoy: Compra ${b} · Venta ${s}`,
+      titleWith: (b, s) => `Dólar blue hoy Bolivia: Compra ${b} · Venta ${s}`,
       titleFallback: 'Bolivia Blue | Dólar Blue Hoy, lectura P2P verificada',
       descWith: (b, s, when) =>
-        `Bolivia Blue: dólar blue hoy compra Bs ${b} y venta Bs ${s}${when ? ` (${when})` : ''}. Mediana multi-plataforma P2P (Binance, El Dorado, OKX).`,
+        `Dólar blue hoy en Bolivia: compra Bs ${b}, venta Bs ${s}${when ? ` (${when})` : ''}. Mediana P2P.`,
       descFallback:
         'Bolivia Blue: dólar blue hoy en Bolivia, lectura verificada, mediana multi-plataforma P2P. Gratis, sin registro.',
     },

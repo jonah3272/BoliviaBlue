@@ -25,6 +25,18 @@ describe('buildLiveRateSeoMeta', () => {
     assert.equal(meta.analyticsTitle, 'Dólar Blue Hoy Bolivia | Lectura Verificada Paralelo');
   });
 
+  it('leads the homepage title with dólar blue hoy Bolivia', () => {
+    const meta = buildLiveRateSeoMeta({
+      buy: 11.98,
+      sell: 11.92,
+      language: 'es',
+      page: 'home',
+    });
+    assert.equal(meta.title, 'Dólar blue hoy Bolivia: Compra 11.98 · Venta 11.92');
+    assert.match(meta.description, /Dólar blue hoy en Bolivia/);
+    assert.doesNotMatch(meta.description, /para la compra/);
+  });
+
   it('never emits Compra 0.00', () => {
     const meta = buildLiveRateSeoMeta({
       buy: 0,

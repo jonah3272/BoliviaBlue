@@ -211,8 +211,8 @@ export function metaForPath(path, buy, sell) {
     case '/':
     default:
       return {
-        title: `Bolivia Blue | Dólar Blue Hoy: Compra ${buy} · Venta ${sell}`,
-        description: `Bolivia Blue: el dólar paralelo (blue) en Bolivia cotiza hoy en Bs ${buy} para la compra y Bs ${sell} para la venta. Actualizado cada 15 min (Binance P2P).`,
+        title: `Dólar blue hoy Bolivia: Compra ${buy} · Venta ${sell}`,
+        description: `Dólar blue hoy en Bolivia: compra Bs ${buy}, venta Bs ${sell}. Mediana P2P, actualizada cada 15 min.`,
       };
   }
 }

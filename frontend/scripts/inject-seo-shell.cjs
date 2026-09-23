@@ -184,11 +184,10 @@ function applyLiveRatesToRoutes(buy, sell, updatedAt, extra = {}) {
   const s = fmtRate(sell);
   if (!b || !s) return false;
   const when = formatSnippetTime(updatedAt);
-  const whenBit = when ? `, lectura ${when}` : '';
 
   const home = ROUTES['/'];
-  home.title = `Dólar Blue Bolivia Hoy: Compra ${b} · Venta ${s}`;
-  home.description = `Lectura verificada: el dólar paralelo (blue) en Bolivia cotiza hoy en Bs ${b} para la compra y Bs ${s} para la venta${whenBit}. Mediana multi-plataforma P2P (USDT).`;
+  home.title = `Dólar blue hoy Bolivia: Compra ${b} · Venta ${s}`;
+  home.description = `Dólar blue hoy en Bolivia: compra Bs ${b}, venta Bs ${s}${when ? ` (${when})` : ''}. Mediana P2P, cada 15 min.`;
   home.shell = fillLiveRateSlots(home.shell, b, s, updatedAt);
 
   const hoy = ROUTES['/dolar-blue-hoy'];
@@ -324,9 +323,6 @@ const SHELL_HOME = `
       Compra <span data-live-buy>—</span> · Venta <span data-live-sell>—</span>
     </p>
     <p class="text-base sm:text-lg text-gray-700 max-w-2xl mx-auto" data-seo-rate-sentence>
-      Precio del dólar hoy en Bolivia (blue / paralelo / mercado negro de referencia P2P):
-      Compra = Bs para obtener 1 USD en P2P (USDT). Venta = Bs al vender 1 USD.
-      No es ventanilla en efectivo ni el tipo oficial del BCB.
       Lectura: <time data-live-when datetime="">—</time> (hora de Bolivia).
     </p>
     <p class="text-lg font-semibold text-gray-800">
@@ -379,8 +375,8 @@ const DATASET_DATOS = {
 /** Route config: path -> { title, description, canonical, shell, getJsonLd } */
 const ROUTES = {
   '/': {
-    title: 'Bolivia Blue | Dólar Blue Hoy, cotización P2P',
-    description: 'Bolivia Blue: dólar blue Bolivia hoy, compra y venta de referencia P2P (USDT). Gráficos, calculadora y noticias. Gratis, sin registro.',
+    title: 'Dólar blue hoy Bolivia | Compra y venta',
+    description: 'Dólar blue hoy en Bolivia: compra y venta, mediana P2P. Actualizado cada 15 min.',
     canonical: BASE_URL + '/',
     shell: SHELL_HOME,
     getJsonLd: () => buildStaticJsonLd('/', 'Inicio', 'Dólar Blue Bolivia Hoy', 'Dólar blue Bolivia hoy: compra y venta de referencia P2P (USDT), actualizadas cada 15 min.', [])

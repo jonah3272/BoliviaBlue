@@ -361,7 +361,7 @@ function Home() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-5 sm:py-8 md:py-10 space-y-6 sm:space-y-8 md:space-y-10 pb-[max(5rem,calc(3.5rem+env(safe-area-inset-bottom)))] md:pb-[max(1.5rem,env(safe-area-inset-bottom))]">
-        {/* Mobile: compact title + rate + meaning + $100 on the first screen */}
+        {/* Mobile: compact title + rate + $100 on the first screen */}
         <div className="md:hidden text-center">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white leading-tight">
             {language === 'es' ? 'Dólar Blue Bolivia Hoy' : 'Bolivia Blue Dollar Today'}
@@ -372,11 +372,6 @@ function Home() {
               · {language === 'es' ? 'Venta' : 'Sell'} {live.sellStr}
             </p>
           )}
-          <p className="mt-2 text-xs text-gray-600 dark:text-gray-400 max-w-sm mx-auto">
-            {language === 'es'
-              ? 'Precio del dólar hoy (blue / paralelo / mercado negro de referencia P2P). Compra: Bs para obtener 1 USD. Venta: Bs al vender 1 USD. No es ventanilla ni BCB.'
-              : 'Dollar price today (blue / parallel / black-market P2P reference). Buy: Bs to obtain 1 USD. Sell: Bs when selling 1 USD. Not a cash desk and not the BCB rate.'}
-          </p>
           {live.times(100) && (
             <p className="mt-2 text-sm font-semibold text-gray-800 dark:text-gray-200">
               100 USD ≈ {live.times(100)} Bs

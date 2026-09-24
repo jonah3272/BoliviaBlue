@@ -51,7 +51,7 @@ const NEW_ROUTES = [
   },
 ];
 
-const HOME_H1 = 'Dólar Blue Bolivia Hoy';
+const HOME_H1 = 'Bolivia Blue';
 
 const FIXTURE = `<!DOCTYPE html>
 <html lang="es">
@@ -81,7 +81,7 @@ describe('new route shell configuration', () => {
       assert.equal(route.canonical, `${BASE_URL}${expected.path}`);
       assert.match(route.shell, new RegExp(`data-seo-shell="${expected.shellId}"`));
       assert.match(route.shell, new RegExp(`<h1[^>]*>${expected.h1.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</h1>`));
-      assert.doesNotMatch(route.shell, new RegExp(HOME_H1.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+      assert.doesNotMatch(route.shell, new RegExp(`<h1[^>]*>${HOME_H1.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</h1>`));
       assert.doesNotMatch(route.title, /2024|2025/);
       assert.doesNotMatch(route.description, /2024|2025/);
       assert.doesNotMatch(route.description, /en vivo|tiempo real|cada \d+ min/i);
@@ -121,7 +121,7 @@ describe('replaceMeta + shell injection for new routes', () => {
       assert.match(html, new RegExp(`<h1[^>]*>${expected.h1.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</h1>`));
       assert.doesNotMatch(html, new RegExp(`rel="canonical" href="${BASE_URL}/"`));
       assert.doesNotMatch(html, new RegExp(`property="og:url" content="${BASE_URL}/"`));
-      assert.doesNotMatch(html, new RegExp(HOME_H1.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+      assert.doesNotMatch(html, new RegExp(`<h1[^>]*>${HOME_H1.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</h1>`));
       assert.equal((html.match(/<h1\b/gi) || []).length, 1);
     });
   }
@@ -146,7 +146,7 @@ describe('generated dist output for new routes', () => {
       assert.match(html, new RegExp(`<h1[^>]*>${expected.h1.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</h1>`));
       assert.match(html, /lang="es"/);
       assert.match(html, /id="root"/);
-      assert.doesNotMatch(html, new RegExp(HOME_H1.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+      assert.doesNotMatch(html, new RegExp(`<h1[^>]*>${HOME_H1.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</h1>`));
       assert.doesNotMatch(html, new RegExp(`rel="canonical" href="${BASE_URL}/"`));
       assert.doesNotMatch(html, new RegExp(`property="og:url" content="${BASE_URL}/"`));
       assert.doesNotMatch(html, /2024|2025/);
@@ -212,7 +212,7 @@ describe('priority crawl shells', () => {
       assert.ok(route);
       assert.match(route.shell, new RegExp(`data-seo-shell="${expected.shellId}"`));
       assert.match(route.shell, new RegExp(expected.h1.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-      assert.doesNotMatch(route.shell, new RegExp(HOME_H1.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+      assert.doesNotMatch(route.shell, new RegExp(`<h1[^>]*>${HOME_H1.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</h1>`));
       assert.equal(route.canonical, `${BASE_URL}${expected.path}`);
       for (const snippet of expected.must) {
         assert.match(route.shell, new RegExp(snippet.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'));

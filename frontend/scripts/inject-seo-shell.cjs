@@ -186,8 +186,8 @@ function applyLiveRatesToRoutes(buy, sell, updatedAt, extra = {}) {
   const when = formatSnippetTime(updatedAt);
 
   const home = ROUTES['/'];
-  home.title = `Dólar blue hoy Bolivia: Compra ${b} · Venta ${s}`;
-  home.description = `Dólar blue hoy en Bolivia: compra Bs ${b}, venta Bs ${s}${when ? ` (${when})` : ''}. Mediana P2P, cada 15 min.`;
+  home.title = `Bolivia Blue | Bolivian Blue: Compra ${b} · Venta ${s}`;
+  home.description = `Bolivia Blue (Bolivian Blue): compra Bs ${b}, venta Bs ${s}${when ? ` (${when})` : ''}. Dólar blue hoy en Bolivia.`;
   home.shell = fillLiveRateSlots(home.shell, b, s, updatedAt);
 
   const hoy = ROUTES['/dolar-blue-hoy'];
@@ -318,7 +318,8 @@ function buildStaticJsonLd(routePath, routeName, pageName, pageDescription, extr
 const SHELL_HOME = `
 <main class="max-w-7xl mx-auto px-4 py-8" data-seo-shell="home">
   <div class="text-center space-y-4 mb-8">
-    <h1 class="text-3xl sm:text-5xl font-bold text-gray-900">Dólar Blue Bolivia Hoy</h1>
+    <h1 class="text-3xl sm:text-5xl font-bold text-gray-900">Bolivia Blue</h1>
+    <p class="text-base text-gray-600">Bolivian Blue · dólar blue hoy en Bolivia</p>
     <p class="text-2xl sm:text-3xl font-bold text-gray-900 tabular-nums">
       Compra <span data-live-buy>—</span> · Venta <span data-live-sell>—</span>
     </p>
@@ -375,8 +376,8 @@ const DATASET_DATOS = {
 /** Route config: path -> { title, description, canonical, shell, getJsonLd } */
 const ROUTES = {
   '/': {
-    title: 'Dólar blue hoy Bolivia | Compra y venta',
-    description: 'Dólar blue hoy en Bolivia: compra y venta, mediana P2P. Actualizado cada 15 min.',
+    title: 'Bolivia Blue | Bolivian Blue',
+    description: 'Bolivia Blue (Bolivian Blue): compra y venta del dólar blue hoy en Bolivia. Mediana P2P.',
     canonical: BASE_URL + '/',
     shell: SHELL_HOME,
     getJsonLd: () => buildStaticJsonLd('/', 'Inicio', 'Dólar Blue Bolivia Hoy', 'Dólar blue Bolivia hoy: compra y venta de referencia P2P (USDT), actualizadas cada 15 min.', [])

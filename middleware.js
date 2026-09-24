@@ -211,8 +211,8 @@ export function metaForPath(path, buy, sell) {
     case '/':
     default:
       return {
-        title: `Dólar blue hoy Bolivia: Compra ${buy} · Venta ${sell}`,
-        description: `Dólar blue hoy en Bolivia: compra Bs ${buy}, venta Bs ${sell}. Mediana P2P, actualizada cada 15 min.`,
+        title: `Bolivia Blue | Bolivian Blue: Compra ${buy} · Venta ${sell}`,
+        description: `Bolivia Blue (Bolivian Blue): compra Bs ${buy}, venta Bs ${sell}. Dólar blue hoy en Bolivia, mediana P2P.`,
       };
   }
 }
@@ -400,8 +400,8 @@ export function metaForPathEn(path, buy, sell) {
     case '/':
     default:
       return {
-        title: `Bolivia Blue | Blue Dollar Today: Buy ${buy} · Sell ${sell}`,
-        description: `Bolivia Blue: the parallel (blue) dollar in Bolivia is Bs ${buy} to buy and Bs ${sell} to sell. Updated every 15 min (P2P USDT).`,
+        title: `Bolivian Blue | Bolivia Blue: Buy ${buy} · Sell ${sell}`,
+        description: `Bolivian Blue (Bolivia Blue): buy Bs ${buy}, sell Bs ${sell}. Bolivia’s blue dollar today, P2P median.`,
       };
   }
 }

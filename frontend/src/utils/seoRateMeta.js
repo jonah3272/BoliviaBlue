@@ -30,18 +30,18 @@ function formatSnippetTime(iso, language = 'es') {
 const PAGE_COPY = {
   home: {
     es: {
-      titleWith: (b, s) => `Dólar blue hoy Bolivia: Compra ${b} · Venta ${s}`,
+      titleWith: (b, s) => `Bolivia Blue | Bolivian Blue: Compra ${b} · Venta ${s}`,
       titleFallback: 'Bolivia Blue | Dólar Blue Hoy, lectura P2P verificada',
       descWith: (b, s, when) =>
-        `Dólar blue hoy en Bolivia: compra Bs ${b}, venta Bs ${s}${when ? ` (${when})` : ''}. Mediana P2P.`,
+        `Bolivia Blue (Bolivian Blue): compra Bs ${b}, venta Bs ${s}${when ? ` (${when})` : ''}. Dólar blue hoy en Bolivia.`,
       descFallback:
         'Bolivia Blue: dólar blue hoy en Bolivia, lectura verificada, mediana multi-plataforma P2P. Gratis, sin registro.',
     },
     en: {
-      titleWith: (b, s) => `Bolivia Blue | Blue Dollar Today: Buy ${b} · Sell ${s}`,
+      titleWith: (b, s) => `Bolivian Blue | Bolivia Blue: Buy ${b} · Sell ${s}`,
       titleFallback: 'Bolivia Blue | Blue Dollar Today, verified P2P reading',
       descWith: (b, s, when) =>
-        `Bolivia Blue: blue dollar today buy Bs ${b}, sell Bs ${s}${when ? ` (${when})` : ''}. Multi-platform P2P median (Binance, El Dorado, OKX).`,
+        `Bolivian Blue (Bolivia Blue): buy Bs ${b}, sell Bs ${s}${when ? ` (${when})` : ''}. Bolivia’s blue dollar today.`,
       descFallback:
         'Bolivia Blue: Bolivia blue dollar today, verified multi-platform P2P median. Free, no signup.',
     },

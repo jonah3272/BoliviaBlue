@@ -32,8 +32,8 @@ describe('buildLiveRateSeoMeta', () => {
       language: 'es',
       page: 'home',
     });
-    assert.equal(meta.title, 'Dólar blue hoy Bolivia: Compra 11.98 · Venta 11.92');
-    assert.match(meta.description, /Dólar blue hoy en Bolivia/);
+    assert.equal(meta.title, 'Bolivia Blue | Bolivian Blue: Compra 11.98 · Venta 11.92');
+    assert.match(meta.description, /Bolivian Blue/);
     assert.doesNotMatch(meta.description, /para la compra/);
   });
 

@@ -364,7 +364,7 @@ function Home() {
         {/* Mobile: compact title + rate + $100 on the first screen */}
         <div className="md:hidden text-center">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white leading-tight">
-            {language === 'es' ? 'Dólar Blue Bolivia Hoy' : 'Bolivia Blue Dollar Today'}
+            {language === 'es' ? 'Bolivia Blue' : 'Bolivian Blue'}
           </h1>
           {live.buyStr && live.sellStr && (
             <p className="mt-2 text-2xl font-bold tabular-nums text-gray-900 dark:text-white">
@@ -438,7 +438,7 @@ function Home() {
               {language === 'es' ? 'Actualizado cada 15 min' : 'Updated every 15 min'}
             </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight">
-              {language === 'es' ? 'Dólar Blue Bolivia Hoy' : 'Bolivia Blue Dollar Today'}
+              {language === 'es' ? 'Bolivia Blue' : 'Bolivian Blue'}
             </h1>
             <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 max-w-lg mx-auto">
               {language === 'es'

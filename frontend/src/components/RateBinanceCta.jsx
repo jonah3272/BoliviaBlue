@@ -63,7 +63,7 @@ export default function RateBinanceCta({ placement = 'rate_binance', midRate = n
             placement={placement}
             className="h-11 w-full sm:w-auto justify-center"
           >
-            {es ? 'Crear cuenta Binance' : 'Create Binance account'}
+            {es ? 'Comprar en Binance' : 'Buy on Binance'}
           </BinanceButton>
           <Link
             to={BUY_GUIDE_PATH}

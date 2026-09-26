@@ -6,7 +6,6 @@ import RateTrioStrip from '../components/RateTrioStrip';
 import TravelersGuideTeaser from '../components/TravelersGuideTeaser';
 import AiCitationBlock from '../components/AiCitationBlock';
 import { PRIMARY_RATE_URL } from '../config/seo';
-import { travelGuidePath } from '../config/travelGuide';
 import NewsletterSignup from '../components/NewsletterSignup';
 import SocialShare from '../components/SocialShare';
 import LazyErrorBoundary from '../components/LazyErrorBoundary';
@@ -392,30 +391,12 @@ function Home() {
               {language === 'es' ? 'No hay una lectura nueva. Reintentando…' : 'No new reading yet. Retrying…'}
             </p>
           )}
-          <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
-            <Link
-              to={PRIMARY_RATE_URL}
-              className="inline-flex h-10 items-center justify-center rounded-xl bg-sky-500 px-3.5 text-xs font-bold text-white"
-            >
-              {language === 'es' ? 'Cotización hoy' : 'Today’s quote'}
-            </Link>
-            <Link
-              to="/calculadora"
-              className="inline-flex h-10 items-center justify-center rounded-xl border border-gray-300 dark:border-gray-600 bg-white/80 dark:bg-gray-800/80 px-3.5 text-xs font-semibold text-gray-800 dark:text-gray-100"
-            >
+          <div className="mt-3 flex flex-col items-center gap-2">
+            <BinanceButton placement="home_mobile_hero" className="h-11 w-full max-w-xs justify-center">
+              {language === 'es' ? 'Comprar en Binance' : 'Buy on Binance'}
+            </BinanceButton>
+            <Link to="/calculadora" className="text-xs font-medium text-sky-700 dark:text-sky-300">
               {language === 'es' ? 'Calculadora' : 'Calculator'}
-            </Link>
-            <a
-              href="#price-alerts"
-              className="inline-flex h-10 items-center justify-center rounded-xl border border-gray-300 dark:border-gray-600 bg-white/80 dark:bg-gray-800/80 px-3.5 text-xs font-semibold text-gray-800 dark:text-gray-100"
-            >
-              {language === 'es' ? 'Crear alerta' : 'Set alert'}
-            </a>
-            <Link
-              to={travelGuidePath(language)}
-              className="inline-flex h-10 items-center justify-center rounded-xl border border-gray-300 dark:border-gray-600 bg-white/80 dark:bg-gray-800/80 px-3.5 text-xs font-semibold text-gray-800 dark:text-gray-100"
-            >
-              {language === 'es' ? 'Guía' : 'Guide'}
             </Link>
           </div>
         </div>

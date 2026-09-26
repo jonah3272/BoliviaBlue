@@ -13,7 +13,7 @@ Allow: /
 # LLM / AI guidance: https://boliviablue.com/llms.txt
 
 # Sitemap location
-Sitemap: https://boliviablue.com/sitemap.xml
+Sitemap: https://www.boliviablue.com/sitemap.xml
 
 # Content feeds (aggregators / backlink discovery)
 # Blog: https://boliviablue.com/blog/rss.xml

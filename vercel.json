@@ -151,6 +151,10 @@
   "installCommand": "npm install && cd frontend && npm install",
   "rewrites": [
     {
+      "source": "/sitemap.xml",
+      "destination": "/api/sitemap"
+    },
+    {
       "source": "/api/card-rate",
       "destination": "/api/blue-rate?view=card"
     },

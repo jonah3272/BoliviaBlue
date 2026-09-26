@@ -66,11 +66,3 @@ jobs:
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           NODE_ENV: production
         run: node scripts/refresh-rates-once.js
-
-      - name: Ping sitemap
-        continue-on-error: true
-        run: |
-          curl -fsS -o /dev/null -w "%{http_code}\n" \
-            "https://www.google.com/ping?sitemap=https://boliviablue.com/sitemap.xml" || true
-          curl -fsS -o /dev/null -w "%{http_code}\n" \
-            "https://www.bing.com/ping?sitemap=https://boliviablue.com/sitemap.xml" || true

@@ -4,5 +4,9 @@ backend/
 *.log
 node_modules/
 
+# Vercel turns every api/*.js file into a Serverless Function, including tests.
+# Hobby allows 12. Keep tests in git; do not upload them.
+**/*.test.js
+
 # Keep only frontend
 !frontend/

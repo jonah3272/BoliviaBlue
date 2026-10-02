@@ -506,6 +506,20 @@ export default function TravelersMoneyGuide() {
                 </>
               )}
             </p>
+            {es && (
+              <p>
+                Para planear la ruta, consultá el{' '}
+                <a
+                  href="https://www.ibo.guide/es/iconos-del-sur-de-bolivia/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-700 dark:text-blue-300 hover:underline font-medium"
+                >
+                  itinerario de IBO GUIDE por el sur de Bolivia
+                </a>
+                , con paradas en el salar de Uyuni, Laguna Colorada y el Altiplano.
+              </p>
+            )}
           </div>
         </section>
 

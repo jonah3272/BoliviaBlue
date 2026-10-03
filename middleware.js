@@ -12,9 +12,9 @@ export const config = {
   matcher: [
     '/',
     '/index.html',
-    '/:page(dolar-blue-hoy|dolar-paralelo-bolivia-en-vivo|cuanto-esta-dolar-bolivia|cotiza-dolar-paralelo|euro-a-boliviano|real-a-boliviano|peso-a-boliviano|sol-a-boliviano|peso-argentino-a-boliviano|peso-chileno-a-boliviano|dolar-blue-santa-cruz|dolar-blue-la-paz|dolar-blue-cochabamba|prensa|guia-dinero-bolivia|bolivia-money-guide)',
-    '/:page(dolar-blue-hoy|dolar-paralelo-bolivia-en-vivo|cuanto-esta-dolar-bolivia|cotiza-dolar-paralelo|euro-a-boliviano|real-a-boliviano|peso-a-boliviano|sol-a-boliviano|peso-argentino-a-boliviano|peso-chileno-a-boliviano|dolar-blue-santa-cruz|dolar-blue-la-paz|dolar-blue-cochabamba|prensa|guia-dinero-bolivia|bolivia-money-guide)/',
-    '/:page(dolar-blue-hoy|dolar-paralelo-bolivia-en-vivo|cuanto-esta-dolar-bolivia|cotiza-dolar-paralelo|euro-a-boliviano|real-a-boliviano|peso-a-boliviano|sol-a-boliviano|peso-argentino-a-boliviano|peso-chileno-a-boliviano|dolar-blue-santa-cruz|dolar-blue-la-paz|dolar-blue-cochabamba|prensa|guia-dinero-bolivia|bolivia-money-guide)/index.html',
+    '/:page(dolar-blue-hoy|bolivian-blue|dolar-paralelo-bolivia-en-vivo|cuanto-esta-dolar-bolivia|cotiza-dolar-paralelo|euro-a-boliviano|real-a-boliviano|peso-a-boliviano|sol-a-boliviano|peso-argentino-a-boliviano|peso-chileno-a-boliviano|dolar-blue-santa-cruz|dolar-blue-la-paz|dolar-blue-cochabamba|prensa|guia-dinero-bolivia|bolivia-money-guide)',
+    '/:page(dolar-blue-hoy|bolivian-blue|dolar-paralelo-bolivia-en-vivo|cuanto-esta-dolar-bolivia|cotiza-dolar-paralelo|euro-a-boliviano|real-a-boliviano|peso-a-boliviano|sol-a-boliviano|peso-argentino-a-boliviano|peso-chileno-a-boliviano|dolar-blue-santa-cruz|dolar-blue-la-paz|dolar-blue-cochabamba|prensa|guia-dinero-bolivia|bolivia-money-guide)/',
+    '/:page(dolar-blue-hoy|bolivian-blue|dolar-paralelo-bolivia-en-vivo|cuanto-esta-dolar-bolivia|cotiza-dolar-paralelo|euro-a-boliviano|real-a-boliviano|peso-a-boliviano|sol-a-boliviano|peso-argentino-a-boliviano|peso-chileno-a-boliviano|dolar-blue-santa-cruz|dolar-blue-la-paz|dolar-blue-cochabamba|prensa|guia-dinero-bolivia|bolivia-money-guide)/index.html',
   ],
 };
 
@@ -113,6 +113,7 @@ export function formatSnippetTime(iso) {
   if (Number.isNaN(d.getTime())) return null;
   try {
     return new Intl.DateTimeFormat('es-BO', {
+      timeZone: 'America/La_Paz',
       day: 'numeric',
       month: 'numeric',
       year: '2-digit',
@@ -124,14 +125,20 @@ export function formatSnippetTime(iso) {
   }
 }
 
-export function metaForPath(path, buy, sell) {
+export function metaForPath(path, buy, sell, updatedAt = null) {
   if (!buy || !sell) return null;
+  const when = formatSnippetTime(updatedAt);
 
   switch (path) {
     case '/dolar-blue-hoy':
       return {
         title: `Dólar Blue Hoy Bolivia: Compra ${buy} · Venta ${sell}`,
         description: `Dólar blue hoy en Bolivia: compra Bs ${buy} y venta Bs ${sell}. Mercado paralelo actualizado cada 15 min.`,
+      };
+    case '/bolivian-blue':
+      return {
+        title: `Bolivian Blue Today: Buy ${buy} · Sell ${sell}`,
+        description: `Bolivian Blue in Bolivia: buy Bs ${buy}, sell Bs ${sell}. Verified multi-platform P2P median.`,
       };
     case '/dolar-paralelo-bolivia-en-vivo':
       return {
@@ -211,8 +218,8 @@ export function metaForPath(path, buy, sell) {
     case '/':
     default:
       return {
-        title: `Bolivia Blue | Bolivian Blue: Compra ${buy} · Venta ${sell}`,
-        description: `Bolivia Blue (Bolivian Blue): compra Bs ${buy}, venta Bs ${sell}. Dólar blue hoy en Bolivia, mediana P2P.`,
+        title: `Dólar Blue Bolivia: Compra ${buy} · Venta ${sell} | Bolivia Blue`,
+        description: `El dólar paralelo (blue) en Bolivia cotiza hoy en Bs ${buy} para la compra y Bs ${sell} para la venta${when ? `, con lectura verificada el ${when}` : ''}, desde Bolivia Blue.`,
       };
   }
 }
@@ -300,10 +307,9 @@ export function injectHomeShellRates(html, buy, sell, updatedAt) {
   }
 
   const when = formatSnippetTime(updatedAt);
-  const whenBit = when ? ` Última lectura: ${when}.` : '';
-  const sentence =
-    `Dólar Blue en Bolivia hoy: compra Bs ${buy} y venta Bs ${sell}. ` +
-    `Cotización de referencia P2P (USDT), no ventanilla en efectivo.${whenBit}`;
+  const sentence = when
+    ? `El dólar paralelo (blue) en Bolivia cotiza hoy en Bs ${buy} para la compra y Bs ${sell} para la venta, con lectura verificada el ${when}, desde Bolivia Blue.`
+    : `El dólar paralelo (blue) en Bolivia cotiza hoy en Bs ${buy} para la compra y Bs ${sell} para la venta, desde Bolivia Blue.`;
   const safe = escapeHtml(sentence);
 
   const replaced = html.replace(
@@ -321,8 +327,16 @@ export function wantsHtmlDocument(request) {
   return false;
 }
 
+/** Search landings whose first HTML must not keep the last deploy’s rate. */
+const ALWAYS_LIVE_PATHS = new Set([
+  '/',
+  '/dolar-blue-hoy',
+  '/cuanto-esta-dolar-bolivia',
+  '/bolivian-blue',
+]);
+
 export function shouldTransformPath(path, userAgent) {
-  if (path === '/') return true;
+  if (ALWAYS_LIVE_PATHS.has(path)) return true;
   return BOT_RE.test(userAgent || '');
 }
 
@@ -346,6 +360,11 @@ export function metaForPathEn(path, buy, sell) {
       return {
         title: `Blue Dollar Today Bolivia: Buy ${buy} · Sell ${sell}`,
         description: `Blue dollar today in Bolivia: buy Bs ${buy} and sell Bs ${sell}. Parallel market, updated every 15 min.`,
+      };
+    case '/bolivian-blue':
+      return {
+        title: `Bolivian Blue Today: Buy ${buy} · Sell ${sell}`,
+        description: `Bolivian Blue in Bolivia: buy Bs ${buy}, sell Bs ${sell}. Verified multi-platform P2P median.`,
       };
     case '/euro-a-boliviano':
       return {
@@ -497,7 +516,7 @@ export function applyLiveSeo(html, path, rates) {
     };
   }
 
-  const meta = metaForPath(path, pair.buy, pair.sell);
+  const meta = metaForPath(path, pair.buy, pair.sell, pair.updatedAt);
   if (!meta) return null;
 
   let out = replaceMeta(html, meta.title, meta.description);

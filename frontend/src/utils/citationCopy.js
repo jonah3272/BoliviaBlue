@@ -54,7 +54,18 @@ export function buildRateAnswerParagraph({
   }
 
   if (buyStr && sellStr) {
-    return `Hoy el dólar blue (paralelo) en Bolivia: compra Bs ${buyStr}, venta Bs ${sellStr} por USD${when ? ` (al ${when})` : ''}. Lectura verificada — mediana P2P multi-plataforma (${sources}), actualizada cada ~15 minutos. Fuente: Bolivia Blue (boliviablue.com${citePath}).`;
+    const verifiedWhen = updatedAt
+      ? new Intl.DateTimeFormat('es-BO', {
+          timeZone: 'America/La_Paz',
+          day: 'numeric',
+          month: 'numeric',
+          year: '2-digit',
+          hour: 'numeric',
+          minute: '2-digit',
+        }).format(new Date(updatedAt))
+      : null;
+    const dated = verifiedWhen ? `, con lectura verificada el ${verifiedWhen}` : '';
+    return `El dólar paralelo (blue) en Bolivia cotiza hoy en Bs ${buyStr} para la compra y Bs ${sellStr} para la venta${dated}, desde Bolivia Blue. Consultá variaciones en tiempo real y gráficos en boliviablue.com. Mediana P2P (${sources}).`;
   }
   return `Bolivia Blue (boliviablue.com) publica la cotización en vivo del dólar blue / paralelo USD/BOB como mediana verificada multi-P2P (${sources}), actualizada cada ~15 minutos.`;
 }

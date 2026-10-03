@@ -27,6 +27,7 @@ import { formatDateTime } from '../utils/formatters';
 import { useRate } from '../contexts/RateContext';
 import { getWebPage, getBreadcrumbList, getDataFeedItem, getLiveRateDataset } from '../utils/seoSchema';
 import { buildLiveRateSeoMeta, ratesFromBluePayload, liveBobParts, fmtLiveBob } from '../utils/seoRateMeta';
+import { buildRateAnswerParagraph } from '../utils/citationCopy';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import AdSenseAutoAds from '../components/AdSenseAutoAds';
 
@@ -74,6 +75,21 @@ function Home() {
     "@context": "https://schema.org",
     "@type": "FAQPage",
     "mainEntity": language === 'es' ? [
+      {
+        "@type": "Question",
+        "name": "¿A cuánto está el dólar en Bolivia hoy?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": buildRateAnswerParagraph({
+            buy: currentRate?.buy ?? currentRate?.buy_bob_per_usd,
+            sell: currentRate?.sell ?? currentRate?.sell_bob_per_usd,
+            updatedAt: currentRate?.updated_at_iso,
+            sourcesUsed: currentRate?.sources_used,
+            language: 'es',
+            citePath: '/',
+          })
+        }
+      },
       {
         "@type": "Question",
         "name": "¿Qué es el dólar blue?",
@@ -484,7 +500,7 @@ function Home() {
             />
             <div className="mt-4 max-w-md mx-auto rounded-xl border border-sky-200 dark:border-sky-800 bg-white/80 dark:bg-gray-800/80 p-3">
               <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1" htmlFor="home-quick-usd">
-                {language === 'es' ? 'Convertir USD → BOB (compra P2P)' : 'Convert USD → BOB (P2P buy)'}
+                {language === 'es' ? 'Convertir USD → BOB (venta P2P)' : 'Convert USD → BOB (P2P sell)'}
               </label>
               <div className="flex gap-2">
                 <input
@@ -497,15 +513,15 @@ function Home() {
                   className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-base tabular-nums min-h-[44px]"
                 />
                 <div className="flex items-center px-3 rounded-lg bg-sky-50 dark:bg-sky-950 text-sm font-mono font-semibold tabular-nums min-h-[44px] min-w-[7.5rem] justify-end">
-                  {Number.isFinite(Number(quickUsd)) && Number.isFinite(currentRate?.buy)
-                    ? `${(Number(quickUsd) * Number(currentRate.buy)).toFixed(2)} Bs`
+                  {Number.isFinite(Number(quickUsd)) && Number.isFinite(Number(currentRate?.sell))
+                    ? `${(Number(quickUsd) * Number(currentRate.sell)).toFixed(2)} Bs`
                     : '—'}
                 </div>
               </div>
               <Link to="/calculadora" className="mt-2 inline-block text-xs font-medium text-sky-700 dark:text-sky-300">
                 {language === 'es' ? 'Calculadora completa →' : 'Full calculator →'}
               </Link>
-              {Number.isFinite(Number(quickUsd)) && Number.isFinite(currentRate?.buy) && (
+              {Number.isFinite(Number(quickUsd)) && Number.isFinite(Number(currentRate?.sell)) && (
                 <BinanceButton
                   placement="home_quick_convert"
                   className="mt-2 h-11 w-full justify-center text-sm"

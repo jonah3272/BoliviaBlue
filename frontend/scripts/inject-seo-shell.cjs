@@ -143,6 +143,7 @@ function formatSnippetTime(iso) {
   if (Number.isNaN(d.getTime())) return null;
   try {
     return new Intl.DateTimeFormat('es-BO', {
+      timeZone: 'America/La_Paz',
       day: 'numeric',
       month: 'numeric',
       year: '2-digit',
@@ -186,8 +187,8 @@ function applyLiveRatesToRoutes(buy, sell, updatedAt, extra = {}) {
   const when = formatSnippetTime(updatedAt);
 
   const home = ROUTES['/'];
-  home.title = `Bolivia Blue | Bolivian Blue: Compra ${b} · Venta ${s}`;
-  home.description = `Bolivia Blue (Bolivian Blue): compra Bs ${b}, venta Bs ${s}${when ? ` (${when})` : ''}. Dólar blue hoy en Bolivia.`;
+  home.title = `Dólar Blue Bolivia: Compra ${b} · Venta ${s} | Bolivia Blue`;
+  home.description = `El dólar paralelo (blue) en Bolivia cotiza hoy en Bs ${b} para la compra y Bs ${s} para la venta${when ? `, con lectura verificada el ${when}` : ''}, desde Bolivia Blue.`;
   home.shell = fillLiveRateSlots(home.shell, b, s, updatedAt);
 
   const hoy = ROUTES['/dolar-blue-hoy'];
@@ -202,6 +203,13 @@ function applyLiveRatesToRoutes(buy, sell, updatedAt, extra = {}) {
     vivo.title = `Dólar Paralelo Bolivia EN VIVO: ${b} / ${s}`;
     vivo.description = `Dólar paralelo Bolivia EN VIVO: compra Bs ${b} y venta Bs ${s}${when ? ` (${when})` : ''}. Cotización cada 15 min desde P2P USDT.`;
     vivo.shell = fillLiveRateSlots(vivo.shell, b, s, updatedAt);
+  }
+
+  const blue = ROUTES['/bolivian-blue'];
+  if (blue) {
+    blue.title = `Bolivian Blue Today: Buy ${b} · Sell ${s}`;
+    blue.description = `Bolivian Blue in Bolivia: buy Bs ${b}, sell Bs ${s}${when ? ` (${when})` : ''}. Verified multi-platform P2P median.`;
+    blue.shell = fillLiveRateSlots(blue.shell, b, s, updatedAt);
   }
 
   const cuanto = ROUTES['/cuanto-esta-dolar-bolivia'];
@@ -324,7 +332,7 @@ const SHELL_HOME = `
       Compra <span data-live-buy>—</span> · Venta <span data-live-sell>—</span>
     </p>
     <p class="text-base sm:text-lg text-gray-700 max-w-2xl mx-auto" data-seo-rate-sentence>
-      Lectura: <time data-live-when datetime="">—</time> (hora de Bolivia).
+      El dólar paralelo (blue) en Bolivia cotiza hoy en Bs <span data-live-buy>—</span> para la compra y Bs <span data-live-sell>—</span> para la venta, con lectura verificada el <time data-live-when datetime="">—</time>, desde Bolivia Blue.
     </p>
     <p class="text-lg font-semibold text-gray-800">
       100 USD ≈ <span data-live-usd100>—</span> Bs (compra P2P).
@@ -376,8 +384,8 @@ const DATASET_DATOS = {
 /** Route config: path -> { title, description, canonical, shell, getJsonLd } */
 const ROUTES = {
   '/': {
-    title: 'Bolivia Blue | Bolivian Blue',
-    description: 'Bolivia Blue (Bolivian Blue): compra y venta del dólar blue hoy en Bolivia. Mediana P2P.',
+    title: 'Dólar Blue Bolivia | Bolivia Blue',
+    description: 'El dólar paralelo (blue) en Bolivia: lectura verificada desde Bolivia Blue. Variaciones en tiempo real y gráficos.',
     canonical: BASE_URL + '/',
     shell: SHELL_HOME,
     getJsonLd: () => buildStaticJsonLd('/', 'Inicio', 'Dólar Blue Bolivia Hoy', 'Dólar blue Bolivia hoy: compra y venta de referencia P2P (USDT), actualizadas cada 15 min.', [])
@@ -449,7 +457,7 @@ const ROUTES = {
 <main class="max-w-7xl mx-auto px-4 py-8" data-seo-shell="bolivian-blue">
   <div class="text-center space-y-4 mb-8">
     <h1 class="text-3xl sm:text-5xl font-bold text-gray-900">Bolivian Blue – Bolivia Blue Dollar Exchange Rate</h1>
-    <p class="text-base text-gray-600 max-w-2xl mx-auto">This page is for readers looking for the Bolivia blue dollar rate in English. The Bolivian Blue is the parallel market rate used by millions in Bolivia; we update it every 15 minutes.</p>
+    <p class="text-base text-gray-600 max-w-2xl mx-auto">Bolivian Blue today: buy <span data-live-buy>—</span> · sell <span data-live-sell>—</span> Bs per USD. Reading: <time data-live-when datetime="">—</time> (Bolivia time). Multi-platform P2P median, updated every 15 minutes.</p>
     <nav class="flex flex-wrap justify-center gap-3 mt-4" aria-label="Related links">
       <a href="/" class="text-blue-600 font-medium">Home</a>
       <a href="/dolar-blue-hoy" class="text-blue-600 font-medium">Blue dollar today</a>
@@ -777,7 +785,7 @@ const ROUTES = {
     shell: `
 <main class="max-w-3xl mx-auto px-4 py-8" data-seo-shell="prensa">
   <div class="text-center space-y-4 mb-8">
-    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">Kit de prensa y backlinks</h1>
+    <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">Kit de prensa</h1>
     <p class="text-base text-gray-700 max-w-2xl mx-auto">Cita lista para medios: el dólar blue (paralelo) en Bolivia cotiza hoy compra <span data-live-buy>—</span> · venta <span data-live-sell>—</span> Bs por USD. Lectura: <time data-live-when datetime="">—</time>. 100 USD ≈ <span data-live-usd100>—</span> Bs (compra P2P, no efectivo ni BCB).</p>
     <p class="text-sm text-gray-600 max-w-2xl mx-auto">CSV 30 días: <a href="/api/historical-data.csv?range=30d" class="text-blue-600 font-medium">descargar CSV</a>. Metodología: <a href="/fuente-de-datos" class="text-blue-600 font-medium">fuente de datos</a>. Widget: <a href="/widget" class="text-blue-600 font-medium">embed</a>. Iframe: <a href="/embed.html" class="text-blue-600 font-medium">embed.html</a>.</p>
     <nav class="flex flex-wrap justify-center gap-3 mt-4" aria-label="Enlaces relacionados">
@@ -989,6 +997,9 @@ async function main() {
     '/dolar-paralelo-bolivia-en-vivo',
     '/cuanto-esta-dolar-bolivia',
     '/bolivian-blue',
+    '/dolar-blue-santa-cruz',
+    '/dolar-blue-la-paz',
+    '/dolar-blue-cochabamba',
     '/que-es-dolar-blue',
     '/datos-historicos',
     '/cotiza-dolar-paralelo',

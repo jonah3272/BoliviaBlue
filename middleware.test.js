@@ -117,9 +117,9 @@ describe('homepage shell injection', () => {
   it('injects visible buy/sell into data-seo-shell paragraph', () => {
     const out = injectHomeShellRates(SHELL_FIXTURE, '12.35', '12.68', '2026-08-01T20:00:00.000Z');
     assert.match(out, /data-seo-shell="home"/);
-    assert.match(out, /compra Bs 12\.35 y venta Bs 12\.68/);
-    assert.match(out, /Referencia P2P|mercado paralelo|USDT/);
-    assert.match(out, /Última lectura:/);
+    assert.match(out, /Bs 12\.35 para la compra y Bs 12\.68 para la venta/);
+    assert.match(out, /lectura verificada el/);
+    assert.match(out, /desde Bolivia Blue/);
     assert.match(out, /href="\/dolar-blue-hoy"/);
     assert.match(out, /id="root"/);
     assert.equal((out.match(/<h1\b/gi) || []).length, 1);
@@ -129,8 +129,8 @@ describe('homepage shell injection', () => {
 
   it('omits timestamp when updatedAt is null', () => {
     const out = injectHomeShellRates(SHELL_FIXTURE, '10.00', '10.10', null);
-    assert.match(out, /compra Bs 10\.00 y venta Bs 10\.10/);
-    assert.doesNotMatch(out, /Última lectura:/);
+    assert.match(out, /Bs 10\.00 para la compra y Bs 10\.10 para la venta/);
+    assert.doesNotMatch(out, /lectura verificada el/);
   });
 });
 
@@ -146,9 +146,10 @@ describe('applyLiveSeo', () => {
     const { html } = applied;
     const meta = metaForPath('/', rates.buy, rates.sell);
     assert.match(html, new RegExp(`<title>${meta.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</title>`));
-    assert.match(html, /compra Bs 12\.34 y venta Bs 12\.56/);
+    assert.match(html, /Bs 12\.34 para la compra y Bs 12\.56 para la venta/);
+    assert.match(html, /desde Bolivia Blue/);
     assert.match(html, new RegExp(`og:title" content="${meta.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`));
-    assert.match(html, /twitter:description" content="Bolivia Blue:/);
+    assert.match(html, /twitter:description" content="El dólar paralelo \(blue\) en Bolivia cotiza hoy/);
   });
 
   it('returns null when rates are missing (caller must keep original shell)', () => {
@@ -157,12 +158,15 @@ describe('applyLiveSeo', () => {
 });
 
 describe('request gating helpers', () => {
-  it('transforms homepage for every UA; other routes only for bots', () => {
+  it('refreshes homepage and key search pages for every UA; other routes only for bots', () => {
     assert.equal(shouldTransformPath('/', 'Mozilla/5.0'), true);
     assert.equal(shouldTransformPath('/', 'Googlebot'), true);
-    assert.equal(shouldTransformPath('/dolar-blue-hoy', 'Mozilla/5.0'), false);
+    assert.equal(shouldTransformPath('/dolar-blue-hoy', 'Mozilla/5.0'), true);
+    assert.equal(shouldTransformPath('/cuanto-esta-dolar-bolivia', 'Mozilla/5.0'), true);
+    assert.equal(shouldTransformPath('/bolivian-blue', 'Mozilla/5.0'), true);
+    assert.equal(shouldTransformPath('/cotiza-dolar-paralelo', 'Mozilla/5.0'), false);
     assert.equal(shouldTransformPath('/dolar-blue-hoy', 'Googlebot'), true);
-    assert.equal(shouldTransformPath('/dolar-blue-hoy', 'bingbot'), true);
+    assert.equal(shouldTransformPath('/cotiza-dolar-paralelo', 'bingbot'), true);
   });
 
   it('skips non-HTML Accept headers', () => {
@@ -232,7 +236,8 @@ describe('GET vs HEAD homepage handling', () => {
       assert.ok(res instanceof Response);
       assert.equal(res.headers.get('x-bb-live-seo'), '1');
       const body = await res.text();
-      assert.match(body, /compra Bs 12\.34 y venta Bs 12\.56/);
+      assert.match(body, /Bs 12\.34 para la compra y Bs 12\.56 para la venta/);
+      assert.match(body, /desde Bolivia Blue/);
       assert.equal(calls.filter((c) => c.url.includes('/api/blue-rate')).length, 1);
     } finally {
       globalThis.fetch = originalFetch;

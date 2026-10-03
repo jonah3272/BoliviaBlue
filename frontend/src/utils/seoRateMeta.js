@@ -16,6 +16,7 @@ function formatSnippetTime(iso, language = 'es') {
   if (Number.isNaN(d.getTime())) return null;
   try {
     return new Intl.DateTimeFormat(language === 'es' ? 'es-BO' : 'en-US', {
+      timeZone: 'America/La_Paz',
       day: 'numeric',
       month: 'numeric',
       year: '2-digit',
@@ -30,12 +31,12 @@ function formatSnippetTime(iso, language = 'es') {
 const PAGE_COPY = {
   home: {
     es: {
-      titleWith: (b, s) => `Bolivia Blue | Bolivian Blue: Compra ${b} · Venta ${s}`,
-      titleFallback: 'Bolivia Blue | Dólar Blue Hoy, lectura P2P verificada',
+      titleWith: (b, s) => `Dólar Blue Bolivia: Compra ${b} · Venta ${s} | Bolivia Blue`,
+      titleFallback: 'Dólar Blue Bolivia | Bolivia Blue',
       descWith: (b, s, when) =>
-        `Bolivia Blue (Bolivian Blue): compra Bs ${b}, venta Bs ${s}${when ? ` (${when})` : ''}. Dólar blue hoy en Bolivia.`,
+        `El dólar paralelo (blue) en Bolivia cotiza hoy en Bs ${b} para la compra y Bs ${s} para la venta${when ? `, con lectura verificada el ${when}` : ''}, desde Bolivia Blue.`,
       descFallback:
-        'Bolivia Blue: dólar blue hoy en Bolivia, lectura verificada, mediana multi-plataforma P2P. Gratis, sin registro.',
+        'El dólar paralelo (blue) en Bolivia: lectura verificada desde Bolivia Blue. Variaciones en tiempo real y gráficos.',
     },
     en: {
       titleWith: (b, s) => `Bolivian Blue | Bolivia Blue: Buy ${b} · Sell ${s}`,

@@ -8,7 +8,7 @@
  * - dateModified: ISO 8601; use real rate timestamp when available
  */
 
-import { SITE_NAME, SITE_NAME_ALT, SITE_URL } from '../config/brand';
+import { CONTACT_EMAIL, SITE_NAME, SITE_NAME_ALT, SITE_URL } from '../config/brand';
 import { buildRateAnswerParagraph, formatP2pSourceList } from './citationCopy';
 
 export const BASE_URL = SITE_URL;
@@ -56,7 +56,7 @@ export function getOrganizationSchema(language = 'es') {
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'customer support',
-      email: 'info@boliviablue.com',
+      email: CONTACT_EMAIL,
       availableLanguage: ['Spanish', 'English'],
       url: `${BASE_URL}/contacto`
     },
@@ -294,8 +294,6 @@ export function getLiveRateDataset(rate, language = 'es', url = '/dolar-blue-hoy
 /** FAQPage for /dolar-blue-hoy — answers aligned with visible AiCitationBlock text. */
 export function getDolarBlueHoyFAQSchema(rate, language = 'es') {
   const es = language === 'es';
-  const buy = fmtRateSchema(rate?.buy_bob_per_usd ?? rate?.buy);
-  const sell = fmtRateSchema(rate?.sell_bob_per_usd ?? rate?.sell);
   const sources = formatP2pSourceList(rate?.sources_used, language);
   const answerText = buildRateAnswerParagraph({
     buy: rate?.buy_bob_per_usd ?? rate?.buy,
@@ -318,9 +316,7 @@ export function getDolarBlueHoyFAQSchema(rate, language = 'es') {
           name: '¿Cuánto está el dólar blue hoy?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: buy && sell
-              ? `Hoy el dólar blue en Bolivia cotiza aproximadamente a Bs ${buy} (compra) y Bs ${sell} (venta) por USD. Fuente: Bolivia Blue, mediana P2P (${sources}).`
-              : answerText,
+            text: answerText,
           },
         },
         {

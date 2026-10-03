@@ -12,6 +12,7 @@ const BlueChart = lazy(() => import('../components/BlueChart'));
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import { Link } from 'react-router-dom';
 import { fetchBlueHistory } from '../utils/api';
+import { historicalTableData, checkExtendedExportService } from '../utils/historicalTable';
 import { BASE_URL, getDataset, getWebPage, getBreadcrumbList } from '../utils/seoSchema';
 import { getApiEndpoint } from '../utils/apiUrl';
 import {
@@ -50,6 +51,18 @@ function DatosHistoricos() {
   const [exportFormMessage, setExportFormMessage] = useState(null);
   const [exportFormError, setExportFormError] = useState(null);
   const [showOfficial, setShowOfficial] = useState(false);
+  const [extendedExportAvailable, setExtendedExportAvailable] = useState(false);
+  const [exportServiceCheck, setExportServiceCheck] = useState(0);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 4000);
+    let cancelled = false;
+    checkExtendedExportService(import.meta.env.VITE_API_URL, { signal: controller.signal }).then((available) => {
+      if (!cancelled) setExtendedExportAvailable(available);
+    });
+    return () => { cancelled = true; clearTimeout(timeout); controller.abort(); };
+  }, [exportServiceCheck]);
 
   useEffect(() => {
     try {
@@ -161,18 +174,14 @@ function DatosHistoricos() {
   const clientCsvNeedsUnlock = EXTENDED_PAGE_RANGES.has(selectedRange) && !exportToken;
 
   useEffect(() => {
-    const loadHistory = async () => {
-      try {
-        setLoading(true);
-        const data = await fetchBlueHistory(selectedRange);
-        setHistoryData(data);
-      } catch (error) {
-        console.error('Error loading history:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadHistory();
+    let cancelled = false;
+    setLoading(true);
+    setHistoryData(null);
+    fetchBlueHistory(selectedRange)
+      .then((data) => { if (!cancelled) setHistoryData(historicalTableData(data)); })
+      .catch((error) => { if (!cancelled) console.error('Error loading history:', error); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
   }, [selectedRange]);
 
   const breadcrumbs = [
@@ -223,8 +232,8 @@ function DatosHistoricos() {
           '@type': 'Answer',
           text:
             language === 'es'
-              ? `Podés bajar una muestra CSV o JSON de hasta 4.000 observaciones recientes sin registro. ${HAS_EXTENDED_EXPORT_BACKEND ? 'El formulario de email habilita rangos ampliados con un máximo de 50.000 filas; consultá la cobertura real del archivo.' : 'La descarga ampliada automática no está disponible aquí; contactanos para solicitarla.'}`
-              : `You can download a CSV or JSON sample of up to 4,000 recent observations without signing up. ${HAS_EXTENDED_EXPORT_BACKEND ? 'The email form unlocks extended ranges capped at 50,000 rows; check the file’s actual coverage.' : 'Extended automatic downloads are unavailable here; contact us to request access.'}`,
+              ? `Podés bajar una muestra CSV o JSON de hasta 4.000 observaciones recientes sin registro. ${extendedExportAvailable ? 'El formulario de email habilita rangos ampliados con un máximo de 50.000 filas; consultá la cobertura real del archivo.' : 'La descarga ampliada automática no está disponible aquí; contactanos para solicitarla.'}`
+              : `You can download a CSV or JSON sample of up to 4,000 recent observations without signing up. ${extendedExportAvailable ? 'The email form unlocks extended ranges capped at 50,000 rows; check the file’s actual coverage.' : 'Extended automatic downloads are unavailable here; contact us to request access.'}`,
         },
       },
       {
@@ -307,7 +316,7 @@ function DatosHistoricos() {
             <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-gray-600 dark:text-gray-300">
               {language === 'es' ? (
                 <>
-                  Gráfico y tabla por período. Fuente Binance P2P, misma que la{' '}
+                  Gráfico y tabla por período. Referencia P2P, misma que la{' '}
                   <Link
                     to="/"
                     onClick={() =>
@@ -341,7 +350,7 @@ function DatosHistoricos() {
                 </>
               ) : (
                 <>
-                  Chart and table by period. Binance P2P source, same as the{' '}
+                  Chart and table by period. P2P reference, same as the{' '}
                   <Link
                     to="/"
                     onClick={() =>
@@ -475,8 +484,8 @@ function DatosHistoricos() {
                 </h2>
                 <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                   {language === 'es'
-                    ? 'Hasta 50 filas visibles; serie completa en descargas o en el gráfico.'
-                    : 'Up to 50 visible rows; full series via downloads or the chart.'}
+                    ? 'Hasta 50 filas visibles; muestras con cobertura indicada en las descargas o en el gráfico.'
+                    : 'Up to 50 visible chart observations; downloads are separate, capped samples.'}
                 </p>
               </div>
               <div
@@ -600,7 +609,7 @@ function DatosHistoricos() {
           </div>
 
           <div className="space-y-6 p-5 sm:p-8">
-            {HAS_EXTENDED_EXPORT_BACKEND ? <div className="rounded-xl border-2 border-indigo-300/80 bg-indigo-50/60 p-5 dark:border-indigo-700 dark:bg-indigo-950/30 sm:p-6">
+            {extendedExportAvailable ? <div className="rounded-xl border-2 border-indigo-300/80 bg-indigo-50/60 p-5 dark:border-indigo-700 dark:bg-indigo-950/30 sm:p-6">
             <p className="text-[11px] font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-300">
               {language === 'es' ? 'Más valor — mismo precio (gratis)' : 'More value — still free'}
             </p>
@@ -690,6 +699,7 @@ function DatosHistoricos() {
                   ? 'La descarga automática ampliada no está disponible aquí. Los archivos públicos son muestras limitadas, no el historial completo. '
                   : 'Extended automatic downloads are unavailable here. Public files are bounded samples, not the full archive. '}
                 <Link to="/contacto" className="text-blue-600 underline">{language === 'es' ? 'Solicitar acceso ampliado' : 'Request extended access'}</Link>
+                {HAS_EXTENDED_EXPORT_BACKEND && <button type="button" onClick={() => setExportServiceCheck((value) => value + 1)} className="ml-3 text-blue-600 underline">{language === 'es' ? 'Reintentar conexión' : 'Retry connection'}</button>}
               </p>
             )}
 

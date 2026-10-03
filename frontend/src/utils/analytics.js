@@ -536,11 +536,10 @@ export const trackApiError = (endpoint, errorMessage, statusCode) => {
 /**
  * Track conversions (key actions)
  */
-export const trackConversion = (conversionType, value = 0, currency = 'USD') => {
+export const trackConversion = (conversionType, value, currency) => {
   trackEvent('conversion', {
     conversion_type: conversionType, // 'alert_signup', 'newsletter_signup', 'calculator_use'
-    value: value,
-    currency: currency,
+    ...(Number.isFinite(value) && typeof currency === 'string' && /^[A-Z]{3}$/.test(currency) ? { value, currency } : {}),
     event_category: 'Conversions',
     event_label: conversionType,
   });

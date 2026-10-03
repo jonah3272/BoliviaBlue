@@ -3,7 +3,7 @@
  * Uses trackEvent from analytics.js (gtag). See ANALYTICS_EVENT_PLAN.md.
  */
 
-import { trackEvent, trackConversion } from './analytics';
+import { trackEvent } from './analytics';
 
 function baseParams(overrides = {}) {
   const path =
@@ -29,7 +29,6 @@ export function trackRateAlertSubmitted({ language, alert_type, direction, thres
     threshold: threshold != null ? String(threshold) : undefined,
   });
   trackEvent('rate_alert_submitted', params);
-  trackConversion('rate_alert_submitted', parseFloat(threshold) || 0);
 }
 
 export function trackCalculatorUsed({ language, from_currency, to_currency, use_official }) {
@@ -41,7 +40,6 @@ export function trackCalculatorUsed({ language, from_currency, to_currency, use_
     use_official: use_official === true,
   });
   trackEvent('calculator_used', params);
-  trackConversion('calculator_used');
 }
 
 export function trackHistoricalDownloadCsv({ language, range, source }) {
@@ -117,7 +115,6 @@ export function trackNewsletterSignupStarted({ language, source }) {
 
 export function trackNewsletterSignupCompleted({ language, source }) {
   trackEvent('newsletter_signup_completed', baseParams({ language, source: source || 'unknown' }));
-  trackConversion('newsletter_signup_completed');
 }
 
 export function trackOutboundSourceClicked({ language, destination, link_label }) {
@@ -129,7 +126,7 @@ export function trackOutboundSourceClicked({ language, destination, link_label }
 }
 
 /**
- * Primary monetization event — mark as GA4 key conversion.
+ * Outbound referral intent only. This is not a confirmed signup, trade or revenue event.
  * partner: binance | airtm | eldorado | takenos | meru | whatsapp
  * placement: home_funnel | buy_page | banner | header | mobile_menu | plataformas | …
  */
@@ -149,7 +146,6 @@ export function trackReferralClicked({
     page_type: 'referral',
   });
   trackEvent('referral_clicked', params);
-  trackConversion('referral_clicked');
   // Keep legacy outbound event for historical reports
   trackEvent('outbound_source_clicked', params);
 }
@@ -196,7 +192,6 @@ export function trackExportLeadSubmitted({ language, source }) {
     page_type: 'historical',
     source: source || 'historical_extended_form',
   }));
-  trackConversion('export_lead_submitted');
 }
 
 export function trackCommercialAccessClicked({ language, destination, link_label }) {

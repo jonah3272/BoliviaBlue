@@ -88,7 +88,7 @@ function NewsletterSignup({ source = 'homepage', compact = false }) {
   if (compact) {
     return (
       <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
-        <form onSubmit={handleSubmit} className="flex gap-2">
+        <form onSubmit={handleSubmit} className="google-anno-skip flex flex-col sm:flex-row gap-2">
           <input
             type="email"
             value={email}
@@ -99,12 +99,12 @@ function NewsletterSignup({ source = 'homepage', compact = false }) {
             onFocus={markSignupStarted}
             placeholder={language === 'es' ? 'Tu email' : 'Your email'}
             required
-            className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full min-w-0 flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
           <button
             type="submit"
             disabled={isSubmitting}
-            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full sm:w-auto shrink-0 px-4 sm:px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting
               ? (language === 'es' ? 'Enviando...' : 'Sending...')

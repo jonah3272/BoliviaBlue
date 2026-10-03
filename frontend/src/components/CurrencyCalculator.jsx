@@ -587,9 +587,10 @@ function CurrencyCalculator() {
                       placement="calculator_result"
                       className="h-11 w-full text-sm"
                     >
-                      {es ? 'Comprá en Binance' : 'Buy on Binance'}
+                      {language === 'es' ? 'Ver invitación Binance' : 'View Binance invitation'}
                     </BinanceButton>
                   )}
+                  {!useOfficial && <p className="google-anno-skip text-[11px] text-gray-500 dark:text-gray-400">{es ? 'Enlace de referido; podemos recibir una comisión. La cotización es una referencia, no una oferta garantizada.' : 'Referral link; we may earn a commission. The quote is a reference, not a guaranteed offer.'}</p>}
                 </div>
               )}
 

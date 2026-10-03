@@ -39,22 +39,22 @@ export default function RateBinanceCta({ placement = 'rate_binance', midRate = n
   return (
     <div
       ref={rootRef}
-      className="rounded-xl border border-amber-200/70 dark:border-amber-900/40 bg-white/95 dark:bg-gray-800/95 p-4 sm:p-5"
+      className="google-anno-skip rounded-xl border border-amber-200/70 dark:border-amber-900/40 bg-white/95 dark:bg-gray-800/95 p-4 sm:p-5"
       data-rate-binance={placement}
     >
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
         <div className="min-w-0 flex-1 text-center sm:text-left">
           <p className="text-sm font-bold text-gray-900 dark:text-white">
-            {es ? 'Comprá USDT al paralelo' : 'Buy USDT at the parallel rate'}
+            {es ? 'Explorá Binance P2P' : 'Explore Binance P2P'}
           </p>
           <p className="mt-0.5 text-xs text-gray-600 dark:text-gray-400">
             {rateLabel
               ? es
-                ? `~${rateLabel} Bs · Binance P2P, el camino más usado en Bolivia.`
-                : `~${rateLabel} Bs · Binance P2P, the most used path in Bolivia.`
+                ? `~${rateLabel} Bs de referencia · el precio de cada oferta puede ser distinto.`
+                : `~${rateLabel} Bs reference · individual offer prices may differ.`
               : es
-                ? 'Binance P2P, el camino más usado en Bolivia para acercarte al blue.'
-                : 'Binance P2P, the most used path in Bolivia to the blue rate.'}
+                ? 'Revisá ofertas, requisitos y condiciones antes de operar.'
+                : 'Review offers, requirements and terms before trading.'}
           </p>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 shrink-0">
@@ -63,7 +63,7 @@ export default function RateBinanceCta({ placement = 'rate_binance', midRate = n
             placement={placement}
             className="h-11 w-full sm:w-auto justify-center"
           >
-            {es ? 'Comprar en Binance' : 'Buy on Binance'}
+            {language === 'es' ? 'Ver invitación Binance' : 'View Binance invitation'}
           </BinanceButton>
           <Link
             to={BUY_GUIDE_PATH}
@@ -77,10 +77,14 @@ export default function RateBinanceCta({ placement = 'rate_binance', midRate = n
             }
             className="inline-flex h-11 items-center justify-center rounded-lg border border-gray-300 dark:border-gray-600 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/60"
           >
-            {es ? 'Otras opciones' : 'Other options'}
+            {es ? 'Guía para principiantes' : 'Beginner guide'}
           </Link>
         </div>
       </div>
+      <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">
+        {es ? 'Enlace de referido: Bolivia Blue puede recibir una comisión. La invitación está sujeta a condiciones y elegibilidad de Binance; no garantiza una recompensa. ' : 'Referral link: Bolivia Blue may earn a commission. The invitation is subject to Binance terms and eligibility; a reward is not guaranteed. '}
+        <a href="https://p2p.binance.com" target="_blank" rel="noopener noreferrer" className="underline">{es ? 'Ya tengo cuenta: abrir P2P' : 'Already have an account? Open P2P'}</a>
+      </p>
     </div>
   );
 }

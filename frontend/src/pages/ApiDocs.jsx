@@ -125,8 +125,8 @@ function ApiDocs() {
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
             {language === 'es'
-              ? 'API REST gratuita para acceder a datos en tiempo real del dólar blue en Bolivia. Sin autenticación requerida, actualizaciones cada 15 minutos.'
-              : 'Free REST API to access real-time blue dollar data in Bolivia. No authentication required, updates every 15 minutes.'}
+              ? 'API REST gratuita para acceder a datos en tiempo real del dólar blue en Bolivia. Muestras públicas sin autenticación; revisá la fecha de cada observación.'
+              : 'Free REST API to access real-time blue dollar data in Bolivia. Public samples need no authentication; check each observation timestamp.'}
           </p>
         </div>
 
@@ -299,8 +299,8 @@ function ApiDocs() {
 {`async function getBlueRate() {
   const response = await fetch('https://boliviablue.com/api/blue-rate');
   const data = await response.json();
-  console.log('Buy:', data.buy, 'BOB');
-  console.log('Sell:', data.sell, 'BOB');
+  console.log('Buy:', data.buy_bob_per_usd, 'BOB');
+  console.log('Sell:', data.sell_bob_per_usd, 'BOB');
   return data;
 }`}
                 </pre>
@@ -317,8 +317,8 @@ function ApiDocs() {
 def get_blue_rate():
     response = requests.get('https://boliviablue.com/api/blue-rate')
     data = response.json()
-    print(f"Buy: {data['buy']} BOB")
-    print(f"Sell: {data['sell']} BOB")
+    print(f"Buy: {data['buy_bob_per_usd']} BOB")
+    print(f"Sell: {data['sell_bob_per_usd']} BOB")
     return data`}
                 </pre>
               </div>
@@ -359,8 +359,8 @@ def get_blue_rate():
                 </li>
                 <li>
                   {language === 'es'
-                    ? 'Los datos se actualizan cada 15 minutos'
-                    : 'Data updates every 15 minutes'}
+                    ? 'Las actualizaciones dependen de los recolectores; verificá la fecha de la observación'
+                    : 'Updates depend on collection; check the observation timestamp'}
                 </li>
               </ul>
             </div>

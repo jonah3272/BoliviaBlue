@@ -500,6 +500,9 @@ export async function fetchBlueHistory(range = '1W', currency = 'USD') {
       // Calculate 30 days ago more precisely
       startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
       break;
+    case '3M':
+      startDate = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+      break;
     case '1Y':
       startDate = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
       break;
@@ -611,7 +614,7 @@ export async function fetchBlueHistory(range = '1W', currency = 'USD') {
     // Paginate any range that can exceed Supabase's default 1000-row cap.
     // At ~5-min refresh: 1D ≈ 288, 1W ≈ 2016, 1M ≈ 8640 — so 1W+ must paginate
     // or the chart only gets the oldest 1000 points and ends days behind live rates.
-    const needsPagination = range === '1W' || range === '1M' || range === '1Y';
+    const needsPagination = range === '1W' || range === '1M' || range === '3M' || range === '1Y';
     const startDateISO = startDate.toISOString();
     logger.log(`[fetchBlueHistory] Fetching ${range} range: from ${startDateISO} to now${needsPagination ? ' (with pagination)' : ''}`);
     

@@ -94,7 +94,7 @@ function BuyFunnelCTA({
             placement={placement}
             className="h-12 w-full sm:w-auto sm:min-w-[16rem] justify-center text-base"
           >
-            {language === 'es' ? 'Crear cuenta Binance' : 'Create Binance account'}
+            {language === 'es' ? 'Ver invitación Binance' : 'View Binance invitation'}
           </BinanceButton>
         </div>
 

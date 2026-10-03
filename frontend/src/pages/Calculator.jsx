@@ -301,7 +301,7 @@ function Calculator() {
       {/* Navigation */}
       <Navigation />
 
-      <main className="max-w-xl md:max-w-3xl mx-auto px-3 sm:px-4 py-3 sm:py-6 md:py-8 flex flex-col gap-3 sm:gap-5 pb-[max(5rem,calc(3.5rem+env(safe-area-inset-bottom)))] md:pb-8">
+      <main className="google-anno-skip max-w-xl md:max-w-3xl mx-auto px-3 sm:px-4 py-3 sm:py-6 md:py-8 flex flex-col gap-3 sm:gap-5 pb-[max(5rem,calc(3.5rem+env(safe-area-inset-bottom)))] md:pb-8">
         <div className="text-center space-y-1">
           <h1 className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
             {language === 'es' ? 'Calculadora USD/BOB' : 'USD/BOB Calculator'}

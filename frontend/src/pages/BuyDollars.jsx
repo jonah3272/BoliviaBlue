@@ -177,8 +177,8 @@ function BuyDollars() {
           </h1>
           <p className="mt-3 max-w-2xl mx-auto text-base sm:text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
             {es
-              ? 'Cuatro caminos al dólar paralelo. Elegí según lo que necesitás — cuenta USD, tarjeta, o P2P líquido.'
-              : 'Four paths to the parallel dollar. Pick by what you need — USD account, card, or liquid P2P.'}
+              ? 'Compará opciones para manejar dinero o comprar USDT. Disponibilidad, requisitos, comisiones y riesgos dependen de cada proveedor.'
+              : 'Compare options for managing money or buying USDT. Availability, requirements, fees and risks depend on each provider.'}
           </p>
           {midRate != null && (
             <p className="mt-4 inline-flex items-center gap-2 rounded-full border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-800/70 px-4 py-1.5 text-sm text-gray-700 dark:text-gray-200 backdrop-blur">
@@ -205,7 +205,7 @@ function BuyDollars() {
         <PlatformRatesBoard placement="buy_page_platforms" />
       </section>
 
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 space-y-16">
+      <main className="google-anno-skip max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 space-y-16">
         {/* Path picker — entire row is the link */}
         <section id="opciones" className="scroll-mt-24 pt-6">
           <div className="mb-8 max-w-2xl">
@@ -217,8 +217,8 @@ function BuyDollars() {
             </h2>
             <p className="mt-2 text-gray-600 dark:text-gray-400 leading-relaxed">
               {es
-                ? 'Tocá cualquier opción para registrarte con nuestro enlace. Cada una sirve un caso distinto.'
-                : 'Tap any option to sign up with our link. Each one fits a different use case.'}
+                ? 'Cada opción abre la página del proveedor o su invitación. Podemos recibir una comisión; revisá condiciones y elegibilidad.'
+                : 'Each option opens the provider’s page or invitation. We may earn a commission; review terms and eligibility.'}
             </p>
           </div>
 
@@ -297,15 +297,19 @@ function BuyDollars() {
               </h2>
               <p className="mt-2 text-gray-600 dark:text-gray-400 leading-relaxed">
                 {es
-                  ? 'La vía más líquida en Bolivia. Registráte con nuestro enlace y seguí estos pasos.'
-                  : 'The most liquid path in Bolivia. Sign up with our link and follow these steps.'}
+                  ? 'Esta guía explica cómo pagar BOB para recibir USDT. El enlace abre una invitación de Binance; revisá sus condiciones.'
+                  : 'This guide explains paying BOB to receive USDT. The link opens a Binance invitation; review its terms.'}
               </p>
             </div>
             <BinanceButton size="lg" placement="buy_page_primary" className="justify-center shrink-0">
-              {es ? 'Crear cuenta Binance' : 'Create Binance account'}
+              {language === 'es' ? 'Ver invitación Binance' : 'View Binance invitation'}
             </BinanceButton>
           </div>
 
+          <p className="mb-5 text-sm text-gray-600 dark:text-gray-300">
+            {es ? 'USDT no es efectivo USD. Las tasas mostradas son referencias, no precios garantizados. ' : 'USDT is not USD cash. Displayed rates are references, not guaranteed execution prices. '}
+            <a href="https://www.binance.com/en/support/faq/detail/360039384951" target="_blank" rel="noopener noreferrer" className="underline">{es ? 'Instrucciones oficiales de compra' : 'Official buying instructions'}</a>
+          </p>
           <ol className="space-y-0 divide-y divide-amber-200/50 dark:divide-amber-900/40">
             {steps.map((step, i) => (
               <li key={i} className="flex gap-4 py-5 first:pt-0 last:pb-0">
@@ -322,7 +326,7 @@ function BuyDollars() {
                   {step.cta && (
                     <div className="mt-3">
                       <BinanceButton size="md" placement="buy_page_step1">
-                        {es ? 'Registrarse en Binance' : 'Sign up on Binance'}
+                        {language === 'es' ? 'Ver invitación Binance' : 'View Binance invitation'}
                       </BinanceButton>
                     </div>
                   )}
@@ -396,8 +400,8 @@ function BuyDollars() {
           </h2>
           <p className="mt-2 text-sm text-white/60 max-w-md mx-auto">
             {es
-              ? 'Empezá por la opción que mejor encaje. Todos los enlaces son nuestros referrals.'
-              : 'Start with the option that fits best. All links are our referrals.'}
+              ? 'Empezá por la opción que mejor encaje. Los enlaces de invitación pueden generar una comisión para Bolivia Blue.'
+              : 'Start with the option that fits best. Invitation links may earn Bolivia Blue a commission.'}
           </p>
           <div className="mt-6 flex flex-wrap items-center justify-center gap-2.5">
             {partners.map((ad) => (
@@ -444,7 +448,7 @@ function BuyDollars() {
           placement="buy_page_sticky"
           className="flex w-full min-h-[44px] justify-center text-sm"
         >
-          {es ? 'Comprá USDT en Binance' : 'Buy USDT on Binance'}
+          {language === 'es' ? 'Ver invitación Binance' : 'View Binance invitation'}
         </BinanceButton>
       </div>
       <div className="h-[calc(7rem+env(safe-area-inset-bottom))] sm:hidden" aria-hidden />

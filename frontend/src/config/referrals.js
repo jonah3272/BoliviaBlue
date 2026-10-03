@@ -32,19 +32,19 @@ export function getPartnerAds(language = 'es') {
       partner: 'binance',
       href: BINANCE_REFERRAL_LINK,
       brand: 'Binance',
-      highlight: es ? 'USDT al paralelo' : 'USDT at parallel',
-      headlineRest: es ? 'vía P2P' : 'via P2P',
-      headline: es ? 'Comprá USDT al dólar paralelo' : 'Buy USDT at the parallel rate',
+      highlight: es ? 'Explorá Binance' : 'Explore Binance',
+      headlineRest: es ? 'invitación de referido' : 'referral invitation',
+      headline: es ? 'Invitación de Binance' : 'Binance invitation',
       sub: es
-        ? 'La vía más usada en Bolivia para acercarte a la cotización blue.'
-        : 'The most used path in Bolivia to the blue market rate.',
-      pathLabel: es ? 'P2P más líquido' : 'Most liquid P2P',
+        ? 'El enlace abre una invitación; revisá condiciones y elegibilidad. Las ofertas P2P pueden diferir de esta referencia.'
+        : 'The link opens an invitation; review terms and eligibility. P2P offers may differ from this reference.',
+      pathLabel: es ? 'Binance P2P' : 'Binance P2P',
       pathDesc: es
-        ? 'La vía más usada en Bolivia para comprar/vender USDT cerca del dólar blue.'
-        : 'The most used path in Bolivia to buy/sell USDT near the blue rate.',
-      bestFor: es ? 'Comprar cerca del blue' : 'Buy near the blue rate',
-      badge: es ? 'Más usado' : 'Most used',
-      cta: es ? 'Crear cuenta Binance' : 'Create Binance account',
+        ? 'Ofertas P2P de USDT. Revisá límites, medios de pago y precio antes de operar.'
+        : 'USDT P2P offers. Review limits, payment methods and price before trading.',
+      bestFor: es ? 'Comparar ofertas P2P' : 'Compare P2P offers',
+      badge: es ? 'Referido' : 'Referral',
+      cta: es ? 'Ver invitación Binance' : 'View Binance invitation',
       theme: 'binance',
       surface: 'light',
       showQr: false,

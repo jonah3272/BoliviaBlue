@@ -36,8 +36,8 @@ function DataSource() {
   const webPageSchema = getWebPage({
     name: language === 'es' ? 'Metodología y Fuente de Datos | Bolivia Blue' : 'Methodology & Data Source | Bolivia Blue',
     description: language === 'es'
-      ? 'Cómo calculamos el dólar blue en Bolivia: mediana cross-source P2P (Binance, El Dorado, OKX, Bybit), actualización cada 15 min. Para medios, investigadores y desarrolladores.'
-      : 'How we calculate the Bolivia blue dollar rate: cross-source P2P median (Binance, El Dorado, OKX, Bybit), update every 15 min. For media, researchers and developers.',
+      ? 'Cómo calculamos el dólar blue en Bolivia: mediana cross-source P2P (Binance, El Dorado, OKX, Bybit), actualizaciones periódicas. Para medios, investigadores y desarrolladores.'
+      : 'How we calculate the Bolivia blue dollar rate: cross-source P2P median (Binance, El Dorado, OKX, Bybit), periodic updates. For media, researchers and developers.',
     url: '/fuente-de-datos',
     inLanguage: language === 'es' ? 'es-BO' : 'en-US'
   });
@@ -48,14 +48,14 @@ function DataSource() {
     {
       q: language === 'es' ? '¿De dónde vienen los datos del dólar blue?' : 'Where does the blue dollar data come from?',
       a: language === 'es'
-        ? 'Los datos provienen de varias plataformas P2P (Binance, El Dorado, OKX y Bybit cuando responden). Calculamos la mediana de cada plataforma y luego la mediana cross-source; el sistema se actualiza cada 15 minutos.'
-        : 'Data comes from multiple P2P platforms (Binance, El Dorado, OKX and Bybit when available). We compute each platform median, then a cross-source median; the system updates every 15 minutes.'
+        ? 'Los datos provienen de varias plataformas P2P (Binance, El Dorado, OKX y Bybit cuando responden). Calculamos la mediana de cada plataforma y luego la mediana cross-source; el sistema intenta actualizarse periódicamente.'
+        : 'Data comes from multiple P2P platforms (Binance, El Dorado, OKX and Bybit when available). We compute each platform median, then a cross-source median; the system attempts periodic updates.'
     },
     {
       q: language === 'es' ? '¿Con qué frecuencia se actualiza la cotización?' : 'How often is the rate updated?',
       a: language === 'es'
-        ? 'La cotización se actualiza cada 15 minutos. Puedes ver la hora de la última actualización en la página principal y en la API.'
-        : 'The rate is updated every 15 minutes. You can see the time of the last update on the homepage and in the API.'
+        ? 'La cotización intenta actualizarse periódicamente. Puedes ver la hora de la última actualización en la página principal y en la API.'
+        : 'The rate is refreshed periodically when collection succeeds. You can see the time of the last update on the homepage and in the API.'
     },
     {
       q: language === 'es' ? '¿En qué se diferencia el dólar blue del tipo de cambio oficial?' : 'How does the blue dollar differ from the official rate?',
@@ -84,8 +84,8 @@ function DataSource() {
     "url": BASE_URL,
     "logo": `${BASE_URL}/favicon.svg`,
     "description": language === 'es'
-      ? "Plataforma de seguimiento del tipo de cambio del dólar blue en Bolivia. Metodología transparente: referencia P2P, mediana, actualización cada 15 min."
-      : "Tracking platform for the blue dollar exchange rate in Bolivia. Transparent methodology: P2P reference, median, update every 15 min.",
+      ? "Plataforma de seguimiento del tipo de cambio del dólar blue en Bolivia. Metodología transparente: referencia P2P, mediana, actualizaciones periódicas."
+      : "Tracking platform for the blue dollar exchange rate in Bolivia. Transparent methodology: P2P reference, median, periodic updates.",
     "contactPoint": {
       "@type": "ContactPoint",
       "contactType": "Media Inquiries",
@@ -100,8 +100,8 @@ function DataSource() {
           ? 'Metodología y Fuente de Datos | Dólar Blue Bolivia'
           : 'Methodology & Data Source | Bolivia Blue Dollar'}
         description={language === 'es'
-          ? 'Cómo calculamos el dólar blue: plataformas P2P disponibles, mediana entre plataformas, actualización cada 15 min. Diferencia con el tipo oficial. Para medios, investigadores y desarrolladores.'
-          : 'How we calculate the blue dollar: available P2P platforms, median across platforms, update every 15 min. Difference from official rate. For media, researchers and developers.'}
+          ? 'Cómo calculamos el dólar blue: plataformas P2P disponibles, mediana entre plataformas, actualizaciones periódicas. Diferencia con el tipo oficial. Para medios, investigadores y desarrolladores.'
+          : 'How we calculate the blue dollar: available P2P platforms, median across platforms, periodic updates. Difference from official rate. For media, researchers and developers.'}
         keywords={language === 'es'
           ? 'metodología dólar blue, fuente datos bolivia, cómo se calcula dólar blue, Binance P2P bolivia, tipo cambio bolivia, datos periodistas, API dólar blue'
           : 'blue dollar methodology, bolivia data source, how blue dollar is calculated, Binance P2P bolivia, exchange rate bolivia, journalist data, blue dollar API'}
@@ -300,8 +300,8 @@ function DataSource() {
               </li>
               <li>
                 {language === 'es'
-                  ? 'Exportación pública: CSV y JSON por rango (30d, 90d, 1y, all) en URLs estables. Ver enlaces en la misma página.'
-                  : 'Public export: CSV and JSON by range (30d, 90d, 1y, all) at stable URLs. See links on that page.'}
+                  ? 'Exportación pública: CSV y JSON para 30d o una muestra reciente all, hasta 4.000 filas. Los rangos ampliados pertenecen al backend separado y requieren acceso habilitado.'
+                  : 'Public export: CSV and JSON for 30d or a recent all sample, capped at 4,000 rows. Extended ranges use the separate backend and require enabled access.'}
               </li>
               <li>
                 <Link
@@ -338,7 +338,7 @@ function DataSource() {
           </h2>
           <div className="space-y-4 text-gray-700 dark:text-gray-300">
             <ul className="list-disc list-inside space-y-2 ml-4">
-              <li>{language === 'es' ? 'Actualizados cada 15 minutos' : 'Updated every 15 minutes'}</li>
+              <li>{language === 'es' ? 'Intentos de actualización periódicos' : 'Periodic update attempts'}</li>
               <li>{language === 'es' ? 'Basados en datos públicos P2P (USDT/BOB)' : 'Based on public P2P data (USDT/BOB)'}</li>
               <li>{language === 'es' ? 'Calculados con mediana de ofertas (más robusto que el promedio)' : 'Calculated with median of offers (more robust than average)'}</li>
               <li>{language === 'es' ? 'Histórico disponible para análisis y descarga' : 'History available for analysis and download'}</li>
@@ -355,8 +355,8 @@ function DataSource() {
           <div className="space-y-4 text-gray-700 dark:text-gray-300">
             <p>
               {language === 'es'
-                ? 'Ofrecemos acceso programático a la cotización actual y a datos históricos mediante endpoints REST. Los datos se sirven en JSON y se actualizan con la misma frecuencia que la web (cada 15 minutos).'
-                : 'We offer programmatic access to the current rate and historical data via REST endpoints. Data is served in JSON and updates at the same frequency as the website (every 15 minutes).'}
+                ? 'Ofrecemos acceso programático a la cotización actual y a datos históricos mediante endpoints REST. Los datos se sirven en JSON y se actualizan con la misma frecuencia que la web (según las observaciones disponibles).'
+                : 'We offer programmatic access to the current rate and historical data via REST endpoints. Data is served in JSON and updates at the same frequency as the website (as observations become available).'}
             </p>
             <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 font-mono text-sm">
               <code className="text-blue-600 dark:text-blue-400">
@@ -392,8 +392,8 @@ function DataSource() {
             <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
               <p className="font-mono text-sm text-gray-900 dark:text-white">
                 {language === 'es'
-                  ? 'Fuente: Bolivia Blue, boliviablue.com, actualización cada 15 minutos.'
-                  : 'Source: Bolivia Blue, boliviablue.com, updated every 15 minutes.'}
+                  ? 'Fuente: Bolivia Blue, boliviablue.com, actualizaciones periódicas.'
+                  : 'Source: Bolivia Blue, boliviablue.com, periodically updated.'}
               </p>
             </div>
             <p className="text-sm">

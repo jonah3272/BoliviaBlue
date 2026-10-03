@@ -223,7 +223,7 @@ export default function PartnerAdCarousel({
   return (
     <div
       ref={rootRef}
-      className="relative z-20 w-full isolate"
+      className="google-anno-skip relative z-20 w-full isolate"
       data-partner-carousel={placement}
       onMouseEnter={() => {
         pausedRef.current = true;
@@ -276,7 +276,7 @@ export default function PartnerAdCarousel({
                   isDark ? 'text-white/55' : 'text-gray-500 dark:text-gray-400'
                 }`}
               >
-                {ad.brand}
+                {ad.brand} · {language === 'es' ? 'Publicidad / referido' : 'Ad / referral'}
               </span>
             </span>
 

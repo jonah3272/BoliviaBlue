@@ -409,8 +409,9 @@ function Home() {
           )}
           <div className="mt-3 flex flex-col items-center gap-2">
             <BinanceButton placement="home_mobile_hero" className="h-11 w-full max-w-xs justify-center">
-              {language === 'es' ? 'Comprar en Binance' : 'Buy on Binance'}
+              {language === 'es' ? 'Ver invitación Binance' : 'View Binance invitation'}
             </BinanceButton>
+            <p className="text-[11px] text-gray-500 dark:text-gray-400">{language === 'es' ? 'Enlace de referido; podemos recibir una comisión. Aplican condiciones.' : 'Referral link; we may earn a commission. Terms apply.'}</p>
             <Link to="/calculadora" className="text-xs font-medium text-sky-700 dark:text-sky-300">
               {language === 'es' ? 'Calculadora' : 'Calculator'}
             </Link>
@@ -498,11 +499,11 @@ function Home() {
               citePath="/"
               className="mt-4 max-w-3xl mx-auto"
             />
-            <div className="mt-4 max-w-md mx-auto rounded-xl border border-sky-200 dark:border-sky-800 bg-white/80 dark:bg-gray-800/80 p-3">
+            <div className="google-anno-skip mt-4 w-full min-w-0 max-w-md mx-auto rounded-xl border border-sky-200 dark:border-sky-800 bg-white/80 dark:bg-gray-800/80 p-3">
               <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1" htmlFor="home-quick-usd">
                 {language === 'es' ? 'Convertir USD → BOB (venta P2P)' : 'Convert USD → BOB (P2P sell)'}
               </label>
-              <div className="flex gap-2">
+              <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-2">
                 <input
                   id="home-quick-usd"
                   type="number"
@@ -510,9 +511,9 @@ function Home() {
                   inputMode="decimal"
                   value={quickUsd}
                   onChange={(e) => setQuickUsd(e.target.value)}
-                  className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-base tabular-nums min-h-[44px]"
+                  className="w-full min-w-0 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-base tabular-nums min-h-[44px]"
                 />
-                <div className="flex items-center px-3 rounded-lg bg-sky-50 dark:bg-sky-950 text-sm font-mono font-semibold tabular-nums min-h-[44px] min-w-[7.5rem] justify-end">
+                <div className="flex min-w-0 items-center px-2 rounded-lg bg-sky-50 dark:bg-sky-950 text-sm font-mono font-semibold tabular-nums min-h-[44px] break-all justify-end">
                   {Number.isFinite(Number(quickUsd)) && Number.isFinite(Number(currentRate?.sell))
                     ? `${(Number(quickUsd) * Number(currentRate.sell)).toFixed(2)} Bs`
                     : '—'}
@@ -526,16 +527,14 @@ function Home() {
                   placement="home_quick_convert"
                   className="mt-2 h-11 w-full justify-center text-sm"
                 >
-                  {language === 'es'
-                    ? `Comprá $${quickUsd} en Binance`
-                    : `Buy $${quickUsd} on Binance`}
+                  {language === 'es' ? 'Ver invitación Binance' : 'View Binance invitation'}
                 </BinanceButton>
               )}
             </div>
             <p className="mt-2 text-xs text-gray-500 dark:text-gray-400 text-center max-w-md mx-auto">
               {language === 'es'
-                ? 'Es una mediana P2P, no un precio de ventanilla: confirmá el tipo antes de cambiar.'
-                : 'This is a P2P median, not a cash-desk price — confirm the rate before you trade.'}
+                ? 'Referencia P2P: confirmá el precio final antes de operar. La invitación es un enlace de referido; podemos recibir una comisión. Aplican condiciones.'
+                : 'P2P reference: confirm the final price before trading. The invitation is a referral link; we may earn a commission. Terms apply.'}
             </p>
             <p className="mt-3 text-center flex flex-wrap justify-center gap-2">
               <Link

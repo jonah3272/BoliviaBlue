@@ -427,7 +427,7 @@ export default function TravelersMoneyGuide() {
             </p>
             <div className="mt-3 flex flex-wrap gap-3">
               <BinanceButton placement="travelers_guide">
-                {es ? 'Crear cuenta Binance' : 'Create a Binance account'}
+                {language === 'es' ? 'Ver invitación Binance' : 'View Binance invitation'}
               </BinanceButton>
               <Link
                 to="/binance-p2p-bolivia"

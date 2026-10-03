@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { FinancialOfferButton } from './FinancialOfferCard';
+import CashOutGuide from './CashOutGuide';
 import { calculateGuideConversion, guideMarketReference } from '../utils/guideConversion';
 import { ELDORADO_GUIDE_CHECKED, ELDORADO_GUIDE_SOURCES } from '../data/eldoradoGuide';
 
@@ -88,9 +89,13 @@ export default function EldoradoMoneyGuide({ offer, direction, onDirectionChange
       </div>
       <button type="button" onClick={loadExample} className="mt-3 min-h-[44px] py-2 text-left text-sm font-semibold text-sky-700 dark:text-sky-300 underline">{es ? 'Cargar ejemplo didáctico con precio 10 BOB/USDT' : 'Load a learning example at 10 BOB/USDT'}</button>
       {(example[direction].price || example[direction].deduction) && <p className="mt-1 text-xs font-semibold text-amber-800 dark:text-amber-200">{es ? 'Hay un precio o cargo del ejemplo didáctico. No es una cotización actual ni una tarifa de El Dorado.' : 'A hypothetical price or fee from the example remains. It is not a current quote or El Dorado fee.'}</p>}
-      {reference.midpoint !== null && <p className="mt-3 text-xs leading-relaxed text-gray-500 dark:text-gray-400" data-guide-reference>{es ? 'Comparación separada: punto medio del mercado' : 'Separate comparison: market midpoint'} ≈ {number(reference.midpoint, 4)} BOB/USDT. {es ? 'No es el precio de tu orden ni una oferta ejecutable de El Dorado.' : 'It is not your order price or an executable El Dorado offer.'} {reference.stale && <strong>{es ? 'Referencia anterior; verificá la app.' : 'Older reference; check the app.'}</strong>} {reference.updatedAt && <time dateTime={reference.updatedAt}>{new Date(reference.updatedAt).toLocaleString(es ? 'es-BO' : 'en-US')}</time>}</p>}
+      {reference.midpoint !== null && <p className="mt-3 text-xs leading-relaxed text-gray-500 dark:text-gray-400" data-guide-reference>{es ? 'Comparación separada: punto medio del mercado' : 'Separate comparison: market midpoint'} ≈ {number(reference.midpoint, 4)} BOB/USDT. {es ? 'No es el precio de tu orden ni una oferta ejecutable de El Dorado.' : 'It is not your order price or an executable El Dorado offer.'} {reference.stale && <strong>{es ? 'Referencia anterior; verificá la app.' : 'Older reference; check the app.'}</strong>} {reference.updatedAt && <time dateTime={reference.updatedAt}>{new Date(reference.updatedAt).toLocaleString(es ? 'es-BO' : 'en-US', { timeZone: 'America/La_Paz' })}</time>}</p>}
       <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">{es ? 'Para comparar el costo real al comprar: BOB totales pagados ÷ USDT netos recibidos. Al vender: BOB netos recibidos ÷ USDT totales debitados. Revisá también cargos bancarios y de red.' : 'To compare the actual buying cost: total BOB paid ÷ net USDT received. When selling: net BOB received ÷ total USDT debited. Check bank and network charges too.'}</p>
     </section>
+    <CashOutGuide onShowSell={() => {
+      onDirectionChange('sell');
+      document.getElementById('guia')?.scrollIntoView({ block: 'start' });
+    }} />
     <section className="mt-7">
       <h3 className="text-lg font-bold text-gray-900 dark:text-white">{es ? 'Dudas antes de tu primera operación' : 'Questions before your first trade'}</h3>
       {faq.map(([question, answer]) => <details key={question} className="mt-2 border-b border-gray-200 dark:border-gray-700 py-2"><summary className="cursor-pointer py-2 text-sm font-semibold text-gray-900 dark:text-white">{question}</summary><p className="pb-3 text-sm leading-relaxed text-gray-600 dark:text-gray-300">{answer}</p></details>)}

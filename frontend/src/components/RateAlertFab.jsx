@@ -8,7 +8,7 @@ export default function RateAlertFab() {
   const { pathname } = useLocation();
   const hasBuyCta = pathname.replace(/\/+$/, '') === '/comprar-dolares';
   const bottomClass = hasBuyCta
-    ? 'bottom-[calc(8.75rem+env(safe-area-inset-bottom)+env(safe-area-inset-bottom)+var(--bb-ad-reserved-bottom,0px))] sm:bottom-[calc(3.75rem+env(safe-area-inset-bottom)+var(--bb-ad-reserved-bottom,0px))]'
+    ? 'bottom-[calc(3.5rem+env(safe-area-inset-bottom)+var(--bb-buy-cta-height,4.75rem)+0.75rem+var(--bb-ad-reserved-bottom,0px))] sm:bottom-[calc(3.75rem+env(safe-area-inset-bottom)+var(--bb-ad-reserved-bottom,0px))]'
     : 'bottom-[calc(3.75rem+env(safe-area-inset-bottom)+var(--bb-ad-reserved-bottom,0px))]';
 
   const scrollToAlerts = () => {

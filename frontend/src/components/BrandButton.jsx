@@ -1,4 +1,5 @@
-import { BINANCE_REFERRAL_LINK, AIRTM_REFERRAL_LINK } from '../config/referrals';
+import { BINANCE_REFERRAL_LINK, AIRTM_REFERRAL_LINK, getPartnerAds } from '../config/referrals';
+import { useOfferImpression } from '../hooks/useOfferImpression';
 import { useLanguage } from '../contexts/LanguageContext';
 import { trackReferralClicked } from '../utils/analyticsEvents';
 
@@ -9,6 +10,8 @@ export function BinanceButton({
   placement = 'unknown',
 }) {
   const language = useLanguage()?.language || 'es';
+  const offer = getPartnerAds(language).find((row) => row.partner === 'binance');
+  const ref = useOfferImpression({ offer, language, placement });
   const sizeClasses = {
     sm: 'px-4 py-2 text-sm',
     md: 'px-5 py-2.5 text-sm',
@@ -17,6 +20,7 @@ export function BinanceButton({
 
   return (
     <a
+      ref={ref}
       href={BINANCE_REFERRAL_LINK}
       title={language === 'es' ? 'Invitación de Binance (enlace de referido)' : 'Binance invitation (referral link)'}
       target="_blank"
@@ -25,6 +29,7 @@ export function BinanceButton({
         trackReferralClicked({
           language,
           partner: 'binance',
+          offer_id: offer.id, intent: offer.intent, variant: offer.variant,
           placement,
           destination: BINANCE_REFERRAL_LINK,
           link_label: 'binance_referral',
@@ -51,6 +56,8 @@ export function AirtmButton({
   placement = 'unknown',
 }) {
   const language = useLanguage()?.language || 'es';
+  const offer = getPartnerAds(language).find((row) => row.partner === 'airtm');
+  const ref = useOfferImpression({ offer, language, placement });
   const sizeClasses = {
     sm: 'px-4 py-2 text-sm',
     md: 'px-5 py-2.5 text-sm',
@@ -59,6 +66,7 @@ export function AirtmButton({
 
   return (
     <a
+      ref={ref}
       href={AIRTM_REFERRAL_LINK}
       target="_blank"
       rel="noopener noreferrer sponsored"
@@ -66,6 +74,7 @@ export function AirtmButton({
         trackReferralClicked({
           language,
           partner: 'airtm',
+          offer_id: offer.id, intent: offer.intent, variant: offer.variant,
           placement,
           destination: AIRTM_REFERRAL_LINK,
           link_label: 'airtm_referral',

@@ -136,6 +136,9 @@ export function trackReferralClicked({
   placement,
   destination,
   link_label,
+  offer_id,
+  intent,
+  variant,
 }) {
   const params = baseParams({
     language,
@@ -144,6 +147,9 @@ export function trackReferralClicked({
     destination,
     link_label: link_label || partner || destination,
     page_type: 'referral',
+    offer_id,
+    intent,
+    variant,
   });
   trackEvent('referral_clicked', params);
   // Keep legacy outbound event for historical reports
@@ -201,4 +207,9 @@ export function trackCommercialAccessClicked({ language, destination, link_label
     destination,
     link_label,
   }));
+}
+
+// Visible creative exposure only. No client event represents confirmed referral earnings.
+export function trackOfferViewed({ language, partner, offer_id, intent, placement, variant }) {
+  trackEvent('offer_viewed', baseParams({ language, partner, offer_id, intent, placement, variant, page_type: 'financial_offer' }));
 }

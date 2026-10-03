@@ -7,8 +7,10 @@ import {
   BINANCE_REFERRAL_LINK,
   MERU_REFERRAL_LINK,
   MERU_REFERRAL_CODE,
+  getPartnerAds,
 } from '../config/referrals';
 import { trackReferralClicked, trackRelatedLinkClicked } from '../utils/analyticsEvents';
+import { OfferExposure } from './FinancialOfferCard';
 import { formatRate } from '../utils/formatters';
 
 const META = {
@@ -18,8 +20,8 @@ const META = {
     accent: 'from-amber-500/20 via-transparent to-transparent border-amber-400/40',
     btn: 'bg-amber-500 text-stone-950 hover:bg-amber-400',
     btnSecondary: 'border-amber-400/50 text-amber-200 hover:bg-amber-500/10',
-    cta: { es: 'Descargar App', en: 'Download App' },
-    cta2: { es: 'Tu cuenta en dólares', en: 'Your USD account' },
+    cta: { es: 'Crear mi cuenta El Dorado', en: 'Create my El Dorado account' },
+    cta2: { es: 'Comprar USDT con BOB', en: 'Buy USDT with BOB' },
   },
   takenos: {
     href: TAKENOS_REFERRAL_LINK,
@@ -27,8 +29,8 @@ const META = {
     accent: 'from-violet-500/20 via-transparent to-transparent border-violet-400/40',
     btn: 'bg-violet-600 text-white hover:bg-violet-500',
     btnSecondary: 'border-violet-400/50 text-violet-200 hover:bg-violet-500/10',
-    cta: { es: 'Conocer más', en: 'Learn more' },
-    cta2: { es: 'Abrir Takenos', en: 'Open Takenos' },
+    cta: { es: 'Crear mi cuenta Takenos', en: 'Create my Takenos account' },
+    cta2: { es: 'Cobrar del exterior', en: 'Get paid from abroad' },
   },
   meru: {
     href: MERU_REFERRAL_LINK,
@@ -38,8 +40,8 @@ const META = {
     btnSecondary: 'border-indigo-400/50 text-indigo-200 hover:bg-indigo-500/10',
     cta: { es: 'Abrir Meru', en: 'Open Meru' },
     cta2: {
-      es: `$5 con código ${MERU_REFERRAL_CODE}`,
-      en: `$5 with code ${MERU_REFERRAL_CODE}`,
+      es: `Código de referido: ${MERU_REFERRAL_CODE}`,
+      en: `Referral code: ${MERU_REFERRAL_CODE}`,
     },
   },
   airtm: {
@@ -100,13 +102,16 @@ export default function PlatformRatesBoard({ placement = 'buy_page_platforms' })
     };
   }, []);
 
+  const offers = getPartnerAds(language);
   const onClick = (id, href, label) => {
+    const offer = offers.find((row) => row.partner === id);
     trackReferralClicked({
       language,
       partner: id,
       placement,
       destination: href,
       link_label: label,
+      offer_id: offer?.id, intent: offer?.intent, variant: offer?.variant,
     });
   };
 
@@ -172,13 +177,13 @@ export default function PlatformRatesBoard({ placement = 'buy_page_platforms' })
               const offlineHint =
                 p.id === 'meru'
                   ? es
-                    ? `$5 de crédito · código ${MERU_REFERRAL_CODE}`
-                    : `$5 credit · code ${MERU_REFERRAL_CODE}`
+                    ? `Código de referido: ${MERU_REFERRAL_CODE}`
+                    : `Referral code: ${MERU_REFERRAL_CODE}`
                   : es
                     ? 'Abrí la app para la tasa'
                     : 'Open app for live rate';
               return (
-                <article
+                <OfferExposure as="article" offer={offers.find((row) => row.partner === p.id)} placement={placement}
                   key={p.id}
                   className={`relative flex flex-col rounded-2xl border bg-gradient-to-br ${meta.accent} bg-gray-50 dark:bg-gray-900/80 p-4 sm:p-5`}
                 >
@@ -200,7 +205,7 @@ export default function PlatformRatesBoard({ placement = 'buy_page_platforms' })
                     )}
                     {!p.live && p.id === 'meru' && (
                       <span className="rounded-full bg-indigo-500/15 text-indigo-600 dark:text-indigo-300 text-[10px] font-bold uppercase px-2 py-0.5">
-                        {es ? 'Bono' : 'Bonus'}
+                        {es ? 'Referido' : 'Referral'}
                       </span>
                     )}
                   </div>
@@ -245,7 +250,7 @@ export default function PlatformRatesBoard({ placement = 'buy_page_platforms' })
                       target="_blank"
                       rel="noopener noreferrer sponsored"
                       onClick={() => onClick(p.id, meta.href, `platform_board_primary_${p.id}`)}
-                      className={`inline-flex h-10 items-center justify-center rounded-xl text-sm font-bold transition ${meta.btn}`}
+                      className={`inline-flex min-h-[44px] px-2 py-2 text-center items-center justify-center rounded-xl text-sm font-bold transition ${meta.btn}`}
                     >
                       {meta.cta[es ? 'es' : 'en']}
                     </a>
@@ -257,12 +262,12 @@ export default function PlatformRatesBoard({ placement = 'buy_page_platforms' })
                       onClick={() => meta.secondaryHref
                         ? trackRelatedLinkClicked({ language, destination: meta.secondaryHref, link_label: `platform_board_existing_${p.id}`, page_type: 'platform_board' })
                         : onClick(p.id, meta.href, `platform_board_secondary_${p.id}`)}
-                      className={`inline-flex h-9 items-center justify-center rounded-xl border text-sm font-semibold transition ${meta.btnSecondary}`}
+                      className={`inline-flex min-h-[44px] px-2 py-2 text-center items-center justify-center rounded-xl border text-sm font-semibold transition ${meta.btnSecondary}`}
                     >
                       {meta.cta2[es ? 'es' : 'en']}
                     </a>
                   </div>
-                </article>
+                </OfferExposure>
               );
             })}
           </div>

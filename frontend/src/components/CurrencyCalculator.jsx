@@ -4,7 +4,7 @@ import { fetchBlueRate } from '../utils/api';
 import { useLanguage } from '../contexts/LanguageContext';
 import { trackCalculatorUsage, trackCalculatorCurrencySwitch, trackCalculatorSwap } from '../utils/analytics';
 import { trackCalculatorUsed } from '../utils/analyticsEvents';
-import { BinanceButton } from './BrandButton';
+import { FinancialOfferButton } from './FinancialOfferCard';
 
 function CurrencyCalculator() {
   const languageContext = useLanguage();
@@ -583,14 +583,14 @@ function CurrencyCalculator() {
                     </button>
                   </div>
                   {!useOfficial && (
-                    <BinanceButton
+                    <FinancialOfferButton
                       placement="calculator_result"
                       className="h-11 w-full text-sm"
                     >
-                      {language === 'es' ? 'Ver invitación Binance' : 'View Binance invitation'}
-                    </BinanceButton>
+                      {language === 'es' ? 'Crear mi cuenta El Dorado' : 'Create my El Dorado account'}
+                    </FinancialOfferButton>
                   )}
-                  {!useOfficial && <p className="google-anno-skip text-[11px] text-gray-500 dark:text-gray-400">{es ? 'Enlace de referido; podemos recibir una comisión. La cotización es una referencia, no una oferta garantizada.' : 'Referral link; we may earn a commission. The quote is a reference, not a guaranteed offer.'}</p>}
+                  {!useOfficial && <p className="google-anno-skip text-[11px] text-gray-500 dark:text-gray-400">{es ? 'Enlace de referido; podemos recibir una comisión. USDT es un criptoactivo. Confirmá precio y costos en El Dorado; esta referencia no se transfiere a una orden.' : 'Referral link; we may earn a commission. USDT is a cryptoasset. Confirm price and costs in El Dorado; this reference does not carry into an order.'}</p>}
                 </div>
               )}
 

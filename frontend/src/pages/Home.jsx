@@ -9,7 +9,7 @@ import { PRIMARY_RATE_URL } from '../config/seo';
 import NewsletterSignup from '../components/NewsletterSignup';
 import SocialShare from '../components/SocialShare';
 import LazyErrorBoundary from '../components/LazyErrorBoundary';
-import { BinanceButton } from '../components/BrandButton';
+import { FinancialOfferButton } from '../components/FinancialOfferCard';
 import { lazy, Suspense, useState, useEffect, useMemo } from 'react';
 
 // Lazy load heavy components for better performance
@@ -408,10 +408,10 @@ function Home() {
             </p>
           )}
           <div className="mt-3 flex flex-col items-center gap-2">
-            <BinanceButton placement="home_mobile_hero" className="h-11 w-full max-w-xs justify-center">
-              {language === 'es' ? 'Ver invitación Binance' : 'View Binance invitation'}
-            </BinanceButton>
-            <p className="text-[11px] text-gray-500 dark:text-gray-400">{language === 'es' ? 'Enlace de referido; podemos recibir una comisión. Aplican condiciones.' : 'Referral link; we may earn a commission. Terms apply.'}</p>
+            <FinancialOfferButton placement="home_mobile_hero" className="h-11 w-full max-w-xs justify-center">
+              {language === 'es' ? 'Crear mi cuenta El Dorado' : 'Create my El Dorado account'}
+            </FinancialOfferButton>
+            <p className="text-[11px] text-gray-500 dark:text-gray-400">{language === 'es' ? 'Enlace de referido; podemos recibir una comisión. USDT es un criptoactivo, no efectivo USD. Aplican costos y requisitos.' : 'Referral link; we may earn a commission. USDT is a cryptoasset, not USD cash. Costs and requirements apply.'}</p>
             <Link to="/calculadora" className="text-xs font-medium text-sky-700 dark:text-sky-300">
               {language === 'es' ? 'Calculadora' : 'Calculator'}
             </Link>
@@ -523,18 +523,18 @@ function Home() {
                 {language === 'es' ? 'Calculadora completa →' : 'Full calculator →'}
               </Link>
               {Number.isFinite(Number(quickUsd)) && Number.isFinite(Number(currentRate?.sell)) && (
-                <BinanceButton
+                <FinancialOfferButton
                   placement="home_quick_convert"
                   className="mt-2 h-11 w-full justify-center text-sm"
                 >
-                  {language === 'es' ? 'Ver invitación Binance' : 'View Binance invitation'}
-                </BinanceButton>
+                  {language === 'es' ? 'Crear mi cuenta El Dorado' : 'Create my El Dorado account'}
+                </FinancialOfferButton>
               )}
             </div>
             <p className="mt-2 text-xs text-gray-500 dark:text-gray-400 text-center max-w-md mx-auto">
               {language === 'es'
-                ? 'Referencia P2P: confirmá el precio final antes de operar. La invitación es un enlace de referido; podemos recibir una comisión. Aplican condiciones.'
-                : 'P2P reference: confirm the final price before trading. The invitation is a referral link; we may earn a commission. Terms apply.'}
+                ? 'Referencia P2P, no una orden. USDT es un criptoactivo, no efectivo USD. Confirmá precio, costos y requisitos en El Dorado. Enlace de referido; podemos recibir una comisión.'
+                : 'P2P reference, not an order. USDT is a cryptoasset, not USD cash. Confirm price, costs and requirements in El Dorado. Referral link; we may earn a commission.'}
             </p>
             <p className="mt-3 text-center flex flex-wrap justify-center gap-2">
               <Link

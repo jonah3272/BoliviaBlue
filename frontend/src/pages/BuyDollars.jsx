@@ -1,292 +1,117 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { Link, useSearchParams, useLocation } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import Header from '../components/Header';
 import PageMeta from '../components/PageMeta';
 import Navigation from '../components/Navigation';
 import BlueRateCards from '../components/BlueRateCards';
-import PartnerAdCarousel from '../components/PartnerAdCarousel';
 import PlatformRatesBoard from '../components/PlatformRatesBoard';
+import FinancialOfferCard, { FinancialOfferButton, OfferComparisonLink } from '../components/FinancialOfferCard';
 import Footer from '../components/Footer';
-import { Link } from 'react-router-dom';
 import { fetchBlueRate } from '../utils/api';
-import { BINANCE_REFERRAL_LINK, getPartnerAds } from '../config/referrals';
+import { getFinancialOffer, getPartnerAds, BUY_USDT_INTENT, RECEIVE_PAYMENTS_INTENT } from '../config/referrals';
 import { BinanceButton } from '../components/BrandButton';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
-import { formatRate } from '../utils/formatters';
-import { trackReferralClicked } from '../utils/analyticsEvents';
-
-function brandMark(theme) {
-  if (theme === 'takenos') {
-    return (
-      <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-sky-500 text-white shadow-md">
-        <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor" aria-hidden>
-          <path d="M12 3c-2.8 2.2-4.5 4.8-4.5 7.6A4.5 4.5 0 0012 15a4.5 4.5 0 004.5-4.4C16.5 7.8 14.8 5.2 12 3z" />
-        </svg>
-      </span>
-    );
-  }
-  if (theme === 'airtm') {
-    return (
-      <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-400 text-slate-950 text-sm font-black shadow-md">
-        AT
-      </span>
-    );
-  }
-  if (theme === 'meru') {
-    return (
-      <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-600 text-white text-sm font-black shadow-md">
-        M
-      </span>
-    );
-  }
-  if (theme === 'binance') {
-    return (
-      <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#F0B90B] text-black text-lg font-black shadow-md">
-        B
-      </span>
-    );
-  }
-  return (
-    <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-[#F5C518] text-stone-950 text-lg font-black shadow-md">
-      ◆
-    </span>
-  );
-}
-
-function pathGlow(theme) {
-  if (theme === 'eldorado') return 'hover:border-amber-400/70 hover:shadow-[0_0_0_1px_rgba(245,197,24,0.25)]';
-  if (theme === 'takenos') return 'hover:border-sky-400/70 hover:shadow-[0_0_0_1px_rgba(56,189,248,0.25)]';
-  if (theme === 'airtm') return 'hover:border-cyan-400/70 hover:shadow-[0_0_0_1px_rgba(34,211,238,0.25)]';
-  if (theme === 'meru') return 'hover:border-indigo-400/70 hover:shadow-[0_0_0_1px_rgba(99,102,241,0.25)]';
-  return 'hover:border-yellow-400/70 hover:shadow-[0_0_0_1px_rgba(240,185,11,0.25)]';
-}
-
-function pathCta(theme) {
-  if (theme === 'eldorado') return 'bg-stone-950 text-[#F5C518] dark:bg-[#F5C518] dark:text-stone-950';
-  if (theme === 'takenos') return 'bg-sky-500 text-white';
-  if (theme === 'airtm') return 'bg-cyan-400 text-slate-950';
-  if (theme === 'meru') return 'bg-indigo-600 text-white';
-  return 'bg-[#F0B90B] text-stone-950';
-}
 
 function BuyDollars() {
   useAdsenseReady();
-
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
   const es = language === 'es';
+  const [params, setParams] = useSearchParams();
+  const location = useLocation();
+  const stickyRef = useRef(null);
+  const intent = params.get('intent') === RECEIVE_PAYMENTS_INTENT ? RECEIVE_PAYMENTS_INTENT : BUY_USDT_INTENT;
+  const offer = getFinancialOffer(language, intent);
   const [showOfficial, setShowOfficial] = useState(false);
   const [currentRate, setCurrentRate] = useState(null);
   const [openFaq, setOpenFaq] = useState(null);
+  useEffect(() => {
+    const node = stickyRef.current;
+    if (!node) return undefined;
+    const measure = () => document.documentElement.style.setProperty('--bb-buy-cta-height', `${node.getBoundingClientRect().height}px`);
+    measure();
+    const observer = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(measure) : null;
+    observer?.observe(node);
+    window.addEventListener('resize', measure);
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener('resize', measure);
+      document.documentElement.style.removeProperty('--bb-buy-cta-height');
+    };
+  }, []);
+  useEffect(() => {
+    if (location.hash === '#guia') document.getElementById('guia')?.scrollIntoView({ block: 'start' });
+  }, [location.key, location.hash]);
 
   useEffect(() => {
-    const loadRate = async () => {
-      try {
-        setCurrentRate(await fetchBlueRate());
-      } catch (err) {
-        console.error('Error loading rate:', err);
-      }
-    };
-    loadRate();
+    let cancelled = false;
+    fetchBlueRate().then((rate) => { if (!cancelled) setCurrentRate(rate); }).catch((err) => console.error('Error loading rate:', err));
+    return () => { cancelled = true; };
   }, []);
-
   const midRate = useMemo(() => {
     const buy = currentRate?.buy ?? currentRate?.buy_bob_per_usd;
     const sell = currentRate?.sell ?? currentRate?.sell_bob_per_usd;
     if (Number.isFinite(buy) && Number.isFinite(sell)) return (buy + sell) / 2;
-    if (Number.isFinite(buy)) return buy;
-    return null;
+    return Number.isFinite(buy) ? buy : null;
   }, [currentRate]);
-
-  const partners = useMemo(() => getPartnerAds(language), [language]);
-
-  const steps = [
-    { title: t('buyDollarsStep1Title'), desc: t('buyDollarsStep1Desc'), cta: true },
-    { title: t('buyDollarsStep2Title'), desc: t('buyDollarsStep2Desc') },
-    { title: t('buyDollarsStep3Title'), desc: t('buyDollarsStep3Desc') },
-    { title: t('buyDollarsStep4Title'), desc: t('buyDollarsStep4Desc') },
-    { title: t('buyDollarsStep5Title'), desc: t('buyDollarsStep5Desc') },
-  ];
-
+  const partners = getPartnerAds(language).filter((ad) => ad.partner !== offer.partner);
+  const steps = [1, 2, 3, 4, 5].map((n) => ({ title: t(`buyDollarsStep${n}Title`), desc: t(`buyDollarsStep${n}Desc`), cta: n === 1 }));
   const howToSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'HowTo',
-    name: es ? 'Cómo comprar dólares en Bolivia' : 'How to buy dollars in Bolivia',
-    description: es
-      ? 'Guía para comprar dólares en Bolivia con Binance P2P, El Dorado, Takenos, Meru y Airtm.'
-      : 'Guide to buy dollars in Bolivia with Binance P2P, El Dorado, Takenos, Meru, and Airtm.',
-    step: steps.map((s, i) => ({
-      '@type': 'HowToStep',
-      position: i + 1,
-      name: s.title,
-      text: s.desc,
-    })),
+    '@context': 'https://schema.org', '@type': 'HowTo',
+    name: `${offer.brand}: ${offer.guideLabel}`,
+    description: offer.body,
+    step: offer.steps.map(([name, text], index) => ({ '@type': 'HowToStep', position: index + 1, name, text })),
   };
-
-  const trackPartnerClick = (ad, placement) => {
-    trackReferralClicked({
-      language,
-      partner: ad.partner,
-      placement,
-      destination: ad.href,
-      link_label: `buy_page_${ad.partner}`,
-    });
+  const selectIntent = (nextIntent) => {
+    const next = new URLSearchParams(params);
+    next.set('intent', nextIntent);
+    setParams(next, { preventScrollReset: true });
   };
-
-  return (
-    <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
-      <PageMeta
-        title={
-          es
-            ? 'Cómo Comprar Dólares en Bolivia - Binance, El Dorado, Takenos, Meru - Bolivia Blue'
-            : 'How to Buy Dollars in Bolivia - Binance, El Dorado, Takenos, Meru - Bolivia Blue'
-        }
-        description={
-          es
-            ? 'Elegí cómo comprar dólares en Bolivia: Binance P2P, El Dorado, Takenos, Meru o Airtm. Tasa paralelo en vivo y guía paso a paso.'
-            : 'Choose how to buy dollars in Bolivia: Binance P2P, El Dorado, Takenos, Meru, or Airtm. Live parallel rate and step-by-step guide.'
-        }
-        keywords={
-          es
-            ? 'comprar dólares bolivia, binance p2p bolivia, el dorado bolivia, takenos bolivia, meru bolivia, airtm bolivia, dólar blue bolivia'
-            : 'buy dollars bolivia, binance p2p bolivia, el dorado bolivia, takenos bolivia, meru bolivia, airtm bolivia, blue dollar bolivia'
-        }
-        canonical="/comprar-dolares"
-        structuredData={howToSchema}
-      />
-
-      <Header />
-      <Navigation />
-
-      {/* Hero intro — before rates so the page job is clear */}
-      <section className="relative overflow-hidden border-b border-gray-200/60 dark:border-gray-800">
-        <div
-          className="pointer-events-none absolute inset-0 opacity-70 dark:opacity-100"
-          style={{
-            background:
-              'radial-gradient(ellipse 80% 60% at 50% -10%, rgba(56,189,248,0.14), transparent 55%), radial-gradient(ellipse 50% 40% at 90% 20%, rgba(245,197,24,0.10), transparent 50%)',
-          }}
-        />
-        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-10 pb-6 text-center">
-          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-sky-600 dark:text-sky-400 mb-3">
-            {es ? 'Guía práctica' : 'Practical guide'}
-          </p>
-          <h1 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-bold text-gray-900 dark:text-white tracking-tight leading-[1.15]">
-            {t('buyDollarsPageTitle')}
-          </h1>
-          <p className="mt-3 max-w-2xl mx-auto text-base sm:text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
-            {es
-              ? 'Compará opciones para manejar dinero o comprar USDT. Disponibilidad, requisitos, comisiones y riesgos dependen de cada proveedor.'
-              : 'Compare options for managing money or buying USDT. Availability, requirements, fees and risks depend on each provider.'}
-          </p>
-          {midRate != null && (
-            <p className="mt-4 inline-flex items-center gap-2 rounded-full border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-800/70 px-4 py-1.5 text-sm text-gray-700 dark:text-gray-200 backdrop-blur">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              {es ? 'Paralelo ahora' : 'Parallel now'}{' '}
-              <span className="font-mono font-bold text-gray-900 dark:text-white">
-                {formatRate(midRate, 'USD')}
-              </span>{' '}
-              Bs / USD
-            </p>
-          )}
+  return <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
+    <PageMeta title={es ? 'Comprar USDT con bolivianos o cobrar del exterior | Bolivia Blue' : 'Buy USDT with bolivianos or get paid from abroad | Bolivia Blue'}
+      description={es ? 'Elegí El Dorado para comprar USDT con BOB o Takenos para recibir pagos de clientes en USD y EUR. Guías, requisitos y comparación de alternativas.' : 'Choose El Dorado to buy USDT with BOB or Takenos to receive client payments in USD and EUR. Guides, requirements and alternatives.'}
+      canonical="/comprar-dolares" structuredData={howToSchema} />
+    <Header />
+    <Navigation />
+    <main className="google-anno-skip max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-7 pb-20 space-y-8">
+      <section>
+        <p className="text-xs font-semibold uppercase tracking-wide text-sky-700 dark:text-sky-300">{es ? 'De la cotización al siguiente paso' : 'From the exchange rate to your next step'}</p>
+        <h1 className="mt-2 text-3xl sm:text-4xl font-bold tracking-tight text-gray-900 dark:text-white">{es ? '¿Qué querés hacer con tu dinero?' : 'What do you want to do with your money?'}</h1>
+        <p className="mt-3 text-gray-600 dark:text-gray-300">{es ? 'Elegí tu objetivo y seguí una guía para empezar.' : 'Choose your goal and follow a guide to get started.'}</p>
+        <div role="group" aria-label={es ? 'Tu objetivo' : 'Your goal'} className="mt-5 grid grid-cols-2 gap-2">
+          {[[BUY_USDT_INTENT, es ? 'Comprar USDT' : 'Buy USDT'], [RECEIVE_PAYMENTS_INTENT, es ? 'Cobrar del exterior' : 'Get paid from abroad']].map(([value, label]) => <button key={value} type="button" aria-pressed={intent === value} onClick={() => selectIntent(value)}
+            className={`min-w-0 min-h-[48px] rounded-xl border px-3 py-3 text-sm font-bold transition-colors ${intent === value ? 'border-sky-700 bg-sky-700 text-white' : 'border-gray-300 bg-white text-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200'}`}>{label}</button>)}
         </div>
+        <div className="mt-4"><FinancialOfferCard placement="buy_page_top" intent={intent} midRate={midRate} guideHref={`?${params.toString()}#guia`} /></div>
       </section>
-
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <section id="guia" className="scroll-mt-[calc(var(--bb-header-height,117px)+4rem)] rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 sm:p-7">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{offer.guideLabel}</h2>
+        <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">{offer.brand} · {offer.qualification}</p>
+        <ol className="mt-5 space-y-5">{offer.steps.map(([title, body], index) => <li key={`${offer.id}-${index}`} className="flex gap-3">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sky-100 text-sm font-bold text-sky-800 dark:bg-sky-900 dark:text-sky-100">{index + 1}</span>
+          <div className="min-w-0"><h3 className="font-semibold text-gray-900 dark:text-white">{title}</h3><p className="mt-1 text-sm leading-relaxed text-gray-600 dark:text-gray-300">{body}</p></div>
+        </li>)}</ol>
+        <a href={offer.source} target="_blank" rel="noopener noreferrer" className="mt-5 inline-block py-2 text-sm text-sky-700 dark:text-sky-300 underline">{es ? 'Ver instrucciones oficiales del proveedor' : 'Read the provider’s official instructions'}</a>
+        <div className="mt-3"><FinancialOfferButton offer={offer} placement="buy_page_guide" /></div>
+        <p className="mt-3 text-xs leading-relaxed text-gray-500 dark:text-gray-400">{offer.disclosure}</p>
+      </section>
+      <section>
+        <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">{es ? 'Compará con la referencia del mercado' : 'Compare with the market reference'}</h2>
         <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} />
+        <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">{es ? 'Las referencias no son ofertas ejecutables. Confirmá precio, comisiones y monto final en cada proveedor.' : 'These references are not executable offers. Confirm the price, fees and final amount with each provider.'}</p>
       </section>
-
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
-        <PartnerAdCarousel placement="buy_page_top" midRate={midRate} />
+      <section id="opciones">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white">{es ? 'Otras opciones para comparar' : 'Other options to compare'}</h2>
+        <p className="mt-2 mb-4 text-sm text-gray-600 dark:text-gray-300">{es ? 'Los enlaces de referido pueden generar una comisión para Bolivia Blue. Revisá condiciones, costos y disponibilidad.' : 'Referral links may earn Bolivia Blue a commission. Review terms, costs and availability.'}</p>
+        <div className="grid gap-3 sm:grid-cols-2">{partners.map((ad) => <OfferComparisonLink key={ad.id} offer={ad} placement="buy_page_comparison" />)}</div>
+        <Link to="/plataformas" className="mt-4 inline-block py-2 text-sm text-sky-700 dark:text-sky-300 underline">{es ? 'Comparación completa de plataformas' : 'Full platform comparison'}</Link>
       </section>
-
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-2">
-        <PlatformRatesBoard placement="buy_page_platforms" />
-      </section>
-
-      <main className="google-anno-skip max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 space-y-16">
-        {/* Path picker — entire row is the link */}
-        <section id="opciones" className="scroll-mt-24 pt-6">
-          <div className="mb-8 max-w-2xl">
-            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-amber-600 dark:text-amber-400 mb-2">
-              {es ? 'Elegí tu camino' : 'Choose your path'}
-            </p>
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
-              {es ? 'Dónde comprar dólares hoy' : 'Where to buy dollars today'}
-            </h2>
-            <p className="mt-2 text-gray-600 dark:text-gray-400 leading-relaxed">
-              {es
-                ? 'Cada opción abre la página del proveedor o su invitación. Podemos recibir una comisión; revisá condiciones y elegibilidad.'
-                : 'Each option opens the provider’s page or invitation. We may earn a commission; review terms and eligibility.'}
-            </p>
-          </div>
-
-          <div className="grid gap-3 sm:gap-4">
-            {partners.map((ad, i) => (
-              <a
-                key={ad.id}
-                href={ad.href}
-                target="_blank"
-                rel="noopener noreferrer sponsored"
-                onClick={() => trackPartnerClick(ad, 'buy_page_paths')}
-                className={`group relative flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 p-5 sm:p-6 transition-all duration-300 hover:-translate-y-0.5 hover:bg-gray-50 dark:hover:bg-gray-800 ${pathGlow(ad.theme)}`}
-              >
-                <div className="flex items-start gap-4 min-w-0 flex-1">
-                  <div className="relative shrink-0">
-                    {brandMark(ad.theme)}
-                    <span className="absolute -left-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-gray-900 text-[10px] font-bold text-white dark:bg-white dark:text-gray-900">
-                      {i + 1}
-                    </span>
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2 mb-1">
-                      <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
-                        {ad.brand}
-                      </h3>
-                      {ad.badge && (
-                        <span className="rounded-md bg-gray-900 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white dark:bg-white dark:text-gray-900">
-                          {ad.badge}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-sm font-medium text-sky-600 dark:text-sky-400 mb-1.5">
-                      {ad.bestFor}
-                    </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-                      {ad.pathDesc}
-                    </p>
-                  </div>
-                </div>
-
-                <span
-                  className={`inline-flex h-11 shrink-0 items-center justify-center rounded-xl px-5 text-sm font-bold shadow-sm transition duration-200 group-hover:scale-[1.02] ${pathCta(ad.theme)}`}
-                >
-                  {ad.cta}
-                  <svg
-                    className="ml-2 h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    aria-hidden
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                  </svg>
-                </span>
-              </a>
-            ))}
-          </div>
-
-          <p className="mt-4 text-center text-xs text-gray-500">
-            <Link to="/plataformas" className="underline underline-offset-2 hover:text-gray-700 dark:hover:text-gray-300">
-              {es ? 'Ver comparación completa de plataformas' : 'See full platform comparison'}
-            </Link>
-          </p>
-        </section>
-
+      <details className="rounded-2xl border border-gray-200 dark:border-gray-700 p-4">
+        <summary className="cursor-pointer py-2 font-semibold text-gray-900 dark:text-white">{es ? '¿Preferís Binance? Guía de compra P2P' : 'Prefer Binance? P2P buying guide'}</summary>
         {/* Binance walkthrough */}
-        <section className="rounded-3xl border border-amber-200/60 dark:border-amber-800/40 bg-gradient-to-b from-amber-50/80 to-white dark:from-amber-950/20 dark:to-gray-900 p-6 sm:p-8 lg:p-10">
+        <div className="rounded-3xl border border-amber-200/60 dark:border-amber-800/40 bg-gradient-to-b from-amber-50/80 to-white dark:from-amber-950/20 dark:to-gray-900 p-6 sm:p-8 lg:p-10">
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-8">
             <div className="max-w-xl">
               <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-amber-700 dark:text-amber-400 mb-2">
@@ -301,7 +126,7 @@ function BuyDollars() {
                   : 'This guide explains paying BOB to receive USDT. The link opens a Binance invitation; review its terms.'}
               </p>
             </div>
-            <BinanceButton size="lg" placement="buy_page_primary" className="justify-center shrink-0">
+            <BinanceButton size="lg" placement="buy_page_binance_secondary" className="justify-center shrink-0">
               {language === 'es' ? 'Ver invitación Binance' : 'View Binance invitation'}
             </BinanceButton>
           </div>
@@ -334,128 +159,31 @@ function BuyDollars() {
               </li>
             ))}
           </ol>
-        </section>
+        </div>
 
-        {/* Safety */}
-        <section>
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4 tracking-tight">
-            {t('buyDollarsSafetyTips')}
-          </h2>
-          <ul className="grid gap-3 sm:grid-cols-2">
-            {[1, 2, 3, 4, 5].map((n) => (
-              <li
-                key={n}
-                className="flex gap-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/40 px-4 py-3 text-sm text-gray-700 dark:text-gray-300"
-              >
-                <span className="mt-0.5 text-emerald-500 font-bold" aria-hidden>
-                  ✓
-                </span>
-                <span>{t(`buyDollarsSafetyTip${n}`)}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
 
-        {/* FAQ accordion */}
-        <section>
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4 tracking-tight">
-            {t('buyDollarsFAQ')}
-          </h2>
-          <div className="divide-y divide-gray-200 dark:divide-gray-700 border-y border-gray-200 dark:border-gray-700">
-            {[1, 2, 3, 4].map((n) => {
-              const open = openFaq === n;
-              return (
-                <div key={n}>
-                  <button
-                    type="button"
-                    onClick={() => setOpenFaq(open ? null : n)}
-                    className="flex w-full items-center justify-between gap-4 py-4 text-left"
-                    aria-expanded={open}
-                  >
-                    <span className="font-semibold text-gray-900 dark:text-white">
-                      {t(`buyDollarsFAQ${n}Q`)}
-                    </span>
-                    <span
-                      className={`shrink-0 text-gray-400 transition-transform duration-200 ${open ? 'rotate-45' : ''}`}
-                      aria-hidden
-                    >
-                      +
-                    </span>
-                  </button>
-                  {open && (
-                    <p className="pb-4 text-sm text-gray-600 dark:text-gray-400 leading-relaxed -mt-1">
-                      {t(`buyDollarsFAQ${n}A`)}
-                    </p>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* Bottom CTA strip */}
-        <section className="rounded-3xl border border-gray-200 dark:border-gray-700 bg-gray-900 dark:bg-black px-6 py-8 sm:px-10 sm:py-10 text-center text-white">
-          <h2 className="text-xl sm:text-2xl font-bold tracking-tight">
-            {es ? '¿Listo para comprar?' : 'Ready to buy?'}
-          </h2>
-          <p className="mt-2 text-sm text-white/60 max-w-md mx-auto">
-            {es
-              ? 'Empezá por la opción que mejor encaje. Los enlaces de invitación pueden generar una comisión para Bolivia Blue.'
-              : 'Start with the option that fits best. Invitation links may earn Bolivia Blue a commission.'}
-          </p>
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-2.5">
-            {partners.map((ad) => (
-              <a
-                key={ad.id}
-                href={ad.href}
-                target="_blank"
-                rel="noopener noreferrer sponsored"
-                onClick={() => trackPartnerClick(ad, 'buy_page_bottom')}
-                className={`inline-flex h-10 items-center justify-center rounded-lg px-4 text-sm font-bold transition hover:opacity-90 ${pathCta(ad.theme)}`}
-              >
-                {ad.brand}
-              </a>
-            ))}
-          </div>
-          <p className="mt-5 text-xs text-white/40">
-            <Link to="/plataformas" className="underline underline-offset-2 hover:text-white/70">
-              {es ? 'Comparar plataformas' : 'Compare platforms'}
-            </Link>
-            {' · '}
-            <a
-              href={BINANCE_REFERRAL_LINK}
-              className="underline underline-offset-2 hover:text-white/70"
-              target="_blank"
-              rel="noopener noreferrer sponsored"
-              onClick={() =>
-                trackReferralClicked({
-                  language,
-                  partner: 'binance',
-                  placement: 'buy_page_footer',
-                  destination: BINANCE_REFERRAL_LINK,
-                  link_label: 'buy_page_footer_binance',
-                })
-              }
-            >
-              binance.com
-            </a>
-          </p>
-        </section>
-      </main>
-
-      <div className="fixed bottom-[calc(3.5rem+env(safe-area-inset-bottom)+var(--bb-ad-reserved-bottom,0px))] inset-x-0 z-40 p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] bg-white/95 dark:bg-gray-900/95 border-t border-gray-200 dark:border-gray-700 sm:hidden backdrop-blur">
-        <BinanceButton
-          placement="buy_page_sticky"
-          className="flex w-full min-h-[44px] justify-center text-sm"
-        >
-          {language === 'es' ? 'Ver invitación Binance' : 'View Binance invitation'}
-        </BinanceButton>
-      </div>
-      <div className="h-[calc(7rem+env(safe-area-inset-bottom))] sm:hidden" aria-hidden />
-
-      <Footer />
+      </details>
+      <section>
+        <h2 className="mb-3 text-xl font-bold text-gray-900 dark:text-white">{es ? 'Antes de pagar' : 'Before you pay'}</h2>
+        <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-300">{es ? 'Verificá los datos del destinatario, los costos y la orden. Usá el chat y la ayuda de la plataforma. Las reseñas y la custodia temporal no eliminan el riesgo de fraude o demoras. Si ya pagaste, no canceles sin haber recibido el reembolso.' : 'Verify recipient details, costs and the order. Use the platform’s chat and help. Reviews and temporary escrow do not eliminate fraud or delays. If you already paid, do not cancel unless you have received a refund.'}</p>
+      </section>
+      <details className="rounded-2xl border border-gray-200 dark:border-gray-700 p-4">
+        <summary className="cursor-pointer py-2 font-semibold text-gray-900 dark:text-white">{es ? 'Ver cotizaciones por plataforma' : 'View platform quotes'}</summary>
+        <PlatformRatesBoard placement="buy_page_platforms" />
+      </details>
+      <section>
+        <h2 className="mb-3 text-xl font-bold text-gray-900 dark:text-white">{t('buyDollarsFAQ')}</h2>
+        {[1, 2, 3, 4].map((n) => <div key={n} className="border-b border-gray-200 dark:border-gray-700">
+          <button type="button" className="flex w-full items-center justify-between gap-4 py-4 text-left font-semibold text-gray-900 dark:text-white" onClick={() => setOpenFaq(openFaq === n ? null : n)} aria-expanded={openFaq === n}>{t(`buyDollarsFAQ${n}Q`)}<span aria-hidden>{openFaq === n ? '−' : '+'}</span></button>
+          {openFaq === n && <p className="pb-4 text-sm text-gray-600 dark:text-gray-300">{t(`buyDollarsFAQ${n}A`)}</p>}
+        </div>)}
+      </section>
+    </main>
+    <div ref={stickyRef} className="google-anno-skip fixed bottom-[calc(3.5rem+env(safe-area-inset-bottom)+var(--bb-ad-reserved-bottom,0px))] inset-x-0 z-40 p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] bg-white/95 dark:bg-gray-900/95 border-t border-gray-200 dark:border-gray-700 sm:hidden backdrop-blur">
+      <FinancialOfferButton offer={offer} placement="buy_page_sticky" className="w-full"><span>{offer.cta}<span className="block text-[10px] font-normal">{es ? 'Enlace de referido' : 'Referral link'}</span></span></FinancialOfferButton>
     </div>
-  );
+    <div className="h-[calc(7rem+env(safe-area-inset-bottom))] sm:hidden" aria-hidden />
+    <Footer />
+  </div>;
 }
-
 export default BuyDollars;

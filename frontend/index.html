@@ -211,7 +211,11 @@
       });
     </script>
   </head>
-  <body>
+  <!-- Google-supported page exclusion for ad-intent links, anchors and chips.
+       Prevents annotations from following SPA navigation onto offer controls.
+       Other AdSense formats remain configured separately.
+       https://support.google.com/adsense/answer/13844047 -->
+  <body class="google-anno-skip">
     <div id="root"></div>
     
     <script type="module" src="/src/main.jsx"></script>

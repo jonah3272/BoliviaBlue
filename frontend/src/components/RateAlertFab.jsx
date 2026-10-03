@@ -1,9 +1,15 @@
+import { useLocation } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 
 /** Mobile FAB — scrolls to #price-alerts on Home / rate hubs */
 export default function RateAlertFab() {
   const { language } = useLanguage();
   const es = language === 'es';
+  const { pathname } = useLocation();
+  const hasBuyCta = pathname.replace(/\/+$/, '') === '/comprar-dolares';
+  const bottomClass = hasBuyCta
+    ? 'bottom-[calc(8.75rem+env(safe-area-inset-bottom)+env(safe-area-inset-bottom)+var(--bb-ad-reserved-bottom,0px))] sm:bottom-[calc(3.75rem+env(safe-area-inset-bottom)+var(--bb-ad-reserved-bottom,0px))]'
+    : 'bottom-[calc(3.75rem+env(safe-area-inset-bottom)+var(--bb-ad-reserved-bottom,0px))]';
 
   const scrollToAlerts = () => {
     const el = document.getElementById('price-alerts');
@@ -18,7 +24,7 @@ export default function RateAlertFab() {
     <button
       type="button"
       onClick={scrollToAlerts}
-      className="md:hidden fixed z-[35] right-4 bottom-[calc(3.75rem+env(safe-area-inset-bottom))] flex h-12 w-12 items-center justify-center rounded-full bg-sky-500 text-white shadow-lg shadow-sky-500/30 touch-manipulation hover:bg-sky-400 active:scale-95 transition-transform"
+      className={`${bottomClass} md:hidden fixed z-[35] right-4 flex h-12 w-12 items-center justify-center rounded-full bg-sky-500 text-white shadow-lg shadow-sky-500/30 touch-manipulation hover:bg-sky-400 active:scale-95 transition-transform`}
       aria-label={es ? 'Crear alerta de precio' : 'Set price alert'}
     >
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>

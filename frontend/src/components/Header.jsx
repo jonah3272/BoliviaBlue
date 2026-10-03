@@ -1,3 +1,5 @@
+import { useLayoutEffect, useRef } from 'react';
+import HeaderRates from './HeaderRates';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import ThemeToggle from './ThemeToggle';
@@ -11,9 +13,24 @@ function Header() {
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
+  const headerRef = useRef(null);
+  useLayoutEffect(() => {
+    const element = headerRef.current;
+    if (!element) return undefined;
+    const update = () => document.documentElement.style.setProperty('--bb-header-height', `${element.getBoundingClientRect().height}px`);
+    update();
+    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(update);
+    observer?.observe(element);
+    window.addEventListener('resize', update);
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener('resize', update);
+    };
+  }, []);
+
 
   return (
-    <header className="sticky top-0 z-40 border-b border-gray-200/80 dark:border-gray-700/80 bg-white dark:bg-gray-800 md:bg-white/90 md:dark:bg-gray-800/90 md:backdrop-blur-md pt-[env(safe-area-inset-top,0px)]">
+    <header ref={headerRef} data-site-header className="google-anno-skip sticky top-0 z-40 border-b border-gray-200/80 dark:border-gray-700/80 bg-white dark:bg-gray-800 md:bg-white/90 md:dark:bg-gray-800/90 md:backdrop-blur-md pt-[env(safe-area-inset-top,0px)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3">
         <div className="flex items-center justify-between gap-3">
           <Link to="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity min-w-0 flex-1">
@@ -99,6 +116,7 @@ function Header() {
           </div>
         </div>
       </div>
+      <HeaderRates />
     </header>
   );
 }

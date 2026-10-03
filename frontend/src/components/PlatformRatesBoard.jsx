@@ -8,7 +8,7 @@ import {
   MERU_REFERRAL_LINK,
   MERU_REFERRAL_CODE,
 } from '../config/referrals';
-import { trackReferralClicked } from '../utils/analyticsEvents';
+import { trackReferralClicked, trackRelatedLinkClicked } from '../utils/analyticsEvents';
 import { formatRate } from '../utils/formatters';
 
 const META = {
@@ -57,8 +57,9 @@ const META = {
     accent: 'from-yellow-500/20 via-transparent to-transparent border-yellow-400/40',
     btn: 'bg-[#F0B90B] text-stone-950 hover:bg-yellow-300',
     btnSecondary: 'border-yellow-400/50 text-yellow-200 hover:bg-yellow-500/10',
-    cta: { es: 'Crear cuenta', en: 'Create account' },
-    cta2: { es: 'Ir a P2P', en: 'Go to P2P' },
+    cta: { es: 'Ver invitación', en: 'View invitation' },
+    secondaryHref: 'https://p2p.binance.com',
+    cta2: { es: 'Ya tengo cuenta: P2P', en: 'Existing account: P2P' },
   },
 };
 
@@ -248,11 +249,14 @@ export default function PlatformRatesBoard({ placement = 'buy_page_platforms' })
                     >
                       {meta.cta[es ? 'es' : 'en']}
                     </a>
+                    <span className="text-center text-[10px] text-gray-500 dark:text-gray-400">{es ? 'Enlace de referido; pueden aplicar condiciones' : 'Referral link; terms may apply'}</span>
                     <a
-                      href={meta.href}
+                      href={meta.secondaryHref || meta.href}
                       target="_blank"
-                      rel="noopener noreferrer sponsored"
-                      onClick={() => onClick(p.id, meta.href, `platform_board_secondary_${p.id}`)}
+                      rel={meta.secondaryHref ? 'noopener noreferrer' : 'noopener noreferrer sponsored'}
+                      onClick={() => meta.secondaryHref
+                        ? trackRelatedLinkClicked({ language, destination: meta.secondaryHref, link_label: `platform_board_existing_${p.id}`, page_type: 'platform_board' })
+                        : onClick(p.id, meta.href, `platform_board_secondary_${p.id}`)}
                       className={`inline-flex h-9 items-center justify-center rounded-xl border text-sm font-semibold transition ${meta.btnSecondary}`}
                     >
                       {meta.cta2[es ? 'es' : 'en']}

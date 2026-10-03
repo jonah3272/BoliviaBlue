@@ -1,3 +1,4 @@
+import useAdReservedSpace from './hooks/useAdReservedSpace';
 import { Routes, Route } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
 import Redirect from './components/Redirect';
@@ -76,6 +77,7 @@ function LoadingFallback() {
 }
 
 function AppContent() {
+  useAdReservedSpace();
   // Track page views, scroll depth, and time on page
   usePageTracking();
   

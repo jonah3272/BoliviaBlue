@@ -50,6 +50,8 @@ export function RateProvider({ children }) {
           (Number.isFinite(data.official_buy) && Number.isFinite(data.official_sell)
             ? (data.official_buy + data.official_sell) / 2
             : data.official_buy),
+        buy_bob_per_brl: data.buy_bob_per_brl,
+        sell_bob_per_brl: data.sell_bob_per_brl,
         buy_bob_per_eur: data.buy_bob_per_eur,
         sell_bob_per_eur: data.sell_bob_per_eur,
         buy_bob_per_cop: data.buy_bob_per_cop,

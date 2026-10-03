@@ -94,17 +94,9 @@
   }
 }
 
-/* AdSense Ad Overlap Prevention */
-/* Prevent Auto Ads from overlapping with content or each other */
-.adsbygoogle,
-ins.adsbygoogle {
-  display: block !important;
-  position: relative !important;
-  z-index: 1 !important;
-  margin: 1rem 0 !important;
-  min-height: 100px !important;
-  overflow: hidden !important;
-}
+/* Google owns Auto-ad/anchor geometry. Do not override .adsbygoogle,
+   noablate slots, ad iframes or Google overlay z-index/position here.
+   Publisher-owned controls use --bb-ad-reserved-bottom instead. */
 
 /* Avoid double-spacing between sections.
    Many pages already use Tailwind `space-y-*` on `main` and also set
@@ -114,30 +106,6 @@ main > section + section {
   margin-top: 0;
 }
 
-/* Prevent anchor ads from overlapping main content */
-[id*="google_ads_iframe_"][id*="ca-pub-3497294777171749"] {
-  position: fixed !important;
-  bottom: 0 !important;
-  z-index: 999 !important;
-}
-
-/* Prevent in-article ads from overlapping */
-article .adsbygoogle,
-.prose .adsbygoogle {
-  margin: 2rem auto !important;
-  max-width: 100% !important;
-  clear: both !important;
-}
-
-/* Prevent sidebar ads from overlapping on desktop */
-@media (min-width: 1024px) {
-  .adsbygoogle[data-ad-format] {
-    max-width: 100% !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-  }
-}
-
 /* Ensure content sections have proper spacing to prevent ad overlap */
 main > section {
   position: relative;
@@ -145,14 +113,7 @@ main > section {
   margin-bottom: 2rem;
 }
 
-/* Prevent vignette/anchor ads from covering the whole page hit-target.
-   Only known vignette containers should be high z-index — never all google_ads nodes. */
-body > div[id*="google_ads"][style*="z-index"],
-body > div[class*="google-vignette"] {
-  z-index: 10000;
-}
-
-/* Keep primary conversion UI above auto-placed ads */
+/* Isolate the publisher-owned partner carousel within normal page content. */
 [data-partner-carousel] {
   position: relative;
   z-index: 20;

@@ -45,7 +45,7 @@ export default function MobileBottomNav() {
 
   return (
     <nav
-      className="md:hidden fixed bottom-0 inset-x-0 z-30 border-t border-gray-200/90 dark:border-gray-700/90 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md pb-[env(safe-area-inset-bottom)]"
+      className="md:hidden fixed bottom-[var(--bb-ad-reserved-bottom,0px)] inset-x-0 z-30 border-t border-gray-200/90 dark:border-gray-700/90 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md pb-[env(safe-area-inset-bottom)]"
       aria-label={es ? 'Navegación principal' : 'Main navigation'}
     >
       <div className="grid grid-cols-4 h-14">

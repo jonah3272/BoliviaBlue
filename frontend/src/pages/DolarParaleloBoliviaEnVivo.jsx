@@ -60,7 +60,7 @@ function DolarParaleloBoliviaEnVivo() {
     description: language === 'es'
       ? 'Cotización del dólar paralelo Bolivia EN VIVO. Actualizamos cada 15 minutos con datos de Binance P2P.'
       : 'Bolivia parallel dollar LIVE. We update every 15 minutes with Binance P2P data.',
-    url: '/dolar-paralelo-bolivia-en-vivo',
+    url: '/dolar-blue-hoy',
     dateModified: rateDateModified || undefined,
     inLanguage: language === 'es' ? 'es-BO' : 'en-US',
     mainEntity: {
@@ -71,7 +71,7 @@ function DolarParaleloBoliviaEnVivo() {
   });
   const breadcrumbSchema = getBreadcrumbList([
     { name: language === 'es' ? 'Inicio' : 'Home', url: '/' },
-    { name: language === 'es' ? 'Dólar Paralelo Bolivia EN VIVO' : 'Bolivia Parallel Dollar LIVE', url: '/dolar-paralelo-bolivia-en-vivo' }
+    { name: language === 'es' ? 'Dólar Paralelo Bolivia EN VIVO' : 'Bolivia Parallel Dollar LIVE', url: '/dolar-blue-hoy' }
   ]);
   const structuredData = [webPageSchema, breadcrumbSchema];
 

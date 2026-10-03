@@ -18,7 +18,8 @@ export default function NewsArticle() {
   const languageContext = useLanguage();
   const language = languageContext?.language || 'es';
   const es = language === 'es';
-  const [article, setArticle] = useState(null);
+  const [articleState, setArticle] = useState(null);
+  const article = articleState?._slug === slugParam ? articleState : null;
   const [rate, setRate] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -31,6 +32,7 @@ export default function NewsArticle() {
     let cancelled = false;
     (async () => {
       setLoading(true);
+      setArticle(null);
       setError(null);
       try {
         const id = newsIdFromSlugParam(slugParam);
@@ -41,7 +43,7 @@ export default function NewsArticle() {
         ]);
         if (cancelled) return;
         if (!item) throw new Error(es ? 'Noticia no encontrada' : 'Article not found');
-        setArticle(item);
+        setArticle({ ...item, _slug: slugParam });
         setRate(rateData);
       } catch (err) {
         if (!cancelled) setError(err.message || 'Error');
@@ -56,7 +58,7 @@ export default function NewsArticle() {
 
   const title = article ? cleanTitle(article.title) : es ? 'Noticia' : 'News';
   const summary = article ? cleanSummary(article.summary || '') : '';
-  const path = article ? newsArticlePath(article) : '/noticias';
+  const path = article ? newsArticlePath(article) : `/noticias/${slugParam}`;
   const buy = rate?.buy ?? rate?.buy_bob_per_usd;
   const sell = rate?.sell ?? rate?.sell_bob_per_usd;
 
@@ -67,7 +69,7 @@ export default function NewsArticle() {
           description: summary || title,
           url: path,
           dateModified: article.published_at_iso,
-          inLanguage: es ? 'es-BO' : 'en-US',
+          inLanguage: 'es-BO',
         }),
         getBreadcrumbList([
           { name: es ? 'Inicio' : 'Home', url: '/' },
@@ -87,7 +89,8 @@ export default function NewsArticle() {
             name: 'Bolivia Blue',
             url: 'https://boliviablue.com',
           },
-          mainEntityOfPage: `https://boliviablue.com${path}`,
+          mainEntityOfPage: `https://www.boliviablue.com${path}`,
+          inLanguage: 'es-BO',
         },
       ]
     : [];
@@ -95,7 +98,7 @@ export default function NewsArticle() {
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900">
       <PageMeta
-        title={`${title} | ${es ? 'Noticias' : 'News'} – Bolivia Blue`}
+        title={`${title} | Noticias – Bolivia Blue`}
         description={
           summary ||
           (es
@@ -103,6 +106,10 @@ export default function NewsArticle() {
             : 'Bolivia economic news with blue / parallel dollar context.')
         }
         canonical={path}
+        contentLanguage="es"
+        availableLanguages={[]}
+        noindex={!article}
+        ogType="article"
         structuredData={schemas}
       />
       <Header />

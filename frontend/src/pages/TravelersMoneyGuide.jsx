@@ -31,9 +31,9 @@ function cardBob(row) {
 
 export default function TravelersMoneyGuide() {
   useAdsenseReady();
-  const language = useLanguage()?.language || 'es';
-  const es = language === 'es';
   const { pathname } = useLocation();
+  const language = pathname.startsWith(TRAVEL_GUIDE_EN) ? 'en' : 'es';
+  const es = language === 'es';
   const canonical = pathname.startsWith(TRAVEL_GUIDE_EN) ? TRAVEL_GUIDE_EN : TRAVEL_GUIDE_ES;
 
   const [rate, setRate] = useState(null);
@@ -238,6 +238,7 @@ export default function TravelersMoneyGuide() {
             : 'bolivia money guide, cash or card bolivia, atm bolivia tourists, blue dollar travel, exchange money bolivia 2026'
         }
         canonical={canonical}
+        contentLanguage={language}
         ogType="article"
         localePaths={{ es: TRAVEL_GUIDE_ES, en: TRAVEL_GUIDE_EN }}
         structuredData={[articleSchema, faqSchema, howToSchema, breadcrumbSchema]}

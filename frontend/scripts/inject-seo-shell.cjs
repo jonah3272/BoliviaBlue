@@ -303,7 +303,7 @@ function buildStaticJsonLd(routePath, routeName, pageName, pageDescription, extr
     name: pageName,
     description: pageDescription,
     url: canonical,
-    inLanguage: routePath === '/bolivian-blue' || routePath === '/bolivia-money-guide' ? 'en-US' : 'es-BO',
+    inLanguage: routePath === '/bolivia-money-guide' ? 'en-US' : 'es-BO',
     isPartOf: { '@type': 'WebSite', name: 'Bolivia Blue', url: BASE_URL },
     publisher: { '@type': 'Organization', name: 'Bolivia Blue', url: BASE_URL }
   };
@@ -413,7 +413,7 @@ const ROUTES = {
   '/dolar-paralelo-bolivia-en-vivo': {
     title: 'Dólar Paralelo Bolivia EN VIVO | Cotización Ahora',
     description: 'Dólar paralelo Bolivia EN VIVO: cotización del mercado cambiario actualizada cada 15 min. Ver precio de compra y venta ahora.',
-    canonical: BASE_URL + '/dolar-paralelo-bolivia-en-vivo',
+    canonical: BASE_URL + '/dolar-blue-hoy',
     shell: `
 <main class="max-w-7xl mx-auto px-4 py-8" data-seo-shell="dolar-paralelo-bolivia-en-vivo">
   <div class="text-center space-y-4 mb-8">
@@ -428,7 +428,7 @@ const ROUTES = {
     </nav>
   </div>
 </main>`.replace(/\n/g, '').trim(),
-    getJsonLd: () => buildStaticJsonLd('/dolar-paralelo-bolivia-en-vivo', 'Dólar Paralelo Bolivia EN VIVO', 'Dólar Paralelo Bolivia EN VIVO', 'Cotización del dólar paralelo Bolivia EN VIVO. Actualizamos cada 15 minutos con datos de Binance P2P.', [])
+    getJsonLd: () => buildStaticJsonLd('/dolar-blue-hoy', 'Dólar Paralelo Bolivia EN VIVO', 'Dólar Paralelo Bolivia EN VIVO', 'Cotización del dólar paralelo Bolivia EN VIVO. Actualizamos cada 15 minutos con datos de Binance P2P.', [])
   },
   '/cuanto-esta-dolar-bolivia': {
     title: '¿Cuánto Está el Dólar en Bolivia Hoy? Precio Actual',
@@ -456,17 +456,17 @@ const ROUTES = {
     shell: `
 <main class="max-w-7xl mx-auto px-4 py-8" data-seo-shell="bolivian-blue">
   <div class="text-center space-y-4 mb-8">
-    <h1 class="text-3xl sm:text-5xl font-bold text-gray-900">Bolivian Blue – Bolivia Blue Dollar Exchange Rate</h1>
-    <p class="text-base text-gray-600 max-w-2xl mx-auto">Bolivian Blue today: buy <span data-live-buy>—</span> · sell <span data-live-sell>—</span> Bs per USD. Reading: <time data-live-when datetime="">—</time> (Bolivia time). Multi-platform P2P median, updated every 15 minutes.</p>
+    <h1 class="text-3xl sm:text-5xl font-bold text-gray-900">Bolivian Blue – Tipo de Cambio Dólar Blue Bolivia</h1>
+    <p class="text-base text-gray-600 max-w-2xl mx-auto">Bolivian Blue hoy: compra <span data-live-buy>—</span> · venta <span data-live-sell>—</span> Bs por USD. Lectura: <time data-live-when datetime="">—</time> (hora de Bolivia). Referencia P2P, actualizada cada 15 minutos.</p>
     <nav class="flex flex-wrap justify-center gap-3 mt-4" aria-label="Related links">
-      <a href="/" class="text-blue-600 font-medium">Home</a>
-      <a href="/dolar-blue-hoy" class="text-blue-600 font-medium">Blue dollar today</a>
-      <a href="/datos-historicos" class="text-blue-600 font-medium">Historical data</a>
-      <a href="/calculadora" class="text-blue-600 font-medium">Calculator</a>
+      <a href="/" class="text-blue-600 font-medium">Inicio</a>
+      <a href="/dolar-blue-hoy" class="text-blue-600 font-medium">Dólar blue hoy</a>
+      <a href="/datos-historicos" class="text-blue-600 font-medium">Datos históricos</a>
+      <a href="/calculadora" class="text-blue-600 font-medium">Calculadora</a>
     </nav>
   </div>
 </main>`.replace(/\n/g, '').trim(),
-    getJsonLd: () => buildStaticJsonLd('/bolivian-blue', 'Bolivian Blue', 'Bolivian Blue – Bolivia Blue Dollar Exchange Rate', 'This page is for readers looking for the Bolivia blue dollar rate in English. The Bolivian Blue is the parallel market rate used by millions in Bolivia; we update it every 15 minutes.', [])
+    getJsonLd: () => buildStaticJsonLd('/bolivian-blue', 'Bolivian Blue', 'Bolivian Blue – Tipo de Cambio Dólar Blue Bolivia', 'Bolivian Blue: cotización de referencia del dólar paralelo en Bolivia, actualizada cada 15 minutos.', [])
   },
   '/que-es-dolar-blue': {
     title: '¿Qué es el Dólar Blue? Guía 2025 – Bolivia y Latinoamérica',
@@ -920,13 +920,20 @@ function upsertHreflang(html, esUrl, enUrl) {
 function replaceMeta(html, routePath) {
   const r = ROUTES[routePath];
   if (!r) return html;
-  const enUrl = englishAlternateUrl(r.canonical);
+  const isGuide = ['/guia-dinero-bolivia', '/bolivia-money-guide'].includes(routePath);
+  const esUrl = isGuide ? BASE_URL + '/guia-dinero-bolivia' : r.canonical;
+  const enUrl = isGuide ? BASE_URL + '/bolivia-money-guide' : englishAlternateUrl(r.canonical);
   let out = html;
   out = out.replace(/<title>[^<]*<\/title>/i, `<title>${r.title}</title>`);
   out = out.replace(/<meta name="title" content="[^"]*"/i, `<meta name="title" content="${r.title.replace(/"/g, '&quot;')}"`);
   out = out.replace(/<meta name="description" content="[^"]*"/i, `<meta name="description" content="${r.description.replace(/"/g, '&quot;')}"`);
   out = out.replace(/<link rel="canonical" href="[^"]*"/i, `<link rel="canonical" href="${r.canonical}"`);
-  out = upsertHreflang(out, r.canonical, enUrl);
+  out = upsertHreflang(out, esUrl, enUrl);
+  const en = routePath === '/bolivia-money-guide';
+  out = out.replace(/<html lang="[^"]*"/i, `<html lang="${en ? 'en' : 'es'}"`);
+  out = out.replace(/<meta name="language" content="[^"]*"/i, `<meta name="language" content="${en ? 'English' : 'Spanish'}"`);
+  out = out.replace(/<meta property="og:locale" content="[^"]*"/i, `<meta property="og:locale" content="${en ? 'en_US' : 'es_BO'}"`);
+  out = out.replace(/<meta property="og:locale:alternate" content="[^"]*"/i, `<meta property="og:locale:alternate" content="${en ? 'es_BO' : 'en_US'}"`);
   out = out.replace(/<meta property="og:title" content="[^"]*"/i, `<meta property="og:title" content="${r.title.replace(/"/g, '&quot;')}"`);
   out = out.replace(/<meta property="og:description" content="[^"]*"/i, `<meta property="og:description" content="${r.description.replace(/"/g, '&quot;')}"`);
   out = out.replace(/<meta property="og:url" content="[^"]*"/i, `<meta property="og:url" content="${r.canonical}"`);
@@ -949,7 +956,7 @@ function injectStaticJsonLd(html, routePath) {
   const r = ROUTES[routePath];
   if (!r || !r.getJsonLd) return html;
   const schemas = r.getJsonLd();
-  const scripts = schemas.map((s) => '<script type="application/ld+json">' + JSON.stringify(s) + '</script>').join('\n    ');
+  const scripts = schemas.map((s) => '<script type="application/ld+json" data-rh="true">' + JSON.stringify(s).replace(/</g, '\\u003c') + '</script>').join('\n    ');
   return html.replace('</head>', '    <!-- SEO Phase 5: static JSON-LD for crawlability -->\n    ' + scripts + '\n  </head>');
 }
 

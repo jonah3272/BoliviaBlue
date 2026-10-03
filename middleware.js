@@ -1,3 +1,5 @@
+import { articleRequest, loadArticle, renderArticleHtml } from './seo/articleSeo.js';
+
 /**
  * Vercel Edge Middleware: inject live buy/sell into homepage HTML for every visitor,
  * and into title/meta for recognized bots on selected rate landing pages.
@@ -12,6 +14,8 @@ export const config = {
   matcher: [
     '/',
     '/index.html',
+    '/blog/:slug',
+    '/noticias/:slug',
     '/:page(dolar-blue-hoy|bolivian-blue|dolar-paralelo-bolivia-en-vivo|cuanto-esta-dolar-bolivia|cotiza-dolar-paralelo|euro-a-boliviano|real-a-boliviano|peso-a-boliviano|sol-a-boliviano|peso-argentino-a-boliviano|peso-chileno-a-boliviano|dolar-blue-santa-cruz|dolar-blue-la-paz|dolar-blue-cochabamba|prensa|guia-dinero-bolivia|bolivia-money-guide)',
     '/:page(dolar-blue-hoy|bolivian-blue|dolar-paralelo-bolivia-en-vivo|cuanto-esta-dolar-bolivia|cotiza-dolar-paralelo|euro-a-boliviano|real-a-boliviano|peso-a-boliviano|sol-a-boliviano|peso-argentino-a-boliviano|peso-chileno-a-boliviano|dolar-blue-santa-cruz|dolar-blue-la-paz|dolar-blue-cochabamba|prensa|guia-dinero-bolivia|bolivia-money-guide)/',
     '/:page(dolar-blue-hoy|bolivian-blue|dolar-paralelo-bolivia-en-vivo|cuanto-esta-dolar-bolivia|cotiza-dolar-paralelo|euro-a-boliviano|real-a-boliviano|peso-a-boliviano|sol-a-boliviano|peso-argentino-a-boliviano|peso-chileno-a-boliviano|dolar-blue-santa-cruz|dolar-blue-la-paz|dolar-blue-cochabamba|prensa|guia-dinero-bolivia|bolivia-money-guide)/index.html',
@@ -138,7 +142,7 @@ export function metaForPath(path, buy, sell, updatedAt = null) {
     case '/bolivian-blue':
       return {
         title: `Bolivian Blue Today: Buy ${buy} · Sell ${sell}`,
-        description: `Bolivian Blue in Bolivia: buy Bs ${buy}, sell Bs ${sell}. Verified multi-platform P2P median.`,
+        description: `Bolivian Blue in Bolivia: buy Bs ${buy}, sell Bs ${sell}. P2P reference quote.`,
       };
     case '/dolar-paralelo-bolivia-en-vivo':
       return {
@@ -361,10 +365,16 @@ export function metaForPathEn(path, buy, sell) {
         title: `Blue Dollar Today Bolivia: Buy ${buy} · Sell ${sell}`,
         description: `Blue dollar today in Bolivia: buy Bs ${buy} and sell Bs ${sell}. Parallel market, updated every 15 min.`,
       };
+    case '/dolar-paralelo-bolivia-en-vivo':
+      return { title: `Bolivia Parallel Dollar Live: ${buy} / ${sell}`, description: `Bolivia parallel dollar: buy Bs ${buy}, sell Bs ${sell} per USD. P2P reference quote.` };
+    case '/cuanto-esta-dolar-bolivia':
+      return { title: `Dollar in Bolivia Today: Buy ${buy} · Sell ${sell}`, description: `Current Bolivia parallel dollar reference: buy Bs ${buy}, sell Bs ${sell}.` };
+    case '/cotiza-dolar-paralelo':
+      return { title: `Bolivia Parallel Dollar Quote: ${buy} / ${sell}`, description: `Parallel dollar quote in Bolivia: buy Bs ${buy}, sell Bs ${sell}.` };
     case '/bolivian-blue':
       return {
         title: `Bolivian Blue Today: Buy ${buy} · Sell ${sell}`,
-        description: `Bolivian Blue in Bolivia: buy Bs ${buy}, sell Bs ${sell}. Verified multi-platform P2P median.`,
+        description: `Bolivian Blue in Bolivia: buy Bs ${buy}, sell Bs ${sell}. P2P reference quote.`,
       };
     case '/euro-a-boliviano':
       return {
@@ -440,6 +450,8 @@ export function withLangQuery(url, lang = 'en') {
 }
 
 export function applyEnglishAnnotations(html, path, pair) {
+  // Dedicated translated guide URLs own their language; query strings cannot change it.
+  if (path === '/guia-dinero-bolivia' || path === '/bolivia-money-guide') return html;
   const canonMatch = html.match(/<link\s+rel=["']canonical["']\s+href=["']([^"']+)["']/i);
   const esCanon = canonMatch ? canonMatch[1] : null;
   const enCanon = esCanon ? withLangQuery(esCanon, 'en') : null;
@@ -469,6 +481,37 @@ export function applyEnglishAnnotations(html, path, pair) {
     const enMeta = metaForPathEn(path, pair.buy, pair.sell);
     if (enMeta) out = replaceMeta(out, enMeta.title, enMeta.description);
   }
+  // Replace the crawl shell and structured page identity too: English metadata
+  // must describe visible English content, not label a Spanish shell as English.
+  const fallbackTitles = {
+    '/': 'Bolivia Blue | Parallel exchange rate',
+    '/dolar-blue-hoy': 'Blue Dollar Today Bolivia',
+    '/dolar-paralelo-bolivia-en-vivo': 'Bolivia Parallel Dollar Live',
+    '/cuanto-esta-dolar-bolivia': 'Dollar Rate in Bolivia Today',
+    '/cotiza-dolar-paralelo': 'Bolivia Parallel Dollar Quote',
+    '/bolivian-blue': 'Bolivian Blue Exchange Rate',
+    '/euro-a-boliviano': 'Euro to Boliviano',
+    '/real-a-boliviano': 'Brazilian Real to Boliviano',
+    '/peso-a-boliviano': 'Colombian Peso to Boliviano',
+    '/sol-a-boliviano': 'Peruvian Sol to Boliviano',
+    '/peso-argentino-a-boliviano': 'Argentine Peso to Boliviano',
+    '/peso-chileno-a-boliviano': 'Chilean Peso to Boliviano',
+    '/dolar-blue-santa-cruz': 'Blue Dollar in Santa Cruz',
+    '/dolar-blue-la-paz': 'Blue Dollar in La Paz',
+    '/dolar-blue-cochabamba': 'Blue Dollar in Cochabamba',
+    '/prensa': 'Bolivia Blue Press | Media kit, citations and data',
+  };
+  const enMeta = pair?.buy && pair?.sell ? metaForPathEn(path, pair.buy, pair.sell) : {
+    title: fallbackTitles[path] || 'Bolivia Blue',
+    description: 'Bolivia Blue publishes reference exchange rates, historical observations and its methodology. Check the latest available quote and observation time.',
+  };
+  out = replaceMeta(out, enMeta.title, enMeta.description);
+  out = out.replace(/<meta property="og:locale:alternate" content="[^"]*"/i, '<meta property="og:locale:alternate" content="es_BO"');
+  const shell = `<main data-seo-shell="english" class="max-w-3xl mx-auto px-4 py-8"><h1>${escapeHtml(enMeta.title)}</h1><p>${escapeHtml(enMeta.description)}</p>${pair?.updatedAt ? `<p>Observation: <time datetime="${escapeAttr(pair.updatedAt)}">${escapeHtml(pair.updatedAt)}</time></p>` : ''}<nav><a href="/?lang=en">Home</a> · <a href="/dolar-blue-hoy?lang=en">Today's quote</a> · <a href="/fuente-de-datos?lang=en">Methodology</a> · <a href="/datos-historicos?lang=en">Historical data</a></nav></main>`;
+  out = out.replace(/<main\b[^>]*data-seo-shell=["'][^"']*["'][^>]*>[\s\S]*?<\/main>/i, () => shell);
+  out = out.replace(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>/gi, '');
+  const schema = { '@context': 'https://schema.org', '@type': 'WebPage', name: enMeta.title, description: enMeta.description, url: enCanon, inLanguage: 'en-US', isPartOf: { '@type': 'WebSite', name: 'Bolivia Blue', url: 'https://www.boliviablue.com' } };
+  out = out.replace('</head>', () => `<script type="application/ld+json" data-rh="true">${JSON.stringify(schema).replace(/</g, '\\u003c')}</script></head>`);
   return out;
 }
 
@@ -534,7 +577,7 @@ export default async function middleware(request) {
     return;
   }
 
-  if (request.method !== 'GET') {
+  if (request.method !== 'GET' && request.method !== 'HEAD') {
     return;
   }
 
@@ -544,9 +587,34 @@ export default async function middleware(request) {
 
   const url = new URL(request.url);
   const path = normalizePath(url.pathname);
+  let article;
+  try { article = articleRequest(path, url.search); } catch { return; }
+  if (article) {
+    try {
+      const [content, shell] = await Promise.all([
+        loadArticle(article),
+        fetch(new URL(`/${article.kind}/index.html`, url.origin), {
+          headers: { [SKIP_HEADER]: '1', Accept: 'text/html' },
+          signal: withTimeout(HTML_TIMEOUT_MS),
+        }),
+      ]);
+      if (!shell.ok) throw new Error('Article shell unavailable');
+      const headers = new Headers(shell.headers);
+      headers.set('content-type', 'text/html; charset=utf-8');
+      headers.set('cache-control', content.status === 200 ? 'public, s-maxage=300, stale-while-revalidate=900' : 'no-store');
+      headers.delete('content-length');
+      if (content.status !== 200) headers.set('x-robots-tag', 'noindex, follow');
+      if (content.status === 503) headers.set('retry-after', '60');
+      return new Response(request.method === 'HEAD' ? null : renderArticleHtml(await shell.text(), content, article), { status: content.status, headers });
+    } catch {
+      return new Response(request.method === 'HEAD' ? null : '<!doctype html><html lang="es"><head><meta name="robots" content="noindex, follow"><title>Artículo temporalmente no disponible | Bolivia Blue</title></head><body><h1>Artículo temporalmente no disponible</h1><a href="/blog">Blog</a></body></html>', { status: 503, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex, follow', 'retry-after': '60' } });
+    }
+  }
+  if (request.method === 'HEAD') return;
+  if (path === '/blog' || path === '/noticias' || path.endsWith('/rss.xml')) return;
   const ua = request.headers.get('user-agent') || '';
 
-  if (!shouldTransformPath(path, ua)) {
+  if (url.searchParams.get('lang') !== 'en' && !shouldTransformPath(path, ua)) {
     return;
   }
 
@@ -559,26 +627,19 @@ export default async function middleware(request) {
     });
     if (!htmlRes.ok) return;
 
-    const rateRes = await fetch(new URL('/api/blue-rate', url.origin), {
-      headers: { [SKIP_HEADER]: '1', Accept: 'application/json' },
-      signal: withTimeout(RATE_TIMEOUT_MS),
-    });
-    if (!rateRes.ok) return;
-
-    let rate;
+    let rates = null;
     try {
-      rate = await rateRes.json();
-    } catch {
-      return;
-    }
-
-  const rates = normalizeRates(rate);
-    if (!rates) return;
-
+      const rateRes = await fetch(new URL('/api/blue-rate', url.origin), {
+        headers: { [SKIP_HEADER]: '1', Accept: 'application/json' },
+        signal: withTimeout(RATE_TIMEOUT_MS),
+      });
+      if (rateRes.ok) rates = normalizeRates(await rateRes.json());
+    } catch { /* keep the existing snapshot on rate-service failure */ }
     const html = await htmlRes.text();
     const lang = url.searchParams.get('lang');
     let applied = applyLiveSeo(html, path, rates);
-    if (!applied) return;
+    if (!applied && lang !== 'en') return;
+    applied ||= { html, live: false, rates: null };
 
     if (lang === 'en') {
       applied = {
@@ -590,7 +651,7 @@ export default async function middleware(request) {
     const headers = new Headers(htmlRes.headers);
     headers.set('content-type', 'text/html; charset=utf-8');
     headers.set('cache-control', 'public, s-maxage=300, stale-while-revalidate=900');
-    headers.set('x-bb-live-seo', '1');
+    headers.set('x-bb-live-seo', applied.live ? '1' : '0');
     headers.delete('content-length');
 
     return new Response(applied.html, { status: 200, headers });

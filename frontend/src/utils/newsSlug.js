@@ -28,6 +28,6 @@ export function newsIdFromSlugParam(param) {
   );
   if (uuid) return uuid[1];
   // Numeric or opaque id after last hyphen (min length 4)
-  const m = String(param).match(/-([A-Za-z0-9_-]{4,})$/);
+  const m = String(param).match(/-([A-Za-z0-9_]{4,})$/);
   return m ? m[1] : null;
 }

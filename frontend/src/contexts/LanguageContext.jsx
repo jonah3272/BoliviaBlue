@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { trackLanguageSwitched } from '../utils/analyticsEvents';
-import { applySanitizedLangUrl } from '../utils/urlLang';
+import { useLocation, useNavigate, useNavigationType } from 'react-router-dom';
+import { languageForLocation, localizedLocation, normalizeLocalePath } from '../utils/pageLocale';
 
 const LanguageContext = createContext();
 
@@ -649,75 +650,40 @@ export const translations = {
 };
 
 export function LanguageProvider({ children }) {
-  const [language, setLanguage] = useState(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const params = new URLSearchParams(window.location.search);
-        const langParam = params.get('lang');
-        if (langParam === 'en' || langParam === 'es') return langParam;
-      } catch {
-        /* ignore */
-      }
-      const saved = localStorage.getItem('language');
-      if (saved === 'en' || saved === 'es') return saved;
-    }
-    return 'es';
-  });
+  const location = useLocation();
+  const navigate = useNavigate();
+  const navigationType = useNavigationType();
+  const [language, setLanguage] = useState(() => languageForLocation(location));
+  const previousLocation = useRef(location.key);
 
-  // Keep URL ?lang= in sync on first paint / navigation without waiting for a toggle
-  useEffect(() => {
-    try {
-      applySanitizedLangUrl();
-      const params = new URLSearchParams(window.location.search);
-      const langParam = params.get('lang');
-      if ((langParam === 'en' || langParam === 'es') && langParam !== language) {
-        setLanguage(langParam);
-      }
-      // Strip redundant ?lang=es so Spanish never competes as a query-param URL
-      if (langParam === 'es') {
-        params.delete('lang');
-        const qs = params.toString();
-        const next = `${window.location.pathname}${qs ? `?${qs}` : ''}${window.location.hash || ''}`;
-        window.history.replaceState({}, '', next);
-      }
-    } catch {
-      /* ignore */
+  useLayoutEffect(() => {
+    const isNewNavigation = previousLocation.current !== location.key;
+    previousLocation.current = location.key;
+    let nextLanguage = languageForLocation(location);
+    const isGuide = ['/guia-dinero-bolivia', '/bolivia-money-guide'].includes(normalizeLocalePath(location.pathname));
+    // Keep an English session on internal links; direct loads and Back/Forward use the URL.
+    if (isNewNavigation && navigationType === 'PUSH' && !isGuide &&
+        !new URLSearchParams(location.search).has('lang') && language === 'en') {
+      nextLanguage = 'en';
     }
-    // Only on mount — intentional
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    setLanguage(nextLanguage);
+    const next = localizedLocation(location, nextLanguage);
+    if (next !== location.pathname + location.search + location.hash) {
+      navigate(next, { replace: true });
+    }
+  }, [location, navigationType, navigate]);
 
   useEffect(() => {
-    localStorage.setItem('language', language);
-    // Update HTML lang attribute for SEO and accessibility
-    document.documentElement.lang = language;
-    // Also update html tag if it exists
-    const htmlTag = document.querySelector('html');
-    if (htmlTag) {
-      htmlTag.setAttribute('lang', language);
-    }
+    try { localStorage.setItem('language', language); } catch { /* unavailable storage */ }
   }, [language]);
 
   const toggleLanguage = () => {
-    setLanguage(prev => {
-      const newLang = prev === 'es' ? 'en' : 'es';
-      // Track language switch
-      trackLanguageSwitched({ from_language: prev, to_language: newLang });
-      // Keep shareable EN links via ?lang=en; ES stays on the clean canonical path
-      try {
-        const url = new URL(window.location.href);
-        if (newLang === 'en') {
-          url.searchParams.set('lang', 'en');
-        } else {
-          url.searchParams.delete('lang');
-        }
-        const qs = url.searchParams.toString();
-        window.history.replaceState({}, '', url.pathname + (qs ? `?${qs}` : '') + url.hash);
-      } catch {
-        /* ignore */
-      }
-      return newLang;
-    });
+    const newLanguage = language === 'es' ? 'en' : 'es';
+    trackLanguageSwitched({ from_language: language, to_language: newLanguage });
+    // Include explicit es while navigating; normalization removes it after synchronization.
+    const next = localizedLocation(location, newLanguage);
+    setLanguage(newLanguage);
+    navigate(next);
   };
 
   const t = (key) => {

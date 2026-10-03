@@ -35,6 +35,7 @@ function Blog() {
 
   // Fetch articles from Supabase (only when not viewing a single article)
   useEffect(() => {
+    let cancelled = false;
     if (!slug) {
       const loadArticles = async () => {
         setIsLoading(true);
@@ -42,6 +43,7 @@ function Blog() {
         try {
           console.log('Loading blog articles from Supabase for language:', language);
           const supabaseArticles = await fetchBlogArticles(language);
+          if (cancelled) return;
           console.log('Supabase articles loaded:', supabaseArticles?.length || 0);
           
           // If Supabase returns articles, use them; otherwise fallback to local
@@ -69,72 +71,52 @@ function Blog() {
             setArticles(fallbackArticles);
           }
         } catch (err) {
+          if (cancelled) return;
           console.error('Error loading blog articles:', err);
           setError(err.message);
           // Fallback to local articles on error
           const fallbackArticles = language === 'es' ? articlesEs : articlesEn;
           setArticles(fallbackArticles);
         } finally {
-          setIsLoading(false);
+          if (!cancelled) setIsLoading(false);
         }
       };
 
       loadArticles();
     }
+    return () => { cancelled = true; };
   }, [language, slug]);
 
-  // Load article by slug from URL params
+  // Cancel stale responses when a reader changes slug/language or goes Back/Forward.
   useEffect(() => {
-    if (slug) {
-      const loadArticleBySlug = async () => {
-        setIsLoading(true);
-        try {
-          console.log('Loading article from Supabase:', slug, language);
-          const article = await fetchBlogArticleBySlug(slug, language);
-          if (article) {
-            console.log('Article loaded from Supabase:', article.title);
-            setSelectedArticle({
-              id: article.id,
-              slug: article.slug,
-              title: article.title,
-              excerpt: article.excerpt,
-              content: article.content,
-              contentFormat: article.content_format || 'html',
-              author: article.author,
-              category: article.category,
-              featured: article.featured,
-              readTime: article.read_time ? `${article.read_time} min` : null,
-              date: article.published_at || article.created_at
-            });
-          } else {
-            console.log('Article not found in Supabase, trying local fallback');
-            // Fallback: try to find in local articles
-            const fallbackArticles = language === 'es' ? articlesEs : articlesEn;
-            const localArticle = fallbackArticles.find(a => a.slug === slug);
-            if (localArticle) {
-              console.log('Article found in local fallback:', localArticle.title);
-              setSelectedArticle(localArticle);
-            } else {
-              console.warn('Article not found in Supabase or local fallback');
-            }
-          }
-        } catch (err) {
-          console.error('Error loading article by slug:', err);
-          // Fallback: try to find in local articles
-          const fallbackArticles = language === 'es' ? articlesEs : articlesEn;
-          const localArticle = fallbackArticles.find(a => a.slug === slug);
-          if (localArticle) {
-            setSelectedArticle(localArticle);
-          }
-        } finally {
-          setIsLoading(false);
-        }
-      };
-      loadArticleBySlug();
-    } else {
-      // Clear selected article when no slug (on /blog page)
-      setSelectedArticle(null);
-    }
+    let cancelled = false;
+    setSelectedArticle(null);
+    if (!slug) return () => { cancelled = true; };
+    setIsLoading(true);
+    setError(null);
+    (async () => {
+      try {
+        const article = await fetchBlogArticleBySlug(slug, language);
+        if (cancelled) return;
+        const fallback = (language === 'es' ? articlesEs : articlesEn).find((a) => a.slug === slug);
+        const found = article || fallback;
+        setSelectedArticle(found ? {
+          ...found,
+          language,
+          contentFormat: found.content_format || found.contentFormat || 'html',
+          readTime: found.read_time ? `${found.read_time} min` : found.readTime,
+          date: found.published_at || found.created_at || found.date,
+        } : null);
+      } catch (err) {
+        if (cancelled) return;
+        const fallback = (language === 'es' ? articlesEs : articlesEn).find((a) => a.slug === slug);
+        setSelectedArticle(fallback ? { ...fallback, language } : null);
+        if (!fallback) setError(err.message);
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
   }, [slug, language]);
 
   const formatDate = (dateString) => {
@@ -149,11 +131,8 @@ function Blog() {
     });
   };
 
-  const selectedArticleData = selectedArticle 
-    ? (typeof selectedArticle === 'object' 
-        ? selectedArticle 
-        : articles.find(a => a.id === selectedArticle || a.slug === selectedArticle))
-    : null;
+  const selectedArticleData = selectedArticle?.slug === slug && selectedArticle?.language === language
+    ? selectedArticle : null;
 
   // Blog collection schema for SEO
   const blogSchema = {
@@ -163,7 +142,7 @@ function Blog() {
     "description": language === 'es' 
       ? "Artículos y análisis sobre el dólar blue, criptomonedas, USDT y finanzas personales en Bolivia"
       : "Articles and analysis about the blue dollar, cryptocurrencies, USDT and personal finance in Bolivia",
-    "url": "https://boliviablue.com/blog",
+    "url": "https://www.boliviablue.com/blog",
     "mainEntity": {
       "@type": "ItemList",
       "itemListElement": articles.map((article, index) => ({
@@ -201,7 +180,10 @@ function Blog() {
           "url": "https://boliviablue.com/favicon.svg"
         }
       },
-      "description": selectedArticleData.excerpt
+      "description": selectedArticleData.excerpt,
+      "url": `https://www.boliviablue.com/blog/${selectedArticleData.slug}${language === 'en' ? '?lang=en' : ''}`,
+      "mainEntityOfPage": `https://www.boliviablue.com/blog/${selectedArticleData.slug}${language === 'en' ? '?lang=en' : ''}`,
+      "inLanguage": language === 'es' ? 'es-BO' : 'en-US'
     };
 
     return (
@@ -210,9 +192,11 @@ function Blog() {
           title={selectedArticleData.title + ' - ' + (language === 'es' ? 'Blog Bolivia Blue' : 'Bolivia Blue Blog')}
           description={selectedArticleData.excerpt}
           keywords={language === 'es'
-            ? `${selectedArticleData.category.toLowerCase()}, dólar blue bolivia, tipo de cambio bolivia, binance p2p, usdt bolivia, finanzas personales bolivia`
-            : `${selectedArticleData.category.toLowerCase()}, blue dollar bolivia, exchange rate bolivia, binance p2p, usdt bolivia, personal finance bolivia`}
+            ? `${(selectedArticleData.category || '').toLowerCase()}, dólar blue bolivia, tipo de cambio bolivia, binance p2p, usdt bolivia, finanzas personales bolivia`
+            : `${(selectedArticleData.category || '').toLowerCase()}, blue dollar bolivia, exchange rate bolivia, binance p2p, usdt bolivia, personal finance bolivia`}
           canonical={`/blog/${selectedArticleData.slug}`}
+          availableLanguages={[language]}
+          ogType="article"
           structuredData={articleSchema}
         />
         
@@ -359,6 +343,24 @@ function Blog() {
             </div>
           </div>
         </footer>
+      </div>
+    );
+  }
+
+  if (slug) {
+    const statusTitle = isLoading
+      ? (language === 'es' ? 'Cargando artículo…' : 'Loading article…')
+      : (language === 'es' ? 'Artículo no encontrado' : 'Article not found');
+    return (
+      <div className="min-h-screen bg-brand-bg dark:bg-gray-900">
+        <PageMeta title={`${statusTitle} | Bolivia Blue`} description={statusTitle}
+          canonical={`/blog/${slug}`} noindex availableLanguages={[]} />
+        <Header /><Navigation />
+        <main className="max-w-3xl mx-auto px-4 py-12" data-adsense-block="missing-article">
+          <h1 className="text-3xl font-bold">{statusTitle}</h1>
+          <Link to="/blog" className="text-blue-600 underline">{language === 'es' ? 'Volver al blog' : 'Back to blog'}</Link>
+        </main>
+        <Footer />
       </div>
     );
   }

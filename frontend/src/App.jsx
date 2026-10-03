@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
 import Redirect from './components/Redirect';
 import MobileBottomNav from './components/MobileBottomNav';
@@ -190,9 +190,7 @@ function AppContent() {
 
 function App() {
   return (
-    <Router>
-      <AppContent />
-    </Router>
+    <AppContent />
   );
 }
 

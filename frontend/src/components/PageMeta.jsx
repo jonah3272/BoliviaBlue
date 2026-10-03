@@ -1,5 +1,4 @@
 import { Helmet } from 'react-helmet-async';
-import { useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { getOrganizationSchema, getWebSiteSchema } from '../utils/seoSchema';
 import { SITE_URL } from '../config/brand';
@@ -20,9 +19,11 @@ export default function PageMeta({
   includeBrandSchema = true,
   /** Separate locale URLs (not ?lang=) — used by the traveler guide. */
   localePaths = null,
+  contentLanguage,
+  availableLanguages = ['es', 'en'],
 }) {
   const languageContext = useLanguage();
-  const language = languageContext?.language || 'es';
+  const language = contentLanguage || languageContext?.language || 'es';
 
   const isStage = typeof window !== 'undefined' && (
     window.location.hostname === 'stage.boliviablue.com' ||
@@ -61,20 +62,20 @@ export default function PageMeta({
   const brandSchemas = includeBrandSchema
     ? [getOrganizationSchema(language), getWebSiteSchema(language)]
     : [];
-  const allSchemas = [...brandSchemas, ...pageSchemas];
+  // Page JSON-LD follows the same canonical identity as the visible head.
+  const localizeSchema = (value) => {
+    if (typeof value === 'string' && value === `${baseUrl}${canonicalPath}`) return fullCanonical;
+    if (Array.isArray(value)) return value.map(localizeSchema);
+    if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, localizeSchema(item)]));
+    return value;
+  };
+  const allSchemas = [...brandSchemas, ...pageSchemas.map(localizeSchema)];
 
-  useEffect(() => {
-    const canons = [...document.querySelectorAll('link[rel="canonical"]')];
-    if (canons.length < 2) return;
-    const keep = canons.find((l) => l.getAttribute('href') === fullCanonical) || canons[canons.length - 1];
-    canons.forEach((l) => {
-      if (l !== keep) l.remove();
-    });
-  }, [fullCanonical]);
 
   return (
     <Helmet>
       <title>{title}</title>
+      <meta name="title" content={title} />
       {description && <meta name="description" content={description} />}
       {keywords && <meta name="keywords" content={keywords} />}
       <link rel="canonical" href={fullCanonical} />
@@ -89,9 +90,9 @@ export default function PageMeta({
       <meta name="geo.region" content="BO" />
       <meta name="geo.placename" content="Bolivia" />
 
-      <link rel="alternate" hrefLang="es" href={alternateEs} />
-      <link rel="alternate" hrefLang="en" href={alternateEn} />
-      <link rel="alternate" hrefLang="x-default" href={alternateEs} />
+      {availableLanguages.includes('es') && <link rel="alternate" hrefLang="es" href={alternateEs} />}
+      {availableLanguages.includes('en') && <link rel="alternate" hrefLang="en" href={alternateEn} />}
+      {availableLanguages.length > 1 && <link rel="alternate" hrefLang="x-default" href={alternateEs} />}
 
       <meta property="og:type" content={ogType} />
       <meta property="og:url" content={fullCanonical} />
@@ -99,7 +100,7 @@ export default function PageMeta({
       {description && <meta property="og:description" content={description} />}
       <meta property="og:image" content={fullOgImage} />
       <meta property="og:locale" content={language === 'es' ? 'es_BO' : 'en_US'} />
-      <meta property="og:locale:alternate" content={language === 'es' ? 'en_US' : 'es_BO'} />
+      {availableLanguages.length > 1 && <meta property="og:locale:alternate" content={language === 'es' ? 'en_US' : 'es_BO'} />}
       <meta property="og:site_name" content="Bolivia Blue" />
 
       <meta name="twitter:card" content="summary_large_image" />

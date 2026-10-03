@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { HelmetProvider } from 'react-helmet-async';
 import App from './App';
+import { BrowserRouter } from 'react-router-dom';
 import './index.css';
 import './styles/ui-enhancements.css';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -200,6 +201,7 @@ if (!rootElement) {
       <ErrorBoundary>
         <HelmetProvider>
           <ThemeProvider>
+            <BrowserRouter>
             <LanguageProvider>
               <CurrencyProvider>
                 <RateProvider>
@@ -209,6 +211,7 @@ if (!rootElement) {
                 </RateProvider>
               </CurrencyProvider>
             </LanguageProvider>
+            </BrowserRouter>
           </ThemeProvider>
         </HelmetProvider>
       </ErrorBoundary>

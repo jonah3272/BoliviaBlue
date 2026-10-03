@@ -12,7 +12,6 @@ const PAGES = [
   { path: '/bolivian-blue', changefreq: 'hourly', priority: '0.95' },
   { path: '/calculadora', changefreq: 'daily', priority: '0.9' },
   { path: '/cuanto-esta-dolar-bolivia', changefreq: 'hourly', priority: '0.85' },
-  { path: '/dolar-paralelo-bolivia-en-vivo', changefreq: 'hourly', priority: '0.75' },
   { path: '/cotiza-dolar-paralelo', changefreq: 'hourly', priority: '0.85' },
   { path: '/que-es-dolar-blue', changefreq: 'weekly', priority: '0.85' },
   { path: '/dolar-blue-la-paz', changefreq: 'hourly', priority: '0.85' },
@@ -61,14 +60,20 @@ function liveLastmod(date) {
 }
 
 function urlEntry(locPath, lastmod, changefreq, priority) {
+  const isGuide = ['/guia-dinero-bolivia', '/bolivia-money-guide'].includes(locPath);
+  const esPath = isGuide ? '/guia-dinero-bolivia' : locPath;
+  const enPath = isGuide ? '/bolivia-money-guide' : `${locPath}?lang=en`;
+  // Blog translations use different slugs; do not invent query-string translations.
+  const alternates = locPath.startsWith('/blog/') ? '' : `
+    <xhtml:link rel="alternate" hreflang="es" href="${BASE}${esPath}" />
+    <xhtml:link rel="alternate" hreflang="en" href="${BASE}${enPath}" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="${BASE}${esPath}" />`;
   return `  <url>
     <loc>${BASE}${locPath}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>${changefreq}</changefreq>
     <priority>${priority}</priority>
-    <xhtml:link rel="alternate" hreflang="es" href="${BASE}${locPath}" />
-    <xhtml:link rel="alternate" hreflang="en" href="${BASE}${locPath}?lang=en" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="${BASE}${locPath}" />
+${alternates}
   </url>
 `;
 }

@@ -8,6 +8,8 @@ import BlueRateCards from '../components/BlueRateCards';
 import PlatformRatesBoard from '../components/PlatformRatesBoard';
 import FinancialOfferCard, { FinancialOfferButton, OfferComparisonLink } from '../components/FinancialOfferCard';
 import Footer from '../components/Footer';
+import EldoradoMoneyGuide from '../components/EldoradoMoneyGuide';
+import { getEldoradoGuide } from '../data/eldoradoGuide';
 import { fetchBlueRate } from '../utils/api';
 import { getFinancialOffer, getPartnerAds, BUY_USDT_INTENT, RECEIVE_PAYMENTS_INTENT } from '../config/referrals';
 import { BinanceButton } from '../components/BrandButton';
@@ -23,7 +25,20 @@ function BuyDollars() {
   const location = useLocation();
   const stickyRef = useRef(null);
   const intent = params.get('intent') === RECEIVE_PAYMENTS_INTENT ? RECEIVE_PAYMENTS_INTENT : BUY_USDT_INTENT;
-  const offer = getFinancialOffer(language, intent);
+  const operation = params.get('operation') === 'sell' ? 'sell' : 'buy';
+  const baseOffer = getFinancialOffer(language, intent);
+  const eldoradoGuide = getEldoradoGuide(language, operation);
+  const offer = intent === BUY_USDT_INTENT ? {
+    ...baseOffer,
+    id: operation === 'sell' ? 'eldorado_usdt_bob' : baseOffer.id,
+    intent: operation === 'sell' ? 'sell_usdt' : baseOffer.intent,
+    variant: 'stepwise_v1',
+    headline: operation === 'sell' ? (es ? 'Convertí tus USDT en bolivianos con El Dorado' : 'Convert your USDT to bolivianos with El Dorado') : baseOffer.headline,
+    body: operation === 'sell' ? (es ? 'Vendé USDT y recibí BOB por un medio de cobro admitido. Revisá el monto neto y verificá el ingreso en tu cuenta antes de liberar los USDT.' : 'Sell USDT and receive BOB through a supported method. Check the net amount and verify payment in your account before releasing USDT.') : baseOffer.body,
+    guideLabel: eldoradoGuide.title,
+    guideSummary: eldoradoGuide.summary,
+    steps: eldoradoGuide.steps,
+  } : baseOffer;
   const [showOfficial, setShowOfficial] = useState(false);
   const [currentRate, setCurrentRate] = useState(null);
   const [openFaq, setOpenFaq] = useState(null);
@@ -61,8 +76,13 @@ function BuyDollars() {
   const howToSchema = {
     '@context': 'https://schema.org', '@type': 'HowTo',
     name: `${offer.brand}: ${offer.guideLabel}`,
-    description: offer.body,
+    description: offer.guideSummary || offer.body,
     step: offer.steps.map(([name, text], index) => ({ '@type': 'HowToStep', position: index + 1, name, text })),
+  };
+  const selectOperation = (nextOperation) => {
+    const next = new URLSearchParams(params);
+    next.set('operation', nextOperation);
+    setParams(next, { preventScrollReset: true });
   };
   const selectIntent = (nextIntent) => {
     const next = new URLSearchParams(params);
@@ -70,8 +90,8 @@ function BuyDollars() {
     setParams(next, { preventScrollReset: true });
   };
   return <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
-    <PageMeta title={es ? 'Comprar USDT con bolivianos o cobrar del exterior | Bolivia Blue' : 'Buy USDT with bolivianos or get paid from abroad | Bolivia Blue'}
-      description={es ? 'Elegí El Dorado para comprar USDT con BOB o Takenos para recibir pagos de clientes en USD y EUR. Guías, requisitos y comparación de alternativas.' : 'Choose El Dorado to buy USDT with BOB or Takenos to receive client payments in USD and EUR. Guides, requirements and alternatives.'}
+    <PageMeta title={es ? 'Comprar y vender USDT con bolivianos | Guía Bolivia Blue' : 'Buy and sell USDT with bolivianos | Bolivia Blue guide'}
+      description={es ? 'Aprendé a comprar USDT con BOB y vender USDT por bolivianos en El Dorado: pasos, conversiones, comisiones y seguridad. También pagos del exterior con Takenos.' : 'Learn to buy USDT with BOB and sell USDT for bolivianos on El Dorado: steps, conversions, fees and safety. Also receive overseas payments with Takenos.'}
       canonical="/comprar-dolares" structuredData={howToSchema} />
     <Header />
     <Navigation />
@@ -84,9 +104,10 @@ function BuyDollars() {
           {[[BUY_USDT_INTENT, es ? 'Comprar USDT' : 'Buy USDT'], [RECEIVE_PAYMENTS_INTENT, es ? 'Cobrar del exterior' : 'Get paid from abroad']].map(([value, label]) => <button key={value} type="button" aria-pressed={intent === value} onClick={() => selectIntent(value)}
             className={`min-w-0 min-h-[48px] rounded-xl border px-3 py-3 text-sm font-bold transition-colors ${intent === value ? 'border-sky-700 bg-sky-700 text-white' : 'border-gray-300 bg-white text-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200'}`}>{label}</button>)}
         </div>
-        <div className="mt-4"><FinancialOfferCard placement="buy_page_top" intent={intent} midRate={midRate} guideHref={`?${params.toString()}#guia`} /></div>
+        <div className="mt-4"><FinancialOfferCard placement="buy_page_top" offer={offer} intent={intent} midRate={midRate} guideHref={`?${params.toString()}#guia`} /></div>
       </section>
       <section id="guia" className="scroll-mt-[calc(var(--bb-header-height,117px)+4rem)] rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 sm:p-7">
+        {intent === BUY_USDT_INTENT ? <EldoradoMoneyGuide offer={offer} direction={operation} onDirectionChange={selectOperation} currentRate={currentRate} /> : <>
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{offer.guideLabel}</h2>
         <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">{offer.brand} · {offer.qualification}</p>
         <ol className="mt-5 space-y-5">{offer.steps.map(([title, body], index) => <li key={`${offer.id}-${index}`} className="flex gap-3">
@@ -94,8 +115,9 @@ function BuyDollars() {
           <div className="min-w-0"><h3 className="font-semibold text-gray-900 dark:text-white">{title}</h3><p className="mt-1 text-sm leading-relaxed text-gray-600 dark:text-gray-300">{body}</p></div>
         </li>)}</ol>
         <a href={offer.source} target="_blank" rel="noopener noreferrer" className="mt-5 inline-block py-2 text-sm text-sky-700 dark:text-sky-300 underline">{es ? 'Ver instrucciones oficiales del proveedor' : 'Read the provider’s official instructions'}</a>
-        <div className="mt-3"><FinancialOfferButton offer={offer} placement="buy_page_guide" /></div>
-        <p className="mt-3 text-xs leading-relaxed text-gray-500 dark:text-gray-400">{offer.disclosure}</p>
+        </>}
+        {intent === RECEIVE_PAYMENTS_INTENT && <><div className="mt-3"><FinancialOfferButton offer={offer} placement="buy_page_guide" /></div>
+        <p className="mt-3 text-xs leading-relaxed text-gray-500 dark:text-gray-400">{offer.disclosure}</p></>}
       </section>
       <section>
         <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">{es ? 'Compará con la referencia del mercado' : 'Compare with the market reference'}</h2>

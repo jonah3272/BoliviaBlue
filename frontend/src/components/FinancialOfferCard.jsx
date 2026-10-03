@@ -26,10 +26,10 @@ export function OfferComparisonLink({ offer, placement }) {
   </div>;
 }
 
-export default function FinancialOfferCard({ placement = 'financial_offer', intent, midRate = null, guideHref }) {
+export default function FinancialOfferCard({ placement = 'financial_offer', intent, midRate = null, guideHref, offer: providedOffer }) {
   const language = useLanguage()?.language || 'es';
   const es = language === 'es';
-  const offer = getFinancialOffer(language, intent);
+  const offer = providedOffer || getFinancialOffer(language, intent);
   const ref = useOfferImpression({ offer, language, placement });
   const guide = guideHref || `${BUY_GUIDE_PATH}?intent=${offer.intent}${es ? '' : '&lang=en'}#guia`;
   const rateLabel = midRate != null && Number.isFinite(Number(midRate)) ? formatRate(midRate, 'USD') : null;

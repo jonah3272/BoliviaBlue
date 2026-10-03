@@ -1048,7 +1048,7 @@ async function main() {
     ['/correcciones', 'Correcciones', 'Cómo reportar un error en Bolivia Blue.'],
     ['/politica-editorial', 'Política editorial', 'Política editorial de Bolivia Blue.'],
     ['/equipo', 'Equipo Bolivia Blue', 'Quién publica Bolivia Blue.'],
-    ['/comprar-dolares', 'Comprar USDT con bolivianos o cobrar del exterior | Bolivia Blue', 'Elegí El Dorado para comprar USDT con BOB o Takenos para recibir pagos de clientes en USD y EUR. Guías, requisitos y comparación de alternativas.'],
+    ['/comprar-dolares', 'Comprar y vender USDT con bolivianos | Guía Bolivia Blue', 'Aprendé a comprar USDT con BOB y vender USDT por bolivianos en El Dorado: pasos, conversiones, comisiones y seguridad. También pagos del exterior con Takenos.'],
     ['/bancos', 'Dólar en bancos de Bolivia', 'Tipo de cambio oficial y bancos en Bolivia.'],
     ['/plataformas', 'Plataformas P2P en Bolivia', 'Plataformas P2P usadas para la referencia del paralelo.'],
     ['/fuente-de-datos', 'Fuente de datos del dólar blue', 'Metodología: mediana P2P USDT/BOB, no ventanilla.'],

@@ -154,7 +154,7 @@ export async function getCurrentBlueRate() {
     const cross = await fetchCrossSourceBobRates();
 
     return {
-      source: cross.sources_used.length > 1 ? 'p2p-cross-median' : 'binance-p2p',
+      source: cross.sources_used.length > 1 ? 'p2p-cross-median' : `${cross.sources_used[0]}-p2p`,
       sources_used: cross.sources_used,
       buy_bob_per_usd: cross.buy,
       sell_bob_per_usd: cross.sell,
@@ -186,7 +186,7 @@ export async function getAllCurrentBlueRates() {
   try {
     // Fetch all currencies in parallel
     const [bobRate, brlRate, eurRate, copRate, penRate, arsRate, clpRate] = await Promise.all([
-      getCurrentBlueRateForFiat('BOB').catch(err => {
+      fetchCrossSourceBobRates().catch(err => {
         console.warn('Failed to fetch BOB rate:', err.message);
         return null;
       }),
@@ -226,13 +226,14 @@ export async function getAllCurrentBlueRates() {
     }
 
     const result = {
-      source: 'binance-p2p',
+      source: bobRate.sources_used.length > 1 ? 'p2p-cross-median' : `${bobRate.sources_used[0]}-p2p`,
+      sources_used: bobRate.sources_used,
       // USD rates (BOB per USDT, which is approximately BOB per USD)
       buy_bob_per_usd: bobRate.buy,
       sell_bob_per_usd: bobRate.sell,
       updated_at_iso: new Date().toISOString(),
-      sample_buy: bobRate.sample_buy,
-      sample_sell: bobRate.sample_sell
+      sample_buy: bobRate.platforms.map((p) => p.buy).slice(0, 5),
+      sample_sell: bobRate.platforms.map((p) => p.sell).slice(0, 5)
     };
 
     // Calculate BRL rates: BOB/BRL = (USDT/BOB) / (USDT/BRL)

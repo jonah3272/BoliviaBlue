@@ -352,9 +352,10 @@ export async function fetchBlueRate(currency = 'USD') {
     
     // Format response to match expected structure (always use buy_bob_per_* naming for consistency)
     const response = {
-      source: data.source || 'p2p-cross-median',
-      sources_used: data.sources_used || ['binance', 'eldorado', 'okx'],
-      source_count: data.source_count || (data.sources_used?.length ?? 3),
+      source: data.source || 'stored-p2p-reference',
+      sources_used: data.sources_used || [],
+      source_count: data.source_count ?? (data.sources_used?.length ?? 0),
+      source_provenance: data.source_provenance || 'unavailable_for_stored_row',
       quote_kind: 'usdt_p2p_median',
       updated_at_iso: data.t,
       generated_at_iso: new Date().toISOString(),

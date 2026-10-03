@@ -8,7 +8,9 @@ const { attachOfficial } = require('./_lib/officialRate');
 const { attachFreshCardRate, toPayload: toCardPayload } = require('./_lib/cardRate');
 
 /** Last cross-source platforms seen on refresh (per serverless instance) */
-let lastSourcesUsed = ['binance'];
+// Source composition is not persisted with rows. Only a refresh in this instance
+// can attest provenance, and only for its exact observation timestamp.
+let lastSourceObservation = null;
 let lastEurDerivation = null;
 let lastCopDerivation = null;
 let lastPenDerivation = null;
@@ -75,7 +77,7 @@ async function attachLastValidPair(supabase, data, spec) {
 }
 
 function toPayload(data, extras = {}) {
-  const sources = lastSourcesUsed.length ? lastSourcesUsed : ['binance'];
+  const sources = lastSourceObservation?.t === data.t ? lastSourceObservation.sources : [];
   const generatedAt = extras.generated_at_iso || new Date().toISOString();
   const hasEur = data.buy_bob_per_eur != null && data.sell_bob_per_eur != null;
   const hasCop = data.buy_bob_per_cop != null && data.sell_bob_per_cop != null;
@@ -103,7 +105,8 @@ function toPayload(data, extras = {}) {
     lastClpDerivation ||
     (hasClp ? 'p2p-usdt' : null);
   return {
-    source: sources.length > 1 ? 'p2p-cross-median' : 'binance-p2p',
+    source: sources.length > 1 ? 'p2p-cross-median' : sources.length === 1 ? `${sources[0]}-p2p` : 'stored-p2p-reference',
+    source_provenance: sources.length ? 'observed_this_refresh' : 'unavailable_for_stored_row',
     sources_used: sources,
     source_count: sources.length,
     quote_kind: 'usdt_p2p_median',
@@ -191,7 +194,7 @@ module.exports = async function handler(req, res) {
         if (isRateStale(latest?.t, STALE_MS)) {
           const refreshed = await refreshBlueFromBinance(supabase);
           const { row, sourcesUsed } = refreshed;
-          if (sourcesUsed?.length) lastSourcesUsed = sourcesUsed;
+          lastSourceObservation = { t: row.t, sources: sourcesUsed || [] };
           if (refreshed.eurDerivation) lastEurDerivation = refreshed.eurDerivation;
           if (refreshed.copDerivation) lastCopDerivation = refreshed.copDerivation;
           if (refreshed.penDerivation) lastPenDerivation = refreshed.penDerivation;

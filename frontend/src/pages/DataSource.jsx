@@ -84,8 +84,8 @@ function DataSource() {
     "url": BASE_URL,
     "logo": `${BASE_URL}/favicon.svg`,
     "description": language === 'es'
-      ? "Plataforma de seguimiento del tipo de cambio del dólar blue en Bolivia. Metodología transparente: Binance P2P, mediana, actualización cada 15 min."
-      : "Tracking platform for the blue dollar exchange rate in Bolivia. Transparent methodology: Binance P2P, median, update every 15 min.",
+      ? "Plataforma de seguimiento del tipo de cambio del dólar blue en Bolivia. Metodología transparente: referencia P2P, mediana, actualización cada 15 min."
+      : "Tracking platform for the blue dollar exchange rate in Bolivia. Transparent methodology: P2P reference, median, update every 15 min.",
     "contactPoint": {
       "@type": "ContactPoint",
       "contactType": "Media Inquiries",
@@ -100,8 +100,8 @@ function DataSource() {
           ? 'Metodología y Fuente de Datos | Dólar Blue Bolivia'
           : 'Methodology & Data Source | Bolivia Blue Dollar'}
         description={language === 'es'
-          ? 'Cómo calculamos el dólar blue: fuente Binance P2P, mediana de ofertas, actualización cada 15 min. Diferencia con el tipo oficial. Para medios, investigadores y desarrolladores.'
-          : 'How we calculate the blue dollar: Binance P2P source, median of offers, update every 15 min. Difference from official rate. For media, researchers and developers.'}
+          ? 'Cómo calculamos el dólar blue: plataformas P2P disponibles, mediana entre plataformas, actualización cada 15 min. Diferencia con el tipo oficial. Para medios, investigadores y desarrolladores.'
+          : 'How we calculate the blue dollar: available P2P platforms, median across platforms, update every 15 min. Difference from official rate. For media, researchers and developers.'}
         keywords={language === 'es'
           ? 'metodología dólar blue, fuente datos bolivia, cómo se calcula dólar blue, Binance P2P bolivia, tipo cambio bolivia, datos periodistas, API dólar blue'
           : 'blue dollar methodology, bolivia data source, how blue dollar is calculated, Binance P2P bolivia, exchange rate bolivia, journalist data, blue dollar API'}
@@ -124,8 +124,8 @@ function DataSource() {
           </h2>
           <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
             {language === 'es'
-              ? 'Bolivia Blue es la referencia pública del dólar blue en Bolivia: mediana verificada multi-P2P, actualización ~15 min, API JSON y llms.txt para asistentes de IA.'
-              : 'Bolivia Blue is the public reference for Bolivia’s blue dollar: verified multi-P2P median, ~15 min updates, JSON API, and llms.txt for AI assistants.'}
+              ? 'Bolivia Blue publica una referencia P2P del dólar blue en Bolivia, con actualizaciones periódicas, API JSON y documentación de la metodología.'
+              : 'Bolivia Blue publishes a P2P reference for Bolivia’s blue dollar, with periodic updates, a JSON API and methodology documentation.'}
           </p>
           <div className="flex flex-wrap gap-3 text-sm">
             <Link to="/dolar-blue-hoy" className="font-semibold text-sky-700 hover:underline dark:text-sky-300" onClick={trackRel('/dolar-blue-hoy', 'dolar-blue-hoy')}>
@@ -184,8 +184,8 @@ function DataSource() {
           <div className="space-y-4 text-gray-700 dark:text-gray-300">
             <p>
               {language === 'es'
-                ? 'Utilizamos únicamente datos públicos de Binance P2P: el mercado peer-to-peer de Binance donde usuarios publican ofertas de compra y venta de USDT contra bolivianos (BOB). No recopilamos datos de redes sociales ni de otras plataformas para la cotización principal.'
-                : 'We use only public data from Binance P2P: Binance\'s peer-to-peer market where users post buy and sell offers for USDT against bolivianos (BOB). We do not collect data from social networks or other platforms for the main quote.'}
+                ? 'Los recolectores consultan datos públicos de Binance, El Dorado, OKX y Bybit para USDT/BOB. Se usan las plataformas que responden; una lectura puede incluir una sola fuente. La referencia P2P no es una oferta de efectivo en ventanilla.'
+                : 'Collectors query public USDT/BOB data from Binance, El Dorado, OKX and Bybit. Only responding platforms are used; a reading may include one source. The P2P reference is not a cash-counter offer.'}
             </p>
             <p>
               {language === 'es'
@@ -203,8 +203,8 @@ function DataSource() {
           <div className="space-y-4 text-gray-700 dark:text-gray-300">
             <p>
               {language === 'es'
-                ? 'Para cada actualización, obtenemos una muestra de ofertas de compra (BUY) y de venta (SELL) del par USDT/BOB en Binance P2P. Sobre esas muestras aplicamos la mediana (no el promedio) para reducir el impacto de ofertas atípicas.'
-                : 'For each update, we obtain a sample of buy (BUY) and sell (SELL) offers for the USDT/BOB pair on Binance P2P. We apply the median (not the average) to these samples to reduce the impact of outlier offers.'}
+                ? 'Para cada actualización se calcula una referencia de compra y venta por plataforma. En los libros de ofertas se usa la mediana; El Dorado aporta su precio público. Luego se toma la mediana de los valores de las plataformas disponibles, con igual peso por plataforma.'
+                : 'Each update calculates a buy and sell reference per platform. Order books use their median; El Dorado contributes its public price. The final reference is the median of available platform values, with equal weight per platform.'}
             </p>
             <ul className="list-disc list-inside space-y-2 ml-4">
               <li>
@@ -239,8 +239,8 @@ function DataSource() {
           <div className="space-y-4 text-gray-700 dark:text-gray-300">
             <p>
               {language === 'es'
-                ? 'La cotización del dólar blue se actualiza automáticamente cada 15 minutos. En cada ciclo se consulta Binance P2P, se calculan las medianas y se guarda un nuevo registro en nuestra base de datos (que alimenta la web y la API).'
-                : 'The blue dollar rate is updated automatically every 15 minutes. In each cycle we query Binance P2P, compute the medians, and store a new record in our database (which feeds the website and the API).'}
+                ? 'Los procesos automáticos intentan actualizar la cotización periódicamente. Los dos recolectores usan el mismo cálculo USD/BOB y guardan observaciones en la base de datos. Revisá siempre la fecha de observación: los servicios externos y el programador pueden demorar.'
+                : 'Automatic processes attempt periodic quote updates. Both collectors use the same USD/BOB calculation and save observations to the database. Always check the observation timestamp: external services and scheduling can be delayed.'}
             </p>
             <p>
               {language === 'es'
@@ -263,8 +263,8 @@ function DataSource() {
             </p>
             <p>
               {language === 'es'
-                ? 'En nuestra plataforma mostramos ambas cotizaciones: la del mercado paralelo (blue, desde Binance P2P) y la oficial (desde el BCB o fuentes que reflejan el tipo oficial). No modificamos ni mezclamos estas fuentes.'
-                : 'On our platform we show both rates: the parallel market (blue, from Binance P2P) and the official rate (from the BCB or sources that reflect the official rate). We do not modify or mix these sources.'}
+                ? 'En nuestra plataforma mostramos ambas cotizaciones: la del mercado paralelo (blue, referencia P2P) y la oficial (desde el BCB o fuentes que reflejan el tipo oficial). No modificamos ni mezclamos estas fuentes.'
+                : 'On our platform we show both rates: the parallel market (blue, P2P reference) and the official rate (from the BCB or sources that reflect the official rate). We do not modify or mix these sources.'}
             </p>
             <Link
               to="/comparacion"
@@ -317,6 +317,20 @@ function DataSource() {
           </div>
         </section>
 
+        <section className="bg-amber-50 dark:bg-amber-950/20 rounded-xl p-6 mb-8" id="provenance">
+          <h2 className="text-xl font-bold mb-3">{language === 'es' ? 'Límites del historial y de las fuentes' : 'History and source limitations'}</h2>
+          <p className="text-gray-700 dark:text-gray-300">
+            {language === 'es'
+              ? 'Las filas históricas no guardan qué plataformas participaron ni la versión del recolector. En el pasado coexistieron métodos distintos; no las reclasificamos como una serie homogénea. Si sources_used está vacío, la composición de fuentes de esa observación es desconocida. Cambiar el recolector no corrige ni modifica observaciones pasadas.'
+              : 'Historical rows do not record the participating platforms or collector version. Different methods operated in the past; we do not relabel those rows as a homogeneous series. When sources_used is empty, that observation’s source composition is unknown. Updating the collector does not correct or modify past observations.'}
+          </p>
+          <p className="mt-3 text-gray-700 dark:text-gray-300">
+            {language === 'es'
+              ? 'Las descargas públicas tienen un límite de 4.000 filas recientes. Consultá las fechas de cobertura y truncated en el JSON o las cabeceras del CSV antes de citar un período completo. Se conserva la exclusión existente de filas identificadas como interpolación durante una interrupción de 2026.'
+              : 'Public downloads are capped at 4,000 recent rows. Check coverage dates and truncated in JSON or the CSV headers before citing a full period. The existing exclusion of rows identified as interpolation during a 2026 outage is preserved.'}
+          </p>
+        </section>
+
         {/* About Our Data - kept for continuity, shortened */}
         <section className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 mb-8">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
@@ -325,7 +339,7 @@ function DataSource() {
           <div className="space-y-4 text-gray-700 dark:text-gray-300">
             <ul className="list-disc list-inside space-y-2 ml-4">
               <li>{language === 'es' ? 'Actualizados cada 15 minutos' : 'Updated every 15 minutes'}</li>
-              <li>{language === 'es' ? 'Basados en datos públicos de Binance P2P (USDT/BOB)' : 'Based on public Binance P2P data (USDT/BOB)'}</li>
+              <li>{language === 'es' ? 'Basados en datos públicos P2P (USDT/BOB)' : 'Based on public P2P data (USDT/BOB)'}</li>
               <li>{language === 'es' ? 'Calculados con mediana de ofertas (más robusto que el promedio)' : 'Calculated with median of offers (more robust than average)'}</li>
               <li>{language === 'es' ? 'Histórico disponible para análisis y descarga' : 'History available for analysis and download'}</li>
               <li>{language === 'es' ? 'Transparentes y verificables' : 'Transparent and verifiable'}</li>
@@ -398,8 +412,8 @@ function DataSource() {
           <div className="space-y-3 text-gray-700 dark:text-gray-300 text-sm">
             <p>
               {language === 'es'
-                ? 'Nuestros datos se basan en información pública de Binance P2P y representan una estimación del mercado paralelo en Bolivia. No constituyen asesoramiento financiero ni una oferta de compra o venta.'
-                : 'Our data is based on public information from Binance P2P and represents an estimate of the parallel market in Bolivia. It does not constitute financial advice or an offer to buy or sell.'}
+                ? 'Nuestros datos se basan en información pública P2P y representan una estimación del mercado paralelo en Bolivia. No constituyen asesoramiento financiero ni una oferta de compra o venta.'
+                : 'Our data is based on public P2P information and represents an estimate of the parallel market in Bolivia. It does not constitute financial advice or an offer to buy or sell.'}
             </p>
             <p>
               {language === 'es'
@@ -408,8 +422,8 @@ function DataSource() {
             </p>
             <p>
               {language === 'es'
-                ? 'Si Binance P2P no devuelve suficientes ofertas en un ciclo, ese registro podría retrasarse hasta la siguiente actualización exitosa.'
-                : 'If Binance P2P does not return enough offers in a cycle, that update may be delayed until the next successful run.'}
+                ? 'Si ninguna plataforma devuelve una referencia válida en un ciclo, ese registro podría retrasarse hasta la siguiente actualización exitosa.'
+                : 'If no platform returns a valid reference in a cycle, that update may be delayed until the next successful run.'}
             </p>
           </div>
         </section>

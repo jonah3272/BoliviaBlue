@@ -28,6 +28,7 @@ import {
 
 const EXPORT_TOKEN_STORAGE_KEY = 'bb_data_export_token_v1';
 /** Server export ranges that require a signed token */
+const HAS_EXTENDED_EXPORT_BACKEND = Boolean(import.meta.env.VITE_API_URL);
 const EXTENDED_API_RANGES = new Set(['90d', '1y', 'all']);
 /** Page chart/table ranges that need unlock for client CSV snapshot */
 const EXTENDED_PAGE_RANGES = new Set(['3M', '1Y', 'ALL']);
@@ -74,7 +75,9 @@ function DatosHistoricos() {
   };
 
   const buildServerExportHref = (format, rangeParam) => {
-    const path = `${BASE_URL}/api/historical-data.${format}?range=${encodeURIComponent(rangeParam)}`;
+    const base = EXTENDED_API_RANGES.has(rangeParam) && HAS_EXTENDED_EXPORT_BACKEND
+      ? getApiEndpoint(`/api/historical-data.${format}`) : `${BASE_URL}/api/historical-data.${format}`;
+    const path = `${base}?range=${encodeURIComponent(rangeParam)}`;
     if (EXTENDED_API_RANGES.has(rangeParam) && exportToken) {
       return `${path}&token=${encodeURIComponent(exportToken)}`;
     }
@@ -180,14 +183,12 @@ function DatosHistoricos() {
   const datasetSchema = getDataset({
     name: language === 'es' ? 'Datos Históricos del Dólar Blue en Bolivia' : 'Historical Data of Blue Dollar in Bolivia',
     description: language === 'es'
-      ? 'Archivo completo de datos históricos del tipo de cambio del dólar blue en Bolivia. Incluye compra, venta, promedios y tendencias desde 2024. La cotización en vivo se actualiza cada 15 minutos; este archivo recopila esos datos.'
-      : 'Complete archive of historical blue dollar exchange rate data in Bolivia. Includes buy, sell, averages and trends since 2024. Live quote updates every 15 minutes; this archive collects that data.',
+      ? 'Archivo de observaciones históricas disponibles del tipo de cambio del dólar blue en Bolivia. Incluye compra, venta, promedios y tendencias según la cobertura disponible. La cotización en vivo se actualiza cada 15 minutos; este archivo recopila esos datos.'
+      : 'Archive of available historical blue dollar exchange rate data in Bolivia. Includes buy, sell, averages and trends within the available coverage. Live quote updates every 15 minutes; this archive collects that data.',
     url: '/datos-historicos',
-    datePublished: '2024-01-01',
     dateModified: new Date().toISOString().split('T')[0],
     inLanguage: language === 'es' ? 'es-BO' : 'en-US',
     updateFrequency: language === 'es' ? 'Actualización cada 15 minutos (fuente en vivo)' : 'Updates every 15 minutes (live source)',
-    temporalCoverage: '2024-01-01/..',
     variableMeasured: { '@type': 'PropertyValue', name: language === 'es' ? 'Tipo de cambio USD/BOB (dólar blue)' : 'USD/BOB exchange rate (blue dollar)' },
     creator: { '@type': 'Organization', name: 'Bolivia Blue', url: BASE_URL },
     distribution: [
@@ -199,8 +200,8 @@ function DatosHistoricos() {
   const webPageSchema = getWebPage({
     name: language === 'es' ? 'Datos Históricos del Dólar Blue' : 'Historical Blue Dollar Data',
     description: language === 'es'
-      ? 'Archivo de cotizaciones pasadas del dólar blue en Bolivia. Incluye el Valor referencial del dólar estadounidense (BCB) para comparación. Datos desde 2024; la fuente se actualiza cada 15 min.'
-      : 'Archive of past quotes in Bolivia. Includes the US Dollar reference rate (BCB) for comparison. Data from 2024; source updates every 15 min.',
+      ? 'Archivo de cotizaciones pasadas del dólar blue en Bolivia. Incluye el Valor referencial del dólar estadounidense (BCB) para comparación. Datos según la cobertura disponible; la fuente se actualiza cada 15 min.'
+      : 'Archive of past quotes in Bolivia. Includes the US Dollar reference rate (BCB) for comparison. Coverage depends on available observations; source updates every 15 min.',
     url: '/datos-historicos',
     dateModified: new Date().toISOString().split('T')[0],
     inLanguage: language === 'es' ? 'es-BO' : 'en-US'
@@ -217,13 +218,13 @@ function DatosHistoricos() {
     mainEntity: [
       {
         '@type': 'Question',
-        name: language === 'es' ? '¿Cómo descargo el historial completo del dólar blue?' : 'How do I download the full blue dollar history?',
+        name: language === 'es' ? '¿Cómo descargo datos históricos del dólar blue?' : 'How do I download historical blue dollar data?',
         acceptedAnswer: {
           '@type': 'Answer',
           text:
             language === 'es'
-              ? 'Podés bajar CSV o JSON de los últimos 30 días sin registro. Para 90 días, un año o la serie completa, dejá tu email en boliviablue.com/datos-historicos y desbloqueamos las descargas en tu navegador.'
-              : 'You can download CSV or JSON for the last 30 days without signing up. For 90 days, one year, or the full series, enter your email on boliviablue.com/datos-historicos to unlock downloads in your browser.',
+              ? `Podés bajar una muestra CSV o JSON de hasta 4.000 observaciones recientes sin registro. ${HAS_EXTENDED_EXPORT_BACKEND ? 'El formulario de email habilita rangos ampliados con un máximo de 50.000 filas; consultá la cobertura real del archivo.' : 'La descarga ampliada automática no está disponible aquí; contactanos para solicitarla.'}`
+              : `You can download a CSV or JSON sample of up to 4,000 recent observations without signing up. ${HAS_EXTENDED_EXPORT_BACKEND ? 'The email form unlocks extended ranges capped at 50,000 rows; check the file’s actual coverage.' : 'Extended automatic downloads are unavailable here; contact us to request access.'}`,
         },
       },
       {
@@ -279,8 +280,8 @@ function DatosHistoricos() {
           ? 'Datos Históricos Dólar Blue Bolivia | Archivo 2024-2026'
           : 'Blue Dollar Bolivia Historical Data | Archive 2024-2026'}
         description={language === 'es'
-          ? 'Archivo de datos históricos del dólar blue en Bolivia. Promedios, máximos, mínimos y tendencias desde 2024. Incluye el Valor referencial del dólar estadounidense (BCB) para comparación. Descarga disponible.'
-          : 'Historical blue dollar data archive in Bolivia. Averages, highs, lows and trends since 2024. Includes the US Dollar reference rate (BCB) for comparison. Download available.'}
+          ? 'Archivo de datos históricos del dólar blue en Bolivia. Promedios, máximos, mínimos y tendencias según la cobertura disponible. Incluye el Valor referencial del dólar estadounidense (BCB) para comparación. Descarga disponible.'
+          : 'Historical blue dollar data archive in Bolivia. Averages, highs, lows and trends within the available coverage. Includes the US Dollar reference rate (BCB) for comparison. Download available.'}
         keywords={language === 'es'
           ? 'dólar blue bolivia histórico, datos históricos dólar blue, tipo cambio histórico bolivia, estadísticas dólar blue, valor referencial dólar estadounidense BCB, valor referencial dolar Bolivia, tipo de cambio referencial, promedio mensual dólar blue, máximo mínimo dólar blue bolivia'
           : 'blue dollar bolivia historical, historical blue dollar data, bolivia exchange rate history, blue dollar statistics, US dollar reference rate (BCB), reference rate Bolivia, high low blue dollar bolivia'}
@@ -593,18 +594,18 @@ function DatosHistoricos() {
             </h2>
             <p className="mt-1 max-w-2xl text-sm text-gray-600 dark:text-gray-300">
               {language === 'es'
-                ? 'Archivos listos para Excel o scripts. Para series largas pedimos un email (lista de novedades, baja cuando quieras). Para productos o volumen: API y contacto comercial.'
-                : 'Files ready for Excel or scripts. Long series need one email (updates list, unsubscribe anytime). For products or volume: API and commercial contact.'}
+                ? 'Descarga pública: hasta 4.000 observaciones recientes. El JSON informa fechas reales y si el archivo está recortado; el CSV incluye esa información en sus cabeceras HTTP. Para series ampliadas: contacto.'
+                : 'Public download: up to 4,000 recent observations. JSON reports actual dates and truncation; CSV reports these in HTTP headers. Contact us for extended series.'}
             </p>
           </div>
 
           <div className="space-y-6 p-5 sm:p-8">
-            <div className="rounded-xl border-2 border-indigo-300/80 bg-indigo-50/60 p-5 dark:border-indigo-700 dark:bg-indigo-950/30 sm:p-6">
+            {HAS_EXTENDED_EXPORT_BACKEND ? <div className="rounded-xl border-2 border-indigo-300/80 bg-indigo-50/60 p-5 dark:border-indigo-700 dark:bg-indigo-950/30 sm:p-6">
             <p className="text-[11px] font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-300">
               {language === 'es' ? 'Más valor — mismo precio (gratis)' : 'More value — still free'}
             </p>
             <h3 className="mt-1 text-lg font-bold text-gray-900 dark:text-white">
-              {language === 'es' ? '90 días, 1 año o historial completo' : '90 days, 1 year, or full history'}
+              {language === 'es' ? 'Rangos ampliados: hasta 50.000 filas' : 'Extended ranges: up to 50,000 rows'}
             </h3>
             <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
               {language === 'es'
@@ -683,7 +684,14 @@ function DatosHistoricos() {
                 ))}
               </div>
             )}
-            </div>
+            </div> : (
+              <p className="rounded-xl bg-blue-50 p-4 text-sm text-gray-700 dark:bg-blue-950/30 dark:text-gray-300">
+                {language === 'es'
+                  ? 'La descarga automática ampliada no está disponible aquí. Los archivos públicos son muestras limitadas, no el historial completo. '
+                  : 'Extended automatic downloads are unavailable here. Public files are bounded samples, not the full archive. '}
+                <Link to="/contacto" className="text-blue-600 underline">{language === 'es' ? 'Solicitar acceso ampliado' : 'Request extended access'}</Link>
+              </p>
+            )}
 
             <div className="grid gap-5 border-t border-gray-200/80 pt-6 dark:border-gray-700 md:grid-cols-2 lg:grid-cols-3">
               <div className="rounded-xl border border-gray-100 bg-slate-50/70 p-4 dark:border-gray-600 dark:bg-gray-900/40">
@@ -691,7 +699,7 @@ function DatosHistoricos() {
                   {language === 'es' ? 'Sin registro' : 'No signup'}
                 </p>
                 <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
-                  {language === 'es' ? '~30 días · CSV o JSON' : '~30 days · CSV or JSON'}
+                  {language === 'es' ? 'Últimos 30 días, hasta 4.000 filas · CSV o JSON' : 'Last 30 days, up to 4,000 rows · CSV or JSON'}
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   <a
@@ -754,12 +762,12 @@ function DatosHistoricos() {
                 </p>
                 <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                   {language === 'es'
-                    ? 'Mismo período que la tabla. 3M / 1Y / todo: desbloqueá arriba.'
-                    : 'Same range as the table. 3M / 1Y / ALL: unlock above.'}
+                    ? 'Exporta los puntos mostrados en la tabla; puede ser una muestra del período. Para series largas, solicitá acceso ampliado.'
+                    : 'Exports the points shown in the table; this can be a sample of the period. Request extended access for long series.'}
                 </p>
                 {clientCsvNeedsUnlock && (
                   <p className="mt-2 text-xs text-amber-800 dark:text-amber-200">
-                    {language === 'es' ? 'Período largo: usá el formulario de email.' : 'Long range: use the email form above.'}
+                    {language === 'es' ? 'Período largo: solicitá acceso ampliado.' : 'Long range: request extended access.'}
                   </p>
                 )}
                 <button
@@ -846,13 +854,13 @@ function DatosHistoricos() {
             {language === 'es' ? (
               <p>
                 Archivo del <strong>dólar blue en Bolivia</strong> y del <strong>bolivian blue rate</strong>: compra, venta y
-                promedio desde 2024, alineado con la cotización en vivo. Los datos no son asesoría financiera; sirven para
+                promedio según la cobertura disponible, alineado con la cotización en vivo. Los datos no son asesoría financiera; sirven para
                 tendencias y análisis con atribución a boliviablue.com.
               </p>
             ) : (
               <p>
                 Archive of the <strong>blue dollar in Bolivia</strong> and <strong>bolivian blue rate</strong>: buy, sell, and
-                mid since 2024, aligned with the live quote. Data is not financial advice; use for trends and analysis with
+                mid within the available coverage, aligned with the live quote. Data is not financial advice; use for trends and analysis with
                 attribution to boliviablue.com.
               </p>
             )}

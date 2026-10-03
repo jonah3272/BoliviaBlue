@@ -348,7 +348,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
       ? t('cardRateDescription')
       : rateMode === 'official'
         ? t('officialRateDescription')
-        : t('blueMarketTitle');
+        : language === 'es' ? 'Mercado paralelo — referencia P2P' : 'Parallel market — P2P reference';
 
   return (
     <div className="space-y-6">

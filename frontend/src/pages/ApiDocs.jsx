@@ -7,6 +7,7 @@ import Navigation from '../components/Navigation';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import { Link } from 'react-router-dom';
+import { getApiEndpoint } from '../utils/apiUrl';
 import { trackApiDocsViewed, trackCommercialAccessClicked } from '../utils/analyticsEvents';
 
 function ApiDocs() {
@@ -36,8 +37,8 @@ function ApiDocs() {
       ? "API del Dólar Blue Bolivia"
       : "Bolivia Blue Dollar API",
     "description": language === 'es'
-      ? "API gratuita para acceder a datos en tiempo real del dólar blue en Bolivia. Incluye tasas actuales, datos históricos y noticias financieras."
-      : "Free API to access real-time blue dollar data in Bolivia. Includes current rates, historical data and financial news.",
+      ? "API gratuita para acceder a datos en tiempo real del dólar blue en Bolivia. Incluye tasas actuales, observaciones históricas y estado del archivo."
+      : "Free API to access real-time blue dollar data in Bolivia. Includes current rates, historical observations and archive status.",
     "url": "https://boliviablue.com/api-docs",
     "provider": {
       "@type": "Organization",
@@ -48,200 +49,50 @@ function ApiDocs() {
     "termsOfService": "https://boliviablue.com/politica-de-privacidad"
   };
 
+  // Document the deployed public API contract. The optional backend has separate routes.
   const endpoints = [
     {
-      method: 'GET',
-      path: '/api/blue-rate',
-      description: language === 'es' 
-        ? 'Obtiene las tasas actuales de compra y venta del dólar blue'
-        : 'Gets current buy and sell rates for the blue dollar',
+      method: 'GET', path: '/api/blue-rate',
+      description: language === 'es' ? 'Cotización actual USD/BOB. La composición de fuentes puede no estar registrada para la fila guardada.' : 'Current USD/BOB quote. Source composition may be unavailable for the stored row.',
       parameters: [],
-      response: {
-        buy: 'number',
-        sell: 'number',
-        timestamp: 'string (ISO 8601)',
-        stale: 'boolean'
-      },
-      example: {
-        url: 'https://boliviablue.com/api/blue-rate',
-        response: {
-          buy: 8.45,
-          sell: 8.50,
-          timestamp: '2025-01-17T12:00:00Z',
-          stale: false
-        }
-      }
+      response: { buy_bob_per_usd: 'number', sell_bob_per_usd: 'number', updated_at_iso: 'ISO 8601', is_stale: 'boolean', sources_used: 'array (empty when provenance is unknown)', source_provenance: 'string' },
+      example: { url: 'https://www.boliviablue.com/api/blue-rate', response: { buy_bob_per_usd: 12.34, sell_bob_per_usd: 12.56, updated_at_iso: '2026-10-03T12:00:00Z', is_stale: false, sources_used: [], source_provenance: 'unavailable_for_stored_row' } },
     },
-    {
-      method: 'GET',
-      path: '/api/blue-history',
+    ...['csv', 'json'].map((format) => ({
+      method: 'GET', path: `/api/historical-data.${format}`,
       description: language === 'es'
-        ? 'Obtiene datos históricos del dólar blue para un rango de tiempo específico'
-        : 'Gets historical blue dollar data for a specific time range',
+        ? 'Hasta 4.000 observaciones recientes, ordenadas por fecha ascendente. 30d limita el período; all selecciona las últimas filas disponibles, no todo el archivo. 90d y 1y devuelven 400. No se requiere token para estas muestras públicas.'
+        : 'Up to 4,000 recent observations in ascending date order. 30d limits the period; all selects the latest available rows, not the entire archive. 90d and 1y return 400. These public samples do not require a token.',
       parameters: [
-        {
-          name: 'range',
-          type: 'string',
-          required: true,
-          options: ['1D', '1W', '1M', '3M', '1Y', 'ALL'],
-          description: language === 'es' 
-            ? 'Rango de tiempo: 1D (últimas 24h), 1W (última semana), 1M (último mes), 3M (últimos 3 meses), 1Y (último año), ALL (todo)'
-            : 'Time range: 1D (last 24h), 1W (last week), 1M (last month), 3M (last 3 months), 1Y (last year), ALL (all time)'
-        },
-        {
-          name: 'currency',
-          type: 'string',
-          required: false,
-          options: ['USD', 'BRL', 'EUR', 'COP'],
-          description: language === 'es' 
-            ? 'Moneda base (por defecto: USD)'
-            : 'Base currency (default: USD)'
-        }
+        { name: 'range', type: 'string', required: false, options: ['30d', 'all'], description: 'Default: 30d' },
+        { name: 'limit', type: 'integer', required: false, description: '1–4000; default 4000. Larger values are capped at 4000.' },
       ],
-      response: {
-        history: 'array',
-        range: 'string',
-        count: 'number'
-      },
-      example: {
-        url: 'https://boliviablue.com/api/blue-history?range=1W',
-        response: {
-          history: [
-            {
-              timestamp: '2025-01-17T12:00:00Z',
-              buy: 8.45,
-              sell: 8.50
-            }
-          ],
-          range: '1W',
-          count: 168
-        }
-      }
-    },
+      response: format === 'csv'
+        ? 'CSV columns: t,buy,sell,mid,official_buy,official_sell,official_mid. Coverage headers: X-Data-Range, X-Data-Rows, X-Data-Limit, X-Data-Truncated, X-Data-Start, X-Data-End, X-Data-Provenance.'
+        : 'JSON: { range, count, points: [{ t, buy, sell, mid, official_buy, official_sell, official_mid }], metadata: { range_requested, requested_start, requested_end, returned_start, returned_end, rows_returned, limit, truncated, selection, order, source_provenance, generated_at } }',
+      example: { url: `https://www.boliviablue.com/api/historical-data.${format}?range=30d`, response: format === 'csv' ? { note: 'Read HTTP coverage headers before citing a time span.' } : { range: '30d', count: 1, points: [{ t: '2026-10-03T12:00:00Z', buy: 12.34, sell: 12.56, mid: 12.45 }], metadata: { returned_start: '2026-10-03T12:00:00Z', returned_end: '2026-10-03T12:00:00Z', rows_returned: 1, limit: 4000, truncated: false, source_provenance: 'unavailable_for_historical_rows' } } },
+    })),
     {
-      method: 'GET',
-      path: '/api/historical-data.csv',
-      description: language === 'es'
-        ? 'Descarga histórica en CSV. Rango 30d es público (muestra acotada, ideal para citas). Rangos 90d, 1y y all requieren token devuelto por POST /api/data-export/register (desbloqueo con email en /datos-historicos).'
-        : 'Historical CSV. The 30d range is public (bounded sample, citable). Ranges 90d, 1y, and all require a token from POST /api/data-export/register (email unlock on /datos-historicos).',
-      parameters: [
-        { name: 'range', type: 'string', required: false, options: ['30d', '90d', '1y', 'all'], description: language === 'es' ? '30d (default público), 90d|1y|all con token' : '30d (default, public), 90d|1y|all with token' },
-        { name: 'limit', type: 'number', required: false, description: language === 'es' ? 'Máximo de filas (cap 50000; 30d sin token: cap ~4000)' : 'Max rows (cap 50000; 30d without token: ~4000 cap)' },
-        { name: 'token', type: 'string', required: false, description: language === 'es' ? 'Firma HMAC para rangos extendidos' : 'HMAC-signed token for extended ranges' }
-      ],
-      response: 'text/csv with columns: timestamp,buy,sell,mid,official_buy,official_sell,official_mid',
-      example: {
-        url: 'https://boliviablue.com/api/historical-data.csv?range=30d',
-        response: { note: 'CSV body; use range=90d&token=... for extended after unlock' }
-      }
+      method: 'GET', path: '/api/health',
+      description: language === 'es' ? 'Estado del archivo y fecha de la última observación.' : 'Archive status and latest observation time.',
+      parameters: [], response: { ok: 'boolean', updated_at_iso: 'ISO 8601 or null', history_points: 'number', host: 'vercel' },
+      example: { url: 'https://www.boliviablue.com/api/health', response: { ok: true, updated_at_iso: '2026-10-03T12:00:00Z', history_points: 29250, host: 'vercel' } },
     },
-    {
-      method: 'GET',
-      path: '/api/historical-data.json',
-      description: language === 'es'
-        ? 'Histórico en JSON con metadatos. Misma política de rangos que el CSV (30d público; extendido con token).'
-        : 'Historical JSON with metadata. Same range policy as CSV (30d public; extended with token).',
-      parameters: [
-        { name: 'range', type: 'string', required: false, options: ['30d', '90d', '1y', 'all'], description: language === 'es' ? '30d (default público), 90d|1y|all con token' : '30d (default, public), 90d|1y|all with token' },
-        { name: 'limit', type: 'number', required: false, description: language === 'es' ? 'Máximo de filas (cap 50000)' : 'Max rows (cap 50000)' },
-        { name: 'token', type: 'string', required: false, description: language === 'es' ? 'Token para rangos extendidos' : 'Token for extended ranges' }
-      ],
-      response: 'JSON: { metadata: { source, attribution, range_requested, rows_returned, generated_at }, data: [...] }',
-      example: {
-        url: 'https://boliviablue.com/api/historical-data.json?range=30d',
-        response: {
-          metadata: {
-            source: 'Bolivia Blue',
-            attribution: 'https://boliviablue.com',
-            range_requested: '30d',
-            rows_returned: 120
-          },
-          data: [{ timestamp: '2025-01-17T12:00:00Z', buy: 8.45, sell: 8.5, mid: 8.475 }]
-        }
-      }
-    },
-    {
-      method: 'POST',
-      path: '/api/data-export/register',
-      description: language === 'es'
-        ? 'Desbloquea descargas CSV/JSON extendidas (90d, 1y, all). Registra el email en la lista de Bolivia Blue (source: historical_extended_download) y devuelve un token válido varios días. Requiere consent: true.'
-        : 'Unlock extended CSV/JSON downloads (90d, 1y, all). Subscribes the email to Bolivia Blue updates (source: historical_extended_download) and returns a multi-day token. Requires consent: true.',
-      parameters: [
-        { name: 'email', type: 'string', required: true, description: language === 'es' ? 'Email válido' : 'Valid email' },
-        { name: 'language', type: 'string', required: false, options: ['es', 'en'], description: language === 'es' ? 'Idioma preferido' : 'Preferred language' },
-        { name: 'consent', type: 'boolean', required: true, description: language === 'es' ? 'Debe ser true' : 'Must be true' }
-      ],
-      response: '{ success, token, expires_in_days, message }',
-      example: {
-        url: 'POST https://boliviablue.com/api/data-export/register  Body: {"email":"you@example.com","language":"es","consent":true}',
-        response: {
-          success: true,
-          token: '<signed-token>',
-          expires_in_days: 7,
-          message: 'Done. You can download extended files.'
-        }
-      }
-    },
-    {
-      method: 'GET',
-      path: '/api/news',
-      description: language === 'es'
-        ? 'Obtiene las últimas noticias financieras relacionadas con el dólar blue en Bolivia'
-        : 'Gets latest financial news related to the blue dollar in Bolivia',
-      parameters: [
-        {
-          name: 'limit',
-          type: 'number',
-          required: false,
-          default: 20,
-          description: language === 'es' 
-            ? 'Número máximo de noticias a retornar (por defecto: 20)'
-            : 'Maximum number of news items to return (default: 20)'
-        }
-      ],
-      response: {
-        news: 'array',
-        count: 'number'
-      },
-      example: {
-        url: 'https://boliviablue.com/api/news?limit=10',
-        response: {
-          news: [
-            {
-              id: 1,
-              title: 'Dólar blue sube en Bolivia',
-              source: 'El Deber',
-              url: 'https://...',
-              timestamp: '2025-01-17T10:00:00Z',
-              sentiment: 'up'
-            }
-          ],
-          count: 10
-        }
-      }
-    },
-    {
-      method: 'GET',
-      path: '/api/health',
-      description: language === 'es'
-        ? 'Verifica el estado del sistema y la disponibilidad de la API'
-        : 'Checks system status and API availability',
-      parameters: [],
-      response: {
-        status: 'string',
-        uptime: 'number',
-        version: 'string'
-      },
-      example: {
-        url: 'https://boliviablue.com/api/health',
-        response: {
-          status: 'ok',
-          uptime: 86400,
-          version: '1.0.0'
-        }
-      }
-    }
   ];
+  if (import.meta.env.VITE_API_URL) {
+    endpoints.push({
+      method: 'GET', path: getApiEndpoint('/api/historical-data.json'),
+      description: language === 'es'
+        ? 'Backend separado para descargas ampliadas: 90d, 1y y all requieren el token del formulario de email en /datos-historicos. Conserva su límite de 50.000 filas y metadatos de cobertura; no es el contrato de la API pública www.'
+        : 'Separate extended-export backend: 90d, 1y and all require a token from the email form on /datos-historicos. Its 50,000-row limit and coverage metadata apply; this is separate from the public www API contract.',
+      parameters: [
+        { name: 'range', type: 'string', required: true, options: ['90d', '1y', 'all'], description: 'Extended ranges' },
+        { name: 'token', type: 'string', required: true, description: 'Use only the token issued after your existing email/consent unlock.' },
+      ],
+      response: 'JSON: { metadata, data: [{ timestamp, buy, sell, mid, official_buy, official_sell, official_mid }] }. CSV uses timestamp as its first column. Both formats disclose coverage and truncation.',
+      example: { url: getApiEndpoint('/api/historical-data.json?range=90d&token=YOUR_TOKEN'), response: { metadata: { range_requested: '90d', limit: 50000, truncated: false }, data: [] } },
+    });
+  }
 
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
@@ -298,7 +149,7 @@ function ApiDocs() {
                 {language === 'es' ? 'Obtener datos históricos:' : 'Get historical data:'}
               </p>
               <code className="block bg-gray-100 dark:bg-gray-700 p-3 rounded text-sm font-mono text-blue-600 dark:text-blue-400 break-all">
-                curl https://boliviablue.com/api/blue-history?range=1W
+                curl https://www.boliviablue.com/api/historical-data.json?range=30d
               </code>
             </div>
           </div>

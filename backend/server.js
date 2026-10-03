@@ -12,6 +12,8 @@ import rateLimit from 'express-rate-limit';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import crypto from 'crypto';
+import historicalExport from '../api/_lib/historicalExport.js';
+const { fetchHistoricalExport } = historicalExport;
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { existsSync } from 'node:fs';
@@ -258,6 +260,7 @@ app.get('/api/blue-rate', async (req, res) => {
       
       return res.json({
         ...cache.latestRate,
+        source_provenance: cache.latestRate.sources_used?.length ? 'observed_this_refresh' : 'unavailable_for_stored_row',
         is_stale: isStale
       });
     }
@@ -275,7 +278,10 @@ app.get('/api/blue-rate', async (req, res) => {
     const isStale = Date.now() - new Date(dbRate.t).getTime() > STALE_THRESHOLD;
     
     res.json({
-      source: 'binance-p2p',
+      source: 'stored-p2p-reference',
+      sources_used: [],
+      source_count: 0,
+      source_provenance: 'unavailable_for_stored_row',
       buy_bob_per_usd: dbRate.buy,
       sell_bob_per_usd: dbRate.sell,
       official_buy: dbRate.official_buy,
@@ -375,41 +381,20 @@ if (process.env.NODE_ENV === 'production' && !isExportTokenSigningConfigured()) 
  */
 async function getHistoricalExportRows(rangeParam, limitParam) {
   const range = (rangeParam || EXPORT_DEFAULT_RANGE).toLowerCase();
-  const maxRows = Math.min(
-    Math.max(1, parseInt(limitParam, 10) || EXPORT_MAX_ROWS),
-    EXPORT_MAX_ROWS
-  );
-
-  let startDate;
-  let rows;
-
-  switch (range) {
-    case '30d':
-      startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-      rows = await getRatesInRange(startDate);
-      break;
-    case '90d':
-      startDate = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
-      rows = await getRatesInRange(startDate);
-      break;
-    case '1y':
-      startDate = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString();
-      rows = await getRatesInRange(startDate);
-      break;
-    case 'all':
-      rows = await getAllRates();
-      break;
-    default:
-      throw new Error(`Invalid range. Use: 30d, 90d, 1y, all`);
+  const maxRows = Math.min(Math.max(1, parseInt(limitParam, 10) || EXPORT_MAX_ROWS), EXPORT_MAX_ROWS);
+  const days = { '30d': 30, '90d': 90, '1y': 365 };
+  if (range !== 'all' && !days[range]) throw new Error('Invalid range. Use: 30d, 90d, 1y, all');
+  if (!supabase) {
+    const error = new Error('Historical data store is unavailable');
+    error.statusCode = 503;
+    throw error;
   }
-
-  if (!rows || rows.length === 0) {
-    return { rows: [], range, startDate: startDate || null };
-  }
-
-  // Enforce cap: keep most recent rows (ascending order, so last N)
-  const capped = rows.length > maxRows ? rows.slice(-maxRows) : rows;
-  return { rows: capped, range, startDate: startDate || null };
+  const now = new Date();
+  const startDate = range === 'all' ? null : new Date(now.getTime() - days[range] * 86400000).toISOString();
+  const result = await fetchHistoricalExport(supabase, {
+    range, limit: maxRows, requested_start: startDate, requested_end: now.toISOString(),
+  });
+  return { rows: result.points, range, startDate, metadata: result.metadata };
 }
 
 /**
@@ -453,7 +438,7 @@ function resolveHistoricalExportAccess(query) {
 app.get('/api/historical-data.csv', async (req, res) => {
   try {
     const { range, effectiveLimit } = resolveHistoricalExportAccess(req.query);
-    const { rows } = await getHistoricalExportRows(range, String(effectiveLimit));
+    const { rows, metadata } = await getHistoricalExportRows(range, String(effectiveLimit));
 
     const BOM = '\uFEFF';
     const header = 'timestamp,buy,sell,mid,official_buy,official_sell,official_mid';
@@ -472,6 +457,12 @@ app.get('/api/historical-data.csv', async (req, res) => {
     res.set({
       'Content-Type': 'text/csv; charset=utf-8',
       'Content-Disposition': `attachment; filename="bolivia-blue-historical-${range}.csv"`,
+      'X-Data-Truncated': String(metadata.truncated),
+      'X-Data-Rows': String(metadata.rows_returned),
+      'X-Data-Start': metadata.returned_start || '',
+      'X-Data-End': metadata.returned_end || '',
+      'X-Data-Provenance': metadata.source_provenance,
+      'Access-Control-Expose-Headers': 'X-Data-Truncated, X-Data-Rows, X-Data-Start, X-Data-End, X-Data-Provenance',
       'Cache-Control': `public, max-age=${EXPORT_CACHE_MAX_AGE}`,
       'Access-Control-Allow-Origin': '*'
     });
@@ -505,7 +496,7 @@ app.get('/api/historical-data.csv', async (req, res) => {
 app.get('/api/historical-data.json', async (req, res) => {
   try {
     const { range, effectiveLimit } = resolveHistoricalExportAccess(req.query);
-    const { rows, startDate } = await getHistoricalExportRows(range, String(effectiveLimit));
+    const { rows, startDate, metadata } = await getHistoricalExportRows(range, String(effectiveLimit));
 
     const data = rows.map(row => ({
       timestamp: row.t,
@@ -519,6 +510,7 @@ app.get('/api/historical-data.json', async (req, res) => {
 
     const payload = {
       metadata: {
+        ...metadata,
         source: 'Bolivia Blue con Paz',
         attribution: 'https://boliviablue.com',
         range_requested: range,

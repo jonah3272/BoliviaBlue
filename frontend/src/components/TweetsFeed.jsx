@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { fetchTweets } from '../utils/api';
-import { formatTimeAgo, cleanSummary, cleanTitle } from '../utils/formatters';
+import { cleanSummary, cleanTitle } from '../utils/formatters';
+import { storedTweetDate, newestStoredTweetDate, formatStoredTweetDate } from '../utils/storedTweetDates';
 import { useLanguage } from '../contexts/LanguageContext';
 import SentimentIndicator from './SentimentIndicator';
 
 function TweetCard({ tweet, language = 'es' }) {
+  const publishedAt = storedTweetDate(tweet);
   return (
     <a
       href={tweet.url}
@@ -42,7 +44,7 @@ function TweetCard({ tweet, language = 'es' }) {
       
       <div className="flex items-center justify-between text-xs">
         <span className="text-gray-500 dark:text-gray-500">
-          {formatTimeAgo(tweet.published_at)}
+          {publishedAt ? <time dateTime={publishedAt}>{formatStoredTweetDate(publishedAt, language)}</time> : formatStoredTweetDate(null, language)}
         </span>
         {tweet.category && tweet.category !== 'general' && (
           <span className="px-2.5 py-1 rounded-full bg-blue-500 dark:bg-blue-600 text-white text-xs font-semibold shadow-sm">
@@ -56,77 +58,54 @@ function TweetCard({ tweet, language = 'es' }) {
 
 function TweetsFeed({ maxItems = 10 }) {
   const languageContext = useLanguage();
-  const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
   const [tweets, setTweets] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    let cancelled = false;
+    let latestRequest = 0;
     const loadTweets = async () => {
+      const request = ++latestRequest;
       setIsLoading(true);
       try {
         const data = await fetchTweets(maxItems);
-        setTweets(data);
-        setError(null);
+        if (!cancelled && request === latestRequest) {
+          setTweets(Array.isArray(data) ? data : []);
+          setError(null);
+        }
       } catch (err) {
         console.error('Error loading tweets:', err);
-        setError(err.message);
+        if (!cancelled && request === latestRequest) setError(err.message || 'unavailable');
       } finally {
-        setIsLoading(false);
+        if (!cancelled && request === latestRequest) setIsLoading(false);
       }
     };
 
     loadTweets();
     
-    // Refresh every 2 minutes (tweets are more real-time)
+    // Re-read stored rows every two minutes; this does not fetch new posts from X.
     const interval = setInterval(loadTweets, 120000);
-    return () => clearInterval(interval);
+    return () => { cancelled = true; clearInterval(interval); };
   }, [maxItems]);
 
-  if (isLoading) {
-    return (
-      <div className="space-y-4">
-        {[...Array(3)].map((_, i) => (
-          <div key={i} className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded-xl h-32" />
-        ))}
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-red-500">
-          {t('errorLoadingTweets')}
-        </p>
-      </div>
-    );
-  }
-
-  if (tweets.length === 0) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-gray-500 dark:text-gray-400">
-          {t('noTweetsAvailable')}
-        </p>
-        <p className="text-sm text-gray-400 dark:text-gray-500 mt-2">
-          {language === 'es' 
-            ? 'Agrega TWITTER_BEARER_TOKEN a Railway para activar' 
-            : 'Add TWITTER_BEARER_TOKEN to Railway to activate'}
-        </p>
-      </div>
-    );
-  }
-
+  const newestDate = newestStoredTweetDate(tweets);
   return (
-    <div className="space-y-4">
-      {tweets.map(tweet => (
-        <TweetCard key={tweet.id} tweet={tweet} language={language} />
-      ))}
-    </div>
+    <section className="space-y-4" aria-label={language === 'es' ? 'Publicaciones guardadas de X' : 'Stored X posts'}>
+      <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 p-4 text-sm text-gray-600 dark:text-gray-300">
+        <h3 className="font-semibold text-gray-900 dark:text-white">{language === 'es' ? 'Publicaciones guardadas de X' : 'Stored X posts'}</h3>
+        <p className="mt-1">{language === 'es' ? 'Este archivo no es un flujo en vivo. No hay una actualización automática de publicaciones nuevas de X verificada.' : 'This archive is not a live feed. Automatic retrieval of new X posts has not been verified.'}</p>
+        {newestDate && <p className="mt-2 text-xs">{language === 'es' ? 'Fecha más reciente del archivo' : 'Newest date in this archive'}: <time dateTime={newestDate}>{formatStoredTweetDate(newestDate, language)}</time></p>}
+      </div>
+      {isLoading ? <div className="space-y-4" role="status" aria-busy="true">
+        <p className="sr-only">{language === 'es' ? 'Cargando archivo' : 'Loading archive'}</p>
+        {[0, 1, 2].map((index) => <div key={index} className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded-xl h-32" />)}
+      </div> : error ? <p role="status" className="py-6 text-center text-sm text-gray-500 dark:text-gray-400">{language === 'es' ? 'No se pudo consultar el archivo en este momento. Volvé a intentarlo más tarde.' : 'The archive could not be loaded right now. Please try again later.'}</p>
+      : tweets.length === 0 ? <p className="py-6 text-center text-sm text-gray-500 dark:text-gray-400">{language === 'es' ? 'Todavía no hay publicaciones guardadas para mostrar.' : 'There are no stored posts to show yet.'}</p>
+      : tweets.map((tweet) => <TweetCard key={tweet.id} tweet={tweet} language={language} />)}
+    </section>
   );
 }
 
 export default TweetsFeed;
-

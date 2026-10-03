@@ -8,7 +8,7 @@
  * - dateModified: ISO 8601; use real rate timestamp when available
  */
 
-import { CONTACT_EMAIL, SITE_NAME, SITE_NAME_ALT, SITE_URL } from '../config/brand';
+import { SITE_NAME, SITE_NAME_ALT, SITE_URL } from '../config/brand';
 import { buildRateAnswerParagraph, formatP2pSourceList } from './citationCopy';
 
 export const BASE_URL = SITE_URL;
@@ -56,7 +56,7 @@ export function getOrganizationSchema(language = 'es') {
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'customer support',
-      email: CONTACT_EMAIL,
+      email: 'info@boliviablue.com',
       availableLanguage: ['Spanish', 'English'],
       url: `${BASE_URL}/contacto`
     },

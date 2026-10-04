@@ -531,20 +531,20 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
                       <span className={vsBluePct >= 0 ? 'text-green-600' : 'text-red-600'}>
                         {vsBluePct >= 0 ? '+' : ''}
                         {vsBluePct.toFixed(2)}%{' '}
-                        ({vsBluePct >= 0 ? t('cardRateBetter') : t('cardRateWorse')})
+                        ({vsBluePct === 0 ? (language === 'es' ? 'igual' : 'equal') : vsBluePct > 0 ? t('cardRateBetter') : t('cardRateWorse')})
                       </span>
                       <div className="mt-1 text-xs font-normal text-gray-600 dark:text-gray-400">
                         {vsBluePct >= 0.3
                           ? (language === 'es'
-                            ? 'Señal: pagar con tarjeta suele rendir más Bs por USD que cambiar cash al paralelo.'
-                            : 'Signal: paying by card often yields more Bs per USD than cash at the parallel rate.')
+                            ? 'La estimación con la comisión elegida está por encima del punto medio P2P. No es una comparación con efectivo.'
+                            : 'The estimate with the selected fee is above the P2P midpoint. This is not a cash comparison.')
                           : vsBluePct <= -0.3
                             ? (language === 'es'
-                              ? 'Señal: el cash blue está más “rico” que la tarjeta hoy.'
-                              : 'Signal: cash blue is richer than card today.')
+                              ? 'La estimación con la comisión elegida está por debajo del punto medio P2P. Confirmá el precio y los cargos de tu operación.'
+                              : 'The estimate with the selected fee is below the P2P midpoint. Confirm your transaction’s price and charges.')
                             : (language === 'es'
-                              ? 'Brecha chica — mira comisión FX y comodidad.'
-                              : 'Small gap — check FX fee and convenience.')}
+                              ? 'Referencias cercanas: revisá la tasa final y todos los cargos.'
+                              : 'Close references: check the final rate and all charges.')}
                       </div>
                     </div>
                   )}

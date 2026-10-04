@@ -19,12 +19,12 @@ const HIST_CSV = `${SITE_URL}/api/historical-data.csv?range=30d`;
 
 function citeHtml(buyStr, sellStr) {
   const rateBit = buyStr && sellStr ? ` Compra Bs ${buyStr} · venta Bs ${sellStr}.` : '';
-  return `<p>Fuente: <a href="${SITE_URL}/dolar-blue-hoy">Bolivia Blue</a> — dólar blue / paralelo Bolivia.${rateBit} Mediana multi-P2P (Binance, El Dorado, OKX). CSV 30 días: <a href="${HIST_CSV}">historical-data.csv</a>. Metodología: <a href="${SITE_URL}/fuente-de-datos">fuente-de-datos</a>. Widget: <a href="${SITE_URL}/widget">widget</a>.</p>`;
+  return `<p>Fuente: <a href="${SITE_URL}/dolar-blue-hoy">Bolivia Blue</a> — dólar blue / paralelo Bolivia.${rateBit} Referencia P2P USDT/BOB usada como referencia del USD; no es una cotización de efectivo. CSV 30 días: <a href="${HIST_CSV}">historical-data.csv</a>. Metodología: <a href="${SITE_URL}/fuente-de-datos">fuente-de-datos</a>. Widget: <a href="${SITE_URL}/widget">widget</a>.</p>`;
 }
 
 function citeMd(buyStr, sellStr) {
   const rateBit = buyStr && sellStr ? ` Compra Bs ${buyStr} · venta Bs ${sellStr}.` : '';
-  return `Fuente: [Bolivia Blue](${SITE_URL}/dolar-blue-hoy) — dólar blue / paralelo Bolivia.${rateBit} Mediana multi-P2P. CSV: [${HIST_CSV}](${HIST_CSV}). Metodología: [${SITE_URL}/fuente-de-datos](${SITE_URL}/fuente-de-datos).`;
+  return `Fuente: [Bolivia Blue](${SITE_URL}/dolar-blue-hoy) — dólar blue / paralelo Bolivia.${rateBit} Referencia P2P USDT/BOB usada como referencia del USD; no es una cotización de efectivo. CSV: [${HIST_CSV}](${HIST_CSV}). Metodología: [${SITE_URL}/fuente-de-datos](${SITE_URL}/fuente-de-datos).`;
 }
 
 const CITE_METHODOLOGY = `Metodología: ${SITE_URL}/fuente-de-datos — mediana cross-source P2P (Binance, El Dorado, OKX, Bybit cuando disponible), actualización ~15 min. CSV 30 días: ${HIST_CSV}`;

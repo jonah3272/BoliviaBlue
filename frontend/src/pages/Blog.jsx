@@ -10,8 +10,13 @@ import SocialShare from '../components/SocialShare';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { fetchBlogArticles, fetchBlogArticleBySlug } from '../utils/blogApi';
+import { selectRelatedArticles } from '../utils/relatedArticles';
 import { articlesEs, articlesEn } from '../data/blogArticles'; // Fallback
 import { useAdsenseReadyWhen } from '../hooks/useAdsenseReady';
+
+// Do not newly promote these legacy guides while their payment-safety correction
+// is pending. Their existing collection entries and canonical URLs stay intact.
+const RELATED_ARTICLE_REVIEW_HOLD = ['guia-comprar-dolares-binance-p2p', 'guide-buy-dollars-binance-p2p'];
 
 function Blog() {
   const languageContext = useLanguage();
@@ -22,6 +27,8 @@ function Blog() {
   const [showOfficial, setShowOfficial] = useState(false);
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [articles, setArticles] = useState([]);
+  const [relatedCollection, setRelatedCollection] = useState({ language: null, items: [] });
+  const isArticleView = Boolean(slug);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   
@@ -86,6 +93,26 @@ function Blog() {
     }
     return () => { cancelled = true; };
   }, [language, slug]);
+
+  // Detail discovery loads independently: a slow collection must never hide the
+  // article, change its loading/noindex state, or restore another language's links.
+  useEffect(() => {
+    let cancelled = false;
+    if (!isArticleView) return () => { cancelled = true; };
+    setRelatedCollection({ language, items: [] });
+    const fallback = language === 'es' ? articlesEs : articlesEn;
+    const publish = (items) => {
+      if (cancelled) return;
+      setRelatedCollection({ language, items: items.map((article) => ({
+        ...article,
+        readTime: article.read_time ? `${article.read_time} min` : article.readTime,
+      })) });
+    };
+    fetchBlogArticles(language)
+      .then((items) => publish(Array.isArray(items) && items.length > 0 ? items : fallback))
+      .catch(() => publish(fallback));
+    return () => { cancelled = true; };
+  }, [language, isArticleView]);
 
   // Cancel stale responses when a reader changes slug/language or goes Back/Forward.
   useEffect(() => {
@@ -163,6 +190,9 @@ function Blog() {
 
   if (selectedArticleData) {
     // Article detail view
+    const relatedArticles = selectRelatedArticles(
+      relatedCollection.language === language ? relatedCollection.items : [], selectedArticleData, 2, RELATED_ARTICLE_REVIEW_HOLD
+    );
     const articleSchema = {
       "@context": "https://schema.org",
       "@type": "BlogPosting",
@@ -288,18 +318,15 @@ function Blog() {
           </article>
 
           {/* Related Articles */}
-          <div className="mt-12">
+          {relatedArticles.length > 0 && <section className="mt-12" aria-label={language === 'es' ? 'Artículos relacionados' : 'Related articles'}>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
               {language === 'es' ? 'Artículos Relacionados' : 'Related Articles'}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {articles
-                .filter(a => a.id !== selectedArticleData.id && a.category === selectedArticleData.category)
-                .slice(0, 2)
-                .map((article) => (
+              {relatedArticles.map((article) => (
                   <Link
-                    key={article.id}
-                    to={`/blog/${article.slug || article.id}`}
+                    key={article.slug}
+                    to={`/blog/${article.slug}${language === 'en' ? '?lang=en' : ''}`}
                     className="block bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-shadow p-5 cursor-pointer group border border-gray-200 dark:border-gray-700"
                   >
                     <div className="flex items-center gap-2 mb-2">
@@ -319,7 +346,7 @@ function Blog() {
                   </Link>
                 ))}
             </div>
-          </div>
+          </section>}
           </>
           ) : (
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 md:p-8 text-center">
@@ -336,13 +363,7 @@ function Blog() {
           )}
         </main>
 
-        <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="text-center text-sm text-gray-600 dark:text-gray-400">
-              <p>&copy; 2026 {t('title')}</p>
-            </div>
-          </div>
-        </footer>
+        <Footer />
       </div>
     );
   }

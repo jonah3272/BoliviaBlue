@@ -192,12 +192,10 @@ function DatosHistoricos() {
   const datasetSchema = getDataset({
     name: language === 'es' ? 'Datos Históricos del Dólar Blue en Bolivia' : 'Historical Data of Blue Dollar in Bolivia',
     description: language === 'es'
-      ? 'Archivo de observaciones históricas disponibles del tipo de cambio del dólar blue en Bolivia. Incluye compra, venta, promedios y tendencias según la cobertura disponible. La cotización en vivo se actualiza cada 15 minutos; este archivo recopila esos datos.'
-      : 'Archive of available historical blue dollar exchange rate data in Bolivia. Includes buy, sell, averages and trends within the available coverage. Live quote updates every 15 minutes; this archive collects that data.',
+      ? 'Archivo de observaciones históricas disponibles del tipo de cambio del dólar blue en Bolivia. Incluye compra, venta, promedios y tendencias según la cobertura disponible. La frecuencia de las observaciones puede variar y puede haber vacíos. No se conserva la composición de fuentes por registro.'
+      : 'Archive of available historical blue dollar exchange rate data in Bolivia. Includes buy, sell, averages and trends within the available coverage. Observation intervals can vary and gaps can occur. Per-record source composition is not recorded.',
     url: '/datos-historicos',
-    dateModified: new Date().toISOString().split('T')[0],
     inLanguage: language === 'es' ? 'es-BO' : 'en-US',
-    updateFrequency: language === 'es' ? 'Actualización cada 15 minutos (fuente en vivo)' : 'Updates every 15 minutes (live source)',
     variableMeasured: { '@type': 'PropertyValue', name: language === 'es' ? 'Tipo de cambio USD/BOB (dólar blue)' : 'USD/BOB exchange rate (blue dollar)' },
     creator: { '@type': 'Organization', name: 'Bolivia Blue', url: BASE_URL },
     distribution: [
@@ -209,10 +207,9 @@ function DatosHistoricos() {
   const webPageSchema = getWebPage({
     name: language === 'es' ? 'Datos Históricos del Dólar Blue' : 'Historical Blue Dollar Data',
     description: language === 'es'
-      ? 'Archivo de cotizaciones pasadas del dólar blue en Bolivia. Incluye el Valor referencial del dólar estadounidense (BCB) para comparación. Datos según la cobertura disponible; la fuente se actualiza cada 15 min.'
-      : 'Archive of past quotes in Bolivia. Includes the US Dollar reference rate (BCB) for comparison. Coverage depends on available observations; source updates every 15 min.',
+      ? 'Archivo de cotizaciones pasadas del dólar blue en Bolivia. Incluye el Valor referencial del dólar estadounidense (BCB) para comparación. La cobertura depende de las observaciones guardadas y puede tener vacíos.'
+      : 'Archive of past quotes in Bolivia. Includes the US Dollar reference rate (BCB) for comparison. Coverage depends on stored observations and may have gaps.',
     url: '/datos-historicos',
-    dateModified: new Date().toISOString().split('T')[0],
     inLanguage: language === 'es' ? 'es-BO' : 'en-US'
   });
 
@@ -286,8 +283,8 @@ function DatosHistoricos() {
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
         title={language === 'es' 
-          ? 'Datos Históricos Dólar Blue Bolivia | Archivo 2024-2026'
-          : 'Blue Dollar Bolivia Historical Data | Archive 2024-2026'}
+          ? 'Historial del dólar blue en Bolivia | Datos y descargas'
+          : 'Bolivia blue dollar history | Data and downloads'}
         description={language === 'es'
           ? 'Archivo de datos históricos del dólar blue en Bolivia. Promedios, máximos, mínimos y tendencias según la cobertura disponible. Incluye el Valor referencial del dólar estadounidense (BCB) para comparación. Descarga disponible.'
           : 'Historical blue dollar data archive in Bolivia. Averages, highs, lows and trends within the available coverage. Includes the US Dollar reference rate (BCB) for comparison. Download available.'}
@@ -316,7 +313,7 @@ function DatosHistoricos() {
             <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-gray-600 dark:text-gray-300">
               {language === 'es' ? (
                 <>
-                  Gráfico y tabla por período. Referencia P2P, misma que la{' '}
+                  Gráfico y tabla de observaciones guardadas, con posibles vacíos. Compará con la{' '}
                   <Link
                     to="/"
                     onClick={() =>
@@ -331,7 +328,7 @@ function DatosHistoricos() {
                   >
                     cotización en vivo
                   </Link>
-                  {' '}(~15 min).{' '}
+                  .{' '}
                   <Link
                     to="/fuente-de-datos"
                     onClick={() =>
@@ -350,7 +347,7 @@ function DatosHistoricos() {
                 </>
               ) : (
                 <>
-                  Chart and table by period. P2P reference, same as the{' '}
+                  Chart and table of stored observations, with possible gaps. Compare with the{' '}
                   <Link
                     to="/"
                     onClick={() =>
@@ -365,7 +362,7 @@ function DatosHistoricos() {
                   >
                     live quote
                   </Link>
-                  {' '}(~15 min).{' '}
+                  .{' '}
                   <Link
                     to="/fuente-de-datos"
                     onClick={() =>

@@ -1,5 +1,5 @@
 /**
- * Parallel vs card vs BCB — surfaces when paying by card beats cash (or the reverse).
+ * P2P midpoint vs card estimate vs BCB reference; these are not cash-counter quotes.
  */
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -74,34 +74,34 @@ export default function RateTrioStrip({
     if (cardVsBluePct >= 0.3) {
       return {
         tone: 'card',
-        title: es ? 'Hoy conviene más la tarjeta' : 'Card wins today',
+        title: es ? 'Estimación de tarjeta por encima de P2P' : 'Card estimate above P2P',
         body: es
-          ? `La tarjeta rinde ~${abs}% más Bs por dólar que el cash blue (${formatRate(cardRate)} vs ${formatRate(blueMid)}). Si pagas en comercios con tarjeta en USD, suele salir mejor que cambiar billetes al paralelo.`
-          : `Card yields ~${abs}% more Bs per dollar than cash blue (${formatRate(cardRate)} vs ${formatRate(blueMid)}). Paying by USD card in shops often beats changing cash at the parallel rate.`,
+          ? `La estimación de tarjeta está ~${abs}% por encima del punto medio P2P (${formatRate(cardRate)} vs ${formatRate(blueMid)}). Es una comparación de referencias; confirmá la tasa y los cargos de tu emisor.`
+          : `The card estimate is ~${abs}% above the P2P midpoint (${formatRate(cardRate)} vs ${formatRate(blueMid)}). This compares references; confirm your issuer’s rate and charges.`,
       };
     }
     if (cardVsBluePct <= -0.3) {
       return {
-        tone: 'cash',
-        title: es ? 'Hoy el cash blue está más caro' : 'Cash blue is richer today',
+        tone: 'p2p',
+        title: es ? 'Estimación de tarjeta por debajo de P2P' : 'Card estimate below P2P',
         body: es
-          ? `El paralelo está ~${abs}% por encima de la tarjeta. Cambiar billetes al blue te da más Bs por USD que la tasa de tarjeta (revisa comisiones FX de tu emisor).`
-          : `Parallel is ~${abs}% above card. Cash blue pays more Bs per USD than card (check your issuer FX fees).`,
+          ? `La estimación de tarjeta está ~${abs}% por debajo del punto medio P2P. Eso no indica cuánto recibirías por billetes; compará precios y cargos de la operación que vas a realizar.`
+          : `The card estimate is ~${abs}% below the P2P midpoint. This does not tell you what banknotes would receive; compare the price and charges for your actual transaction.`,
       };
     }
     return {
       tone: 'flat',
-      title: es ? 'Tarjeta y paralelo casi empatados' : 'Card and parallel nearly tied',
+      title: es ? 'Referencias de tarjeta y P2P cercanas' : 'Card and P2P references are close',
       body: es
-        ? 'La brecha es chica. Gana el canal más cómodo — y ojo a la comisión FX de tu banco (0–3%).'
-        : 'The gap is small. Pick whichever is easier — and watch issuer FX fees (0–3%).',
+        ? 'La diferencia entre estas referencias es pequeña. Revisá la tasa final, la comisión FX y otros cargos de tu emisor o proveedor.'
+        : 'The difference between these references is small. Check the final rate, issuer FX fee and other issuer or provider charges.',
     };
   })();
 
   const cells = [
     {
       key: 'blue',
-      label: es ? 'Paralelo (cash blue)' : 'Parallel (cash blue)',
+      label: es ? 'P2P USDT/BOB (punto medio)' : 'P2P USDT/BOB (midpoint)',
       value: blueMid,
       sub:
         Number.isFinite(buy) && Number.isFinite(sell)
@@ -112,7 +112,7 @@ export default function RateTrioStrip({
     },
     {
       key: 'card',
-      label: es ? 'Tarjeta (USD→BOB)' : 'Card (USD→BOB)',
+      label: es ? 'Estimación tarjeta (USD→BOB)' : 'Card estimate (USD→BOB)',
       value: cardRate,
       sub: es
         ? 'Estimación red / Wise · sin comisión FX del emisor'
@@ -133,7 +133,7 @@ export default function RateTrioStrip({
   const arbTone =
     arb?.tone === 'card'
       ? 'border-emerald-300 bg-emerald-50/90 dark:border-emerald-800 dark:bg-emerald-950/50'
-      : arb?.tone === 'cash'
+      : arb?.tone === 'p2p'
         ? 'border-blue-300 bg-blue-50/90 dark:border-blue-800 dark:bg-blue-950/50'
         : 'border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800/50';
 
@@ -141,17 +141,17 @@ export default function RateTrioStrip({
     <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 mb-4">
       <div>
         <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
-          {es ? '¿Tarjeta o cash?' : 'Card or cash?'}
+          {es ? 'Compará referencias: P2P, tarjeta y BCB' : 'Compare references: P2P, card and BCB'}
         </h2>
         <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1 max-w-2xl">
           {es
-            ? 'Tres precios del dólar: paralelo (billetes), tarjeta USD→BOB, y BCB. La brecha es la oportunidad.'
-            : 'Three dollar prices: parallel cash, USD→BOB card, and BCB. The gap is the opportunity.'}
+            ? 'El punto medio P2P corresponde a USDT/BOB; no es una cotización de billetes ni de una casa de cambio. Tarjeta y BCB son referencias distintas.'
+            : 'The P2P midpoint is for USDT/BOB; it is not a banknote or currency-exchange cash quote. Card and BCB are different references.'}
         </p>
       </div>
       {cardVsBluePct != null && (
         <div className="text-xs sm:text-sm font-mono text-gray-600 dark:text-gray-300 whitespace-nowrap">
-          {es ? 'Tarjeta vs blue' : 'Card vs blue'}:{' '}
+          {es ? 'Tarjeta vs P2P' : 'Card vs P2P'}:{' '}
           <span
             className={
               cardVsBluePct >= 0
@@ -220,7 +220,7 @@ export default function RateTrioStrip({
 
       {updatedAt && (
         <p className="mt-3 text-[11px] text-gray-500 dark:text-gray-500">
-          {es ? 'Lectura paralelo' : 'Parallel reading'}:{' '}
+          {es ? 'Lectura P2P' : 'P2P observation'}:{' '}
           {new Date(updatedAt).toLocaleString(es ? 'es-BO' : 'en-US', { timeZone: 'America/La_Paz' })}
           {es ? ' (hora de Bolivia)' : ' (Bolivia time)'}
         </p>
@@ -231,10 +231,14 @@ export default function RateTrioStrip({
   return (
     <section
       className="rounded-2xl border-2 border-emerald-200/80 dark:border-emerald-800/50 bg-white dark:bg-gray-900 p-4 sm:p-5 shadow-sm ring-1 ring-emerald-500/10"
-      aria-label={es ? 'Paralelo vs tarjeta vs oficial' : 'Parallel vs card vs official'}
+      aria-label={es ? 'P2P vs tarjeta vs oficial' : 'P2P vs card vs official'}
     >
       {headerBlock}
       {bodyBlock}
+      <nav className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-xs" aria-label={es ? 'Contexto de las referencias' : 'Reference context'}>
+        <Link to={es ? '/guia-dinero-bolivia' : '/bolivia-money-guide'} className="text-blue-600 dark:text-blue-400 underline">{es ? 'Guía de dinero para viajeros' : 'Traveler money guide'}</Link>
+        <Link to={`/fuente-de-datos${es ? '' : '?lang=en'}`} className="text-blue-600 dark:text-blue-400 underline">{es ? 'Cómo se calcula la referencia P2P' : 'How the P2P reference is calculated'}</Link>
+      </nav>
     </section>
   );
 }

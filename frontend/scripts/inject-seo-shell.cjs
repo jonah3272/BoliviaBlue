@@ -367,11 +367,9 @@ const DATASET_DATOS = {
   '@context': 'https://schema.org',
   '@type': 'Dataset',
   name: 'Historical Blue Dollar Exchange Rate Data – Bolivia',
-  description: 'Archive of blue dollar USD/BOB buy and sell quotes from 2024 to present. Same source as the live quote, updated every 15 minutes. Chart and table show trends and averages by period.',
+  description: 'Available historical USD/BOB reference observations. Chart and table show trends by period. Coverage can have gaps; downloads have limits, and per-record source provenance is unavailable.',
   url: BASE_URL + '/datos-historicos',
   inLanguage: 'es-BO',
-  datePublished: '2024-01-01',
-  temporalCoverage: '2024-01-01/..',
   variableMeasured: { '@type': 'PropertyValue', name: 'USD/BOB blue dollar exchange rate' },
   creator: { '@type': 'Organization', name: 'Bolivia Blue', url: BASE_URL },
   publisher: { '@type': 'Organization', name: 'Bolivia Blue', url: BASE_URL },
@@ -488,15 +486,15 @@ const ROUTES = {
     getJsonLd: () => buildStaticJsonLd('/que-es-dolar-blue', '¿Qué es el Dólar Blue?', '¿Qué es el Dólar Blue?', 'Guía completa sobre el dólar blue en Bolivia: qué es, cómo funciona y por qué es importante.', [])
   },
   '/datos-historicos': {
-    title: 'Datos Históricos Dólar Blue Bolivia | Archivo 2024-2025',
-    description: 'Archivo de datos históricos del dólar blue en Bolivia. Promedios, máximos, mínimos y tendencias desde 2024. Misma fuente que la cotización en vivo.',
+    title: 'Historial del dólar blue en Bolivia | Datos y descargas',
+    description: 'Archivo de datos históricos del dólar blue en Bolivia. Promedios, máximos, mínimos y tendencias según la cobertura disponible. Incluye el Valor referencial del dólar estadounidense (BCB) para comparación. Descarga disponible.',
     canonical: BASE_URL + '/datos-historicos',
     shell: `
 <main class="max-w-7xl mx-auto px-4 py-8" data-seo-shell="datos-historicos">
   <div class="text-center space-y-4 mb-8">
     <h1 class="text-3xl sm:text-5xl font-bold text-gray-900">Datos Históricos del Dólar Blue</h1>
-    <p class="text-base text-gray-600">Archivo de cotizaciones pasadas para analizar tendencias. Datos desde 2024.</p>
-    <p class="text-sm text-gray-500 max-w-2xl mx-auto">El gráfico y la tabla muestran compra, venta y promedio por período. Los datos provienen de la misma fuente que la cotización en vivo (actualización cada 15 min).</p>
+    <p class="text-base text-gray-600">Archivo de observaciones históricas según la cobertura disponible. Consultá las fechas y los límites de cada descarga.</p>
+    <p class="text-sm text-gray-500 max-w-2xl mx-auto">El gráfico y la tabla muestran compra, venta y promedio por período. La cobertura puede tener vacíos y las descargas tienen límites; la composición de fuentes no está disponible para cada registro.</p>
     <nav class="flex flex-wrap justify-center gap-3 mt-4" aria-label="Enlaces relacionados">
       <a href="/" class="text-blue-600 font-medium">Cotización actual</a>
       <a href="/dolar-blue-hoy" class="text-blue-600 font-medium">Dólar blue hoy</a>
@@ -505,7 +503,7 @@ const ROUTES = {
     </nav>
   </div>
 </main>`.replace(/\n/g, '').trim(),
-    getJsonLd: () => buildStaticJsonLd('/datos-historicos', 'Datos Históricos', 'Datos Históricos del Dólar Blue', 'Archivo de cotizaciones pasadas para analizar tendencias. El gráfico y la tabla muestran compra, venta y promedio por período. Misma fuente que la cotización en vivo (cada 15 min).', [DATASET_DATOS])
+    getJsonLd: () => buildStaticJsonLd('/datos-historicos', 'Datos Históricos', 'Datos Históricos del Dólar Blue', 'Archivo de observaciones históricas según la cobertura disponible. El gráfico y la tabla muestran compra, venta y promedio por período. Consultá las fechas y los límites de cada descarga.', [DATASET_DATOS])
   },
   '/cotiza-dolar-paralelo': {
     title: 'Cotiza el Dólar Paralelo en Bolivia | Cotización en Tiempo Real',
@@ -614,11 +612,18 @@ const ROUTES = {
   <div class="text-center space-y-4 mb-8">
     <h1 class="text-3xl sm:text-5xl font-bold text-gray-900">Blog</h1>
     <p class="text-base text-gray-600 max-w-2xl mx-auto">Guías y análisis sobre el dólar blue, el tipo de cambio y el mercado cambiario en Bolivia.</p>
+    <ul class="mt-4 space-y-2" aria-label="Artículos del blog">
+      <li><a href="/blog/por-que-se-llama-dolar-blue-origen" class="text-blue-600 font-medium">Origen del término dólar blue</a></li>
+      <li><a href="/blog/que-es-usdt-tether-guia-completa" class="text-blue-600 font-medium">Qué es USDT: conceptos y usos</a></li>
+    </ul>
     <nav class="flex flex-wrap justify-center gap-3 mt-4" aria-label="Enlaces relacionados">
       <a href="/" class="text-blue-600 font-medium">Inicio</a>
       <a href="/noticias" class="text-blue-600 font-medium">Noticias</a>
       <a href="/comparacion" class="text-blue-600 font-medium">Comparación</a>
       <a href="/datos-historicos" class="text-blue-600 font-medium">Datos históricos</a>
+      <a href="/comprar-dolares" class="text-blue-600 font-medium">Guía de compra y venta de USDT</a>
+      <a href="/guia-dinero-bolivia" class="text-blue-600 font-medium">Guía de dinero para viajeros</a>
+      <a href="/fuente-de-datos" class="text-blue-600 font-medium">Metodología y fuentes</a>
     </nav>
   </div>
 </main>`.replace(/\n/g, '').trim(),
@@ -786,7 +791,7 @@ const ROUTES = {
 <main class="max-w-3xl mx-auto px-4 py-8" data-seo-shell="prensa">
   <div class="text-center space-y-4 mb-8">
     <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">Kit de prensa</h1>
-    <p class="text-base text-gray-700 max-w-2xl mx-auto">Cita lista para medios: el dólar blue (paralelo) en Bolivia cotiza hoy compra <span data-live-buy>—</span> · venta <span data-live-sell>—</span> Bs por USD. Lectura: <time data-live-when datetime="">—</time>. 100 USD ≈ <span data-live-usd100>—</span> Bs (compra P2P, no efectivo ni BCB).</p>
+    <p class="text-base text-gray-700 max-w-2xl mx-auto">Cita lista para medios: el dólar blue (paralelo) en Bolivia cotiza hoy compra <span data-live-buy>—</span> · venta <span data-live-sell>—</span> Bs por USD. Lectura: <time data-live-when datetime="">—</time>. 100 USD ≈ <span data-live-usd100>—</span> Bs (referencia P2P USDT/BOB para el USD; no efectivo ni BCB).</p>
     <p class="text-sm text-gray-600 max-w-2xl mx-auto">CSV 30 días: <a href="/api/historical-data.csv?range=30d" class="text-blue-600 font-medium">descargar CSV</a>. Metodología: <a href="/fuente-de-datos" class="text-blue-600 font-medium">fuente de datos</a>. Widget: <a href="/widget" class="text-blue-600 font-medium">embed</a>. Iframe: <a href="/embed.html" class="text-blue-600 font-medium">embed.html</a>.</p>
     <nav class="flex flex-wrap justify-center gap-3 mt-4" aria-label="Enlaces relacionados">
       <a href="/" class="text-blue-600 font-medium">Inicio</a>

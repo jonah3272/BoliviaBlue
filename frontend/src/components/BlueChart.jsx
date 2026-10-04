@@ -19,7 +19,6 @@ function BlueChart({ showOfficial = false }) {
   const [rawData, setRawData] = useState([]); // Store raw API data for candlestick transformation
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [dataAge, setDataAge] = useState(0);
   const [stats, setStats] = useState({ latestBuy: 0, latestSell: 0, change: 0, high: 0, low: 0, points: 0 });
   const [uniqueDateIndices, setUniqueDateIndices] = useState([]); // For ALL range X-axis ticks
   const [chartType, setChartType] = useState('area'); // 'area' or 'candlestick'
@@ -241,19 +240,6 @@ function BlueChart({ showOfficial = false }) {
         setData(chartData);
         setError(null);
 
-        // Data-age badge: when viewing 1D/1W/1M/1Y, fetch ALL in background so chart stayed fast
-        if (range !== 'ALL') {
-          fetchBlueHistory('ALL', currency)
-            .then((allDataResult) => {
-              if (allDataResult.points.length > 0) {
-                const oldestPoint = new Date(allDataResult.points[0].t);
-                const now = new Date();
-                const age = Math.floor((now - oldestPoint) / (1000 * 60 * 60 * 24));
-                setDataAge(age);
-              }
-            })
-            .catch(() => { /* optional badge only */ });
-        }
       } catch (err) {
         console.error('Error loading chart data:', err);
         setError(err.message);
@@ -461,7 +447,6 @@ function BlueChart({ showOfficial = false }) {
           
           {TIME_RANGES.map(({ value, label }) => {
             // Always allow switching — each range fetches its own window.
-            // (Locking on current-span "dataAge" hid 1W/1M/1Y after viewing 1D.)
             return (
               <button
                 key={value}

@@ -1,5 +1,6 @@
 import { articleRequest, loadArticle, renderArticleHtml } from './seo/articleSeo.js';
 import { buyGuidePageForSearch, renderBuyGuideHtml } from './seo/buyGuideSeo.js';
+import { platformComparisonPageForSearch, renderPlatformComparisonHtml } from './seo/platformComparisonSeo.js';
 
 /**
  * Vercel Edge Middleware: inject live buy/sell into homepage HTML for every visitor,
@@ -17,9 +18,9 @@ export const config = {
     '/index.html',
     '/blog/:slug',
     '/noticias/:slug',
-    '/:page(dolar-blue-hoy|bolivian-blue|dolar-paralelo-bolivia-en-vivo|cuanto-esta-dolar-bolivia|cotiza-dolar-paralelo|euro-a-boliviano|real-a-boliviano|peso-a-boliviano|sol-a-boliviano|peso-argentino-a-boliviano|peso-chileno-a-boliviano|dolar-blue-santa-cruz|dolar-blue-la-paz|dolar-blue-cochabamba|prensa|guia-dinero-bolivia|bolivia-money-guide|comprar-dolares)',
-    '/:page(dolar-blue-hoy|bolivian-blue|dolar-paralelo-bolivia-en-vivo|cuanto-esta-dolar-bolivia|cotiza-dolar-paralelo|euro-a-boliviano|real-a-boliviano|peso-a-boliviano|sol-a-boliviano|peso-argentino-a-boliviano|peso-chileno-a-boliviano|dolar-blue-santa-cruz|dolar-blue-la-paz|dolar-blue-cochabamba|prensa|guia-dinero-bolivia|bolivia-money-guide|comprar-dolares)/',
-    '/:page(dolar-blue-hoy|bolivian-blue|dolar-paralelo-bolivia-en-vivo|cuanto-esta-dolar-bolivia|cotiza-dolar-paralelo|euro-a-boliviano|real-a-boliviano|peso-a-boliviano|sol-a-boliviano|peso-argentino-a-boliviano|peso-chileno-a-boliviano|dolar-blue-santa-cruz|dolar-blue-la-paz|dolar-blue-cochabamba|prensa|guia-dinero-bolivia|bolivia-money-guide|comprar-dolares)/index.html',
+    '/:page(dolar-blue-hoy|bolivian-blue|dolar-paralelo-bolivia-en-vivo|cuanto-esta-dolar-bolivia|cotiza-dolar-paralelo|euro-a-boliviano|real-a-boliviano|peso-a-boliviano|sol-a-boliviano|peso-argentino-a-boliviano|peso-chileno-a-boliviano|dolar-blue-santa-cruz|dolar-blue-la-paz|dolar-blue-cochabamba|prensa|guia-dinero-bolivia|bolivia-money-guide|comprar-dolares|plataformas)',
+    '/:page(dolar-blue-hoy|bolivian-blue|dolar-paralelo-bolivia-en-vivo|cuanto-esta-dolar-bolivia|cotiza-dolar-paralelo|euro-a-boliviano|real-a-boliviano|peso-a-boliviano|sol-a-boliviano|peso-argentino-a-boliviano|peso-chileno-a-boliviano|dolar-blue-santa-cruz|dolar-blue-la-paz|dolar-blue-cochabamba|prensa|guia-dinero-bolivia|bolivia-money-guide|comprar-dolares|plataformas)/',
+    '/:page(dolar-blue-hoy|bolivian-blue|dolar-paralelo-bolivia-en-vivo|cuanto-esta-dolar-bolivia|cotiza-dolar-paralelo|euro-a-boliviano|real-a-boliviano|peso-a-boliviano|sol-a-boliviano|peso-argentino-a-boliviano|peso-chileno-a-boliviano|dolar-blue-santa-cruz|dolar-blue-la-paz|dolar-blue-cochabamba|prensa|guia-dinero-bolivia|bolivia-money-guide|comprar-dolares|plataformas)/index.html',
   ],
 };
 
@@ -604,6 +605,25 @@ export default async function middleware(request) {
     } catch {
       const es = buyGuidePageForSearch(url.search).language === 'es';
       const title = es ? 'Guía temporalmente no disponible' : 'Guide temporarily unavailable';
+      return new Response(request.method === 'HEAD' ? null : `<!doctype html><html lang="${es ? 'es' : 'en'}"><head><meta name="robots" content="noindex, follow"><title>${title} | Bolivia Blue</title></head><body><h1>${title}</h1></body></html>`, { status: 503, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex, follow', 'retry-after': '60' } });
+    }
+  }
+  // Reviewed comparison content has no live data dependency.
+  if (path === '/plataformas') {
+    try {
+      const shell = await fetch(new URL('/plataformas/index.html', url.origin), {
+        headers: { [SKIP_HEADER]: '1', Accept: 'text/html' },
+        signal: withTimeout(HTML_TIMEOUT_MS),
+      });
+      if (!shell.ok) throw new Error('Comparison shell unavailable');
+      const headers = new Headers(shell.headers);
+      headers.set('content-type', 'text/html; charset=utf-8');
+      headers.set('cache-control', 'public, s-maxage=300, stale-while-revalidate=900');
+      headers.delete('content-length');
+      return new Response(request.method === 'HEAD' ? null : renderPlatformComparisonHtml(await shell.text(), url.search), { status: 200, headers });
+    } catch {
+      const es = platformComparisonPageForSearch(url.search).language === 'es';
+      const title = es ? 'Comparación temporalmente no disponible' : 'Comparison temporarily unavailable';
       return new Response(request.method === 'HEAD' ? null : `<!doctype html><html lang="${es ? 'es' : 'en'}"><head><meta name="robots" content="noindex, follow"><title>${title} | Bolivia Blue</title></head><body><h1>${title}</h1></body></html>`, { status: 503, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex, follow', 'retry-after': '60' } });
     }
   }

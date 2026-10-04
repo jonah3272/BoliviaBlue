@@ -1,13 +1,11 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import vm from 'node:vm';
+import { getPlatformComparison, getPlatformComparisonPage, REVIEWED_AT } from '../frontend/src/data/platformComparison.js';
 import { BINANCE_REFERRAL_LINK, AIRTM_REFERRAL_LINK, ELDORADO_REFERRAL_LINK } from '../frontend/src/config/referrals.js';
 
 const page = readFileSync(new URL('../frontend/src/pages/Plataformas.jsx', import.meta.url), 'utf8');
-const model = page.slice(page.indexOf('export function getPlatformComparison'), page.indexOf('\nfunction Plataformas(')).replace('export function', 'function');
-const context = { BINANCE_REFERRAL_LINK, AIRTM_REFERRAL_LINK, ELDORADO_REFERRAL_LINK };
-vm.runInNewContext(model + '\nthis.compare = getPlatformComparison;', context);
+const shared = readFileSync(new URL('../frontend/src/data/platformComparison.js', import.meta.url), 'utf8');
 
 describe('qualified platform comparison', () => {
   it('keeps six distinct provider routes and the exact three owned referral destinations in both languages', () => {
@@ -17,7 +15,7 @@ describe('qualified platform comparison', () => {
       airtm: 'https://app.airtm.io/ivt/dasyl1sfs6fzr',
     };
     for (const language of ['es', 'en']) {
-      const rows = context.compare(language);
+      const rows = getPlatformComparison(language);
       assert.equal(rows.length, 6);
       assert.equal(new Set(rows.map(({ partner }) => partner)).size, 6);
       assert.equal(rows[0].partner, 'eldorado');
@@ -38,30 +36,34 @@ describe('qualified platform comparison', () => {
     }
   });
   it('removes unsupported ratings, universal fee/minimum/speed claims and unsafe immediate cancellation', () => {
-    assert.doesNotMatch(page, /renderStars|★|Mejor tasa del mercado|Best market rate|Tasas más competitivas|Most competitive rates|Highest liquidity|Highest security|Sin comisiones|No fees|\$10 USD|\$50 USD|2-5%|cancel the transaction immediately|cancela la transacción inmediatamente|No referral program|Sin programa de referidos/);
-    assert.match(page, /No canceles por una promesa de devolución/);
-    assert.match(page, /Do not cancel based on a promise of a refund/);
-    assert.match(page, /dinero llegó antes de liberar cripto/);
-    assert.match(page, /before releasing crypto/);
-    assert.match(page, /El pago puede hacerse en la app de tu banco/);
-    assert.match(page, /Payment may take place in your banking app/);
-    assert.match(page, /no los cuentes dos veces/);
-    assert.match(page, /do not count them twice/);
+    assert.doesNotMatch(page + shared, /renderStars|★|Mejor tasa del mercado|Best market rate|Tasas más competitivas|Most competitive rates|Highest liquidity|Highest security|Sin comisiones|No fees|\$10 USD|\$50 USD|2-5%|cancel the transaction immediately|cancela la transacción inmediatamente|No referral program|Sin programa de referidos/);
+    assert.match(shared, /No canceles por una promesa de devolución/);
+    assert.match(shared, /Do not cancel based on a promise of a refund/);
+    assert.match(shared, /dinero llegó antes de liberar cripto/);
+    assert.match(shared, /before releasing crypto/);
+    assert.match(shared, /El pago puede hacerse en la app de tu banco/);
+    assert.match(shared, /Payment may take place in your banking app/);
+    assert.match(shared, /no los cuentes dos veces/);
+    assert.match(shared, /do not count them twice/);
   });
   it('preserves labeled referral attribution, explicit locale links and the supported guide anchor', () => {
     assert.match(page, /rel="noopener noreferrer sponsored"/);
     assert.match(page, /trackReferralClicked\(\{ language, partner: platform\.partner, placement: 'plataformas', destination: platform\.referral/);
-    assert.match(page, /url: local\('\/'\)/);
-    assert.match(page, /url: local\('\/plataformas'\)/);
-    assert.match(page, /intent=buy_usdt&operation=sell#guia/);
+    assert.match(shared, /url: local\('\/'\)/);
+    assert.match(shared, /url: local\('\/plataformas'\)/);
+    assert.match(shared, /intent=buy_usdt&operation=sell#guia/);
     assert.doesNotMatch(page, /#cash-out-title/);
-    assert.match(page, /searchParams\.set\('lang', 'en'\)/);
+    assert.match(shared, /searchParams\.set\('lang', 'en'\)/);
     assert.match(page, /RateBinanceCta placement="plataformas_top"/);
-    assert.match(page, /REVIEWED_AT = '2026-10-04'/);
+    assert.equal(REVIEWED_AT, '2026-10-04');
     assert.doesNotMatch(page, /AggregateRating|Review"|reviewRating|dateModified: new Date/);
     const shell = readFileSync(new URL('../frontend/scripts/inject-seo-shell.cjs', import.meta.url), 'utf8');
-    const metadata = shell.match(/\['\/plataformas', '([^']+)', '([^']+)'\]/);
-    assert.ok(metadata);
-    assert.ok(page.includes(metadata[1]) && page.includes(metadata[2]));
+    assert.match(shell, /renderPlatformComparisonHtml\(originalHtml\)/);
+    assert.doesNotMatch(shell, /\['\/plataformas',/);
+    for (const language of ['es', 'en']) {
+      const model = getPlatformComparisonPage(language);
+      assert.equal(model.title, model.comparisonSchema.name);
+      assert.equal(model.description, model.comparisonSchema.description);
+    }
   });
 });

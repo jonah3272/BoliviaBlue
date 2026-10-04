@@ -1046,6 +1046,13 @@ async function main() {
   fs.writeFileSync(path.join(buyGuideDir, 'index.html'), renderBuyGuideHtml(originalHtml), 'utf8');
   console.log('[inject-seo-shell] Wrote shared buy/sell guide shell');
 
+  // Initial comparison and request-time locale variants share the reviewed React data.
+  const { renderPlatformComparisonHtml } = await import('../../seo/platformComparisonSeo.js');
+  const comparisonDir = path.join(DIST, 'plataformas');
+  fs.mkdirSync(comparisonDir, { recursive: true });
+  fs.writeFileSync(path.join(comparisonDir, 'index.html'), renderPlatformComparisonHtml(originalHtml), 'utf8');
+  console.log('[inject-seo-shell] Wrote shared platform comparison shell');
+
   const extraSpa = [
     ['/acerca-de', 'Sobre Bolivia Blue', 'Qué es Bolivia Blue, metodología y transparencia del dólar paralelo.'],
     ['/publicitar', 'Publicitar en Bolivia Blue', 'Opciones de publicidad en Bolivia Blue.'],
@@ -1056,7 +1063,6 @@ async function main() {
     ['/politica-editorial', 'Política editorial', 'Política editorial de Bolivia Blue.'],
     ['/equipo', 'Equipo Bolivia Blue', 'Quién publica Bolivia Blue.'],
     ['/bancos', 'Dólar en bancos de Bolivia', 'Tipo de cambio oficial y bancos en Bolivia.'],
-    ['/plataformas', 'Plataformas para comprar USDT y cambiar dinero en Bolivia | Bolivia Blue', 'Compará Binance P2P, El Dorado, Airtm, Wallbit, Bitget y Bybit por uso, medios de pago y costos a revisar antes de operar en Bolivia.'],
     ['/fuente-de-datos', 'Fuente de datos del dólar blue', 'Metodología: mediana P2P USDT/BOB, no ventanilla.'],
     ['/widget', 'Widget del dólar blue', 'Embebí la cotización de Bolivia Blue en tu sitio.'],
     ['/binance-p2p-bolivia', 'Binance P2P Bolivia', 'Cómo usar Binance P2P para el paralelo en Bolivia.'],

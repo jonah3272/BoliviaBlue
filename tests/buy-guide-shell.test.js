@@ -94,7 +94,7 @@ describe('guide middleware is independent of rates', () => {
       }
     } finally { globalThis.fetch = previous; }
     assert.equal(config.matcher.length, 7);
-    assert.equal(config.matcher.filter((route) => route.includes('|comprar-dolares)')).length, 3);
+    assert.equal(config.matcher.filter((route) => route.includes('|comprar-dolares|')).length, 3);
   });
   it('returns localized non-cacheable 503 on asset failure and skips non-document or recursive requests', async () => {
     const previous = globalThis.fetch;

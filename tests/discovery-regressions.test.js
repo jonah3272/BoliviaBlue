@@ -2,8 +2,9 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
 import { selectRelatedArticles } from '../frontend/src/utils/relatedArticles.js';
-import { articlesEs } from '../frontend/src/data/blogArticles.js';
+import { articlesEs, articlesEn } from '../frontend/src/data/blogArticles.js';
 import { buildRateAnswerParagraph, PLAIN_CITE_ES, PLAIN_CITE_EN } from '../frontend/src/utils/citationCopy.js';
 const require = createRequire(import.meta.url);
 const { ROUTES } = require('../frontend/scripts/inject-seo-shell.cjs');
@@ -28,12 +29,22 @@ describe('article discovery and truthful source context', () => {
     assert.deepEqual(selectRelatedArticles([{ slug: 'current', title: 'Current' }], { slug: 'current' }), []);
     assert.equal(selectRelatedArticles([{ slug: 'next', title: 'Next' }], { slug: 'current' })[0].slug, 'next');
   });
-  it('puts existing canonical fallback article links and useful hubs in the initial blog HTML', () => {
+  it('links reviewed current hubs without newly promoting legacy articles in the initial blog HTML', () => {
     const shell = ROUTES['/blog'].shell;
-    const slugs = [...shell.matchAll(/href="\/blog\/([^"?#]+)"/g)].map((match) => match[1]);
-    assert.ok(slugs.length >= 2);
-    for (const slug of slugs) assert.ok(articlesEs.some((article) => article.slug === slug));
-    for (const hub of ['/comprar-dolares', '/fuente-de-datos', '/guia-dinero-bolivia']) assert.ok(shell.includes(`href="${hub}"`));
+    assert.doesNotMatch(shell, /href="\/blog\//);
+    for (const hub of ['/comprar-dolares', '/fuente-de-datos', '/datos-historicos']) assert.ok(shell.includes(`href="${hub}"`));
+  });
+  it('holds both languages of legacy Binance and USDT guides only from new related suggestions', () => {
+    const page = readFileSync(new URL('../frontend/src/pages/Blog.jsx', import.meta.url), 'utf8');
+    const hold = page.match(/const RELATED_ARTICLE_REVIEW_HOLD = \[([\s\S]*?)\];/);
+    assert.ok(hold);
+    const excluded = [...hold[1].matchAll(/'([^']+)'/g)].map((match) => match[1]);
+    const expected = ['guia-comprar-dolares-binance-p2p', 'guide-buy-dollars-binance-p2p', 'que-es-usdt-tether-guia-completa', 'what-is-usdt-tether-complete-guide'];
+    assert.deepEqual(excluded, expected);
+    for (const slug of expected) assert.ok([...articlesEs, ...articlesEn].some((article) => article.slug === slug));
+    const rows = expected.map((slug) => ({ slug, title: slug, category: 'Guide' }));
+    rows.push({ slug: 'reviewed-peer', title: 'Reviewed peer', category: 'Guide' });
+    assert.deepEqual(selectRelatedArticles(rows, { slug: 'current', category: 'Guide' }, 2, excluded).map((row) => row.slug), ['reviewed-peer']);
   });
   it('does not invent historical start years, publication dates or a fixed collection cadence', () => {
     const route = ROUTES['/datos-historicos'];
@@ -58,5 +69,23 @@ describe('article discovery and truthful source context', () => {
     }
     assert.match(PLAIN_CITE_ES, /USDT\/BOB/);
     assert.match(PLAIN_CITE_EN, /USD proxy/);
+  });
+  it('formats citation readings in labeled Bolivia time independently of the viewer timezone', () => {
+    const moduleUrl = new URL('../frontend/src/utils/citationCopy.js', import.meta.url).href;
+    const script = `import { buildRateAnswerParagraph } from ${JSON.stringify(moduleUrl)}; console.log(JSON.stringify(['es','en'].map(language => buildRateAnswerParagraph({ buy: 12.34, sell: 12.56, updatedAt: '2026-10-04T03:26:00Z', language }))));`;
+    const render = (TZ) => {
+      const result = spawnSync(process.execPath, ['--input-type=module', '-e', script], { env: { ...process.env, TZ }, encoding: 'utf8' });
+      assert.equal(result.status, 0, result.stderr);
+      return JSON.parse(result.stdout);
+    };
+    const quotes = render('America/Los_Angeles');
+    assert.deepEqual(quotes, render('Asia/Tokyo'));
+    for (const [index, locale] of ['es-BO', 'en-US'].entries()) {
+      const expected = new Intl.DateTimeFormat(locale, { timeZone: 'America/La_Paz', dateStyle: 'medium', timeStyle: 'short' }).format(new Date('2026-10-04T03:26:00Z'));
+      assert.ok(quotes[index].includes(expected));
+      assert.match(quotes[index], index === 0 ? /hora de Bolivia/ : /Bolivia time/);
+      assert.doesNotMatch(quotes[index], /every 15|cada ~?15/);
+      assert.doesNotThrow(() => buildRateAnswerParagraph({ buy: 12.34, sell: 12.56, updatedAt: 'invalid', language: index ? 'en' : 'es' }));
+    }
   });
 });

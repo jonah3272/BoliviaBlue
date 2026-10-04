@@ -612,17 +612,12 @@ const ROUTES = {
   <div class="text-center space-y-4 mb-8">
     <h1 class="text-3xl sm:text-5xl font-bold text-gray-900">Blog</h1>
     <p class="text-base text-gray-600 max-w-2xl mx-auto">Guías y análisis sobre el dólar blue, el tipo de cambio y el mercado cambiario en Bolivia.</p>
-    <ul class="mt-4 space-y-2" aria-label="Artículos del blog">
-      <li><a href="/blog/por-que-se-llama-dolar-blue-origen" class="text-blue-600 font-medium">Origen del término dólar blue</a></li>
-      <li><a href="/blog/que-es-usdt-tether-guia-completa" class="text-blue-600 font-medium">Qué es USDT: conceptos y usos</a></li>
-    </ul>
     <nav class="flex flex-wrap justify-center gap-3 mt-4" aria-label="Enlaces relacionados">
       <a href="/" class="text-blue-600 font-medium">Inicio</a>
       <a href="/noticias" class="text-blue-600 font-medium">Noticias</a>
       <a href="/comparacion" class="text-blue-600 font-medium">Comparación</a>
       <a href="/datos-historicos" class="text-blue-600 font-medium">Datos históricos</a>
       <a href="/comprar-dolares" class="text-blue-600 font-medium">Guía de compra y venta de USDT</a>
-      <a href="/guia-dinero-bolivia" class="text-blue-600 font-medium">Guía de dinero para viajeros</a>
       <a href="/fuente-de-datos" class="text-blue-600 font-medium">Metodología y fuentes</a>
     </nav>
   </div>

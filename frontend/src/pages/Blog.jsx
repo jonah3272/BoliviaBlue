@@ -14,9 +14,14 @@ import { selectRelatedArticles } from '../utils/relatedArticles';
 import { articlesEs, articlesEn } from '../data/blogArticles'; // Fallback
 import { useAdsenseReadyWhen } from '../hooks/useAdsenseReady';
 
-// Do not newly promote these legacy guides while their payment-safety correction
-// is pending. Their existing collection entries and canonical URLs stay intact.
-const RELATED_ARTICLE_REVIEW_HOLD = ['guia-comprar-dolares-binance-p2p', 'guide-buy-dollars-binance-p2p'];
+// Do not newly promote these legacy guides while their safety and financial-claim
+// corrections are pending. Existing collection entries and canonical URLs stay intact.
+const RELATED_ARTICLE_REVIEW_HOLD = [
+  'guia-comprar-dolares-binance-p2p',
+  'guide-buy-dollars-binance-p2p',
+  'que-es-usdt-tether-guia-completa',
+  'what-is-usdt-tether-complete-guide',
+];
 
 function Blog() {
   const languageContext = useLanguage();

@@ -27,8 +27,6 @@ function citeMd(buyStr, sellStr) {
   return `Fuente: [Bolivia Blue](${SITE_URL}/dolar-blue-hoy) — dólar blue / paralelo Bolivia.${rateBit} Referencia P2P USDT/BOB usada como referencia del USD; no es una cotización de efectivo. CSV: [${HIST_CSV}](${HIST_CSV}). Metodología: [${SITE_URL}/fuente-de-datos](${SITE_URL}/fuente-de-datos).`;
 }
 
-const CITE_METHODOLOGY = `Metodología: ${SITE_URL}/fuente-de-datos — mediana cross-source P2P (Binance, El Dorado, OKX, Bybit cuando disponible), actualización ~15 min. CSV 30 días: ${HIST_CSV}`;
-
 const BADGE_HTML = `<a href="${SITE_URL}/dolar-blue-hoy?utm_source=badge" rel="noopener"><img src="${SITE_URL}/api/badge.svg" alt="Dólar blue Bolivia — Bolivia Blue" width="320" height="40" /></a>`;
 
 const STATIC_BADGE_HTML = `<a href="${SITE_URL}/dolar-blue-hoy?utm_source=badge" rel="noopener"><img src="${SITE_URL}/badge.svg" alt="Bolivia Blue live rate" width="200" height="40" /></a>`;
@@ -41,7 +39,7 @@ function pitchEmailEs(cite, liveLine) {
 
 Hola,
 
-Soy de Bolivia Blue (${SITE_URL}), un monitor del dólar blue / paralelo en Bolivia basado en P2P (mediana, ~cada 15 min).
+Soy de Bolivia Blue (${SITE_URL}), un monitor de la referencia P2P USDT/BOB para el dólar paralelo en Bolivia, con intentos periódicos de actualización.
 
 ${liveLine}
 
@@ -62,7 +60,7 @@ function pitchEmailEn(cite, liveLine) {
 
 Hello,
 
-Bolivia Blue (${SITE_URL}) tracks Bolivia’s parallel / blue dollar from P2P (median, ~every 15 minutes).
+Bolivia Blue (${SITE_URL}) tracks the P2P USDT/BOB reference for Bolivia’s parallel dollar, with periodic update attempts.
 
 ${liveLine}
 
@@ -82,6 +80,9 @@ function PressKit() {
   useAdsenseReady();
   const languageContext = useLanguage();
   const language = languageContext?.language || 'es';
+  const CITE_METHODOLOGY = language === 'es'
+    ? `Metodología actual: ${SITE_URL}/fuente-de-datos — mediana de referencias P2P disponibles por plataforma. Se intentan actualizaciones periódicas y puede haber demoras. La composición de fuentes de los registros históricos no está registrada; el método actual no acredita la procedencia de cada observación guardada. CSV 30 días: ${HIST_CSV}`
+    : `Current methodology: ${SITE_URL}/fuente-de-datos — median of available per-platform P2P references. Updates are attempted periodically and may be delayed. Historical source composition is not recorded; the current method does not establish the provenance of each stored observation. 30-day CSV: ${HIST_CSV}`;
   const [copied, setCopied] = useState('');
   const { rateData } = useRate();
   const live = liveBobParts(rateData);

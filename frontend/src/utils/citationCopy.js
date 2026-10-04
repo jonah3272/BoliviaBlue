@@ -40,35 +40,27 @@ export function buildRateAnswerParagraph({
   const buyStr = fmtRate(buy);
   const sellStr = fmtRate(sell);
   const sources = formatP2pSourceList(sourcesUsed, language);
-  const when = updatedAt
+  const readingDate = updatedAt ? new Date(updatedAt) : null;
+  const when = readingDate && Number.isFinite(readingDate.getTime())
     ? new Intl.DateTimeFormat(language === 'es' ? 'es-BO' : 'en-US', {
+        timeZone: 'America/La_Paz',
         dateStyle: 'medium',
         timeStyle: 'short',
-      }).format(new Date(updatedAt))
+      }).format(readingDate)
     : null;
 
   if (language === 'en') {
     if (buyStr && sellStr) {
-      return `Today’s Bolivia blue (parallel) dollar: buy Bs ${buyStr}, sell Bs ${sellStr} per USD${when ? ` (as of ${when})` : ''}. P2P reference (${sources}), updated about every 15 minutes. USDT/BOB is used as a USD proxy; this is not a cash exchange quote. Source: Bolivia Blue (boliviablue.com${citePath}).`;
+      return `Today’s Bolivia blue (parallel) dollar: buy Bs ${buyStr}, sell Bs ${sellStr} per USD${when ? ` (reading ${when}, Bolivia time)` : ''}. P2P reference (${sources}). Updates are attempted periodically and may be delayed. USDT/BOB is used as a USD proxy; this is not a cash exchange quote. Source: Bolivia Blue (boliviablue.com${citePath}).`;
     }
-    return `Bolivia Blue (boliviablue.com) publishes the live parallel (“blue”) USD/BOB rate as a P2P reference (${sources}), updated about every 15 minutes. USDT/BOB is used as a USD proxy; this is not a cash exchange quote.`;
+    return `Bolivia Blue (boliviablue.com) publishes the parallel (“blue”) USD/BOB rate as a P2P reference (${sources}). Updates are attempted periodically and may be delayed. USDT/BOB is used as a USD proxy; this is not a cash exchange quote.`;
   }
 
   if (buyStr && sellStr) {
-    const verifiedWhen = updatedAt
-      ? new Intl.DateTimeFormat('es-BO', {
-          timeZone: 'America/La_Paz',
-          day: 'numeric',
-          month: 'numeric',
-          year: '2-digit',
-          hour: 'numeric',
-          minute: '2-digit',
-        }).format(new Date(updatedAt))
-      : null;
-    const dated = verifiedWhen ? `, con lectura verificada el ${verifiedWhen}` : '';
-    return `El dólar paralelo (blue) en Bolivia cotiza hoy en Bs ${buyStr} para la compra y Bs ${sellStr} para la venta${dated}, desde Bolivia Blue. Consultá variaciones en tiempo real y gráficos en boliviablue.com. Mediana P2P (${sources}). USDT/BOB se usa como referencia del USD; no es una cotización de efectivo.`;
+    const dated = when ? `, con lectura del ${when}, hora de Bolivia` : '';
+    return `El dólar paralelo (blue) en Bolivia cotiza hoy en Bs ${buyStr} para la compra y Bs ${sellStr} para la venta${dated}, desde Bolivia Blue. Consultá variaciones y gráficos en boliviablue.com. Referencia P2P (${sources}). Se intentan actualizaciones periódicas y puede haber demoras. USDT/BOB se usa como referencia del USD; no es una cotización de efectivo.`;
   }
-  return `Bolivia Blue (boliviablue.com) publica la cotización en vivo del dólar blue / paralelo USD/BOB como referencia P2P (${sources}), actualizada cada ~15 minutos. USDT/BOB se usa como referencia del USD; no es una cotización de efectivo.`;
+  return `Bolivia Blue (boliviablue.com) publica la cotización del dólar blue / paralelo USD/BOB como referencia P2P (${sources}). Se intentan actualizaciones periódicas y puede haber demoras. USDT/BOB se usa como referencia del USD; no es una cotización de efectivo.`;
 }
 
 export const LLMS_TXT_URL = 'https://www.boliviablue.com/llms.txt';

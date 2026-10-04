@@ -1056,7 +1056,7 @@ async function main() {
     ['/politica-editorial', 'Política editorial', 'Política editorial de Bolivia Blue.'],
     ['/equipo', 'Equipo Bolivia Blue', 'Quién publica Bolivia Blue.'],
     ['/bancos', 'Dólar en bancos de Bolivia', 'Tipo de cambio oficial y bancos en Bolivia.'],
-    ['/plataformas', 'Plataformas P2P en Bolivia', 'Plataformas P2P usadas para la referencia del paralelo.'],
+    ['/plataformas', 'Plataformas para comprar USDT y cambiar dinero en Bolivia | Bolivia Blue', 'Compará Binance P2P, El Dorado, Airtm, Wallbit, Bitget y Bybit por uso, medios de pago y costos a revisar antes de operar en Bolivia.'],
     ['/fuente-de-datos', 'Fuente de datos del dólar blue', 'Metodología: mediana P2P USDT/BOB, no ventanilla.'],
     ['/widget', 'Widget del dólar blue', 'Embebí la cotización de Bolivia Blue en tu sitio.'],
     ['/binance-p2p-bolivia', 'Binance P2P Bolivia', 'Cómo usar Binance P2P para el paralelo en Bolivia.'],

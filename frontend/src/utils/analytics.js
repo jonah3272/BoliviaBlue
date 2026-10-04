@@ -8,6 +8,73 @@ const isGtagAvailable = () => {
   return typeof window !== 'undefined' && typeof window.gtag === 'function';
 };
 
+// This only bridges the existing deferred bootstrap. Never persist or retry hits.
+const MAX_PENDING_HITS = 100;
+const PENDING_HIT_TTL_MS = 30000;
+const pendingHits = [];
+let pendingExpiryTimer;
+let gtagReadySignaled = false;
+
+const isAnalyticsDisabled = () =>
+  typeof window !== 'undefined' && window['ga-disable-G-WRN4D234F2'] === true;
+
+function clearPendingHits() {
+  pendingHits.length = 0;
+  clearTimeout(pendingExpiryTimer);
+  pendingExpiryTimer = undefined;
+}
+
+function expirePendingHits() {
+  clearTimeout(pendingExpiryTimer);
+  pendingExpiryTimer = undefined;
+  const now = Date.now();
+  while (pendingHits.length && pendingHits[0].expiresAt <= now) pendingHits.shift();
+  if (pendingHits.length) {
+    pendingExpiryTimer = setTimeout(expirePendingHits, pendingHits[0].expiresAt - now);
+  }
+}
+
+function sendHit(eventName, payload) {
+  if (isAnalyticsDisabled() || !isGtagAvailable()) return;
+  try {
+    window.gtag('event', eventName, payload);
+  } catch (error) {
+    console.error('[Analytics Error]', error);
+  }
+}
+
+function dispatchOrQueue(eventName, payload) {
+  if (typeof window === 'undefined') return;
+  if (isAnalyticsDisabled()) {
+    clearPendingHits();
+    return;
+  }
+  if (isGtagAvailable()) {
+    sendHit(eventName, payload);
+    return;
+  }
+  if (gtagReadySignaled) return;
+  expirePendingHits();
+  if (pendingHits.length >= MAX_PENDING_HITS) return;
+  pendingHits.push({ eventName, payload, expiresAt: Date.now() + PENDING_HIT_TTL_MS });
+  if (pendingExpiryTimer === undefined) {
+    pendingExpiryTimer = setTimeout(expirePendingHits, PENDING_HIT_TTL_MS);
+  }
+}
+
+function flushPendingHits() {
+  gtagReadySignaled = true;
+  expirePendingHits();
+  const queued = pendingHits.slice();
+  clearPendingHits();
+  // Existing gtag remains responsible for consent. Missing/disabled means drop.
+  queued.forEach(({ eventName, payload }) => sendHit(eventName, payload));
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('bb-gtag-ready', flushPendingHits);
+}
+
 /** Dev / QA: set localStorage bb_analytics_debug = "1" or VITE_ANALYTICS_DEBUG=true to log all GA events. */
 export const isAnalyticsDebug = () => {
   if (typeof window === 'undefined') return false;
@@ -36,52 +103,23 @@ export const trackEvent = (eventName, eventParams = {}) => {
     if (import.meta.env?.DEV && !isAnalyticsDebug()) {
       console.log('[Analytics]', eventName, eventParams);
     }
-    return;
   }
 
-  try {
-    window.gtag('event', eventName, payload);
-  } catch (error) {
-    console.error('[Analytics Error]', error);
-  }
+  dispatchOrQueue(eventName, payload);
 };
-
-const pendingHits = [];
-
-function flushPendingHits() {
-  if (!isGtagAvailable() || pendingHits.length === 0) return;
-  const queued = pendingHits.splice(0, pendingHits.length);
-  queued.forEach((hit) => hit());
-}
-
-if (typeof window !== 'undefined') {
-  window.addEventListener('bb-gtag-ready', flushPendingHits);
-}
 
 /**
  * Track page views with a stable title (route, not live rate tick).
- * Hits queue until gtag.js finishes loading on window.load.
+ * Hits briefly queue until the existing gtag stub is installed on window.load.
  */
 export const trackPageView = (pagePath, pageTitle, additionalParams = {}) => {
-  const send = () => {
-    if (!isGtagAvailable()) {
-      pendingHits.push(send);
-      return;
-    }
-    try {
-      window.gtag('event', 'page_view', {
-        page_path: pagePath,
-        page_title: pageTitle,
-        page_location:
-          typeof window !== 'undefined' ? window.location.href : undefined,
-        ...additionalParams,
-      });
-    } catch (error) {
-      console.error('[Analytics Error]', error);
-    }
-  };
-
-  send();
+  dispatchOrQueue('page_view', {
+    page_path: pagePath,
+    page_title: pageTitle,
+    page_location:
+      typeof window !== 'undefined' ? window.location.href : undefined,
+    ...additionalParams,
+  });
 };
 
 // ============================================================================

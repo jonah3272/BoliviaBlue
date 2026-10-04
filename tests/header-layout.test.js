@@ -1,6 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import vm from 'node:vm';
 import { headerRateSnapshot, reservedBottomSpace } from '../frontend/src/utils/headerRate.js';
 const source = (path) => readFileSync(new URL(`../frontend/src/${path}`, import.meta.url), 'utf8');
 const now = Date.parse('2026-10-03T12:00:00Z');
@@ -64,12 +65,34 @@ describe('publisher layout and supported anchors', () => {
     assert.match(hook, /observer\.disconnect/);
     for (const file of ['components/MobileBottomNav.jsx', 'components/RateAlertFab.jsx', 'pages/BuyDollars.jsx']) assert.match(source(file), /--bb-ad-reserved-bottom/);
   });
-  it('does not override Google-managed ad geometry and documents the bottom-only behavior', () => {
+  it('does not override Google-managed ad geometry or the owner’s anchor settings', () => {
     const css = source('index.css').replace(/\/\*[\s\S]*?\*\//g, '');
     assert.doesNotMatch(css, /adsbygoogle|google_ads_iframe|google-vignette/);
     const loader = source('utils/adsenseLoader.js');
-    assert.match(loader, /setAttribute\('data-overlays', 'bottom'\)/);
-    assert.match(loader, /enables anchors/);
-    assert.match(loader, /remove this attribute/);
+    assert.doesNotMatch(loader, /setAttribute\(['"]data-overlays/);
+    assert.match(loader, /dashboard settings/);
+  });
+  it('loads ordinary Auto ads once without re-enabling anchors', () => {
+    const loaded = [];
+    const context = {
+      console: { log() {}, warn() {}, error() {} },
+      window: { location: { pathname: '/comprar-dolares' } },
+      document: {
+        querySelector: () => loaded[0] || null,
+        querySelectorAll: () => [],
+        body: { getAttribute: () => 'true' },
+        createElement: () => ({ attributes: {}, setAttribute(name, value) { this.attributes[name] = value; } }),
+        head: { appendChild(script) { loaded.push({ ...script, attributes: { ...script.attributes } }); } },
+      },
+    };
+    const code = source('utils/adsenseLoader.js').replace(/export function /g, 'function ');
+    vm.runInNewContext(code + "\nloadAdSense('ca-pub-3497294777171749'); loadAdSense('ca-pub-3497294777171749');", context);
+    assert.equal(loaded.length, 1);
+    assert.equal(loaded[0].src, 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3497294777171749');
+    assert.equal(loaded[0].async, true);
+    assert.equal(loaded[0].crossOrigin, 'anonymous');
+    assert.equal(loaded[0].attributes['data-ad-client'], 'ca-pub-3497294777171749');
+    assert.equal(loaded[0].attributes['data-auto-ads'], 'true');
+    assert.equal(loaded[0].attributes['data-overlays'], undefined);
   });
 });

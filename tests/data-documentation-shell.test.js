@@ -79,6 +79,16 @@ describe('shared initial methodology and history documentation', () => {
       assert.doesNotMatch(html, /range=all|utm_source=arbitrary/);
     }
   });
+  it('keeps the API example contained on narrow screens in React and initial HTML', () => {
+    const component = readFileSync(new URL('../frontend/src/pages/DataSource.jsx', import.meta.url), 'utf8');
+    const code = component.match(/<code className="([^"]*)">\s*GET \{BASE_URL\}\/api\/blue-rate\s*<\/code>/);
+    assert.ok(code, 'The API example retains its original visible command');
+    for (const name of ['block', 'min-w-0', 'break-all']) assert.ok(code[1].split(' ').includes(name));
+    for (const language of ['es', 'en']) {
+      const html = renderDataDocumentationHtml(template, '/fuente-de-datos', `?lang=${language}`);
+      assert.match(html, /<p class="break-words font-mono text-sm">GET https:\/\/www\.boliviablue\.com\/api\/blue-rate<\/p>/);
+    }
+  });
   it('uses the same malformed/duplicate locale policy as React and supports every exact route', () => {
     for (const path of DATA_DOCUMENTATION_PATHS) for (const search of ['', '?lang=es', '?lang=en', '?lang=es&lang=en', '?lang=en&lang=es', '?lang=en?lang=en', '?lang=fr', '?lang=%22%3E%3Cscript%3E']) {
       const page = dataDocumentationPageForSearch(path, search);

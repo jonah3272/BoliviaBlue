@@ -279,7 +279,7 @@ function DataSource() {
               {copy.apiDescription}
             </p>
             <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 font-mono text-sm">
-              <code className="text-blue-600 dark:text-blue-400">
+              <code className="block min-w-0 break-all text-blue-600 dark:text-blue-400">
                 GET {BASE_URL}/api/blue-rate
               </code>
             </div>

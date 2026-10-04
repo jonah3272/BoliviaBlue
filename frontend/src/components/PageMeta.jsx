@@ -1,4 +1,4 @@
-import { Helmet } from 'react-helmet-async';
+import PageHead from './PageHead';
 import { useLanguage } from '../contexts/LanguageContext';
 import { getOrganizationSchema, getWebSiteSchema } from '../utils/seoSchema';
 import { SITE_URL } from '../config/brand';
@@ -73,7 +73,7 @@ export default function PageMeta({
 
 
   return (
-    <Helmet>
+    <PageHead>
       <title>{title}</title>
       <meta name="title" content={title} />
       {description && <meta name="description" content={description} />}
@@ -114,6 +114,6 @@ export default function PageMeta({
           {JSON.stringify(data)}
         </script>
       ))}
-    </Helmet>
+    </PageHead>
   );
 }

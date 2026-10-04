@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
+import PageHead from './PageHead';
 import { blockAdsOnThisPage } from '../utils/adsenseLoader';
 import { SITE_URL } from '../config/brand';
 
@@ -41,14 +41,14 @@ function Redirect({ to }) {
   // This helps Google understand the redirect relationship
   return (
     <>
-      <Helmet>
+      <PageHead>
         {/* Canonical tag points to destination - tells Google this is a redirect */}
         <link rel="canonical" href={canonicalUrl} />
         {/* Noindex to prevent indexing of redirect pages */}
         <meta name="robots" content="noindex, nofollow" />
         {/* Redirect signal for search engines */}
         <meta httpEquiv="refresh" content={`0; url=${canonicalUrl}`} />
-      </Helmet>
+      </PageHead>
       {/* Minimal content to satisfy crawlers */}
       <div style={{ display: 'none' }}>
         <p>Redirecting to <a href={canonicalUrl}>{canonicalUrl}</a></p>

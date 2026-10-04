@@ -1,5 +1,5 @@
 import React, { useState, useEffect, memo, useCallback, useMemo } from 'react';
-import { Helmet } from 'react-helmet-async';
+import PageHead from './PageHead';
 import { fetchBlueRate, fetchCardRates } from '../utils/api';
 import { formatRate, formatCopThousand, formatDateTime, isStale } from '../utils/formatters';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -353,11 +353,11 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
   return (
     <div className="space-y-6">
       {exchangeRateSchema && (
-        <Helmet>
+        <PageHead>
           <script type="application/ld+json">
             {JSON.stringify(exchangeRateSchema)}
           </script>
-        </Helmet>
+        </PageHead>
       )}
       
       <div className="flex items-center justify-center mb-6 min-h-[3.25rem]" data-rate-mode-tabs>

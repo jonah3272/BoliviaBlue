@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
+import PageHead from './PageHead';
 import { fetchBlueRate } from '../utils/api';
 import { formatRate, formatDateTime, isStale } from '../utils/formatters';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -131,11 +131,11 @@ function RateCards() {
   return (
     <div className="space-y-6">
       {exchangeRateSchema && (
-        <Helmet>
+        <PageHead>
           <script type="application/ld+json">
             {JSON.stringify(exchangeRateSchema)}
           </script>
-        </Helmet>
+        </PageHead>
       )}
       {/* Blue Market Rates */}
       <div>

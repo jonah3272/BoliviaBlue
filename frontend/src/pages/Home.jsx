@@ -393,7 +393,7 @@ function Home() {
             <FinancialOfferButton placement="home_mobile_hero" className="h-11 w-full max-w-xs justify-center">
               {language === 'es' ? 'Crear mi cuenta El Dorado' : 'Create my El Dorado account'}
             </FinancialOfferButton>
-            <p className="text-[11px] text-gray-500 dark:text-gray-400">{language === 'es' ? 'Enlace de referido; podemos recibir una comisión. USDT es un criptoactivo, no efectivo USD. Aplican costos y requisitos.' : 'Referral link; we may earn a commission. USDT is a cryptoasset, not USD cash. Costs and requirements apply.'}</p>
+            <p className="text-[11px] text-gray-500 dark:text-gray-400">{language === 'es' ? 'Podemos recibir una comisión' : 'We may earn a commission'}</p>
             <Link to="/calculadora" className="text-xs font-medium text-sky-700 dark:text-sky-300">
               {language === 'es' ? 'Calculadora' : 'Calculator'}
             </Link>

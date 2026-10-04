@@ -57,6 +57,24 @@ describe('financial offer intent and destinations', () => {
     assert.doesNotMatch(source('components/PartnerAdCarousel.jsx'), /setInterval|SlideArt|\+\$5/);
     assert.doesNotMatch(source('components/PlatformRatesBoard.jsx'), /\$5|\+\$5|'Bono'|'Bonus'/);
   });
+  it('keeps a short visible commission disclosure directly below the mobile home offer', () => {
+    const home = source('pages/Home.jsx');
+    const hero = home.slice(home.indexOf('{/* Mobile: compact title'), home.indexOf('{/* Hero — desktop only */}'));
+    assert.match(hero, /<FinancialOfferButton placement="home_mobile_hero"[^>]*>[\s\S]*?<\/FinancialOfferButton>\s*<p className="text-\[11px\] text-gray-500 dark:text-gray-400">\{language === 'es' \? 'Podemos recibir una comisión' : 'We may earn a commission'\}<\/p>/);
+    assert.match(hero, /Crear mi cuenta El Dorado/);
+    assert.match(hero, /Create my El Dorado account/);
+    assert.doesNotMatch(hero, /Referral link;|Enlace de referido;|USDT is a cryptoasset|Aplican costos y requisitos/);
+    const guide = source('components/EldoradoMoneyGuide.jsx');
+    assert.match(guide, /USDT is not USD cash or a bank deposit/);
+    assert.match(guide, /El saldo USDT no es efectivo USD ni un depósito bancario/);
+    assert.match(guide, /What are the fees and minimum amount/);
+    assert.match(guide, /¿Cuánto cobra y cuál es el mínimo/);
+    for (const language of ['es', 'en']) {
+      const offer = getFinancialOffer(language, BUY_USDT_INTENT);
+      assert.equal(offer.href, expected.eldorado);
+      assert.match(offer.disclosure, language === 'es' ? /riesgos y costos/ : /risks and costs/);
+    }
+  });
   it('records visible offer exposure and outbound intent without claiming revenue or signup', () => {
     const events = [];
     const context = { trackEvent: (name, params) => events.push({ name, params }) };

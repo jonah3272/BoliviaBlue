@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useLanguage } from '../contexts/LanguageContext';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PageMeta from '../components/PageMeta';
@@ -8,26 +7,16 @@ import Navigation from '../components/Navigation';
 import Breadcrumbs from '../components/Breadcrumbs';
 import BlueRateCards from '../components/BlueRateCards';
 import { BinanceButton } from '../components/BrandButton';
-import { fetchBlueRate, fetchCardRates } from '../utils/api';
-import { formatRate } from '../utils/formatters';
+import { fetchBlueRate } from '../utils/api';
 import { liveBobParts } from '../utils/seoRateMeta';
 import { TRAVEL_GUIDE_EN, TRAVEL_GUIDE_ES } from '../config/travelGuide';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import SantaCruzPartnerLinks from '../components/SantaCruzPartnerLinks';
 import { SITE_URL } from '../config/brand';
 import NewsletterSignup from '../components/NewsletterSignup';
+import PaymentCostChecker from '../components/PaymentCostChecker';
 
 const PUBLISHED = '2026-09-14';
-
-function n(v) {
-  const x = Number(v);
-  return Number.isFinite(x) && x >= 1 ? x : null;
-}
-
-function cardBob(row) {
-  if (!row) return null;
-  return n(row.visa_bob_per_usd) ?? n(row.mastercard_bob_per_usd) ?? n(row.amex_bob_per_usd);
-}
 
 export default function TravelersMoneyGuide() {
   useAdsenseReady();
@@ -37,16 +26,13 @@ export default function TravelersMoneyGuide() {
   const canonical = pathname.startsWith(TRAVEL_GUIDE_EN) ? TRAVEL_GUIDE_EN : TRAVEL_GUIDE_ES;
 
   const [rate, setRate] = useState(null);
-  const [card, setCard] = useState(null);
-  const [usd, setUsd] = useState('500');
 
   useEffect(() => {
     let cancelled = false;
-    Promise.all([fetchBlueRate(), fetchCardRates().catch(() => null)])
-      .then(([blue, cards]) => {
+    fetchBlueRate()
+      .then((blue) => {
         if (cancelled) return;
         setRate(blue);
-        setCard(cards);
       })
       .catch(() => {});
     return () => {
@@ -55,13 +41,6 @@ export default function TravelersMoneyGuide() {
   }, []);
 
   const live = liveBobParts(rate);
-  const sell = n(rate?.sell_bob_per_usd ?? rate?.sell);
-  const official = n(rate?.official_buy ?? rate?.officialBuy) ?? n(rate?.official_mid);
-  const cardRate = cardBob(card);
-  const amount = Math.max(0, Number(usd) || 0);
-  const atSell = sell != null ? amount * sell : null;
-  const atOfficial = official != null ? amount * official : null;
-  const atCard = cardRate != null ? amount * cardRate : null;
 
   const title = es
     ? live.buy && live.sell
@@ -203,6 +182,7 @@ export default function TravelersMoneyGuide() {
   const toc = es
     ? [
         { id: 'tasas', label: 'Tasas en vivo' },
+        { id: 'payment-cost-comparison', label: '¿BOB o USD al pagar?' },
         { id: '2026', label: 'Qué cambió en 2026' },
         { id: 'efectivo', label: 'Efectivo USD' },
         { id: 'cajeros', label: 'Cajeros y tarjetas' },
@@ -213,6 +193,7 @@ export default function TravelersMoneyGuide() {
       ]
     : [
         { id: 'tasas', label: 'Live rates' },
+        { id: 'payment-cost-comparison', label: 'Pay in BOB or USD?' },
         { id: '2026', label: 'What changed in 2026' },
         { id: 'efectivo', label: 'USD cash' },
         { id: 'cajeros', label: 'ATMs and cards' },
@@ -287,54 +268,16 @@ export default function TravelersMoneyGuide() {
           </h2>
           <p className="mt-3 text-gray-700 dark:text-gray-300">
             {es
-              ? 'Si vendés dólares en efectivo, te acercás a la venta (cuántos Bs te dan por 1 USD). El BCB es el tipo oficial. La tarjeta suele cotizar cerca del mercado, no del “oficial histórico”.'
-              : 'If you sell cash dollars, you are near sell (how many Bs you get per 1 USD). BCB is the official print. Cards usually sit near mid-market — not some historic official peg.'}
+              ? 'Estas tarjetas son referencias: P2P usa ofertas de USDT/BOB, el BCB publica su referencia y la opción de tarjeta muestra una estimación con la fuente indicada. Ninguna confirma el precio de tus billetes ni el cargo final de tu tarjeta. Para comparar una compra, ingresá tus dos precios y tu tasa en la herramienta de abajo.'
+              : 'These cards are references: P2P uses USDT/BOB offers, the BCB publishes its reference and the card option shows an estimate from the stated source. None confirms the price for your banknotes or your final card charge. To compare a purchase, enter your two prices and your rate in the tool below.'}
           </p>
           <div className="mt-4">
             <BlueRateCards showTimestampInCards={false} showCrossSourceBadge={false} />
           </div>
-          <div className="mt-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
-            <label htmlFor="guide-usd" className="text-sm font-semibold text-gray-800 dark:text-gray-100">
-              {es ? '¿Cuántos USD pensás cambiar?' : 'How many USD will you change?'}
-            </label>
-            <input
-              id="guide-usd"
-              type="number"
-              min="0"
-              inputMode="decimal"
-              value={usd}
-              onChange={(e) => setUsd(e.target.value)}
-              className="mt-2 w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 font-mono tabular-nums"
-            />
-            <dl className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
-              <div className="rounded-lg bg-sky-50 dark:bg-sky-950/40 p-3">
-                <dt className="text-xs uppercase tracking-wide text-gray-500">{es ? 'Al paralelo (venta)' : 'At parallel (sell)'}</dt>
-                <dd className="mt-1 font-mono text-lg font-bold tabular-nums text-gray-900 dark:text-white">
-                  {atSell != null ? `${formatRate(atSell)} Bs` : '—'}
-                </dd>
-              </div>
-              <div className="rounded-lg bg-gray-50 dark:bg-gray-900 p-3">
-                <dt className="text-xs uppercase tracking-wide text-gray-500">BCB</dt>
-                <dd className="mt-1 font-mono text-lg font-bold tabular-nums text-gray-900 dark:text-white">
-                  {atOfficial != null ? `${formatRate(atOfficial)} Bs` : '—'}
-                </dd>
-              </div>
-              <div className="rounded-lg bg-amber-50 dark:bg-amber-950/30 p-3">
-                <dt className="text-xs uppercase tracking-wide text-gray-500">{es ? 'Tarjeta (est. Wise)' : 'Card (Wise est.)'}</dt>
-                <dd className="mt-1 font-mono text-lg font-bold tabular-nums text-gray-900 dark:text-white">
-                  {atCard != null ? `${formatRate(atCard)} Bs` : '—'}
-                </dd>
-              </div>
-            </dl>
-            <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">
-              {es
-                ? 'Referencia P2P/USDT y BCB en vivo. Una casa de cambio te va a dar un poco menos. La tarjeta no es Visa/Mastercard liquidación; es un estimado de mercado.'
-                : 'Live P2P/USDT and BCB reference. A casa de cambio will shave a bit. The card figure is a mid-market estimate, not a Visa/Mastercard settlement print.'}
-            </p>
-            <Link to="/calculadora" className="mt-2 inline-block text-sm font-medium text-blue-700 dark:text-blue-300">
-              {es ? 'Calculadora completa →' : 'Full calculator →'}
-            </Link>
-          </div>
+          <PaymentCostChecker language={language} />
+          <Link to="/calculadora" className="mt-3 inline-block text-sm font-medium text-blue-700 dark:text-blue-300">
+            {es ? 'Calculadora completa →' : 'Full calculator →'}
+          </Link>
         </section>
 
         <section id="2026" className="mt-12 scroll-mt-24">
@@ -359,8 +302,8 @@ export default function TravelersMoneyGuide() {
           </h2>
           <p className="mt-3 text-gray-700 dark:text-gray-300">
             {es
-              ? 'Mercados, micros, trufis, tours chicos y pueblos no toman tarjeta. Cambiá en casas de cambio (no en la calle si podés evitarlo). Compará con la venta de esta página antes de aceptar.'
-              : 'Markets, micros, trufis, small tours, and villages do not take cards. Change at casas de cambio (skip the street if you can). Compare with this page’s sell rate before you say yes.'}
+              ? 'Mercados, micros, trufis, tours chicos y pueblos no toman tarjeta. Cambiá en casas de cambio (no en la calle si podés evitarlo). Pedí el monto neto en BOB para tus billetes y todos los cargos antes de aceptar; la referencia P2P de esta página no es esa cotización.'
+              : 'Markets, micros, trufis, small tours, and villages do not take cards. Change at casas de cambio (skip the street if you can). Ask for the net BOB amount for your banknotes and all charges before accepting; this page’s P2P reference is not that quote.'}
           </p>
           <ul className="mt-4 space-y-2 text-gray-700 dark:text-gray-300 list-disc pl-5">
             <li>
@@ -380,8 +323,8 @@ export default function TravelersMoneyGuide() {
             </li>
             <li>
               {es
-                ? 'Contá los Bs en el mostrador. Si la tasa está muy por encima de nuestra venta, desconfiá.'
-                : 'Count bolivianos at the counter. If the rate is wildly above our sell, walk away.'}
+                ? 'Confirmá la moneda, el monto neto y los cargos acordados; contá los Bs en el mostrador antes de terminar el cambio.'
+                : 'Confirm the agreed currency, net amount and charges; count the bolivianos at the counter before completing the exchange.'}
             </li>
           </ul>
         </section>
@@ -397,8 +340,8 @@ export default function TravelersMoneyGuide() {
           </p>
           <p className="mt-3 text-gray-700 dark:text-gray-300">
             {es
-              ? 'Si el datáfono pregunta “¿cobrar en USD o BOB?”, elegí BOB para no pagar una conversión extra del comercio. Avisá a tu banco que viajás a Bolivia.'
-              : 'If the terminal asks USD vs BOB, choose BOB so you do not pay the merchant’s extra conversion. Tell your bank you are traveling to Bolivia.'}
+              ? 'Si el datáfono ofrece cobrar en USD o BOB, pedí ambos importes, la tasa y los cargos de conversión. Compará el costo completo, incluidos los de tu emisor; no supongas que una moneda siempre cuesta menos. Visa explica esta elección en la fuente enlazada en el comparador.'
+              : 'If the terminal offers USD or BOB, ask for both amounts, the rate and conversion charges. Compare the full cost, including your issuer’s fees; do not assume one currency always costs less. Visa explains this choice in the source linked in the checker.'}
           </p>
         </section>
 

@@ -63,6 +63,17 @@ describe('Euro next-step choices', () => {
       assert.equal(node.props.tabIndex, undefined);
     }
   });
+  it('allows the EUR input to shrink beside its result on narrow screens', () => {
+    const input = page.match(/<input\s+id="euro-quick"[\s\S]*?\/>/)[0];
+    const classes = input.match(/className="([^"]+)"/)[1].split(' ');
+    for (const className of ['min-w-0', 'flex-1', 'min-h-[44px]']) assert.ok(classes.includes(className));
+    assert.match(page, /<label htmlFor="euro-quick"/);
+    assert.match(input, /type="number"/);
+    assert.match(input, /inputMode="decimal"/);
+    assert.match(input, /value=\{convertEur\}/);
+    assert.match(input, /onChange=\{\(e\) => setConvertEur\(e.target.value\)\}/);
+    assert.match(page, /Number\(convertEur\) \* buy\)\.toFixed\(2\)/);
+  });
   it('replaces only the generic banner after the EUR snapshot and keeps the dollar-rate related link', () => {
     const render = page.slice(page.indexOf('\nfunction EuroToBoliviano()'));
     assert.doesNotMatch(render, /BinanceBanner|See today’s blue dollar rate →|Ver cotización del dólar blue hoy →/);

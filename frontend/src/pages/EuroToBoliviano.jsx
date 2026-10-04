@@ -249,7 +249,7 @@ function EuroToBoliviano() {
               inputMode="decimal"
               value={convertEur}
               onChange={(e) => setConvertEur(e.target.value)}
-              className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-base tabular-nums min-h-[44px]"
+              className="min-w-0 flex-1 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-base tabular-nums min-h-[44px]"
             />
             <div className="flex items-center px-3 rounded-lg bg-blue-50 dark:bg-blue-950 text-sm font-mono font-semibold tabular-nums min-h-[44px] min-w-[7.5rem] justify-end">
               {Number.isFinite(Number(convertEur)) && Number.isFinite(buy)

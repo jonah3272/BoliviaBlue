@@ -5,7 +5,6 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PageMeta from '../components/PageMeta';
 import Navigation from '../components/Navigation';
-import BinanceBanner from '../components/BinanceBanner';
 import CurrencyRateSnapshot, { CurrencyConversionList } from '../components/CurrencyRateSnapshot';
 import { Link } from 'react-router-dom';
 import { fetchBlueHistory } from '../utils/api';
@@ -13,6 +12,41 @@ import Breadcrumbs from '../components/Breadcrumbs';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import { buildLiveRateSeoMeta } from '../utils/seoRateMeta';
 import NewsletterSignup from '../components/NewsletterSignup';
+import { travelGuidePath } from '../config/travelGuide';
+import { localizedLocation } from '../utils/pageLocale';
+import { trackRelatedLinkClicked } from '../utils/analyticsEvents';
+
+
+export function EuroNextSteps({ language = 'es' }) {
+  const es = language === 'es';
+  const guide = (intent) => localizedLocation({ pathname: '/comprar-dolares', search: `?intent=${intent}`, hash: '#guia' }, language);
+  const choices = [
+    { to: travelGuidePath(language), label: 'euro_next_travel', title: es ? 'Viajar a Bolivia' : 'Travel to Bolivia', description: es ? 'Efectivo, tarjetas y cajeros' : 'Cash, cards and ATMs' },
+    { to: guide('receive_payments'), label: 'euro_next_receive_payments', title: es ? 'Cobrar del exterior' : 'Get paid from abroad', description: es ? 'Revisar cómo recibir un pago' : 'Review how to receive a payment' },
+    { to: guide('buy_usdt'), label: 'euro_next_buy_usdt', title: es ? 'Comprar USDT con bolivianos' : 'Buy USDT with bolivianos', description: es ? 'Ver pasos, requisitos y costos' : 'See steps, requirements and costs' },
+  ];
+
+  return (
+    <section data-euro-next-steps aria-labelledby="euro-next-step-heading" className="rounded-xl border border-blue-200 bg-white p-4 dark:border-blue-800 dark:bg-gray-800 sm:p-6">
+      <h2 id="euro-next-step-heading" className="mb-3 text-xl font-semibold text-gray-900 dark:text-white">
+        {es ? '¿Qué querés hacer ahora?' : 'What would you like to do next?'}
+      </h2>
+      <div className="grid gap-3 sm:grid-cols-3">
+        {choices.map(({ to, label, title, description }) => (
+          <Link
+            key={label}
+            to={to}
+            onClick={() => trackRelatedLinkClicked({ language, destination: to, link_label: label, page_type: 'euro' })}
+            className="min-w-0 min-h-[72px] rounded-lg border border-gray-200 bg-blue-50/50 p-3 transition-colors hover:bg-blue-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:border-gray-600 dark:bg-gray-900/40 dark:hover:bg-gray-700"
+          >
+            <span className="block font-semibold text-blue-700 dark:text-blue-300">{title}</span>
+            <span className="mt-1 block text-sm leading-5 text-gray-600 dark:text-gray-300">{description}</span>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
 
 function EuroToBoliviano() {
   // Signal to AdSense that this page has sufficient content
@@ -224,15 +258,6 @@ function EuroToBoliviano() {
             </div>
           </div>
         </div>
-        <p className="text-center mb-4 sm:mb-6">
-          <Link
-            to="/dolar-blue-hoy"
-            className="inline-flex items-center gap-1.5 rounded-lg bg-sky-500/10 px-4 py-2 text-sm font-semibold text-sky-700 hover:bg-sky-500/20 dark:text-sky-300 dark:hover:bg-sky-500/20 transition-colors"
-          >
-            {language === 'es' ? 'Ver cotización del dólar blue hoy →' : 'See today’s blue dollar rate →'}
-          </Link>
-        </p>
-
         <CurrencyRateSnapshot
           language={language}
           accent="blue"
@@ -268,10 +293,7 @@ function EuroToBoliviano() {
             : 'Buy: Bs to obtain 1 EUR via USDT. Sell: Bs when selling 1 EUR. P2P reference, not a cash desk.'}
         />
 
-        {/* Binance Banner */}
-        <section className="min-h-[12rem] sm:min-h-[11rem]">
-          <BinanceBanner />
-        </section>
+        <EuroNextSteps language={language} />
 
         {/* Main Content */}
         <section className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-lg p-4 sm:p-8 md:p-10">

@@ -220,12 +220,11 @@ export function loadAdSense(publisherId) {
       // Auto Ads: keep in-article/anchor. Vignettes are blocked per-link via
       // suppressVignetteTriggers() (data-google-vignette="false") plus the AdSense UI toggle.
       script.setAttribute('data-auto-ads', 'true');
-      // Request regular, non-collapsible bottom anchors as a controlled header-overlap
-      // trial. Google may serve less lucrative formats; placement needs live verification.
-      // This overrides dashboard positioning and enables anchors: remove this attribute
-      // if anchors are disabled in the dashboard later. No injected ad nodes are edited.
+      // Supported bottom-only anchors preserve the sticky header. This overrides
+      // dashboard positioning and enables anchors: remove this attribute if anchors
+      // are disabled in the AdSense dashboard later. No injected ad nodes are edited.
       // https://support.google.com/adsense/answer/7478225
-      script.setAttribute('data-overlays', 'collapsed-bottom');
+      script.setAttribute('data-overlays', 'bottom');
       
       script.onload = () => {
         console.log('[AdSense] ✓ Script loaded successfully (Auto Ads enabled)');
@@ -330,3 +329,4 @@ export function resetPageReadiness() {
   document.body.removeAttribute('data-has-sufficient-content');
   console.log('[AdSense] Page readiness state reset');
 }
+

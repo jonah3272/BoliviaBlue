@@ -5,6 +5,8 @@ import { trackPageView, initScrollDepthTracking, initTimeOnPageTracking } from '
 import { analyticsTitleForPath } from '../utils/seoRateMeta';
 import { analyticsPageLocation, sanitizeLangSearch } from '../utils/urlLang';
 
+import { isPaymentCostGuide, waitForPaymentCostAnchor } from '../utils/paymentCostAnchor';
+
 const IGNORED_HASHES = new Set(['google_vignette', 'aswift', 'google_ads']);
 
 /**
@@ -16,13 +18,32 @@ export function usePageTracking() {
   const languageContext = useLanguage();
   const language = languageContext?.language || 'es';
   const lastPageKeyRef = useRef('');
+  const initialEntryRef = useRef({ ...location, settled: false });
+  // A same-URL router navigation has a new key even when the tracking effect's
+  // pathname/search/hash dependencies do not change. Cancel only this waiter.
+  useEffect(() => {
+    const initial = initialEntryRef.current;
+    if (location.key !== initial.key) {
+      initial.settled = true;
+      initial.cancel?.();
+    }
+  }, [location.key]);
 
   useEffect(() => {
     let hashTimer;
+    let paymentHashCleanup;
+    const initial = initialEntryRef.current;
+    const sameInitialEntry = ['key', 'pathname', 'search', 'hash'].every((key) => initial[key] === location[key]);
+    if (!sameInitialEntry) initial.settled = true;
     const hashId = (location.hash || '').replace(/^#/, '');
     const isAdHash = IGNORED_HASHES.has(hashId);
 
-    if (location.hash && !isAdHash) {
+    if (isPaymentCostGuide(location) && sameInitialEntry) {
+      if (!initial.settled) {
+        paymentHashCleanup = waitForPaymentCostAnchor(() => { initial.settled = true; });
+        initial.cancel = paymentHashCleanup;
+      }
+    } else if (location.hash && !isAdHash) {
       const scrollToHash = () => {
         const el = document.getElementById(hashId);
         if (el) {
@@ -47,6 +68,7 @@ export function usePageTracking() {
     if (lastPageKeyRef.current === pageKey) {
       return () => {
         if (hashTimer) window.clearTimeout(hashTimer);
+        paymentHashCleanup?.();
       };
     }
     lastPageKeyRef.current = pageKey;
@@ -62,6 +84,7 @@ export function usePageTracking() {
 
     return () => {
       if (hashTimer) window.clearTimeout(hashTimer);
+      paymentHashCleanup?.();
       if (scrollCleanup) scrollCleanup();
       if (timeCleanup) timeCleanup();
     };

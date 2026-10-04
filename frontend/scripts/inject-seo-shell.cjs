@@ -362,22 +362,7 @@ const SHELL_HOME = `
   </div>
 </main>`.replace(/\n/g, '').trim();
 
-/** Dataset schema for /datos-historicos (aligned with static shell text) */
-const DATASET_DATOS = {
-  '@context': 'https://schema.org',
-  '@type': 'Dataset',
-  name: 'Historical Blue Dollar Exchange Rate Data – Bolivia',
-  description: 'Available historical USD/BOB reference observations. Chart and table show trends by period. Coverage can have gaps; downloads have limits, and per-record source provenance is unavailable.',
-  url: BASE_URL + '/datos-historicos',
-  inLanguage: 'es-BO',
-  variableMeasured: { '@type': 'PropertyValue', name: 'USD/BOB blue dollar exchange rate' },
-  creator: { '@type': 'Organization', name: 'Bolivia Blue', url: BASE_URL },
-  publisher: { '@type': 'Organization', name: 'Bolivia Blue', url: BASE_URL },
-  distribution: [
-    { '@type': 'DataDownload', contentUrl: BASE_URL + '/api/historical-data.csv?range=30d', encodingFormat: 'text/csv', name: 'CSV últimos 30 días' },
-    { '@type': 'DataDownload', contentUrl: BASE_URL + '/api/historical-data.json?range=30d', encodingFormat: 'application/json', name: 'JSON últimos 30 días' }
-  ]
-};
+
 
 /** Route config: path -> { title, description, canonical, shell, getJsonLd } */
 const ROUTES = {
@@ -484,26 +469,6 @@ const ROUTES = {
   </div>
 </main>`.replace(/\n/g, '').trim(),
     getJsonLd: () => buildStaticJsonLd('/que-es-dolar-blue', '¿Qué es el Dólar Blue?', '¿Qué es el Dólar Blue?', 'Guía completa sobre el dólar blue en Bolivia: qué es, cómo funciona y por qué es importante.', [])
-  },
-  '/datos-historicos': {
-    title: 'Historial del dólar blue en Bolivia | Datos y descargas',
-    description: 'Archivo de datos históricos del dólar blue en Bolivia. Promedios, máximos, mínimos y tendencias según la cobertura disponible. Incluye el Valor referencial del dólar estadounidense (BCB) para comparación. Descarga disponible.',
-    canonical: BASE_URL + '/datos-historicos',
-    shell: `
-<main class="max-w-7xl mx-auto px-4 py-8" data-seo-shell="datos-historicos">
-  <div class="text-center space-y-4 mb-8">
-    <h1 class="text-3xl sm:text-5xl font-bold text-gray-900">Datos Históricos del Dólar Blue</h1>
-    <p class="text-base text-gray-600">Archivo de observaciones históricas según la cobertura disponible. Consultá las fechas y los límites de cada descarga.</p>
-    <p class="text-sm text-gray-500 max-w-2xl mx-auto">El gráfico y la tabla muestran compra, venta y promedio por período. La cobertura puede tener vacíos y las descargas tienen límites; la composición de fuentes no está disponible para cada registro.</p>
-    <nav class="flex flex-wrap justify-center gap-3 mt-4" aria-label="Enlaces relacionados">
-      <a href="/" class="text-blue-600 font-medium">Cotización actual</a>
-      <a href="/dolar-blue-hoy" class="text-blue-600 font-medium">Dólar blue hoy</a>
-      <a href="/calculadora" class="text-blue-600 font-medium">Calculadora</a>
-      <a href="/que-es-dolar-blue" class="text-blue-600 font-medium">¿Qué es el dólar blue?</a>
-    </nav>
-  </div>
-</main>`.replace(/\n/g, '').trim(),
-    getJsonLd: () => buildStaticJsonLd('/datos-historicos', 'Datos Históricos', 'Datos Históricos del Dólar Blue', 'Archivo de observaciones históricas según la cobertura disponible. El gráfico y la tabla muestran compra, venta y promedio por período. Consultá las fechas y los límites de cada descarga.', [DATASET_DATOS])
   },
   '/cotiza-dolar-paralelo': {
     title: 'Cotiza el Dólar Paralelo en Bolivia | Cotización en Tiempo Real',
@@ -1008,7 +973,6 @@ async function main() {
     '/dolar-blue-la-paz',
     '/dolar-blue-cochabamba',
     '/que-es-dolar-blue',
-    '/datos-historicos',
     '/cotiza-dolar-paralelo',
     '/preguntas-frecuentes',
     '/comparacion',
@@ -1053,6 +1017,15 @@ async function main() {
   fs.writeFileSync(path.join(comparisonDir, 'index.html'), renderPlatformComparisonHtml(originalHtml), 'utf8');
   console.log('[inject-seo-shell] Wrote shared platform comparison shell');
 
+  // Documentation content shares its editorial copy with the interactive pages.
+  const { renderDataDocumentationHtml } = await import('../../seo/dataDocumentationSeo.js');
+  for (const route of ['/fuente-de-datos', '/datos-historicos']) {
+    const dir = path.join(DIST, route.slice(1));
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(path.join(dir, 'index.html'), renderDataDocumentationHtml(originalHtml, route), 'utf8');
+    console.log(`[inject-seo-shell] Wrote shared documentation shell ${route}`);
+  }
+
   const extraSpa = [
     ['/acerca-de', 'Sobre Bolivia Blue', 'Qué es Bolivia Blue, metodología y transparencia del dólar paralelo.'],
     ['/publicitar', 'Publicitar en Bolivia Blue', 'Opciones de publicidad en Bolivia Blue.'],
@@ -1063,7 +1036,6 @@ async function main() {
     ['/politica-editorial', 'Política editorial', 'Política editorial de Bolivia Blue.'],
     ['/equipo', 'Equipo Bolivia Blue', 'Quién publica Bolivia Blue.'],
     ['/bancos', 'Dólar en bancos de Bolivia', 'Tipo de cambio oficial y bancos en Bolivia.'],
-    ['/fuente-de-datos', 'Fuente de datos del dólar blue', 'Metodología: mediana P2P USDT/BOB, no ventanilla.'],
     ['/widget', 'Widget del dólar blue', 'Embebí la cotización de Bolivia Blue en tu sitio.'],
     ['/binance-p2p-bolivia', 'Binance P2P Bolivia', 'Cómo usar Binance P2P para el paralelo en Bolivia.'],
     ['/usdt-bolivia', 'USDT en Bolivia', 'USDT como referencia del dólar paralelo en Bolivia.'],

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import { getDataDocumentationPage } from '../data/dataDocumentation';
 import { useLanguage } from '../contexts/LanguageContext';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -13,7 +14,7 @@ import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import { Link } from 'react-router-dom';
 import { fetchBlueHistory } from '../utils/api';
 import { historicalTableData, checkExtendedExportService } from '../utils/historicalTable';
-import { BASE_URL, getDataset, getWebPage, getBreadcrumbList } from '../utils/seoSchema';
+import { BASE_URL } from '../utils/seoSchema';
 import { getApiEndpoint } from '../utils/apiUrl';
 import {
   trackChartRangeChanged,
@@ -40,6 +41,8 @@ function DatosHistoricos() {
   
   const languageContext = useLanguage();
   const language = languageContext?.language || 'es';
+  const page = getDataDocumentationPage('/datos-historicos', language);
+  const { copy } = page;
   const [selectedRange, setSelectedRange] = useState('1M');
   const [historyData, setHistoryData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -184,39 +187,7 @@ function DatosHistoricos() {
     return () => { cancelled = true; };
   }, [selectedRange]);
 
-  const breadcrumbs = [
-    { name: language === 'es' ? 'Inicio' : 'Home', url: '/' },
-    { name: language === 'es' ? 'Datos Históricos' : 'Historical Data', url: '/datos-historicos' }
-  ];
-
-  const datasetSchema = getDataset({
-    name: language === 'es' ? 'Datos Históricos del Dólar Blue en Bolivia' : 'Historical Data of Blue Dollar in Bolivia',
-    description: language === 'es'
-      ? 'Archivo de observaciones históricas disponibles del tipo de cambio del dólar blue en Bolivia. Incluye compra, venta, promedios y tendencias según la cobertura disponible. La frecuencia de las observaciones puede variar y puede haber vacíos. No se conserva la composición de fuentes por registro.'
-      : 'Archive of available historical blue dollar exchange rate data in Bolivia. Includes buy, sell, averages and trends within the available coverage. Observation intervals can vary and gaps can occur. Per-record source composition is not recorded.',
-    url: '/datos-historicos',
-    inLanguage: language === 'es' ? 'es-BO' : 'en-US',
-    variableMeasured: { '@type': 'PropertyValue', name: language === 'es' ? 'Tipo de cambio USD/BOB (dólar blue)' : 'USD/BOB exchange rate (blue dollar)' },
-    creator: { '@type': 'Organization', name: 'Bolivia Blue', url: BASE_URL },
-    distribution: [
-      { '@type': 'DataDownload', contentUrl: `${BASE_URL}/api/historical-data.csv?range=30d`, encodingFormat: 'text/csv', name: language === 'es' ? 'CSV últimos 30 días' : 'CSV last 30 days' },
-      { '@type': 'DataDownload', contentUrl: `${BASE_URL}/api/historical-data.json?range=30d`, encodingFormat: 'application/json', name: language === 'es' ? 'JSON últimos 30 días' : 'JSON last 30 days' }
-    ]
-  });
-
-  const webPageSchema = getWebPage({
-    name: language === 'es' ? 'Datos Históricos del Dólar Blue' : 'Historical Blue Dollar Data',
-    description: language === 'es'
-      ? 'Archivo de cotizaciones pasadas del dólar blue en Bolivia. Incluye el Valor referencial del dólar estadounidense (BCB) para comparación. La cobertura depende de las observaciones guardadas y puede tener vacíos.'
-      : 'Archive of past quotes in Bolivia. Includes the US Dollar reference rate (BCB) for comparison. Coverage depends on stored observations and may have gaps.',
-    url: '/datos-historicos',
-    inLanguage: language === 'es' ? 'es-BO' : 'en-US'
-  });
-
-  const breadcrumbSchema = getBreadcrumbList([
-    { name: language === 'es' ? 'Inicio' : 'Home', url: '/' },
-    { name: language === 'es' ? 'Datos Históricos' : 'Historical Data', url: '/datos-historicos' }
-  ]);
+  const { breadcrumbs, datasetSchema, webPageSchema, breadcrumbSchema } = page;
 
   const faqSchema = {
     '@context': 'https://schema.org',
@@ -282,15 +253,9 @@ function DatosHistoricos() {
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
-        title={language === 'es' 
-          ? 'Historial del dólar blue en Bolivia | Datos y descargas'
-          : 'Bolivia blue dollar history | Data and downloads'}
-        description={language === 'es'
-          ? 'Archivo de datos históricos del dólar blue en Bolivia. Promedios, máximos, mínimos y tendencias según la cobertura disponible. Incluye el Valor referencial del dólar estadounidense (BCB) para comparación. Descarga disponible.'
-          : 'Historical blue dollar data archive in Bolivia. Averages, highs, lows and trends within the available coverage. Includes the US Dollar reference rate (BCB) for comparison. Download available.'}
-        keywords={language === 'es'
-          ? 'dólar blue bolivia histórico, datos históricos dólar blue, tipo cambio histórico bolivia, estadísticas dólar blue, valor referencial dólar estadounidense BCB, valor referencial dolar Bolivia, tipo de cambio referencial, promedio mensual dólar blue, máximo mínimo dólar blue bolivia'
-          : 'blue dollar bolivia historical, historical blue dollar data, bolivia exchange rate history, blue dollar statistics, US dollar reference rate (BCB), reference rate Bolivia, high low blue dollar bolivia'}
+        title={copy.title}
+        description={copy.description}
+        keywords={copy.keywords}
         canonical="/datos-historicos"
         structuredData={[webPageSchema, breadcrumbSchema, datasetSchema, faqSchema]}
       />
@@ -305,81 +270,19 @@ function DatosHistoricos() {
         <header className="overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800/90">
           <div className="border-b border-gray-100 px-5 py-8 dark:border-gray-700 sm:px-8">
             <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-600 dark:text-blue-400">
-              {language === 'es' ? 'Archivo público' : 'Public archive'}
+              {copy.eyebrow}
             </p>
             <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-              {language === 'es' ? 'Datos históricos del dólar blue' : 'Blue dollar historical data'}
+              {copy.heading}
             </h1>
             <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-gray-600 dark:text-gray-300">
-              {language === 'es' ? (
-                <>
-                  Gráfico y tabla de observaciones guardadas, con posibles vacíos. Compará con la{' '}
-                  <Link
-                    to="/"
-                    onClick={() =>
-                      trackRelatedLinkClicked({
-                        language,
-                        destination: '/',
-                        link_label: 'hero_live_rate',
-                        page_type: 'historical',
-                      })
-                    }
-                    className="font-medium text-blue-600 underline decoration-blue-600/30 underline-offset-2 hover:decoration-blue-600 dark:text-blue-400 dark:decoration-blue-400/30"
-                  >
-                    cotización en vivo
-                  </Link>
-                  .{' '}
-                  <Link
-                    to="/fuente-de-datos"
-                    onClick={() =>
-                      trackRelatedLinkClicked({
-                        language,
-                        destination: '/fuente-de-datos',
-                        link_label: 'hero_methodology',
-                        page_type: 'historical',
-                      })
-                    }
-                    className="font-medium text-blue-600 underline decoration-blue-600/30 underline-offset-2 hover:decoration-blue-600 dark:text-blue-400 dark:decoration-blue-400/30"
-                  >
-                    Metodología
-                  </Link>
-                  .
-                </>
-              ) : (
-                <>
-                  Chart and table of stored observations, with possible gaps. Compare with the{' '}
-                  <Link
-                    to="/"
-                    onClick={() =>
-                      trackRelatedLinkClicked({
-                        language,
-                        destination: '/',
-                        link_label: 'hero_live_rate',
-                        page_type: 'historical',
-                      })
-                    }
-                    className="font-medium text-blue-600 underline decoration-blue-600/30 underline-offset-2 hover:decoration-blue-600 dark:text-blue-400 dark:decoration-blue-400/30"
-                  >
-                    live quote
-                  </Link>
-                  .{' '}
-                  <Link
-                    to="/fuente-de-datos"
-                    onClick={() =>
-                      trackRelatedLinkClicked({
-                        language,
-                        destination: '/fuente-de-datos',
-                        link_label: 'hero_methodology',
-                        page_type: 'historical',
-                      })
-                    }
-                    className="font-medium text-blue-600 underline decoration-blue-600/30 underline-offset-2 hover:decoration-blue-600 dark:text-blue-400 dark:decoration-blue-400/30"
-                  >
-                    Methodology
-                  </Link>
-                  .
-                </>
-              )}
+              {page.historyIntroduction}{' '}
+              <Link to="/" onClick={() => trackRelatedLinkClicked({ language, destination: '/', link_label: 'hero_live_rate', page_type: 'historical' })} className="font-medium text-blue-600 underline underline-offset-2 dark:text-blue-400">
+                {page.liveLabel}
+              </Link>.{' '}
+              <Link to="/fuente-de-datos" onClick={() => trackRelatedLinkClicked({ language, destination: '/fuente-de-datos', link_label: 'hero_methodology', page_type: 'historical' })} className="font-medium text-blue-600 underline underline-offset-2 dark:text-blue-400">
+                {page.methodologyLabel}
+              </Link>.
             </p>
           </div>
           {stats && (
@@ -426,13 +329,20 @@ function DatosHistoricos() {
           )}
         </header>
 
+        <section id="cobertura" className="rounded-xl border border-amber-200 bg-amber-50 p-6 dark:border-amber-800 dark:bg-amber-950/20">
+          <h2 className="mb-3 text-xl font-bold text-gray-900 dark:text-white">{page.methodology.provenanceHeading}</h2>
+          <p className="text-gray-700 dark:text-gray-300">{copy.datasetDescription}</p>
+          <p className="mt-3 text-gray-700 dark:text-gray-300">{page.methodology.provenanceDescription}</p>
+          <p className="mt-3 text-gray-700 dark:text-gray-300">{page.methodology.coverageDescription}</p>
+        </section>
+
         <section
           className="overflow-hidden rounded-2xl border border-gray-200/80 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800/90 sm:p-6"
           aria-labelledby="historical-chart-heading"
         >
           <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <h2 id="historical-chart-heading" className="text-lg font-semibold text-gray-900 dark:text-white">
-              {language === 'es' ? 'Gráfico histórico' : 'Historical chart'}
+              {copy.chartHeading}
             </h2>
             <label className="inline-flex cursor-pointer select-none items-center gap-2 rounded-lg border border-transparent px-2 py-1 text-sm text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700/50">
               <input
@@ -463,9 +373,7 @@ function DatosHistoricos() {
             </LazyErrorBoundary>
           </div>
           <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">
-            {language === 'es'
-              ? 'El Valor referencial del dólar estadounidense (BCB) se actualiza diariamente. Los rangos del gráfico (1D, 1W…) son independientes del período de la tabla.'
-              : 'The US Dollar reference rate (BCB) is updated daily. Chart ranges (1D, 1W…) are independent from the table period below.'}
+            {copy.chartDescription}
           </p>
         </section>
 
@@ -477,12 +385,10 @@ function DatosHistoricos() {
             <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
               <div className="min-w-0">
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  {language === 'es' ? 'Registros por período' : 'Records by period'}
+                  {copy.recordsHeading}
                 </h2>
                 <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                  {language === 'es'
-                    ? 'Hasta 50 filas visibles; muestras con cobertura indicada en las descargas o en el gráfico.'
-                    : 'Up to 50 visible chart observations; downloads are separate, capped samples.'}
+                  {copy.recordsDescription}
                 </p>
               </div>
               <div
@@ -596,12 +502,10 @@ function DatosHistoricos() {
         <section className="mb-10 overflow-hidden rounded-2xl border border-blue-200/70 bg-white shadow-md dark:border-blue-900/50 dark:bg-gray-800/90 sm:shadow-lg">
           <div className="border-b border-blue-100/80 bg-gradient-to-r from-blue-50/90 to-white px-5 py-6 dark:border-blue-900/40 dark:from-blue-950/40 dark:to-gray-900/80 sm:px-8">
             <h2 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
-              {language === 'es' ? 'Descargar o integrar' : 'Download or integrate'}
+              {copy.downloadsHeading}
             </h2>
             <p className="mt-1 max-w-2xl text-sm text-gray-600 dark:text-gray-300">
-              {language === 'es'
-                ? 'Descarga pública: hasta 4.000 observaciones recientes. El JSON informa fechas reales y si el archivo está recortado; el CSV incluye esa información en sus cabeceras HTTP. Para series ampliadas: contacto.'
-                : 'Public download: up to 4,000 recent observations. JSON reports actual dates and truncation; CSV reports these in HTTP headers. Contact us for extended series.'}
+              {copy.downloadsDescription}
             </p>
           </div>
 
@@ -695,7 +599,7 @@ function DatosHistoricos() {
                 {language === 'es'
                   ? 'La descarga automática ampliada no está disponible aquí. Los archivos públicos son muestras limitadas, no el historial completo. '
                   : 'Extended automatic downloads are unavailable here. Public files are bounded samples, not the full archive. '}
-                <Link to="/contacto" className="text-blue-600 underline">{language === 'es' ? 'Solicitar acceso ampliado' : 'Request extended access'}</Link>
+                <Link to="/contacto" className="text-blue-600 underline">{copy.extendedAccessLabel}</Link>
                 {HAS_EXTENDED_EXPORT_BACKEND && <button type="button" onClick={() => setExportServiceCheck((value) => value + 1)} className="ml-3 text-blue-600 underline">{language === 'es' ? 'Reintentar conexión' : 'Retry connection'}</button>}
               </p>
             )}
@@ -703,10 +607,10 @@ function DatosHistoricos() {
             <div className="grid gap-5 border-t border-gray-200/80 pt-6 dark:border-gray-700 md:grid-cols-2 lg:grid-cols-3">
               <div className="rounded-xl border border-gray-100 bg-slate-50/70 p-4 dark:border-gray-600 dark:bg-gray-900/40">
                 <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                  {language === 'es' ? 'Sin registro' : 'No signup'}
+                  {copy.noSignup}
                 </p>
                 <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
-                  {language === 'es' ? 'Últimos 30 días, hasta 4.000 filas · CSV o JSON' : 'Last 30 days, up to 4,000 rows · CSV or JSON'}
+                  {copy.publicRangeDescription}
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   <a
@@ -729,10 +633,10 @@ function DatosHistoricos() {
               </div>
               <div className="rounded-xl border border-gray-100 bg-slate-50/70 p-4 dark:border-gray-600 dark:bg-gray-900/40">
                 <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                  {language === 'es' ? 'Empresas y devs' : 'Teams & devs'}
+                  {copy.teamsLabel}
                 </p>
                 <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
-                  {language === 'es' ? 'API, volumen y licencias.' : 'API, volume, licensing.'}
+                  {copy.teamsDescription}
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   <Link
@@ -759,18 +663,16 @@ function DatosHistoricos() {
                     }
                     className="inline-flex rounded-lg border border-gray-700 px-3 py-1.5 text-sm font-semibold text-gray-900 dark:border-gray-300 dark:text-white"
                   >
-                    {language === 'es' ? 'Contacto' : 'Contact'}
+                    {copy.contactLabel}
                   </Link>
                 </div>
               </div>
               <div className="rounded-xl border border-gray-100 bg-white p-4 dark:border-gray-600 dark:bg-gray-800/60 md:col-span-2 lg:col-span-1">
                 <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                  {language === 'es' ? 'CSV de la tabla' : 'Table CSV'}
+                  {copy.tableCsvHeading}
                 </p>
                 <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                  {language === 'es'
-                    ? 'Exporta los puntos mostrados en la tabla; puede ser una muestra del período. Para series largas, solicitá acceso ampliado.'
-                    : 'Exports the points shown in the table; this can be a sample of the period. Request extended access for long series.'}
+                  {copy.tableCsvDescription}
                 </p>
                 {clientCsvNeedsUnlock && (
                   <p className="mt-2 text-xs text-amber-800 dark:text-amber-200">
@@ -846,6 +748,14 @@ function DatosHistoricos() {
               )}
             </p>
           </div>
+        </section>
+
+        <section id="citar" className="rounded-xl border border-blue-200 bg-blue-50 p-6 dark:border-blue-800 dark:bg-blue-900/20">
+          <h2 className="mb-3 text-xl font-bold text-gray-900 dark:text-white">{page.methodology.citeHeading}</h2>
+          <p className="text-gray-700 dark:text-gray-300">{page.methodology.citeIntroduction}</p>
+          <p className="mt-3 rounded-lg bg-white p-4 font-mono text-sm text-gray-900 dark:bg-gray-800 dark:text-white">{page.methodology.citation}</p>
+          <p className="mt-3 text-sm text-gray-700 dark:text-gray-300">{page.methodology.citationAlternatives}</p>
+          <Link to="/fuente-de-datos#citar" className="mt-3 inline-block font-medium text-blue-600 underline dark:text-blue-400">{page.methodologyLabel}</Link>
         </section>
 
         <details className="group mb-6 overflow-hidden rounded-xl border border-gray-200/80 bg-white text-sm shadow-sm dark:border-gray-700 dark:bg-gray-800/80">

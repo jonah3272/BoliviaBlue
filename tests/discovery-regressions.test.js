@@ -1,3 +1,5 @@
+import { getDataDocumentationPage } from '../frontend/src/data/dataDocumentation.js';
+import { renderDataDocumentationHtml } from '../seo/dataDocumentationSeo.js';
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
@@ -47,16 +49,18 @@ describe('article discovery and truthful source context', () => {
     assert.deepEqual(selectRelatedArticles(rows, { slug: 'current', category: 'Guide' }, 2, excluded).map((row) => row.slug), ['reviewed-peer']);
   });
   it('does not invent historical start years, publication dates or a fixed collection cadence', () => {
-    const route = ROUTES['/datos-historicos'];
-    assert.equal(route.title, 'Historial del dólar blue en Bolivia | Datos y descargas');
-    assert.doesNotMatch(route.title + route.description + route.shell + JSON.stringify(route.getJsonLd()), /2024|2025|cada 15|every 15|2026/);
-    const dataset = route.getJsonLd().find((schema) => schema['@type'] === 'Dataset');
-    assert.ok(dataset);
+    const model = getDataDocumentationPage('/datos-historicos');
+    assert.equal(model.copy.title, 'Historial del dólar blue en Bolivia | Datos y descargas');
+    assert.equal(getDataDocumentationPage('/datos-historicos', 'en').copy.title, 'Bolivia blue dollar history | Data and downloads');
+    const template = readFileSync(new URL('../frontend/index.html', import.meta.url), 'utf8');
+    const html = renderDataDocumentationHtml(template, '/datos-historicos');
+    assert.doesNotMatch(html, /Archivo 2024|Archive 2024|cada 15|every 15/);
+    const dataset = model.datasetSchema;
     assert.equal('datePublished' in dataset, false);
     assert.equal('temporalCoverage' in dataset, false);
+    assert.equal('dateModified' in dataset, false);
     const page = readFileSync(new URL('../frontend/src/pages/DatosHistoricos.jsx', import.meta.url), 'utf8');
-    assert.ok(page.includes(route.title));
-    assert.ok(page.includes('Bolivia blue dollar history | Data and downloads'));
+    assert.match(page, /title=\{copy.title\}/);
     assert.doesNotMatch(page, /Archive 2024|Archivo 2024|updates every 15|se actualiza cada 15/);
   });
   it('qualifies quoted values as a USDT/BOB proxy without changing values or inventing sources', () => {

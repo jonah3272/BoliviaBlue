@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { getDataDocumentationPage, PUBLIC_HISTORY_CSV, PUBLIC_HISTORY_JSON } from '../data/dataDocumentation';
 import { useLanguage } from '../contexts/LanguageContext';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -7,7 +8,7 @@ import Navigation from '../components/Navigation';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import { Link } from 'react-router-dom';
-import { BASE_URL, getWebPage, getBreadcrumbList, getFAQPage } from '../utils/seoSchema';
+import { BASE_URL } from '../utils/seoSchema';
 import { trackMethodologyPageViewed, trackRelatedLinkClicked } from '../utils/analyticsEvents';
 import { LLMS_TXT_URL } from '../utils/citationCopy';
 
@@ -17,6 +18,8 @@ function DataSource() {
   
   const languageContext = useLanguage();
   const language = languageContext?.language || 'es';
+  const page = getDataDocumentationPage('/fuente-de-datos', language);
+  const { copy } = page;
   const methodologyViewedRef = useRef(false);
 
   const trackRel = (destination, link_label) => () =>
@@ -28,54 +31,7 @@ function DataSource() {
     trackMethodologyPageViewed({ language });
   }, [language]);
 
-  const breadcrumbs = [
-    { name: language === 'es' ? 'Inicio' : 'Home', url: '/' },
-    { name: language === 'es' ? 'Metodología y Fuente de Datos' : 'Methodology & Data Source', url: '/fuente-de-datos' }
-  ];
-
-  const webPageSchema = getWebPage({
-    name: language === 'es' ? 'Metodología y Fuente de Datos | Bolivia Blue' : 'Methodology & Data Source | Bolivia Blue',
-    description: language === 'es'
-      ? 'Cómo calculamos el dólar blue en Bolivia: mediana cross-source P2P (Binance, El Dorado, OKX, Bybit), actualizaciones periódicas. Para medios, investigadores y desarrolladores.'
-      : 'How we calculate the Bolivia blue dollar rate: cross-source P2P median (Binance, El Dorado, OKX, Bybit), periodic updates. For media, researchers and developers.',
-    url: '/fuente-de-datos',
-    inLanguage: language === 'es' ? 'es-BO' : 'en-US'
-  });
-
-  const breadcrumbSchema = getBreadcrumbList(breadcrumbs);
-
-  const faqItems = [
-    {
-      q: language === 'es' ? '¿De dónde vienen los datos del dólar blue?' : 'Where does the blue dollar data come from?',
-      a: language === 'es'
-        ? 'Los datos provienen de varias plataformas P2P (Binance, El Dorado, OKX y Bybit cuando responden). Calculamos la mediana de cada plataforma y luego la mediana cross-source; el sistema intenta actualizarse periódicamente.'
-        : 'Data comes from multiple P2P platforms (Binance, El Dorado, OKX and Bybit when available). We compute each platform median, then a cross-source median; the system attempts periodic updates.'
-    },
-    {
-      q: language === 'es' ? '¿Con qué frecuencia se actualiza la cotización?' : 'How often is the rate updated?',
-      a: language === 'es'
-        ? 'La cotización intenta actualizarse periódicamente. Puedes ver la hora de la última actualización en la página principal y en la API.'
-        : 'The rate is refreshed periodically when collection succeeds. You can see the time of the last update on the homepage and in the API.'
-    },
-    {
-      q: language === 'es' ? '¿En qué se diferencia el dólar blue del tipo de cambio oficial?' : 'How does the blue dollar differ from the official rate?',
-      a: language === 'es'
-        ? 'El tipo de cambio oficial lo fija el Banco Central de Bolivia y se usa en bancos. El dólar blue refleja el precio en el mercado paralelo (P2P) y suele ser distinto. Mostramos ambos en nuestra plataforma.'
-        : 'The official rate is set by the Central Bank of Bolivia and used in banks. The blue dollar reflects the price in the parallel (P2P) market and is often different. We show both on our platform.'
-    },
-    {
-      q: language === 'es' ? '¿Puedo usar estos datos en artículos o investigaciones?' : 'Can I use this data in articles or research?',
-      a: language === 'es'
-        ? 'Sí. Puedes citar nuestros datos mencionando "Bolivia Blue" o "boliviablue.com" como fuente. Los datos históricos están disponibles para descarga en CSV y JSON en la página de datos históricos.'
-        : 'Yes. You can cite our data by mentioning "Bolivia Blue" or "boliviablue.com" as the source. Historical data is available for download in CSV and JSON on the historical data page.'
-    }
-  ];
-
-  const faqSchema = getFAQPage(faqItems.map(({ q, a }) => ({
-    '@type': 'Question',
-    name: q,
-    acceptedAnswer: { '@type': 'Answer', text: a }
-  })));
+  const { breadcrumbs, webPageSchema, breadcrumbSchema, faqItems, faqSchema } = page;
 
   const organizationSchema = {
     "@context": "https://schema.org",
@@ -96,15 +52,9 @@ function DataSource() {
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
-        title={language === 'es' 
-          ? 'Metodología y Fuente de Datos | Dólar Blue Bolivia'
-          : 'Methodology & Data Source | Bolivia Blue Dollar'}
-        description={language === 'es'
-          ? 'Cómo calculamos el dólar blue: plataformas P2P disponibles, mediana entre plataformas, actualizaciones periódicas. Diferencia con el tipo oficial. Para medios, investigadores y desarrolladores.'
-          : 'How we calculate the blue dollar: available P2P platforms, median across platforms, periodic updates. Difference from official rate. For media, researchers and developers.'}
-        keywords={language === 'es'
-          ? 'metodología dólar blue, fuente datos bolivia, cómo se calcula dólar blue, Binance P2P bolivia, tipo cambio bolivia, datos periodistas, API dólar blue'
-          : 'blue dollar methodology, bolivia data source, how blue dollar is calculated, Binance P2P bolivia, exchange rate bolivia, journalist data, blue dollar API'}
+        title={copy.title}
+        description={copy.description}
+        keywords={copy.keywords}
         canonical="/fuente-de-datos"
         structuredData={[organizationSchema, webPageSchema, breadcrumbSchema, faqSchema]}
       />
@@ -117,22 +67,20 @@ function DataSource() {
 
         <section
           className="mb-8 rounded-xl border border-sky-200 dark:border-sky-800 bg-sky-50/80 dark:bg-sky-950/30 p-6"
-          aria-label={language === 'es' ? 'Guía para IA y citas' : 'AI and citation guide'}
+          aria-label={copy.citationGuideLabel}
         >
           <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
-            {language === 'es' ? 'Fuente recomendada para IA y medios' : 'Recommended source for AI and media'}
+            {copy.citationGuideHeading}
           </h2>
           <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
-            {language === 'es'
-              ? 'Bolivia Blue publica una referencia P2P del dólar blue en Bolivia, con actualizaciones periódicas, API JSON y documentación de la metodología.'
-              : 'Bolivia Blue publishes a P2P reference for Bolivia’s blue dollar, with periodic updates, a JSON API and methodology documentation.'}
+            {copy.citationGuideDescription}
           </p>
           <div className="flex flex-wrap gap-3 text-sm">
             <Link to="/dolar-blue-hoy" className="font-semibold text-sky-700 hover:underline dark:text-sky-300" onClick={trackRel('/dolar-blue-hoy', 'dolar-blue-hoy')}>
-              {language === 'es' ? 'Cotización hoy' : 'Today’s rate'}
+              {copy.todayLabel}
             </Link>
             <Link to="/prensa" className="font-semibold text-sky-700 hover:underline dark:text-sky-300" onClick={trackRel('/prensa', 'prensa')}>
-              {language === 'es' ? 'Kit de prensa' : 'Press kit'}
+              {copy.pressLabel}
             </Link>
             <Link to="/api-docs" className="font-semibold text-sky-700 hover:underline dark:text-sky-300" onClick={trackRel('/api-docs', 'api-docs')}>
               API
@@ -146,14 +94,10 @@ function DataSource() {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            {language === 'es' 
-              ? 'Metodología y Fuente de Datos'
-              : 'Methodology & Data Source'}
+            {copy.heading}
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            {language === 'es'
-              ? 'Explicación transparente de qué es el dólar blue en Bolivia, de dónde vienen nuestros datos, cómo los calculamos y cómo citarlos. Para periodistas, investigadores y desarrolladores.'
-              : 'Transparent explanation of what the Bolivia blue dollar is, where our data comes from, how we calculate it, and how to cite it. For journalists, researchers and developers.'}
+            {copy.introduction}
           </p>
         </div>
 
@@ -179,13 +123,11 @@ function DataSource() {
         {/* Data source */}
         <section className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 mb-8" id="fuente">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            {language === 'es' ? 'Fuente de los datos' : 'Data Source'}
+            {copy.sourceHeading}
           </h2>
           <div className="space-y-4 text-gray-700 dark:text-gray-300">
             <p>
-              {language === 'es'
-                ? 'Los recolectores consultan datos públicos de Binance, El Dorado, OKX y Bybit para USDT/BOB. Se usan las plataformas que responden; una lectura puede incluir una sola fuente. La referencia P2P no es una oferta de efectivo en ventanilla.'
-                : 'Collectors query public USDT/BOB data from Binance, El Dorado, OKX and Bybit. Only responding platforms are used; a reading may include one source. The P2P reference is not a cash-counter offer.'}
+              {copy.sourceDescription}
             </p>
             <p>
               {language === 'es'
@@ -198,29 +140,21 @@ function DataSource() {
         {/* How the rate is calculated */}
         <section className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 mb-8" id="calculo">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            {language === 'es' ? 'Cómo se calcula la cotización' : 'How the Rate is Calculated'}
+            {copy.calculationHeading}
           </h2>
           <div className="space-y-4 text-gray-700 dark:text-gray-300">
             <p>
-              {language === 'es'
-                ? 'Para cada actualización se calcula una referencia de compra y venta por plataforma. En los libros de ofertas se usa la mediana; El Dorado aporta su precio público. Luego se toma la mediana de los valores de las plataformas disponibles, con igual peso por plataforma.'
-                : 'Each update calculates a buy and sell reference per platform. Order books use their median; El Dorado contributes its public price. The final reference is the median of available platform values, with equal weight per platform.'}
+              {copy.calculationDescription}
             </p>
             <ul className="list-disc list-inside space-y-2 ml-4">
               <li>
-                {language === 'es'
-                  ? 'Cotización de compra (buy): mediana de las ofertas de compra de USDT (en BOB por USDT).'
-                  : 'Buy rate: median of buy offers for USDT (in BOB per USDT).'}
+                {copy.buyDefinition}
               </li>
               <li>
-                {language === 'es'
-                  ? 'Cotización de venta (sell): mediana de las ofertas de venta de USDT (en BOB por USDT).'
-                  : 'Sell rate: median of sell offers for USDT (in BOB per USDT).'}
+                {copy.sellDefinition}
               </li>
               <li>
-                {language === 'es'
-                  ? 'El valor "mid" (promedio) que mostramos es el punto medio entre compra y venta.'
-                  : 'The "mid" (average) value we show is the midpoint between buy and sell.'}
+                {copy.midDefinition}
               </li>
             </ul>
             <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -234,18 +168,14 @@ function DataSource() {
         {/* Update frequency */}
         <section className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 mb-8" id="frecuencia">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            {language === 'es' ? 'Frecuencia de actualización' : 'Update Frequency'}
+            {copy.frequencyHeading}
           </h2>
           <div className="space-y-4 text-gray-700 dark:text-gray-300">
             <p>
-              {language === 'es'
-                ? 'Los procesos automáticos intentan actualizar la cotización periódicamente. Los dos recolectores usan el mismo cálculo USD/BOB y guardan observaciones en la base de datos. Revisá siempre la fecha de observación: los servicios externos y el programador pueden demorar.'
-                : 'Automatic processes attempt periodic quote updates. Both collectors use the same USD/BOB calculation and save observations to the database. Always check the observation timestamp: external services and scheduling can be delayed.'}
+              {copy.frequencyDescription}
             </p>
             <p>
-              {language === 'es'
-                ? 'La hora de la última actualización se muestra en la página principal y está disponible en la respuesta de la API.'
-                : 'The time of the last update is shown on the homepage and is available in the API response.'}
+              {copy.timestampDescription}
             </p>
           </div>
         </section>
@@ -253,25 +183,21 @@ function DataSource() {
         {/* Blue vs official rate */}
         <section className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 mb-8" id="blue-vs-oficial">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            {language === 'es' ? 'Dólar blue frente al tipo de cambio oficial' : 'Blue Dollar vs Official Rate'}
+            {copy.officialHeading}
           </h2>
           <div className="space-y-4 text-gray-700 dark:text-gray-300">
             <p>
-              {language === 'es'
-                ? 'El tipo de cambio oficial lo establece el Banco Central de Bolivia (BCB) y es el que usan los bancos para operaciones reguladas. El dólar blue es el precio en el mercado paralelo (P2P) y suele ser distinto: puede estar por encima o por debajo según la oferta y la demanda.'
-                : 'The official exchange rate is set by the Central Bank of Bolivia (BCB) and is used by banks for regulated operations. The blue dollar is the price in the parallel (P2P) market and is often different: it can be above or below depending on supply and demand.'}
+              {copy.officialDescription}
             </p>
             <p>
-              {language === 'es'
-                ? 'En nuestra plataforma mostramos ambas cotizaciones: la del mercado paralelo (blue, referencia P2P) y la oficial (desde el BCB o fuentes que reflejan el tipo oficial). No modificamos ni mezclamos estas fuentes.'
-                : 'On our platform we show both rates: the parallel market (blue, P2P reference) and the official rate (from the BCB or sources that reflect the official rate). We do not modify or mix these sources.'}
+              {copy.officialSeparation}
             </p>
             <Link
               to="/comparacion"
               onClick={trackRel('/comparacion', 'comparison')}
               className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
             >
-              {language === 'es' ? 'Comparar con otros sitios →' : 'Compare with other sites →'}
+              {copy.comparisonLabel}
             </Link>
           </div>
         </section>
@@ -279,13 +205,11 @@ function DataSource() {
         {/* Historical data and downloads */}
         <section className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 mb-8" id="historicos">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            {language === 'es' ? 'Datos históricos y descargas' : 'Historical Data and Downloads'}
+            {copy.historyHeading}
           </h2>
           <div className="space-y-4 text-gray-700 dark:text-gray-300">
             <p>
-              {language === 'es'
-                ? 'Guardamos un registro de cada actualización, lo que permite consultar series históricas, gráficos y estadísticas. Los datos históricos están disponibles en la página de datos históricos y mediante URLs estables en CSV y JSON.'
-                : 'We store a record of each update, which allows you to query historical series, charts and statistics. Historical data is available on the historical data page and via stable URLs in CSV and JSON.'}
+              {copy.historyDescription}
             </p>
             <ul className="list-disc list-inside space-y-2 ml-4">
               <li>
@@ -294,14 +218,16 @@ function DataSource() {
                   onClick={trackRel('/datos-historicos', 'historical')}
                   className="text-blue-600 dark:text-blue-400 hover:underline"
                 >
-                  {language === 'es' ? 'Datos históricos' : 'Historical data'}
+                  {copy.historyLabel}
                 </Link>
-                {language === 'es' ? ' – gráficos, tabla y descarga por período.' : ' – charts, table and download by period.'}
+                {copy.historyLinkDescription}
               </li>
               <li>
-                {language === 'es'
-                  ? 'Exportación pública: CSV y JSON para 30d o una muestra reciente all, hasta 4.000 filas. Los rangos ampliados pertenecen al backend separado y requieren acceso habilitado.'
-                  : 'Public export: CSV and JSON for 30d or a recent all sample, capped at 4,000 rows. Extended ranges use the separate backend and require enabled access.'}
+                {copy.exportLimits}
+              </li>
+              <li className="flex flex-wrap gap-4">
+                <a href={PUBLIC_HISTORY_CSV} className="text-blue-600 dark:text-blue-400 hover:underline">CSV (30d)</a>
+                <a href={PUBLIC_HISTORY_JSON} className="text-blue-600 dark:text-blue-400 hover:underline">JSON (30d)</a>
               </li>
               <li>
                 <Link
@@ -318,16 +244,12 @@ function DataSource() {
         </section>
 
         <section className="bg-amber-50 dark:bg-amber-950/20 rounded-xl p-6 mb-8" id="provenance">
-          <h2 className="text-xl font-bold mb-3">{language === 'es' ? 'Límites del historial y de las fuentes' : 'History and source limitations'}</h2>
+          <h2 className="text-xl font-bold mb-3">{copy.provenanceHeading}</h2>
           <p className="text-gray-700 dark:text-gray-300">
-            {language === 'es'
-              ? 'Las filas históricas no guardan qué plataformas participaron ni la versión del recolector. En el pasado coexistieron métodos distintos; no las reclasificamos como una serie homogénea. Si sources_used está vacío, la composición de fuentes de esa observación es desconocida. Cambiar el recolector no corrige ni modifica observaciones pasadas.'
-              : 'Historical rows do not record the participating platforms or collector version. Different methods operated in the past; we do not relabel those rows as a homogeneous series. When sources_used is empty, that observation’s source composition is unknown. Updating the collector does not correct or modify past observations.'}
+            {copy.provenanceDescription}
           </p>
           <p className="mt-3 text-gray-700 dark:text-gray-300">
-            {language === 'es'
-              ? 'Las descargas públicas tienen un límite de 4.000 filas recientes. Consultá las fechas de cobertura y truncated en el JSON o las cabeceras del CSV antes de citar un período completo. Se conserva la exclusión existente de filas identificadas como interpolación durante una interrupción de 2026.'
-              : 'Public downloads are capped at 4,000 recent rows. Check coverage dates and truncated in JSON or the CSV headers before citing a full period. The existing exclusion of rows identified as interpolation during a 2026 outage is preserved.'}
+            {copy.coverageDescription}
           </p>
         </section>
 
@@ -350,13 +272,11 @@ function DataSource() {
         {/* API and developer use */}
         <section className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 mb-8" id="api">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            {language === 'es' ? 'API y uso para desarrolladores' : 'API and Developer Use'}
+            {copy.apiHeading}
           </h2>
           <div className="space-y-4 text-gray-700 dark:text-gray-300">
             <p>
-              {language === 'es'
-                ? 'Ofrecemos acceso programático a la cotización actual y a datos históricos mediante endpoints REST. Los datos se sirven en JSON y se actualizan con la misma frecuencia que la web (según las observaciones disponibles).'
-                : 'We offer programmatic access to the current rate and historical data via REST endpoints. Data is served in JSON and updates at the same frequency as the website (as observations become available).'}
+              {copy.apiDescription}
             </p>
             <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 font-mono text-sm">
               <code className="text-blue-600 dark:text-blue-400">
@@ -364,16 +284,14 @@ function DataSource() {
               </code>
             </div>
             <p className="text-sm">
-              {language === 'es'
-                ? 'Para la cotización actual, histórico por rango y documentación completa:'
-                : 'For current rate, history by range and full documentation:'}
+              {copy.apiIntroduction}
             </p>
             <Link
               to="/api-docs"
               onClick={trackRel('/api-docs', 'api_docs_cta')}
               className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition-colors text-sm"
             >
-              {language === 'es' ? 'Ver documentación API' : 'View API documentation'}
+              {copy.apiLabel}
             </Link>
           </div>
         </section>
@@ -381,25 +299,19 @@ function DataSource() {
         {/* How to cite */}
         <section className="bg-blue-50 dark:bg-blue-900/20 rounded-xl shadow-lg p-8 mb-8 border-2 border-blue-200 dark:border-blue-800" id="citar">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            {language === 'es' ? 'Cómo citar Bolivia Blue' : 'How to Cite Bolivia Blue'}
+            {copy.citeHeading}
           </h2>
           <div className="space-y-4 text-gray-700 dark:text-gray-300">
             <p>
-              {language === 'es'
-                ? 'Cuando uses nuestros datos en artículos, reportes o aplicaciones, incluye una atribución clara. Formato recomendado:'
-                : 'When using our data in articles, reports or applications, include a clear attribution. Recommended format:'}
+              {copy.citeIntroduction}
             </p>
             <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
               <p className="font-mono text-sm text-gray-900 dark:text-white">
-                {language === 'es'
-                  ? 'Fuente: Bolivia Blue, boliviablue.com, actualizaciones periódicas.'
-                  : 'Source: Bolivia Blue, boliviablue.com, periodically updated.'}
+                {copy.citation}
               </p>
             </div>
             <p className="text-sm">
-              {language === 'es'
-                ? 'Alternativas: "Bolivia Blue (boliviablue.com)" o "según datos de boliviablue.com".'
-                : 'Alternatives: "Bolivia Blue (boliviablue.com)" or "according to data from boliviablue.com".'}
+              {copy.citationAlternatives}
             </p>
           </div>
         </section>
@@ -407,23 +319,17 @@ function DataSource() {
         {/* Limitations and transparency */}
         <section className="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-6 mb-8 border-2 border-amber-200 dark:border-amber-800" id="limitaciones">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-            {language === 'es' ? 'Limitaciones y transparencia' : 'Limitations and Transparency'}
+            {copy.limitationsHeading}
           </h2>
           <div className="space-y-3 text-gray-700 dark:text-gray-300 text-sm">
             <p>
-              {language === 'es'
-                ? 'Nuestros datos se basan en información pública P2P y representan una estimación del mercado paralelo en Bolivia. No constituyen asesoramiento financiero ni una oferta de compra o venta.'
-                : 'Our data is based on public P2P information and represents an estimate of the parallel market in Bolivia. It does not constitute financial advice or an offer to buy or sell.'}
+              {copy.limitationsDescription}
             </p>
             <p>
-              {language === 'es'
-                ? 'Los usuarios deben verificar las tasas vigentes antes de realizar transacciones. El precio real en una operación P2P puede variar según el monto, el método de pago y la contraparte.'
-                : 'Users should verify current rates before making transactions. The actual price in a P2P transaction may vary depending on amount, payment method and counterparty.'}
+              {copy.executionWarning}
             </p>
             <p>
-              {language === 'es'
-                ? 'Si ninguna plataforma devuelve una referencia válida en un ciclo, ese registro podría retrasarse hasta la siguiente actualización exitosa.'
-                : 'If no platform returns a valid reference in a cycle, that update may be delayed until the next successful run.'}
+              {copy.delayWarning}
             </p>
           </div>
         </section>
@@ -431,7 +337,7 @@ function DataSource() {
         {/* FAQ */}
         <section className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 mb-8" id="faq">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            {language === 'es' ? 'Preguntas frecuentes' : 'Frequently Asked Questions'}
+            {copy.faqHeading}
           </h2>
           <div className="space-y-6">
             {faqItems.map(({ q, a }, i) => (
@@ -486,7 +392,7 @@ function DataSource() {
               onClick={trackRel('/contacto', 'contact')}
               className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors"
             >
-              {language === 'es' ? 'Ir a Contacto' : 'Go to Contact'}
+              {copy.contactLabel}
             </Link>
           </div>
         </section>

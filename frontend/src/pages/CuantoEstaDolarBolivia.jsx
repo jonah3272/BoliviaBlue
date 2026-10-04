@@ -1,3 +1,4 @@
+import { normalizeDollarRatePayload } from '../utils/dollarRateSearchCopy.js';
 import { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import Header from '../components/Header';
@@ -8,9 +9,8 @@ import BlueRateCards from '../components/BlueRateCards';
 import BinanceBanner from '../components/BinanceBanner';
 import { Link } from 'react-router-dom';
 import { fetchBlueRate } from '../utils/api';
-import { formatDateTime } from '../utils/formatters';
-import { getWebPage, getBreadcrumbList } from '../utils/seoSchema';
-import { buildLiveRateSeoMeta, ratesFromBluePayload, liveBobParts } from '../utils/seoRateMeta';
+import { getWebPage, getBreadcrumbList, getOrganizationSchema, getWebSiteSchema } from '../utils/seoSchema';
+import { buildLiveRateSeoMeta, liveBobParts } from '../utils/seoRateMeta';
 import { lazy, Suspense } from 'react';
 const BlueChart = lazy(() => import('../components/BlueChart'));
 import PrimaryRateLink from '../components/PrimaryRateLink';
@@ -26,7 +26,6 @@ function CuantoEstaDolarBolivia() {
   const language = languageContext?.language || 'es';
   const [showOfficial, setShowOfficial] = useState(false);
   const [currentRate, setCurrentRate] = useState(null);
-  const [lastUpdated, setLastUpdated] = useState(new Date());
   const live = liveBobParts(currentRate);
 
   useEffect(() => {
@@ -34,7 +33,6 @@ function CuantoEstaDolarBolivia() {
       try {
         const data = await fetchBlueRate();
         setCurrentRate(data);
-        setLastUpdated(new Date());
       } catch (err) {
         console.error('Error loading rate:', err);
       }
@@ -44,25 +42,16 @@ function CuantoEstaDolarBolivia() {
     return () => clearInterval(interval);
   }, []);
 
-  const rateDateModified = currentRate?.updated_at_iso ?? undefined;
-  const articleSchema = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": language === 'es' 
-      ? "¿Cuánto Está el Dólar en Bolivia Hoy? Precio Actual | Cada 15 Min"
-      : "How Much Is the Dollar in Bolivia Today? Current Price | Every 15 Min",
-    "description": language === 'es'
-      ? "¿Cuánto está el dólar en Bolivia? Consulta el precio actual del dólar blue en Bolivia. Cotización en tiempo real actualizada cada 15 minutos. Gráficos históricos y calculadora gratuita."
-      : "How much is the dollar in Bolivia? Check the current blue dollar price in Bolivia. Real-time quote updated every 15 minutes. Historical charts and free calculator.",
-    "author": { "@type": "Organization", "name": "Bolivia Blue" },
-    "publisher": { "@type": "Organization", "name": "Bolivia Blue", "logo": { "@type": "ImageObject", "url": "https://boliviablue.com/favicon.svg" } },
-    "datePublished": "2025-01-01",
-    ...(rateDateModified && { "dateModified": rateDateModified })
-  };
+  const liveSeo = buildLiveRateSeoMeta({
+    ...normalizeDollarRatePayload(currentRate),
+    language,
+    page: 'cuanto',
+  });
 
+  const rateDateModified = liveSeo.observedAt ?? undefined;
   const webPageSchema = getWebPage({
-    name: language === 'es' ? '¿Cuánto Está el Dólar en Bolivia?' : 'How Much is the Dollar in Bolivia?',
-    description: language === 'es' ? 'Respuesta directa: el precio actual del dólar blue está abajo; usa la calculadora para cualquier monto.' : 'Direct answer: the current blue dollar price is below; use the calculator for any amount.',
+    name: liveSeo.title,
+    description: liveSeo.description,
     url: '/cuanto-esta-dolar-bolivia',
     dateModified: rateDateModified,
     inLanguage: language === 'es' ? 'es-BO' : 'en-US'
@@ -73,90 +62,30 @@ function CuantoEstaDolarBolivia() {
     { name: language === 'es' ? '¿Cuánto Está el Dólar?' : 'How Much is the Dollar?', url: '/cuanto-esta-dolar-bolivia' }
   ]);
 
+  // This one answer is also rendered visibly. Legacy FAQ claims remain out of schema pending review.
+  const brandSchemas = [getOrganizationSchema(language), getWebSiteSchema(language)]
+    .map(({ description: _unverifiedDescription, ...schema }) => schema);
   const faqSchema = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": language === 'es' ? [
-      {
-        "@type": "Question",
-        "name": "¿Cuánto está el dólar en Bolivia?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": live.buyStr && live.sellStr
-            ? `El dólar blue en Bolivia está actualmente en ${live.buyStr} BOB por USD para compra y ${live.sellStr} BOB por USD para venta. Esta cotización se actualiza cada 15 minutos con datos en tiempo real de Binance P2P.`
-            : 'El dólar blue (paralelo) en Bolivia se publica en vivo en boliviablue.com como mediana P2P, actualizada cada ~15 minutos.'
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "¿Cuánto vale el dólar en Bolivia?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": live.buyStr
-            ? `El dólar blue vale actualmente ${live.buyStr} BOB por USD. Esto significa que 1 dólar estadounidense equivale a ${live.buyStr} bolivianos en el mercado paralelo.`
-            : 'El dólar blue (paralelo) se actualiza en vivo en boliviablue.com. Abrí la página para ver la compra y venta actuales.'
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "¿Cuánto es $100 USD en Bolivia?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": live.buyStr
-            ? `Con el dólar blue actual (${live.buyStr} BOB por USD), $100 USD equivalen a aproximadamente ${live.times(100)} BOB. Con la tasa oficial del BCB serían menos. La diferencia puede ser significativa.`
-            : 'Usá la calculadora con la cotización blue en vivo para convertir $100 USD a bolivianos al tipo paralelo.'
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "¿Cuánto es 1 USD a 1 Boliviano?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": live.buyStr
-            ? `El dólar blue actualmente está en ${live.buyStr} BOB por USD. Esto significa que 1 USD equivale a aproximadamente ${live.buyStr} BOB, mientras que 1 BOB equivale a aproximadamente ${(1 / Number(live.buyStr)).toFixed(4)} USD.`
-            : 'El dólar blue (paralelo) se actualiza en vivo en boliviablue.com. 1 USD equivale a varios bolivianos al tipo paralelo, no al tipo oficial del BCB.'
-        }
-      }
-    ] : [
-      {
-        "@type": "Question",
-        "name": "How much is the dollar in Bolivia?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": live.buyStr && live.sellStr
-            ? `The blue dollar in Bolivia is currently ${live.buyStr} BOB per USD for buying and ${live.sellStr} BOB per USD for selling. This quote is updated every 15 minutes with real-time data from Binance P2P.`
-            : 'The Bolivia blue (parallel) dollar is published live on boliviablue.com as a P2P median, updated about every 15 minutes.'
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "How much is $100 USD in Bolivia?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": live.buyStr
-            ? `With the current blue dollar (${live.buyStr} BOB per USD), $100 USD equals approximately ${live.times(100)} BOB. The official BCB rate would convert to fewer bolivianos. The difference can be significant.`
-            : 'Use the calculator with the live blue rate to convert $100 USD to bolivianos at the parallel price.'
-        }
-      }
-    ]
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [{
+      '@type': 'Question',
+      name: language === 'es' ? '¿A cuánto está el dólar en Bolivia?' : 'How much is the dollar in Bolivia?',
+      acceptedAnswer: { '@type': 'Answer', text: liveSeo.answer },
+    }],
   };
-
-  const liveSeo = buildLiveRateSeoMeta({
-    ...ratesFromBluePayload(currentRate),
-    language,
-    page: 'cuanto',
-  });
 
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
+        includeBrandSchema={false}
         title={liveSeo.title}
         description={liveSeo.description}
         keywords={language === 'es'
           ? "cuánto está el dólar en bolivia, cuánto vale el dólar en bolivia, precio dólar bolivia, cotización dólar bolivia, cuánto es el dólar en bolivia, precio dólar blue bolivia, cuánto cuesta el dólar en bolivia"
           : "how much is dollar in bolivia, dollar price bolivia, dollar quote bolivia, how much is dollar bolivia, blue dollar price bolivia, dollar cost bolivia"}
         canonical="/cuanto-esta-dolar-bolivia"
-        structuredData={[webPageSchema, breadcrumbSchema, articleSchema, faqSchema]}
+        structuredData={[...brandSchemas, webPageSchema, breadcrumbSchema, faqSchema]}
       />
       
       <Header />
@@ -187,9 +116,7 @@ function CuantoEstaDolarBolivia() {
             : 'Direct answer to “how much is it?”: blue buy/sell below, common conversions ($1, $100, $1000), and a calculator for any amount. Not the LIVE monitor or the how-to-quote guide.'}
         </p>
         <p className="text-center text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-3 sm:mb-6">
-          {language === 'es' ? 'Última actualización' : 'Last updated'}: {currentRate?.updated_at_iso
-            ? formatDateTime(currentRate.updated_at_iso, language === 'es' ? 'es-BO' : 'en-US')
-            : lastUpdated.toLocaleString(language === 'es' ? 'es-BO' : 'en-US', { dateStyle: 'long', timeStyle: 'short' })}
+            {liveSeo.observation}
         </p>
 
         {/* Rate Cards - Prominently Displayed */}
@@ -243,9 +170,7 @@ function CuantoEstaDolarBolivia() {
               </div>
             )}
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              {language === 'es'
-                ? 'Cotización del dólar blue actualizada cada 15 minutos con datos en tiempo real de Binance P2P'
-                : 'Blue dollar quote updated every 15 minutes with real-time data from Binance P2P'}
+              {liveSeo.answer}
             </p>
           </div>
         </section>

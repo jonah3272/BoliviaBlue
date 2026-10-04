@@ -1,3 +1,5 @@
+import { buildDollarRateSearchCopy, DOLLAR_SEARCH_PAGES, normalizeDollarRatePayload } from './frontend/src/utils/dollarRateSearchCopy.js';
+import { renderDollarRateHtml } from './seo/dollarRateSeo.js';
 import { dataDocumentationPageForSearch, renderDataDocumentationHtml } from './seo/dataDocumentationSeo.js';
 import { articleRequest, loadArticle, renderArticleHtml } from './seo/articleSeo.js';
 import { buyGuidePageForSearch, renderBuyGuideHtml } from './seo/buyGuideSeo.js';
@@ -71,7 +73,8 @@ export function escapeHtml(s) {
 }
 
 /** Normalize /api/blue-rate JSON into validated display strings. */
-export function normalizeRates(rate) {
+export function normalizeRates(rate, path = null) {
+  if (DOLLAR_SEARCH_PAGES[path]) return normalizeDollarRatePayload(rate);
   if (!rate || typeof rate !== 'object') return null;
   const buy = fmt(rate.buy_bob_per_usd ?? rate.buy);
   const sell = fmt(rate.sell_bob_per_usd ?? rate.sell);
@@ -89,6 +92,7 @@ export function normalizeRates(rate) {
     buy,
     sell,
     updatedAt,
+    isStale: rate.is_stale === true,
     buyEur: fmt(rate.buy_bob_per_eur),
     sellEur: fmt(rate.sell_bob_per_eur),
     buyBrl: fmt(rate.buy_bob_per_brl),
@@ -132,7 +136,8 @@ export function formatSnippetTime(iso) {
   }
 }
 
-export function metaForPath(path, buy, sell, updatedAt = null) {
+export function metaForPath(path, buy, sell, updatedAt = null, isStale = false) {
+  if (DOLLAR_SEARCH_PAGES[path]) return buildDollarRateSearchCopy({ page: DOLLAR_SEARCH_PAGES[path], buy, sell, updatedAt, isStale, now: Date.now() });
   if (!buy || !sell) return null;
   const when = formatSnippetTime(updatedAt);
 
@@ -360,7 +365,8 @@ function withTimeout(ms) {
  * Apply live rates to homepage (or bot landing) HTML.
  * @returns {{ html: string, live: boolean } | null} null = leave origin response unchanged
  */
-export function metaForPathEn(path, buy, sell) {
+export function metaForPathEn(path, buy, sell, updatedAt = null, isStale = false) {
+  if (DOLLAR_SEARCH_PAGES[path]) return buildDollarRateSearchCopy({ page: DOLLAR_SEARCH_PAGES[path], buy, sell, updatedAt, isStale, language: 'en', now: Date.now() });
   if (!buy || !sell) return null;
   switch (path) {
     case '/dolar-blue-hoy':
@@ -481,7 +487,7 @@ export function applyEnglishAnnotations(html, path, pair) {
   out = out.replace(/<meta name="language" content="[^"]*"/i, '<meta name="language" content="English"');
   out = out.replace(/<meta property="og:locale" content="[^"]*"/i, '<meta property="og:locale" content="en_US"');
   if (pair?.buy && pair?.sell) {
-    const enMeta = metaForPathEn(path, pair.buy, pair.sell);
+    const enMeta = metaForPathEn(path, pair.buy, pair.sell, pair.updatedAt, pair.isStale);
     if (enMeta) out = replaceMeta(out, enMeta.title, enMeta.description);
   }
   // Replace the crawl shell and structured page identity too: English metadata
@@ -504,7 +510,7 @@ export function applyEnglishAnnotations(html, path, pair) {
     '/dolar-blue-cochabamba': 'Blue Dollar in Cochabamba',
     '/prensa': 'Bolivia Blue Press | Media kit, citations and data',
   };
-  const enMeta = pair?.buy && pair?.sell ? metaForPathEn(path, pair.buy, pair.sell) : {
+  const enMeta = pair?.buy && pair?.sell ? metaForPathEn(path, pair.buy, pair.sell, pair.updatedAt, pair.isStale) : {
     title: fallbackTitles[path] || 'Bolivia Blue',
     description: 'Bolivia Blue publishes reference exchange rates, historical observations and its methodology. Check the latest available quote and observation time.',
   };
@@ -515,10 +521,11 @@ export function applyEnglishAnnotations(html, path, pair) {
   out = out.replace(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>/gi, '');
   const schema = { '@context': 'https://schema.org', '@type': 'WebPage', name: enMeta.title, description: enMeta.description, url: enCanon, inLanguage: 'en-US', isPartOf: { '@type': 'WebSite', name: 'Bolivia Blue', url: 'https://www.boliviablue.com' } };
   out = out.replace('</head>', () => `<script type="application/ld+json" data-rh="true">${JSON.stringify(schema).replace(/</g, '\\u003c')}</script></head>`);
-  return out;
+  return DOLLAR_SEARCH_PAGES[path] ? renderDollarRateHtml(out, path, pair, 'en') : out;
 }
 
 export function applyLiveSeo(html, path, rates) {
+  if (DOLLAR_SEARCH_PAGES[path]) return { html: renderDollarRateHtml(html, path, rates), live: Boolean(rates?.buy && rates?.sell), rates };
   if (!rates) return null;
 
   let pair = { buy: rates.buy, sell: rates.sell, updatedAt: rates.updatedAt };
@@ -694,7 +701,7 @@ export default async function middleware(request) {
         headers: { [SKIP_HEADER]: '1', Accept: 'application/json' },
         signal: withTimeout(RATE_TIMEOUT_MS),
       });
-      if (rateRes.ok) rates = normalizeRates(await rateRes.json());
+      if (rateRes.ok) rates = normalizeRates(await rateRes.json(), path);
     } catch { /* keep the existing snapshot on rate-service failure */ }
     const html = await htmlRes.text();
     const lang = url.searchParams.get('lang');

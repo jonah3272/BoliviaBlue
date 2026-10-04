@@ -1,3 +1,5 @@
+import { buildDollarRateSearchCopy, DOLLAR_SEARCH_PAGES } from './dollarRateSearchCopy.js';
+
 /**
  * SERP-oriented title/description with live buy/sell when available.
  * Competitors win clicks by putting Bs rates in the Google snippet.
@@ -429,7 +431,10 @@ export function buildLiveRateSeoMeta({
   updatedAt = null,
   language = 'es',
   page = 'home',
+  isStale = false,
+  now = Date.now(),
 } = {}) {
+  if (Object.values(DOLLAR_SEARCH_PAGES).includes(page)) return buildDollarRateSearchCopy({ page, buy, sell, updatedAt, isStale, language, now });
   const buyStr = fmt(buy);
   const sellStr = fmt(sell);
   const hasRates = buyStr != null && sellStr != null;

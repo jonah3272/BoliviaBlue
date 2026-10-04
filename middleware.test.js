@@ -146,14 +146,17 @@ describe('applyLiveSeo', () => {
     const { html } = applied;
     const meta = metaForPath('/', rates.buy, rates.sell);
     assert.match(html, new RegExp(`<title>${meta.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</title>`));
-    assert.match(html, /Bs 12\.34 para la compra y Bs 12\.56 para la venta/);
-    assert.match(html, /desde Bolivia Blue/);
+    assert.match(html, /compra Bs 12\.34, venta Bs 12\.56/);
+    assert.match(html, /Referencia P2P USDT\/BOB/);
     assert.match(html, new RegExp(`og:title" content="${meta.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`));
-    assert.match(html, /twitter:description" content="El dólar paralelo \(blue\) en Bolivia cotiza hoy/);
+    assert.match(html, /twitter:description" content="Referencia P2P USDT\/BOB/);
   });
 
-  it('returns null when rates are missing (caller must keep original shell)', () => {
-    assert.equal(applyLiveSeo(SHELL_FIXTURE, '/', null), null);
+  it('marks a missing rate honestly instead of retaining a build quote', () => {
+    const result = applyLiveSeo(SHELL_FIXTURE, '/', null);
+    assert.equal(result.live, false);
+    assert.match(result.html, /Lectura P2P no disponible/);
+    assert.doesNotMatch(result.html, /Compra 0\.00/);
   });
 });
 
@@ -236,8 +239,8 @@ describe('GET vs HEAD homepage handling', () => {
       assert.ok(res instanceof Response);
       assert.equal(res.headers.get('x-bb-live-seo'), '1');
       const body = await res.text();
-      assert.match(body, /Bs 12\.34 para la compra y Bs 12\.56 para la venta/);
-      assert.match(body, /desde Bolivia Blue/);
+      assert.match(body, /compra Bs 12\.34, venta Bs 12\.56/);
+      assert.match(body, /Referencia P2P USDT\/BOB/);
       assert.equal(calls.filter((c) => c.url.includes('/api/blue-rate')).length, 1);
     } finally {
       globalThis.fetch = originalFetch;

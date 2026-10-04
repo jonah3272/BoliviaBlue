@@ -14,9 +14,11 @@ export default function AiCitationBlock({
   citePath = '/dolar-blue-hoy',
   showCopyButton = false,
   className = '',
+  answerOverride,
+  summaryLabel,
 }) {
   const es = language === 'es';
-  const answer = buildRateAnswerParagraph({
+  const answer = answerOverride ?? buildRateAnswerParagraph({
     buy,
     sell,
     updatedAt,
@@ -45,7 +47,7 @@ export default function AiCitationBlock({
       <details className="md:hidden group">
         <summary className="cursor-pointer list-none text-sm text-gray-800 dark:text-gray-100 marker:content-none">
           <span className="font-medium">
-            {es ? 'Fuente verificada · Bolivia Blue' : 'Verified source · Bolivia Blue'}
+            {summaryLabel ?? (es ? 'Fuente verificada · Bolivia Blue' : 'Verified source · Bolivia Blue')}
           </span>
           <span className="ml-1 text-emerald-700 dark:text-emerald-300 text-xs">
             ({es ? 'metodología' : 'methodology'})

@@ -1,3 +1,4 @@
+import { normalizeDollarRatePayload } from '../utils/dollarRateSearchCopy.js';
 import Header from '../components/Header';
 import MobileHeroRates from '../components/MobileHeroRates';
 import Footer from '../components/Footer';
@@ -26,9 +27,8 @@ import { Link } from 'react-router-dom';
 import { articlesEs, articlesEn } from '../data/blogArticles';
 import { formatDateTime } from '../utils/formatters';
 import { useRate } from '../contexts/RateContext';
-import { getWebPage, getBreadcrumbList, getDataFeedItem, getLiveRateDataset } from '../utils/seoSchema';
-import { buildLiveRateSeoMeta, ratesFromBluePayload, liveBobParts, fmtLiveBob } from '../utils/seoRateMeta';
-import { buildRateAnswerParagraph } from '../utils/citationCopy';
+import { getWebPage, getBreadcrumbList, getOrganizationSchema, getWebSiteSchema } from '../utils/seoSchema';
+import { buildLiveRateSeoMeta, liveBobParts } from '../utils/seoRateMeta';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import AdSenseAutoAds from '../components/AdSenseAutoAds';
 
@@ -71,269 +71,34 @@ function Home() {
     }
   }, [contextRate]);
   
-  // FAQ Schema for homepage (Organization + WebSite injected sitewide via PageMeta)
+  const liveSeo = buildLiveRateSeoMeta({
+    ...normalizeDollarRatePayload(currentRate),
+    language,
+    page: 'home',
+  });
+
+  // This one answer is also rendered visibly. Legacy FAQ claims remain out of schema pending review.
+  const brandSchemas = [getOrganizationSchema(language), getWebSiteSchema(language)]
+    .map(({ description: _unverifiedDescription, ...schema }) => schema);
   const faqSchema = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": language === 'es' ? [
-      {
-        "@type": "Question",
-        "name": "¿A cuánto está el dólar en Bolivia hoy?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": buildRateAnswerParagraph({
-            buy: currentRate?.buy ?? currentRate?.buy_bob_per_usd,
-            sell: currentRate?.sell ?? currentRate?.sell_bob_per_usd,
-            updatedAt: currentRate?.updated_at_iso,
-            sourcesUsed: currentRate?.sources_used,
-            language: 'es',
-            citePath: '/',
-          })
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "¿Qué es el dólar blue?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "El dólar blue es el tipo de cambio del dólar en el mercado paralelo. En Bolivia, refleja la tasa real a la que se compra y vende el dólar fuera del sistema bancario oficial. En nuestra plataforma el dólar blue Bolivia se actualiza cada 15 minutos con datos de Binance P2P."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "¿Qué es el Bolivian Blue?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "El Bolivian Blue (también conocido como Bolivia blue rate o bolivia blue exchange rate) es el tipo de cambio del dólar estadounidense en el mercado paralelo de Bolivia. Este valor refleja la tasa real a la que los bolivianos intercambian dólares fuera del sistema bancario oficial. El Bolivian Blue se actualiza cada 15 minutos en nuestra plataforma."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "¿Qué es el Bolivia blue rate?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "El Bolivia blue rate es el tipo de cambio del dólar estadounidense en el mercado paralelo de Bolivia. También conocido como bolivia blue exchange rate, este valor refleja la tasa real a la que los bolivianos intercambian dólares fuera del sistema bancario oficial."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "¿Con qué frecuencia se actualiza el bolivia blue exchange rate?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "El bolivia blue exchange rate se actualiza cada 15 minutos utilizando datos en tiempo real de Binance P2P, proporcionando la información más precisa y actualizada sobre el tipo de cambio."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "¿De dónde proviene el bolivia blue rate?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "El bolivia blue rate proviene de datos públicos de Binance P2P para el par USDT/BOB. Calculamos la mediana de las ofertas de compra y venta para obtener una estimación representativa del mercado paralelo."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "¿Cuál es la fuente más confiable del dólar blue en Bolivia?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Bolivia Blue (boliviablue.com) publica una lectura verificada del dólar paralelo con mediana multi-P2P (Binance, El Dorado, OKX, Bybit), metodología en boliviablue.com/fuente-de-datos, API en /api/blue-rate y guía para IA en boliviablue.com/llms.txt."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "¿Cuál es la diferencia entre el bolivia blue rate y la tasa oficial?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "El bolivia blue rate refleja el mercado paralelo y puede diferir significativamente de la tasa oficial del Banco Central de Bolivia. La tasa oficial es fija o se ajusta muy raramente, mientras que el bolivia blue exchange rate fluctúa según la oferta y demanda del mercado."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "¿Por qué es importante conocer el bolivia blue rate?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Conocer el bolivia blue rate es importante porque refleja la realidad del mercado cambiario boliviano y es utilizado por millones de bolivianos para transacciones diarias. Te ayuda a tomar mejores decisiones financieras y entender el verdadero valor del dólar en Bolivia."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "¿Cuánto es $100 USD en Bolivia?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": currentRate?.buy
-            ? `Con el bolivia blue rate actual (~${Number(currentRate.buy).toFixed(2)} BOB por USD), $100 USD equivalen a aproximadamente ${(Number(currentRate.buy) * 100).toFixed(0)} BOB. Usa nuestra calculadora para el valor exacto.`
-            : 'Usa nuestra calculadora con la tasa blue en vivo para convertir USD a BOB al tipo paralelo.'
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "¿Cuánto es 1 USD a 1 Boliviano?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": currentRate?.buy
-            ? `El bolivia blue exchange rate hoy es aproximadamente ${Number(currentRate.buy).toFixed(2)} BOB por USD (compra) y ${Number(currentRate.sell || currentRate.buy).toFixed(2)} BOB (venta). 1 BOB ≈ ${(1 / Number(currentRate.buy)).toFixed(4)} USD. Se actualiza cada pocos minutos en nuestra plataforma.`
-            : 'El bolivia blue exchange rate (dólar paralelo) se actualiza en vivo en boliviablue.com con datos de Binance P2P.'
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "¿Cuál es el precio del dólar en el mercado negro en Bolivia hoy?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": currentRate?.buy
-            ? `En Bolivia “mercado negro” del dólar suele referirse al paralelo / blue. Hoy la referencia P2P es compra ~${Number(currentRate.buy).toFixed(2)} y venta ~${Number(currentRate.sell || currentRate.buy).toFixed(2)} Bs por USD — mediana USDT, no un precio de calle observado. Metodología en /fuente-de-datos; Binance P2P en /binance-p2p-bolivia.`
-            : 'En Bolivia “mercado negro” del dólar suele referirse al paralelo / blue. Publicamos la mediana P2P (USDT), no un precio de ventanilla. Ver /dolar-blue-hoy y /fuente-de-datos.'
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "¿Cuánto está el dólar paralelo en Santa Cruz, La Paz y Cochabamba?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Publicamos una mediana nacional P2P como referencia para Santa Cruz, La Paz y Cochabamba: no es un precio de casa de cambio local. Ver /dolar-blue-santa-cruz, /dolar-blue-la-paz y /dolar-blue-cochabamba."
-        }
-      }
-    ] : [
-      {
-        "@type": "Question",
-        "name": "What is the dollar blue?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "The dollar blue (or blue dollar) is the parallel market exchange rate for the US dollar. In Bolivia, it reflects the real rate at which people buy and sell dollars outside the official banking system. On our platform the Bolivia blue dollar rate is updated every 15 minutes using Binance P2P data."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "What is Bolivian Blue?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "The Bolivian Blue (also known as Bolivia blue rate or bolivia blue exchange rate) is the exchange rate of the US dollar in Bolivia's parallel market. This value reflects the real rate at which Bolivians exchange dollars outside the official banking system. The Bolivian Blue is updated every 15 minutes on our platform."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "What is Bolivia blue rate?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "The Bolivia blue rate is the exchange rate of the US dollar in Bolivia's parallel market. Also known as the bolivia blue exchange rate, this value reflects the real rate at which Bolivians exchange dollars outside the official banking system."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "How often is the bolivia blue exchange rate updated?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "The bolivia blue exchange rate is updated every 15 minutes using real-time data from Binance P2P, providing the most accurate and up-to-date exchange rate information."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Where does the bolivia blue rate come from?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "The bolivia blue rate comes from public Binance P2P data for the USDT/BOB pair. We calculate the median of buy and sell offers to obtain a representative estimate of the parallel market."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "What's the difference between bolivia blue rate and the official rate?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "The bolivia blue rate reflects the parallel market and can differ significantly from the official rate set by the Central Bank of Bolivia. The official rate is fixed or adjusted very rarely, while the bolivia blue exchange rate fluctuates according to market supply and demand."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Why is it important to know the bolivia blue rate?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Knowing the bolivia blue rate is important because it reflects the reality of Bolivia's exchange market and is used by millions of Bolivians for daily transactions. It helps you make better financial decisions and understand the true value of the dollar in Bolivia."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "How much is $100 US in Bolivia?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": currentRate?.buy
-            ? `With the current bolivia blue rate (~${Number(currentRate.buy).toFixed(2)} BOB per USD), $100 USD equals approximately ${(Number(currentRate.buy) * 100).toFixed(0)} BOB. Use our calculator for the exact live value.`
-            : 'Use our calculator with the live blue rate to convert USD to BOB at the parallel market price.'
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "How much is 1 USD to 1 Boliviano?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": currentRate?.buy
-            ? `The bolivia blue exchange rate today is about ${Number(currentRate.buy).toFixed(2)} BOB per USD (buy) and ${Number(currentRate.sell || currentRate.buy).toFixed(2)} BOB (sell). 1 BOB ≈ ${(1 / Number(currentRate.buy)).toFixed(4)} USD. Updated every few minutes on our platform.`
-            : 'The bolivia blue (parallel) exchange rate is updated live on boliviablue.com from Binance P2P.'
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "What is the black-market dollar price in Bolivia today?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": currentRate?.buy
-            ? `In Bolivia the “black market” dollar usually means the parallel / blue rate. Today’s P2P reference is buy ~${Number(currentRate.buy).toFixed(2)} and sell ~${Number(currentRate.sell || currentRate.buy).toFixed(2)} Bs per USD — a USDT median, not a street cash quote. See /fuente-de-datos and /binance-p2p-bolivia.`
-            : 'In Bolivia the “black market” dollar usually means the parallel / blue rate. We publish a P2P (USDT) median, not a cash-desk price. See /dolar-blue-hoy and /fuente-de-datos.'
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "What is the parallel dollar in Santa Cruz, La Paz and Cochabamba?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "We publish one national P2P median as a reference for Santa Cruz, La Paz and Cochabamba — not a local exchange-house price. See /dolar-blue-santa-cruz, /dolar-blue-la-paz and /dolar-blue-cochabamba."
-        }
-      }
-    ]
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [{
+      '@type': 'Question',
+      name: language === 'es' ? '¿A cuánto está el dólar en Bolivia?' : 'How much is the dollar in Bolivia?',
+      acceptedAnswer: { '@type': 'Answer', text: liveSeo.answer },
+    }],
   };
 
-  // FinancialProduct schema for rate cards
-  const liveBuyPrice = fmtLiveBob(currentRate?.buy ?? currentRate?.buy_bob_per_usd);
-  const financialProductSchema = liveBuyPrice ? {
-    "@context": "https://schema.org",
-    "@type": "FinancialProduct",
-    "name": language === 'es' ? "Bolivia Blue Rate" : "Bolivia Blue Rate",
-    "description": language === 'es' 
-      ? "Tipo de cambio del dólar blue en Bolivia en tiempo real"
-      : "Real-time blue dollar exchange rate in Bolivia",
-    "provider": {
-      "@type": "Organization",
-      "name": "Bolivia Blue"
-    },
-    "exchangeRate": {
-      "@type": "UnitPriceSpecification",
-      "price": liveBuyPrice,
-      "priceCurrency": "BOB",
-      "unitText": "USD"
-    }
-  } : null;
-
-  // DataFeed schema for rate updates (dateModified only when we have real rate timestamp)
-  const rateDateModified = currentRate?.updated_at_iso ?? null;
-  const dataFeedSchema = {
-    "@context": "https://schema.org",
-    "@type": "DataFeed",
-    "name": language === 'es' ? "Bolivia Blue Rate - Actualizaciones en Tiempo Real" : "Bolivia Blue Rate - Real-Time Updates",
-    "description": language === 'es'
-      ? "Feed de datos del tipo de cambio del dólar blue en Bolivia actualizado cada 15 minutos"
-      : "Data feed of Bolivia blue dollar exchange rate updated every 15 minutes",
-    "dataFeedElement": currentRate ? [getDataFeedItem(currentRate, rateDateModified)] : []
-  };
+  const rateDateModified = liveSeo.observedAt;
 
   // WebPage schema: authority, freshness, canonical (dateModified only when rate timestamp available)
   const webPageSchema = getWebPage({
-    name: language === 'es' ? 'Dólar Blue Bolivia – Cotización en Tiempo Real' : 'Bolivia Blue Dollar – Live Rate & Tools',
-    description: language === 'es'
-      ? 'Tu fuente principal para el dólar blue en Bolivia: cotización cada 15 min, gráficos históricos, calculadora y noticias. Sin registro.'
-      : 'Your main source for the Bolivia blue dollar: quote every 15 min, historical charts, calculator and news. No signup.',
+    name: liveSeo.title,
+    description: liveSeo.description,
     url: '/',
     dateModified: rateDateModified || undefined,
     inLanguage: language === 'es' ? 'es-BO' : 'en-US',
-    mainEntity: financialProductSchema ? { '@type': 'FinancialProduct', name: language === 'es' ? 'Cotización Dólar Blue Bolivia' : 'Bolivia Blue Dollar Rate' } : undefined
   });
 
   // Breadcrumb schema (reusable helper)
@@ -342,22 +107,14 @@ function Home() {
   ]);
 
   // Page-specific schema only — brand Organization/WebSite come from PageMeta
-  const allStructuredData = [webPageSchema, faqSchema];
-  if (financialProductSchema) allStructuredData.push(financialProductSchema);
-  allStructuredData.push(dataFeedSchema);
-  allStructuredData.push(getLiveRateDataset(currentRate, language, '/'));
-  allStructuredData.push(breadcrumbSchema);
+  const allStructuredData = [...brandSchemas, webPageSchema, breadcrumbSchema, faqSchema];
 
-  const liveSeo = buildLiveRateSeoMeta({
-    ...ratesFromBluePayload(currentRate),
-    language,
-    page: 'home',
-  });
   const live = liveBobParts(currentRate);
   
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
+        includeBrandSchema={false}
         title={liveSeo.title}
         description={liveSeo.description}
         keywords={language === 'es'
@@ -473,6 +230,8 @@ function Home() {
               <RateBinanceCta placement="home_after_rates" midRate={midRate} />
             </div>
             <AiCitationBlock
+              answerOverride={liveSeo.answer}
+              summaryLabel={language === 'es' ? 'Referencia P2P · Bolivia Blue' : 'P2P reference · Bolivia Blue'}
               language={language}
               buy={currentRate?.buy ?? currentRate?.buy_bob_per_usd}
               sell={currentRate?.sell ?? currentRate?.sell_bob_per_usd}

@@ -47,7 +47,7 @@ async function fetchLiveRate() {
     const buy = Number(envBuy);
     const sell = Number(envSell);
     if (fmtRate(buy) && fmtRate(sell)) {
-      return { buy, sell, updatedAt: new Date().toISOString(), source: 'env', buyEur: null, sellEur: null, buyBrl: null, sellBrl: null, buyCop: null, sellCop: null };
+      return { buy, sell, updatedAt: null, source: 'env', buyEur: null, sellEur: null, buyBrl: null, sellBrl: null, buyCop: null, sellCop: null };
     }
   }
 
@@ -68,6 +68,8 @@ async function fetchLiveRate() {
           buyCop: payload.buy_bob_per_cop ?? null,
           sellCop: payload.sell_bob_per_cop ?? null,
           eurUpdatedAt: payload.eur_updated_at_iso ?? updatedAt,
+          rawPayload: payload,
+          isStale: payload.is_stale === true,
           source: 'api',
         };
       }
@@ -933,8 +935,11 @@ async function main() {
     return;
   }
 
+  const { normalizeDollarRatePayload } = await import('../src/utils/dollarRateSearchCopy.js');
+  let dollarSnapshot = null;
   try {
     const live = await fetchLiveRate();
+    dollarSnapshot = normalizeDollarRatePayload(live.rawPayload || live);
     const ok = applyLiveRatesToRoutes(live.buy, live.sell, live.updatedAt, {
       buyEur: live.buyEur,
       sellEur: live.sellEur,
@@ -1070,6 +1075,11 @@ async function main() {
   notFoundHtml = injectRootShell(notFoundHtml, notFoundShell);
   fs.writeFileSync(path.join(DIST, '404.html'), notFoundHtml, 'utf8');
   console.log('[inject-seo-shell] Wrote dist/404.html');
+  const { renderDollarRateHtml } = await import('../../seo/dollarRateSeo.js');
+  for (const route of ['/', '/dolar-blue-hoy', '/cuanto-esta-dolar-bolivia']) {
+    const file = path.join(DIST, route === '/' ? 'index.html' : `${route.slice(1)}/index.html`);
+    fs.writeFileSync(file, renderDollarRateHtml(fs.readFileSync(file, 'utf8'), route, dollarSnapshot), 'utf8');
+  }
 }
 
 module.exports = {

@@ -1,3 +1,4 @@
+import { normalizeDollarRatePayload } from '../utils/dollarRateSearchCopy.js';
 import { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import Header from '../components/Header';
@@ -9,12 +10,10 @@ import RateTrioStrip from '../components/RateTrioStrip';
 import BinanceBanner from '../components/BinanceBanner';
 import { Link } from 'react-router-dom';
 import { fetchBlueRate } from '../utils/api';
-import { formatDateTime } from '../utils/formatters';
-import { getWebPage, getBreadcrumbList, getDolarBlueHoyFAQSchema, getLiveRateDataset, getExchangeRateSpecification } from '../utils/seoSchema';
+import { getWebPage, getBreadcrumbList, getOrganizationSchema, getWebSiteSchema } from '../utils/seoSchema';
 import AiCitationBlock from '../components/AiCitationBlock';
 import CiteShareBar from '../components/CiteShareBar';
-import { buildLiveRateSeoMeta, ratesFromBluePayload } from '../utils/seoRateMeta';
-import { buildRateAnswerParagraph } from '../utils/citationCopy';
+import { buildLiveRateSeoMeta } from '../utils/seoRateMeta';
 import { lazy, Suspense } from 'react';
 const BlueChart = lazy(() => import('../components/BlueChart'));
 import Breadcrumbs from '../components/Breadcrumbs';
@@ -29,14 +28,12 @@ function DolarBlueHoy() {
   const language = languageContext?.language || 'es';
   const [showOfficial, setShowOfficial] = useState(false);
   const [currentRate, setCurrentRate] = useState(null);
-  const [lastUpdated, setLastUpdated] = useState(new Date());
 
   useEffect(() => {
     const loadRate = async () => {
       try {
         const data = await fetchBlueRate();
         setCurrentRate(data);
-        setLastUpdated(new Date());
       } catch (err) {
         console.error('Error loading rate:', err);
       }
@@ -46,29 +43,19 @@ function DolarBlueHoy() {
     return () => clearInterval(interval);
   }, []);
 
-  const rateDateModified = currentRate?.updated_at_iso ?? undefined;
-  const articleSchema = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": language === 'es' 
-      ? "Dólar Blue Hoy - Cotización Actual del Dólar Blue en Bolivia | Actualizado Cada 15 Min"
-      : "Blue Dollar Today - Current Blue Dollar Quote in Bolivia | Updated Every 15 Min",
-    "description": language === 'es'
-      ? "Dólar blue hoy actualizado cada 15 minutos. Consulta la cotización actual del dólar blue en Bolivia hoy. Precio en tiempo real, gráficos históricos y análisis del mercado paralelo."
-      : "Blue dollar today updated every 15 minutes. Check the current blue dollar quote in Bolivia today. Real-time price, historical charts and parallel market analysis.",
-    "author": { "@type": "Organization", "name": "Bolivia Blue" },
-    "publisher": { "@type": "Organization", "name": "Bolivia Blue", "logo": { "@type": "ImageObject", "url": "https://boliviablue.com/favicon.svg" } },
-    "datePublished": "2025-01-01",
-    ...(rateDateModified && { "dateModified": rateDateModified })
-  };
+  const liveSeo = buildLiveRateSeoMeta({
+    ...normalizeDollarRatePayload(currentRate),
+    language,
+    page: 'dolar-blue-hoy',
+  });
 
+  const rateDateModified = liveSeo.observedAt ?? undefined;
   const webPageSchema = getWebPage({
-    name: language === 'es' ? 'Cotización del Dólar Blue Hoy – Bolivia' : 'Blue Dollar Quote Today – Bolivia',
-    description: language === 'es' ? 'Esta es la cotización del dólar blue hoy en Bolivia, actualizada cada 15 minutos.' : "This is today's blue dollar quote in Bolivia, updated every 15 minutes.",
+    name: liveSeo.title,
+    description: liveSeo.description,
     url: '/dolar-blue-hoy',
     dateModified: rateDateModified,
     inLanguage: language === 'es' ? 'es-BO' : 'en-US',
-    mainEntity: getExchangeRateSpecification(currentRate, language) || undefined,
   });
 
   const breadcrumbSchema = getBreadcrumbList([
@@ -76,8 +63,18 @@ function DolarBlueHoy() {
     { name: language === 'es' ? 'Dólar Blue Hoy' : 'Blue Dollar Today', url: '/dolar-blue-hoy' }
   ]);
 
-  const faqSchema = getDolarBlueHoyFAQSchema(currentRate, language);
-  const datasetSchema = getLiveRateDataset(currentRate, language, '/dolar-blue-hoy');
+  // This one answer is also rendered visibly. Legacy FAQ claims remain out of schema pending review.
+  const brandSchemas = [getOrganizationSchema(language), getWebSiteSchema(language)]
+    .map(({ description: _unverifiedDescription, ...schema }) => schema);
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [{
+      '@type': 'Question',
+      name: language === 'es' ? '¿A cuánto está el dólar en Bolivia?' : 'How much is the dollar in Bolivia?',
+      acceptedAnswer: { '@type': 'Answer', text: liveSeo.answer },
+    }],
+  };
 
   const today = new Date().toLocaleDateString(language === 'es' ? 'es-BO' : 'en-US', { 
     weekday: 'long', 
@@ -86,22 +83,18 @@ function DolarBlueHoy() {
     day: 'numeric' 
   });
 
-  const liveSeo = buildLiveRateSeoMeta({
-    ...ratesFromBluePayload(currentRate),
-    language,
-    page: 'dolar-blue-hoy',
-  });
 
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
+        includeBrandSchema={false}
         title={liveSeo.title}
         description={liveSeo.description}
         keywords={language === 'es'
           ? "dólar blue hoy, dólar blue hoy bolivia, dólar blue hoy en bolivia, cotización dólar blue hoy, precio dólar blue hoy, dólar blue hoy actual, dólar blue hoy la paz, tipo cambio hoy bolivia"
           : "blue dollar today, blue dollar today bolivia, blue dollar quote today, blue dollar price today, blue dollar current today, exchange rate today bolivia"}
         canonical="/dolar-blue-hoy"
-        structuredData={[webPageSchema, breadcrumbSchema, articleSchema, faqSchema, datasetSchema]}
+        structuredData={[...brandSchemas, webPageSchema, breadcrumbSchema, faqSchema]}
       />
       
       <Header />
@@ -145,9 +138,7 @@ function DolarBlueHoy() {
               : 'Dated daily snapshot: today’s blue buy/sell, chart high/low, and vs BCB. For continuous monitoring go to parallel LIVE; to convert an amount, How Much Is the Dollar?'}
           </p>
           <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">
-            {language === 'es' ? 'Última actualización' : 'Last updated'}: {currentRate?.updated_at_iso
-              ? formatDateTime(currentRate.updated_at_iso, language === 'es' ? 'es-BO' : 'en-US')
-              : lastUpdated.toLocaleTimeString(language === 'es' ? 'es-BO' : 'en-US', { hour: '2-digit', minute: '2-digit' })}
+            {liveSeo.observation}
           </p>
         </div>
 
@@ -165,6 +156,8 @@ function DolarBlueHoy() {
             />
           </div>
           <AiCitationBlock
+              answerOverride={liveSeo.answer}
+              summaryLabel={language === 'es' ? 'Referencia P2P · Bolivia Blue' : 'P2P reference · Bolivia Blue'}
             language={language}
             buy={currentRate?.buy_bob_per_usd}
             sell={currentRate?.sell_bob_per_usd}
@@ -176,14 +169,7 @@ function DolarBlueHoy() {
           <CiteShareBar
             className="mt-3"
             language={language}
-            liveLine={buildRateAnswerParagraph({
-              buy: currentRate?.buy_bob_per_usd,
-              sell: currentRate?.sell_bob_per_usd,
-              updatedAt: currentRate?.updated_at_iso,
-              sourcesUsed: currentRate?.sources_used,
-              language,
-              citePath: '/dolar-blue-hoy',
-            })}
+            liveLine={liveSeo.answer}
           />
         </section>
 

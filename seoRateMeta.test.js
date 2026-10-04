@@ -22,7 +22,7 @@ describe('buildLiveRateSeoMeta', () => {
     });
     assert.equal(meta.title, 'Dólar Blue Hoy Bolivia: Compra 11.87 · Venta 11.75');
     assert.doesNotMatch(meta.title, /20\d\d/);
-    assert.equal(meta.analyticsTitle, 'Dólar Blue Hoy Bolivia | Lectura Verificada Paralelo');
+    assert.equal(meta.analyticsTitle, 'Dólar Blue Hoy Bolivia | Bolivia Blue');
   });
 
   it('leads the homepage title with dólar blue hoy Bolivia', () => {
@@ -32,8 +32,8 @@ describe('buildLiveRateSeoMeta', () => {
       language: 'es',
       page: 'home',
     });
-    assert.equal(meta.title, 'Bolivia Blue | Bolivian Blue: Compra 11.98 · Venta 11.92');
-    assert.match(meta.description, /Bolivian Blue/);
+    assert.equal(meta.title, 'Dólar Blue Bolivia: Compra 11.98 · Venta 11.92 | Bolivia Blue');
+    assert.match(meta.description, /P2P USDT\/BOB/);
     assert.doesNotMatch(meta.description, /para la compra/);
   });
 
@@ -45,7 +45,7 @@ describe('buildLiveRateSeoMeta', () => {
       page: 'home',
     });
     assert.doesNotMatch(meta.title, /0\.00/);
-    assert.equal(meta.title, 'Bolivia Blue | Dólar Blue Hoy, lectura P2P verificada');
+    assert.equal(meta.title, 'Dólar Blue Bolivia | Bolivia Blue');
   });
 
   it('uses 1.000 COP in Bs for the peso page (per-peso rate is < 1)', () => {
@@ -74,7 +74,7 @@ describe('analyticsTitleForPath', () => {
   it('groups homepage hits under one title even when SERP titles include rates', () => {
     assert.equal(
       analyticsTitleForPath('/', 'es'),
-      'Bolivia Blue | Dólar Blue Hoy, lectura P2P verificada'
+      'Dólar Blue Bolivia | Bolivia Blue'
     );
     assert.equal(
       analyticsTitleForPath('/dolar-blue-hoy', 'es'),

@@ -1,4 +1,5 @@
 import Header from '../components/Header';
+import MobileHeroRates from '../components/MobileHeroRates';
 import Footer from '../components/Footer';
 import BlueRateCards from '../components/BlueRateCards';
 import RateBinanceCta from '../components/RateBinanceCta';
@@ -50,7 +51,7 @@ function Home() {
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
   const [showOfficial, setShowOfficial] = useState(false);
-  const { rateData: contextRate, error: rateError } = useRate();
+  const { rateData: contextRate, error: rateError, isLoading: rateLoading } = useRate();
   const [currentRate, setCurrentRate] = useState(null);
   const [isNewsExpanded, setIsNewsExpanded] = useState(false);
   const [isArticlesExpanded, setIsArticlesExpanded] = useState(false);
@@ -381,32 +382,13 @@ function Home() {
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white leading-tight">
             {language === 'es' ? 'Bolivia Blue' : 'Bolivian Blue'}
           </h1>
-          {live.buyStr && live.sellStr && (
-            <p className="mt-2 text-2xl font-bold tabular-nums text-gray-900 dark:text-white">
-              {language === 'es' ? 'Compra' : 'Buy'} {live.buyStr}{' '}
-              · {language === 'es' ? 'Venta' : 'Sell'} {live.sellStr}
-            </p>
-          )}
-          {live.times(100) && (
-            <p className="mt-2 text-sm font-semibold text-gray-800 dark:text-gray-200">
-              100 USD ≈ {live.times(100)} Bs
-            </p>
-          )}
-          {currentRate?.updated_at_iso && (
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              {language === 'es' ? 'Lectura P2P' : 'P2P reading'}:{' '}
-              <time dateTime={currentRate.updated_at_iso}>
-                {formatDateTime(currentRate.updated_at_iso, language === 'es' ? 'es-BO' : 'en-US')}
-              </time>
-              {language === 'es' ? ' (hora de Bolivia)' : ' (Bolivia time)'}
-              {currentRate?.is_stale ? (language === 'es' ? ' · dato desactualizado' : ' · stale reading') : ''}
-            </p>
-          )}
-          {rateError && !currentRate && (
-            <p className="text-xs text-amber-700 dark:text-amber-300 mt-1">
-              {language === 'es' ? 'No hay una lectura nueva. Reintentando…' : 'No new reading yet. Retrying…'}
-            </p>
-          )}
+          <MobileHeroRates
+            live={live}
+            rate={currentRate}
+            loading={rateLoading || Boolean(contextRate?.buy && contextRate?.sell && !currentRate)}
+            error={rateError}
+            language={language}
+          />
           <div className="mt-3 flex flex-col items-center gap-2">
             <FinancialOfferButton placement="home_mobile_hero" className="h-11 w-full max-w-xs justify-center">
               {language === 'es' ? 'Crear mi cuenta El Dorado' : 'Create my El Dorado account'}

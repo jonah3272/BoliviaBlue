@@ -21,6 +21,9 @@ export function getEldoradoGuide(language = 'es', direction = 'buy') {
     summary: selling
       ? (es ? 'Entregás USDT de tu saldo y recibís BOB en tu cuenta o billetera admitida.' : 'You sell USDT from your balance and receive BOB in a supported account or wallet.')
       : (es ? 'Pagás BOB desde tu cuenta o billetera admitida y recibís USDT en El Dorado.' : 'You pay BOB from a supported account or wallet and receive USDT in El Dorado.'),
+    requirements: es ? 'Necesitás tener 18 años o más, completar la verificación de identidad y revisar el medio de pago de la orden. Si vas a vender, necesitás saldo USDT disponible. Seguí el plazo que muestra la orden; no hay una duración garantizada.' : 'You must be 18 or older, complete identity verification and check the order’s payment method. Selling requires available USDT. Follow the order’s displayed deadline; completion time is not guaranteed.',
+    warningTitle: selling ? (es ? 'No liberes USDT por una captura de pantalla' : 'Do not release USDT based on a screenshot') : (es ? 'Si ya pagaste, no canceles sin reembolso' : 'If you have paid, do not cancel without a refund'),
+    warning: es ? 'Ante un pago faltante, importe distinto o sospecha, abrí la orden → Iniciar disputa y contactá al soporte dentro de la app. Conservá las pruebas. La custodia temporal retiene los USDT durante la orden, pero no elimina el riesgo de fraude o demoras.' : 'For missing payment, a different amount or anything suspicious, open the order → Start dispute and contact in-app support. Keep the evidence. Temporary escrow holds USDT during the order, but does not eliminate fraud or delays.',
     steps: selling ? (es ? [
       ['Prepará tu saldo', 'Necesitás USDT disponibles en El Dorado. Revisá cualquier costo o red antes de depositar criptomonedas.'],
       ['Elegí la dirección', 'En P2P o Cambiar: Tengo USDT → Quiero BOB. Indicá el monto y medio de cobro.'],

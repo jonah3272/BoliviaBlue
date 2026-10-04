@@ -3,11 +3,12 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { FinancialOfferButton } from './FinancialOfferCard';
 import CashOutGuide from './CashOutGuide';
 import { calculateGuideConversion, guideMarketReference } from '../utils/guideConversion';
-import { ELDORADO_GUIDE_CHECKED, ELDORADO_GUIDE_SOURCES } from '../data/eldoradoGuide';
+import { getEldoradoGuide, ELDORADO_GUIDE_CHECKED, ELDORADO_GUIDE_SOURCES } from '../data/eldoradoGuide';
 
 export default function EldoradoMoneyGuide({ offer, direction, onDirectionChange, currentRate }) {
   const es = useLanguage()?.language !== 'en';
   const selling = direction === 'sell';
+  const guide = getEldoradoGuide(es ? 'es' : 'en', direction);
   const [values, setValues] = useState({ buy: { amount: '', price: '', deduction: '' }, sell: { amount: '', price: '', deduction: '' } });
   const [example, setExample] = useState({ buy: { price: false, deduction: false }, sell: { price: false, deduction: false } });
   const fields = values[direction];
@@ -47,15 +48,15 @@ export default function EldoradoMoneyGuide({ offer, direction, onDirectionChange
     <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">{offer.guideSummary}</p>
     <div className="mt-4 rounded-xl bg-sky-50 dark:bg-sky-950/40 p-4 text-sm text-gray-700 dark:text-gray-200">
       <strong>{es ? 'Antes de empezar' : 'Before you start'}</strong>
-      <p className="mt-1">{es ? 'Necesitás tener 18 años o más, completar la verificación de identidad y revisar el medio de pago de la orden. Si vas a vender, necesitás saldo USDT disponible. Seguí el plazo que muestra la orden; no hay una duración garantizada.' : 'You must be 18 or older, complete identity verification and check the order’s payment method. Selling requires available USDT. Follow the order’s displayed deadline; completion time is not guaranteed.'}</p>
+      <p className="mt-1">{guide.requirements}</p>
     </div>
     <ol className="mt-6 space-y-5">{offer.steps.map(([title, body], index) => <li key={`${direction}-${index}`} className="flex gap-3">
       <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sky-100 text-sm font-bold text-sky-800 dark:bg-sky-900 dark:text-sky-100">{index + 1}</span>
       <div className="min-w-0"><h4 className="font-semibold text-gray-900 dark:text-white">{title}</h4><p className="mt-1 text-sm leading-relaxed text-gray-600 dark:text-gray-300">{body}</p></div>
     </li>)}</ol>
     <div className="mt-6 rounded-xl border border-amber-300 dark:border-amber-800 p-4 text-sm text-gray-700 dark:text-gray-200">
-      <strong>{selling ? (es ? 'No liberes USDT por una captura de pantalla' : 'Do not release USDT based on a screenshot') : (es ? 'Si ya pagaste, no canceles sin reembolso' : 'If you have paid, do not cancel without a refund')}</strong>
-      <p className="mt-2">{es ? 'Ante un pago faltante, importe distinto o sospecha, abrí la orden → Iniciar disputa y contactá al soporte dentro de la app. Conservá las pruebas. La custodia temporal retiene los USDT durante la orden, pero no elimina el riesgo de fraude o demoras.' : 'For missing payment, a different amount or anything suspicious, open the order → Start dispute and contact in-app support. Keep the evidence. Temporary escrow holds USDT during the order, but does not eliminate fraud or delays.'}</p>
+      <strong>{guide.warningTitle}</strong>
+      <p className="mt-2">{guide.warning}</p>
     </div>
     <div className="mt-5">
       <FinancialOfferButton offer={offer} placement="buy_page_guide" />

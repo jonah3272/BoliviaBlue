@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { calculateGuideConversion, guideNumber, guideMarketReference } from '../frontend/src/utils/guideConversion.js';
 import { getEldoradoGuide, ELDORADO_GUIDE_CHECKED, ELDORADO_GUIDE_SOURCES } from '../frontend/src/data/eldoradoGuide.js';
+import { getBuyGuidePage } from '../frontend/src/data/buyGuidePage.js';
 const source = (path) => readFileSync(new URL(`../frontend/src/${path}`, import.meta.url), 'utf8');
 
 describe('explicit El Dorado conversion examples', () => {
@@ -67,6 +68,9 @@ describe('direction-specific guide and preservation', () => {
     const page = source('pages/BuyDollars.jsx');
     assert.match(page, /params\.get\('operation'\)/);
     assert.match(page, /intent === BUY_USDT_INTENT \? <EldoradoMoneyGuide/);
-    assert.match(page, /step: offer\.steps\.map/);
+    for (const language of ['es', 'en']) for (const direction of ['buy', 'sell']) {
+      const selected = getBuyGuidePage(language, 'buy_usdt', direction);
+      assert.deepEqual(selected.howToSchema.step.map(({ name, text }) => [name, text]), getEldoradoGuide(language, direction).steps);
+    }
   });
 });

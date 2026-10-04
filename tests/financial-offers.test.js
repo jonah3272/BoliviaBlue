@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { getFinancialOffer, getPartnerAds, BUY_USDT_INTENT, RECEIVE_PAYMENTS_INTENT } from '../frontend/src/config/referrals.js';
+import { getBuyGuidePage } from '../frontend/src/data/buyGuidePage.js';
 const source = (name) => readFileSync(new URL(`../frontend/src/${name}`, import.meta.url), 'utf8');
 const expected = {
   eldorado: 'https://link.eldorado.io/MMLGEZcDf5b',
@@ -45,7 +46,10 @@ describe('financial offer intent and destinations', () => {
     const page = source('pages/BuyDollars.jsx');
     assert.match(page, /params\.get\('intent'\)/);
     assert.match(page, /new URLSearchParams\(params\)/);
-    assert.match(page, /step: offer\.steps\.map/);
+    for (const language of ['es', 'en']) for (const intent of [BUY_USDT_INTENT, RECEIVE_PAYMENTS_INTENT]) {
+      const selected = getBuyGuidePage(language, intent);
+      assert.deepEqual(selected.howToSchema.step.map(({ name, text }) => [name, text]), selected.offer.steps);
+    }
     assert.match(page, /FinancialOfferButton offer=\{offer\} placement="buy_page_sticky"/);
     assert.doesNotMatch(page, /PartnerAdCarousel|setInterval/);
     assert.match(page, /--bb-buy-cta-height/);

@@ -9,9 +9,9 @@ import PlatformRatesBoard from '../components/PlatformRatesBoard';
 import FinancialOfferCard, { FinancialOfferButton, OfferComparisonLink } from '../components/FinancialOfferCard';
 import Footer from '../components/Footer';
 import EldoradoMoneyGuide from '../components/EldoradoMoneyGuide';
-import { getEldoradoGuide } from '../data/eldoradoGuide';
+import { getBuyGuidePage } from '../data/buyGuidePage';
 import { fetchBlueRate } from '../utils/api';
-import { getFinancialOffer, getPartnerAds, BUY_USDT_INTENT, RECEIVE_PAYMENTS_INTENT } from '../config/referrals';
+import { getPartnerAds, BUY_USDT_INTENT, RECEIVE_PAYMENTS_INTENT } from '../config/referrals';
 import { BinanceButton } from '../components/BrandButton';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 
@@ -24,21 +24,8 @@ function BuyDollars() {
   const [params, setParams] = useSearchParams();
   const location = useLocation();
   const stickyRef = useRef(null);
-  const intent = params.get('intent') === RECEIVE_PAYMENTS_INTENT ? RECEIVE_PAYMENTS_INTENT : BUY_USDT_INTENT;
-  const operation = params.get('operation') === 'sell' ? 'sell' : 'buy';
-  const baseOffer = getFinancialOffer(language, intent);
-  const eldoradoGuide = getEldoradoGuide(language, operation);
-  const offer = intent === BUY_USDT_INTENT ? {
-    ...baseOffer,
-    id: operation === 'sell' ? 'eldorado_usdt_bob' : baseOffer.id,
-    intent: operation === 'sell' ? 'sell_usdt' : baseOffer.intent,
-    variant: 'stepwise_v1',
-    headline: operation === 'sell' ? (es ? 'Convertí tus USDT en bolivianos con El Dorado' : 'Convert your USDT to bolivianos with El Dorado') : baseOffer.headline,
-    body: operation === 'sell' ? (es ? 'Vendé USDT y recibí BOB por un medio de cobro admitido. Revisá el monto neto y verificá el ingreso en tu cuenta antes de liberar los USDT.' : 'Sell USDT and receive BOB through a supported method. Check the net amount and verify payment in your account before releasing USDT.') : baseOffer.body,
-    guideLabel: eldoradoGuide.title,
-    guideSummary: eldoradoGuide.summary,
-    steps: eldoradoGuide.steps,
-  } : baseOffer;
+  const page = getBuyGuidePage(language, params.get('intent'), params.get('operation'));
+  const { intent, operation, offer, howToSchema } = page;
   const [showOfficial, setShowOfficial] = useState(false);
   const [currentRate, setCurrentRate] = useState(null);
   const [openFaq, setOpenFaq] = useState(null);
@@ -73,12 +60,6 @@ function BuyDollars() {
   }, [currentRate]);
   const partners = getPartnerAds(language).filter((ad) => ad.partner !== offer.partner);
   const steps = [1, 2, 3, 4, 5].map((n) => ({ title: t(`buyDollarsStep${n}Title`), desc: t(`buyDollarsStep${n}Desc`), cta: n === 1 }));
-  const howToSchema = {
-    '@context': 'https://schema.org', '@type': 'HowTo',
-    name: `${offer.brand}: ${offer.guideLabel}`,
-    description: offer.guideSummary || offer.body,
-    step: offer.steps.map(([name, text], index) => ({ '@type': 'HowToStep', position: index + 1, name, text })),
-  };
   const selectOperation = (nextOperation) => {
     const next = new URLSearchParams(params);
     next.set('operation', nextOperation);
@@ -90,16 +71,16 @@ function BuyDollars() {
     setParams(next, { preventScrollReset: true });
   };
   return <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
-    <PageMeta title={es ? 'Comprar y vender USDT con bolivianos | Guía Bolivia Blue' : 'Buy and sell USDT with bolivianos | Bolivia Blue guide'}
-      description={es ? 'Aprendé a comprar USDT con BOB y vender USDT por bolivianos en El Dorado: pasos, conversiones, comisiones y seguridad. También pagos del exterior con Takenos.' : 'Learn to buy USDT with BOB and sell USDT for bolivianos on El Dorado: steps, conversions, fees and safety. Also receive overseas payments with Takenos.'}
+    <PageMeta title={page.title}
+      description={page.description}
       canonical="/comprar-dolares" structuredData={howToSchema} />
     <Header />
     <Navigation />
     <main className="google-anno-skip max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-7 pb-20 space-y-8">
       <section>
         <p className="text-xs font-semibold uppercase tracking-wide text-sky-700 dark:text-sky-300">{es ? 'De la cotización al siguiente paso' : 'From the exchange rate to your next step'}</p>
-        <h1 className="mt-2 text-3xl sm:text-4xl font-bold tracking-tight text-gray-900 dark:text-white">{es ? '¿Qué querés hacer con tu dinero?' : 'What do you want to do with your money?'}</h1>
-        <p className="mt-3 text-gray-600 dark:text-gray-300">{es ? 'Elegí tu objetivo y seguí una guía para empezar.' : 'Choose your goal and follow a guide to get started.'}</p>
+        <h1 className="mt-2 text-3xl sm:text-4xl font-bold tracking-tight text-gray-900 dark:text-white">{page.heading}</h1>
+        <p className="mt-3 text-gray-600 dark:text-gray-300">{page.introduction}</p>
         <div role="group" aria-label={es ? 'Tu objetivo' : 'Your goal'} className="mt-5 grid grid-cols-2 gap-2">
           {[[BUY_USDT_INTENT, es ? 'Comprar USDT' : 'Buy USDT'], [RECEIVE_PAYMENTS_INTENT, es ? 'Cobrar del exterior' : 'Get paid from abroad']].map(([value, label]) => <button key={value} type="button" aria-pressed={intent === value} onClick={() => selectIntent(value)}
             className={`min-w-0 min-h-[48px] rounded-xl border px-3 py-3 text-sm font-bold transition-colors ${intent === value ? 'border-sky-700 bg-sky-700 text-white' : 'border-gray-300 bg-white text-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200'}`}>{label}</button>)}

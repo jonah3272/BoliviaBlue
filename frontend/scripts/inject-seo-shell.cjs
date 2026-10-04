@@ -1039,6 +1039,13 @@ async function main() {
     console.log(`[inject-seo-shell] Wrote ${outPath}`);
   }
 
+  // Reuse the request-time renderer so the default built guide has identical content.
+  const { renderBuyGuideHtml } = await import('../../seo/buyGuideSeo.js');
+  const buyGuideDir = path.join(DIST, 'comprar-dolares');
+  fs.mkdirSync(buyGuideDir, { recursive: true });
+  fs.writeFileSync(path.join(buyGuideDir, 'index.html'), renderBuyGuideHtml(originalHtml), 'utf8');
+  console.log('[inject-seo-shell] Wrote shared buy/sell guide shell');
+
   const extraSpa = [
     ['/acerca-de', 'Sobre Bolivia Blue', 'Qué es Bolivia Blue, metodología y transparencia del dólar paralelo.'],
     ['/publicitar', 'Publicitar en Bolivia Blue', 'Opciones de publicidad en Bolivia Blue.'],
@@ -1048,7 +1055,6 @@ async function main() {
     ['/correcciones', 'Correcciones', 'Cómo reportar un error en Bolivia Blue.'],
     ['/politica-editorial', 'Política editorial', 'Política editorial de Bolivia Blue.'],
     ['/equipo', 'Equipo Bolivia Blue', 'Quién publica Bolivia Blue.'],
-    ['/comprar-dolares', 'Comprar y vender USDT con bolivianos | Guía Bolivia Blue', 'Aprendé a comprar USDT con BOB y vender USDT por bolivianos en El Dorado: pasos, conversiones, comisiones y seguridad. También pagos del exterior con Takenos.'],
     ['/bancos', 'Dólar en bancos de Bolivia', 'Tipo de cambio oficial y bancos en Bolivia.'],
     ['/plataformas', 'Plataformas P2P en Bolivia', 'Plataformas P2P usadas para la referencia del paralelo.'],
     ['/fuente-de-datos', 'Fuente de datos del dólar blue', 'Metodología: mediana P2P USDT/BOB, no ventanilla.'],

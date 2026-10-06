@@ -1,6 +1,7 @@
 import { normalizeDollarRatePayload } from '../utils/dollarRateSearchCopy.js';
 import Header from '../components/Header';
 import MobileHeroRates from '../components/MobileHeroRates';
+import MobileMoneyActions from '../components/MobileMoneyActions';
 import Footer from '../components/Footer';
 import BlueRateCards from '../components/BlueRateCards';
 import RateBinanceCta from '../components/RateBinanceCta';
@@ -151,9 +152,7 @@ function Home() {
               {language === 'es' ? 'Crear mi cuenta El Dorado' : 'Create my El Dorado account'}
             </FinancialOfferButton>
             <p className="text-[11px] text-gray-500 dark:text-gray-400">{language === 'es' ? 'Podemos recibir una comisión' : 'We may earn a commission'}</p>
-            <Link to="/calculadora" className="text-xs font-medium text-sky-700 dark:text-sky-300">
-              {language === 'es' ? 'Calculadora' : 'Calculator'}
-            </Link>
+            <MobileMoneyActions language={language} />
           </div>
         </div>
 

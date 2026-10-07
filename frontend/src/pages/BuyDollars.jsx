@@ -82,7 +82,7 @@ function BuyDollars() {
         <h1 className="mt-2 text-3xl sm:text-4xl font-bold tracking-tight text-gray-900 dark:text-white">{page.heading}</h1>
         <p className="mt-3 text-gray-600 dark:text-gray-300">{page.introduction}</p>
         <div role="group" aria-label={es ? 'Tu objetivo' : 'Your goal'} className="mt-5 grid grid-cols-2 gap-2">
-          {[[BUY_USDT_INTENT, es ? 'Comprar USDT' : 'Buy USDT'], [RECEIVE_PAYMENTS_INTENT, es ? 'Cobrar del exterior' : 'Get paid from abroad']].map(([value, label]) => <button key={value} type="button" aria-pressed={intent === value} onClick={() => selectIntent(value)}
+          {[[BUY_USDT_INTENT, page.usdtGoalLabel], [RECEIVE_PAYMENTS_INTENT, es ? 'Cobrar del exterior' : 'Get paid from abroad']].map(([value, label]) => <button key={value} type="button" aria-pressed={intent === value} onClick={() => selectIntent(value)}
             className={`min-w-0 min-h-[48px] rounded-xl border px-3 py-3 text-sm font-bold transition-colors ${intent === value ? 'border-sky-700 bg-sky-700 text-white' : 'border-gray-300 bg-white text-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200'}`}>{label}</button>)}
         </div>
         <div className="mt-4"><FinancialOfferCard placement="buy_page_top" offer={offer} intent={intent} midRate={midRate} guideHref={`?${params.toString()}#guia`} /></div>

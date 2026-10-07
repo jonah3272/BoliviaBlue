@@ -10,6 +10,7 @@ import { useState, useEffect } from 'react';
 import { fetchBlueRate, fetchBlueHistory } from '../utils/api';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import CurrencyCalculator from '../components/CurrencyCalculator';
+import { calculatorRate } from '../utils/calculatorRates';
 
 function CalculatorStats({ language, currentRate, weekChangePct }) {
   const es = language === 'es';
@@ -46,37 +47,40 @@ function CalculatorStats({ language, currentRate, weekChangePct }) {
       <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2.5 text-center col-span-2 sm:col-span-1">
         <div className="text-[10px] uppercase tracking-wide text-gray-400">{es ? 'Spread hoy' : 'Today spread'}</div>
         <div className="font-mono text-sm font-bold tabular-nums text-gray-800 dark:text-gray-100">
-          {(currentRate.sell - currentRate.buy).toFixed(2)} Bs
+          {(currentRate.buy - currentRate.sell).toFixed(2)} Bs
         </div>
       </div>
     </div>
   );
 }
 
-function CalculatorScenarios({ language, currentRate }) {
+function CalculatorScenarios({ language, currentRate, onPreset }) {
   const es = language === 'es';
-  const buy = currentRate?.buy;
-  const sell = currentRate?.sell;
-  if (!buy || !sell) return null;
+  const toBob = calculatorRate(currentRate, 'USD', false, false);
+  const fromBob = calculatorRate(currentRate, 'USD', false, true);
+  if (!toBob || !fromBob) return null;
 
   const scenarios = [
     {
       href: '/calculadora?usd=500',
+      preset: { usd: '500' },
       emoji: '💸',
-      title: es ? 'Remesa $500' : '$500 remittance',
-      sub: es ? `≈ ${(buy * 500).toFixed(0)} Bs al recibir` : `≈ ${(buy * 500).toFixed(0)} BOB received`,
+      title: es ? 'Remesa $500 (referencia)' : '$500 remittance reference',
+      sub: es ? `≈ ${(toBob * 500).toFixed(0)} Bs antes de comisiones` : `≈ ${(toBob * 500).toFixed(0)} BOB before fees`,
     },
     {
       href: '/calculadora?bob=5000',
+      preset: { bob: '5000' },
       emoji: '✈️',
       title: es ? 'Viaje 5.000 Bs' : '5,000 BOB trip',
-      sub: es ? `≈ $${(5000 / sell).toFixed(2)} USD` : `≈ $${(5000 / sell).toFixed(2)} USD`,
+      sub: es ? `≈ $${(5000 / fromBob).toFixed(2)} USD` : `≈ $${(5000 / fromBob).toFixed(2)} USD`,
     },
     {
       href: '/calculadora?usd=100',
+      preset: { usd: '100' },
       emoji: '🛒',
-      title: es ? 'Compra $100' : '$100 purchase',
-      sub: es ? `≈ ${(buy * 100).toFixed(0)} Bs en efectivo` : `≈ ${(buy * 100).toFixed(0)} BOB cash`,
+      title: es ? '$100 a bolivianos' : '$100 to bolivianos',
+      sub: es ? `≈ ${(toBob * 100).toFixed(0)} Bs, referencia P2P` : `≈ ${(toBob * 100).toFixed(0)} BOB, P2P reference`,
     },
   ];
 
@@ -90,6 +94,11 @@ function CalculatorScenarios({ language, currentRate }) {
           <Link
             key={s.href}
             to={s.href}
+            onClick={(event) => {
+              if (!event.defaultPrevented && event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
+                onPreset({ ...s.preset });
+              }
+            }}
             className="flex items-start gap-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-3 hover:border-sky-300 dark:hover:border-sky-700 hover:bg-sky-50/50 dark:hover:bg-sky-950/20 transition-colors touch-manipulation"
           >
             <span className="text-xl" aria-hidden>
@@ -132,15 +141,15 @@ function CalculatorQuickLinks({ language }) {
 
 function CalculatorHelpContent({ language, currentRate, compact = false }) {
   const es = language === 'es';
-  const buy = currentRate?.buy ?? currentRate?.buy_bob_per_usd;
-  const sell = currentRate?.sell ?? currentRate?.sell_bob_per_usd;
+  const toBob = calculatorRate(currentRate, 'USD', false, false);
+  const fromBob = calculatorRate(currentRate, 'USD', false, true);
 
   return (
     <>
       <p className="text-gray-700 dark:text-gray-300">
         {es
-          ? 'Ingresá un monto y elegí USD→BOB o BOB→USD. Usamos la tasa blue actualizada cada 15 minutos desde Binance P2P.'
-          : 'Enter an amount and pick USD→BOB or BOB→USD. We use the blue rate updated every 15 minutes from Binance P2P.'}
+          ? 'Ingresá un monto y elegí USD→BOB o BOB→USD. La referencia blue proviene de mercados P2P de USDT y se actualiza cada 15 minutos. Al vender USDT recibís BOB con la tasa de venta; al comprar USDT con BOB se usa la tasa de compra.'
+          : 'Enter an amount and pick USD→BOB or BOB→USD. The blue reference comes from USDT P2P markets and updates every 15 minutes. Selling USDT for BOB uses the sell rate; buying USDT with BOB uses the buy rate.'}
       </p>
 
       {!compact && (
@@ -150,8 +159,8 @@ function CalculatorHelpContent({ language, currentRate, compact = false }) {
           </h3>
           <p className="text-gray-700 dark:text-gray-300">
             {es
-              ? 'Refleja el precio real del mercado paralelo en Bolivia — más útil que la tasa oficial para cambios del día a día.'
-              : 'It reflects Bolivia’s real parallel-market price — more useful than the official rate for everyday exchanges.'}
+              ? 'Es una referencia informativa de USDT/BOB. Los cálculos en USD suponen una paridad de 1:1 con USDT; no garantizan esa paridad, liquidez ni una cotización de dólares en efectivo. Las comisiones y condiciones de cada operación pueden cambiar el resultado.'
+              : 'It is an informational USDT/BOB reference. USD calculations assume 1:1 with USDT; that parity, liquidity and a cash-dollar quote are not guaranteed. Fees and individual trading conditions can change the result.'}
           </p>
         </>
       )}
@@ -163,19 +172,19 @@ function CalculatorHelpContent({ language, currentRate, compact = false }) {
         {es ? (
           <>
             <li>
-              <strong>Remesa $500:</strong> ~{(buy ? buy * 500 : 0).toFixed(0)} BOB (compra {buy?.toFixed(2) || '—'})
+              <strong>Remesa $500:</strong> {toBob ? `~${(toBob * 500).toFixed(0)}` : '—'} BOB (venta P2P {toBob ? toBob.toFixed(2) : '—'}, antes de comisiones)
             </li>
             <li>
-              <strong>Gastar 5.000 BOB:</strong> ~{(sell ? 5000 / sell : 0).toFixed(2)} USD (venta {sell?.toFixed(2) || '—'})
+              <strong>Gastar 5.000 BOB:</strong> {fromBob ? `~${(5000 / fromBob).toFixed(2)}` : '—'} USD estimados (compra P2P {fromBob ? fromBob.toFixed(2) : '—'}, antes de comisiones)
             </li>
           </>
         ) : (
           <>
             <li>
-              <strong>$500 remittance:</strong> ~{(buy ? buy * 500 : 0).toFixed(0)} BOB (buy {buy?.toFixed(2) || '—'})
+              <strong>$500 remittance:</strong> {toBob ? `~${(toBob * 500).toFixed(0)}` : '—'} BOB (P2P sell {toBob ? toBob.toFixed(2) : '—'}, before fees)
             </li>
             <li>
-              <strong>Spend 5,000 BOB:</strong> ~{(sell ? 5000 / sell : 0).toFixed(2)} USD (sell {sell?.toFixed(2) || '—'})
+              <strong>Spend 5,000 BOB:</strong> {fromBob ? `~${(5000 / fromBob).toFixed(2)}` : '—'} estimated USD (P2P buy {fromBob ? fromBob.toFixed(2) : '—'}, before fees)
             </li>
           </>
         )}
@@ -205,17 +214,18 @@ function Calculator() {
   const [showOfficial, setShowOfficial] = useState(false);
   const [currentRate, setCurrentRate] = useState(null);
   const [weekChangePct, setWeekChangePct] = useState(null);
+  const [presetRequest, setPresetRequest] = useState(null);
   
   // Load current rate for structured data
   useEffect(() => {
     const loadRate = async () => {
       try {
         const data = await fetchBlueRate();
-        if (data && (data.buy_bob_per_usd || data.buy) && (data.sell_bob_per_usd || data.sell)) {
+        if (calculatorRate(data, 'USD', false, false) && calculatorRate(data, 'USD', false, true)) {
           setCurrentRate({
             ...data,
-            buy: data.buy_bob_per_usd ?? data.buy,
-            sell: data.sell_bob_per_usd ?? data.sell,
+            buy: Number(data.buy_bob_per_usd ?? data.buy),
+            sell: Number(data.sell_bob_per_usd ?? data.sell),
           });
         }
       } catch (error) {
@@ -255,7 +265,7 @@ function Calculator() {
     },
     "fromCurrency": "USD",
     "toCurrency": "BOB",
-    "currentExchangeRate": currentRate.buy?.toFixed(2) || "0",
+    "currentExchangeRate": calculatorRate(currentRate, 'USD', false, false).toFixed(2),
     "dateModified": new Date().toISOString()
   } : null;
 
@@ -322,7 +332,7 @@ function Calculator() {
 
         <CalculatorStats language={language} currentRate={currentRate} weekChangePct={weekChangePct} />
 
-        <CurrencyCalculator />
+        <CurrencyCalculator presetRequest={presetRequest} />
 
         {currentRate && (
           <RateTrioStrip
@@ -335,7 +345,7 @@ function Calculator() {
           />
         )}
 
-        <CalculatorScenarios language={language} currentRate={currentRate} />
+        <CalculatorScenarios language={language} currentRate={currentRate} onPreset={setPresetRequest} />
 
         <CalculatorQuickLinks language={language} />
 

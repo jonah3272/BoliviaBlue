@@ -4,14 +4,16 @@ import { fetchBlueRate } from '../utils/api';
 import { useLanguage } from '../contexts/LanguageContext';
 import { trackCalculatorUsage, trackCalculatorCurrencySwitch, trackCalculatorSwap } from '../utils/analytics';
 import { trackCalculatorUsed } from '../utils/analyticsEvents';
+import { calculatorRate, isP2PReferenceCurrency } from '../utils/calculatorRates';
 import { FinancialOfferButton } from './FinancialOfferCard';
 
-function CurrencyCalculator() {
+function CurrencyCalculator({ presetRequest }) {
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
   const [rateData, setRateData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [useOfficial, setUseOfficial] = useState(false);
   const [convertFromBOB, setConvertFromBOB] = useState(false); // false = USD->BOB (search intent)
   
@@ -19,11 +21,19 @@ function CurrencyCalculator() {
   const [usdAmount, setUsdAmount] = useState('100');
   const userTouchedRef = useRef(false);
   const usedTrackedRef = useRef(false);
+  const historyIdRef = useRef(0);
   
   // New features state
   const [selectedCurrency, setSelectedCurrency] = useState('USD');
   const [comparisonMode, setComparisonMode] = useState(false);
-  const [history, setHistory] = useState([]);
+  const [history, setHistory] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('calculatorHistory') || '[]');
+      return Array.isArray(saved) ? saved.filter((item) => item && typeof item === 'object').slice(0, 10) : [];
+    } catch {
+      return []; // Browser storage is optional.
+    }
+  });
   const [showHistory, setShowHistory] = useState(false);
   const [copied, setCopied] = useState(false);
   const [searchParams] = useSearchParams();
@@ -53,29 +63,29 @@ function CurrencyCalculator() {
     CLP: null
   });
 
-  // Load history from localStorage on mount
-  useEffect(() => {
-    const savedHistory = localStorage.getItem('calculatorHistory');
-    if (savedHistory) {
-      try {
-        setHistory(JSON.parse(savedHistory));
-      } catch (error) {
-        console.error('Error loading history:', error);
-      }
+  const applyPreset = useCallback((usd, bob) => {
+    if (usd && /^\d+(\.\d+)?$/.test(usd) && Number.isFinite(Number(usd))) {
+      setSelectedCurrency('USD');
+      setUseOfficial(false);
+      setUsdAmount(usd);
+      setConvertFromBOB(false);
+    } else if (bob && /^\d+(\.\d+)?$/.test(bob) && Number.isFinite(Number(bob))) {
+      setSelectedCurrency('USD');
+      setUseOfficial(false);
+      setBobAmount(bob);
+      setConvertFromBOB(true);
     }
   }, []);
 
   useEffect(() => {
-    const usd = searchParams.get('usd');
-    const bob = searchParams.get('bob');
-    if (usd && /^\d+(\.\d+)?$/.test(usd)) {
-      setUsdAmount(usd);
-      setConvertFromBOB(false);
-    } else if (bob && /^\d+(\.\d+)?$/.test(bob)) {
-      setBobAmount(bob);
-      setConvertFromBOB(true);
-    }
-  }, [searchParams]);
+    applyPreset(searchParams.get('usd'), searchParams.get('bob'));
+  }, [searchParams, applyPreset]);
+
+  // A deliberate scenario click also applies when its URL is already active.
+  // Incidental hash changes must not discard edits to currency, rate or amount.
+  useEffect(() => {
+    if (presetRequest) applyPreset(presetRequest.usd, presetRequest.bob);
+  }, [presetRequest, applyPreset]);
 
   useEffect(() => {
     loadRates();
@@ -83,20 +93,20 @@ function CurrencyCalculator() {
     return () => clearInterval(interval);
   }, []);
 
+  // Only the active input drives a calculation; writing the output must not
+  // create a second history entry or a feedback loop.
+  const inputAmount = convertFromBOB ? bobAmount : usdAmount;
   useEffect(() => {
-    if (rateData) {
-      if (convertFromBOB && bobAmount) {
-        calculateUSD();
-      } else if (!convertFromBOB && usdAmount) {
-        calculateBOB();
-      }
-    }
-  }, [rateData, bobAmount, usdAmount, useOfficial, convertFromBOB, selectedCurrency]);
+    if (!rateData) return;
+    if (convertFromBOB) calculateUSD();
+    else calculateBOB();
+  }, [rateData, inputAmount, useOfficial, convertFromBOB, selectedCurrency, exchangeRates]);
 
   const loadRates = async () => {
     try {
       const data = await fetchBlueRate();
       setRateData(data);
+      setLoadError(false);
       const usdBuy = Number(data.buy_bob_per_usd ?? data.buy);
       setExchangeRates((prev) => {
         const next = { ...prev, USD: 1, USDT: 1, USDC: 1 };
@@ -117,57 +127,18 @@ function CurrencyCalculator() {
       setIsLoading(false);
     } catch (error) {
       console.error('Error loading rates:', error);
+      setLoadError(true);
       setIsLoading(false);
     }
   };
 
-  const fiatBobPerUnit = (side) => {
-    const field = {
-      EUR: 'eur',
-      BRL: 'brl',
-      COP: 'cop',
-      PEN: 'pen',
-      ARS: 'ars',
-      CLP: 'clp',
-    }[selectedCurrency];
-    if (!field) return null;
-    const key = side === 'sell' ? `sell_bob_per_${field}` : `buy_bob_per_${field}`;
-    return Number(rateData?.[key]);
-  };
+  const getRate = (fromBOB = convertFromBOB) =>
+    calculatorRate(rateData, selectedCurrency, useOfficial, fromBOB, exchangeRates);
 
-  const getRate = () => {
-    if (!rateData) return 0;
-
-    const usdBlue = convertFromBOB
-      ? Number(rateData.sell_bob_per_usd)
-      : Number(rateData.buy_bob_per_usd);
-    const usdOfficial = convertFromBOB
-      ? Number(rateData.official_sell)
-      : Number(rateData.official_buy);
-    const fiatBlue = fiatBobPerUnit(convertFromBOB ? 'sell' : 'buy');
-
-    if (selectedCurrency === 'USD' || selectedCurrency === 'USDT' || selectedCurrency === 'USDC') {
-      return useOfficial ? usdOfficial : usdBlue;
-    }
-
-    if (Number.isFinite(fiatBlue) && fiatBlue > 0) {
-      if (useOfficial && Number.isFinite(usdOfficial) && usdOfficial > 0 && usdBlue > 0) {
-        return usdOfficial * (fiatBlue / usdBlue);
-      }
-      if (!useOfficial) return fiatBlue;
-    }
-
-    const currencyToUSD = Number(exchangeRates[selectedCurrency]);
-    const base = useOfficial ? usdOfficial : usdBlue;
-    if (Number.isFinite(base) && Number.isFinite(currencyToUSD) && currencyToUSD > 0) {
-      return base / currencyToUSD;
-    }
-    return 0;
-  };
-  
   const saveToHistory = (from, to, fromAmount, toAmount, rate) => {
     const calculation = {
-      id: Date.now(),
+      id: `${Date.now()}-${++historyIdRef.current}`,
+      calculationVersion: 2,
       timestamp: new Date().toISOString(),
       from,
       to,
@@ -178,10 +149,17 @@ function CurrencyCalculator() {
       currency: selectedCurrency
     };
     
-    const newHistory = [calculation, ...history].slice(0, 10); // Keep last 10
-    setHistory(newHistory);
-    localStorage.setItem('calculatorHistory', JSON.stringify(newHistory));
+    setHistory((previous) => {
+      const last = previous[0];
+      if (last && ['from', 'to', 'fromAmount', 'toAmount', 'rate', 'rateType', 'currency', 'calculationVersion']
+        .every((key) => last[key] === calculation[key])) return previous;
+      return [calculation, ...previous].slice(0, 10);
+    });
   };
+
+  useEffect(() => {
+    try { localStorage.setItem('calculatorHistory', JSON.stringify(history)); } catch { /* optional history */ }
+  }, [history]);
 
   const calculateUSD = () => {
     if (!rateData || !bobAmount) {
@@ -190,13 +168,14 @@ function CurrencyCalculator() {
     }
     
     const bob = parseFloat(bobAmount);
-    if (isNaN(bob) || bob === 0) {
+    if (!Number.isFinite(bob) || bob <= 0) {
       setUsdAmount('');
       return;
     }
     
     const rate = getRate();
     const usd = bob / rate;
+    if (rate <= 0 || !Number.isFinite(usd)) { setUsdAmount(''); return; }
     setUsdAmount(usd.toFixed(4));
     
     // Save to history if it's a meaningful calculation
@@ -222,13 +201,14 @@ function CurrencyCalculator() {
     }
     
     const usd = parseFloat(usdAmount);
-    if (isNaN(usd) || usd === 0) {
+    if (!Number.isFinite(usd) || usd <= 0) {
       setBobAmount('');
       return;
     }
     
     const rate = getRate();
     const bob = usd * rate;
+    if (rate <= 0 || !Number.isFinite(bob)) { setBobAmount(''); return; }
     setBobAmount(bob.toFixed(2));
     
     // Save to history if it's a meaningful calculation
@@ -271,55 +251,12 @@ function CurrencyCalculator() {
     const prevToCurrency = convertFromBOB ? selectedCurrency : 'BOB';
     
     setConvertFromBOB(!convertFromBOB);
-    // Swap the values
-    const tempBob = bobAmount;
-    setBobAmount(usdAmount);
-    setUsdAmount(tempBob);
+    // Keep each amount attached to its currency. The previous output becomes
+    // the new input, then the opposite side of the spread is applied.
     
     // Track swap
     trackCalculatorSwap();
     trackCalculatorCurrencySwitch(prevFromCurrency, prevToCurrency);
-  };
-
-  const getBuyRate = () => {
-    if (useOfficial) {
-      if (['COP', 'EUR', 'BRL', 'PEN', 'ARS', 'CLP'].includes(selectedCurrency)) {
-        const usdBlue = Number(rateData?.buy_bob_per_usd);
-        const usdOff = Number(rateData?.official_buy);
-        const fiat = fiatBobPerUnit('buy');
-        if (usdBlue > 0 && usdOff > 0 && Number.isFinite(fiat) && fiat > 0) {
-          return usdOff * (fiat / usdBlue);
-        }
-      }
-      return rateData?.official_buy;
-    }
-    if (selectedCurrency === 'EUR') return rateData?.buy_bob_per_eur;
-    if (selectedCurrency === 'BRL') return rateData?.buy_bob_per_brl;
-    if (selectedCurrency === 'COP') return rateData?.buy_bob_per_cop;
-    if (selectedCurrency === 'PEN') return rateData?.buy_bob_per_pen;
-    if (selectedCurrency === 'ARS') return rateData?.buy_bob_per_ars;
-    if (selectedCurrency === 'CLP') return rateData?.buy_bob_per_clp;
-    return rateData?.buy_bob_per_usd;
-  };
-  const getSellRate = () => {
-    if (useOfficial) {
-      if (['COP', 'EUR', 'BRL', 'PEN', 'ARS', 'CLP'].includes(selectedCurrency)) {
-        const usdBlue = Number(rateData?.sell_bob_per_usd);
-        const usdOff = Number(rateData?.official_sell);
-        const fiat = fiatBobPerUnit('sell');
-        if (usdBlue > 0 && usdOff > 0 && Number.isFinite(fiat) && fiat > 0) {
-          return usdOff * (fiat / usdBlue);
-        }
-      }
-      return rateData?.official_sell;
-    }
-    if (selectedCurrency === 'EUR') return rateData?.sell_bob_per_eur;
-    if (selectedCurrency === 'BRL') return rateData?.sell_bob_per_brl;
-    if (selectedCurrency === 'COP') return rateData?.sell_bob_per_cop;
-    if (selectedCurrency === 'PEN') return rateData?.sell_bob_per_pen;
-    if (selectedCurrency === 'ARS') return rateData?.sell_bob_per_ars;
-    if (selectedCurrency === 'CLP') return rateData?.sell_bob_per_clp;
-    return rateData?.sell_bob_per_usd;
   };
 
   const applyUsdPreset = useCallback((amount) => {
@@ -339,10 +276,11 @@ function CurrencyCalculator() {
     const toAmt = convertFromBOB ? usdAmount : bobAmount;
     const fromLabel = convertFromBOB ? 'BOB' : selectedCurrency;
     const toLabel = convertFromBOB ? selectedCurrency : 'BOB';
-    if (!fromAmt || !toAmt) return;
+    if (!fromAmt || !toAmt || !validResult) return;
+    const referenceNote = p2pReference ? (es ? '; referencia P2P USDT' : '; USDT P2P reference') : '';
     const text = es
-      ? `${fromAmt} ${fromLabel} = ${toAmt} ${toLabel} (Bolivia Blue, tasa ${useOfficial ? 'oficial' : 'blue'})`
-      : `${fromAmt} ${fromLabel} = ${toAmt} ${toLabel} (Bolivia Blue, ${useOfficial ? 'official' : 'blue'} rate)`;
+      ? `${fromAmt} ${fromLabel} = ${toAmt} ${toLabel} (Bolivia Blue, tasa ${useOfficial ? 'oficial' : 'blue; antes de comisiones'}${referenceNote})`
+      : `${fromAmt} ${fromLabel} = ${toAmt} ${toLabel} (Bolivia Blue, ${useOfficial ? 'official rate' : 'blue; before fees'}${referenceNote})`;
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
@@ -354,6 +292,10 @@ function CurrencyCalculator() {
 
   const es = language === 'es';
   const rate = getRate();
+  const forwardRate = getRate(false);
+  const reverseRate = getRate(true);
+  const p2pReference = !useOfficial && isP2PReferenceCurrency(selectedCurrency);
+  const validResult = !isLoading && rate > 0 && Number.isFinite(Number(bobAmount)) && Number(bobAmount) > 0 && Number.isFinite(Number(usdAmount)) && Number(usdAmount) > 0;
   const rateDecimals = ['COP', 'ARS', 'CLP'].includes(selectedCurrency) ? 4 : selectedCurrency === 'BRL' ? 3 : 2;
   const usdPresets = ['COP', 'ARS', 'CLP'].includes(selectedCurrency)
     ? [10000, 50000, 100000, 500000, 1000000]
@@ -447,13 +389,14 @@ function CurrencyCalculator() {
               {/* Inputs */}
               <div className="space-y-3">
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                  <label htmlFor="calculator-bob" className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
                     {t('bolivianos')} (BOB)
                   </label>
                   <div className="relative">
                     <input
                       type="text"
                       inputMode="decimal"
+                      id="calculator-bob"
                       value={bobAmount}
                       onChange={handleBobChange}
                       className="w-full px-4 py-3.5 pr-12 text-2xl font-mono font-bold tabular-nums bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-sky-500/40 focus:border-sky-500 text-gray-900 dark:text-white"
@@ -479,13 +422,14 @@ function CurrencyCalculator() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
+                  <label htmlFor="calculator-foreign" className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
                     {currencies[selectedCurrency].name} ({selectedCurrency})
                   </label>
                   <div className="relative">
                     <input
                       type="text"
                       inputMode="decimal"
+                      id="calculator-foreign"
                       value={usdAmount}
                       onChange={handleUsdChange}
                       className="w-full px-4 py-3.5 pr-12 text-2xl font-mono font-bold tabular-nums bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-sky-500/40 focus:border-sky-500 text-gray-900 dark:text-white"
@@ -527,9 +471,9 @@ function CurrencyCalculator() {
                       1 {selectedCurrency} → BOB
                     </div>
                     <div className="font-mono text-lg font-bold tabular-nums text-sky-700 dark:text-sky-300 min-h-[1.5rem]">
-                      {isLoading || !rateData || !Number.isFinite(rate) || rate <= 0
+                      {isLoading || forwardRate <= 0
                         ? '—'
-                        : rate.toFixed(rateDecimals)}
+                        : forwardRate.toFixed(rateDecimals)}
                     </div>
                   </div>
                   <div>
@@ -537,20 +481,34 @@ function CurrencyCalculator() {
                       1 BOB → {selectedCurrency}
                     </div>
                     <div className="font-mono text-lg font-bold tabular-nums text-sky-700 dark:text-sky-300 min-h-[1.5rem]">
-                      {isLoading || !rateData || rate === 0 ? '—' : (1 / rate).toFixed(4)}
+                      {isLoading || reverseRate <= 0 ? '—' : (1 / reverseRate).toFixed(4)}
                     </div>
                   </div>
                 </div>
-                {!isLoading && rateData && (
+                {p2pReference && (
                   <p className="mt-2 text-center text-[11px] text-gray-500 dark:text-gray-400">
-                    {useOfficial ? t('official') : t('unofficial')} · {es ? 'compra' : 'buy'}{' '}
-                    {Number.isFinite(Number(getBuyRate())) ? Number(getBuyRate()).toFixed(rateDecimals) : '—'} · {es ? 'venta' : 'sell'} {Number.isFinite(Number(getSellRate())) ? Number(getSellRate()).toFixed(rateDecimals) : '—'}
+                    {es ? 'Referencia P2P USDT, antes de comisiones. BOB → USDT: comprás; USDT → BOB: vendés.' : 'USDT P2P reference, before fees. BOB → USDT: you buy; USDT → BOB: you sell.'}
+                    {selectedCurrency !== 'USDT' && (es ? ` ${selectedCurrency} es una estimación a paridad 1:1 con USDT, sin garantía de paridad o liquidez; no es una cotización de efectivo.` : ` ${selectedCurrency} is an estimate at 1:1 with USDT, with no guarantee of parity or liquidity; it is not a cash quote.`)}
+                  </p>
+                )}
+                {!isLoading && rate > 0 && (
+                  <p className="mt-2 text-center text-[11px] text-gray-500 dark:text-gray-400">
+                    {es ? 'Tasa aplicada' : 'Applied rate'}: {rate.toFixed(rateDecimals)} BOB / {selectedCurrency} · {useOfficial ? t('official') : t('unofficial')}
+                  </p>
+                )}
+                {isLoading ? (
+                  <p role="status" className="mt-2 text-center text-xs text-gray-500">{es ? 'Cargando tasas…' : 'Loading rates…'}</p>
+                ) : (loadError || rate <= 0) && (
+                  <p role="status" className="mt-2 text-center text-xs text-amber-700 dark:text-amber-300">
+                    {loadError && rate > 0
+                      ? (es ? 'No se pudo actualizar. Se muestra la última referencia cargada.' : 'Could not refresh. Showing the last loaded reference.')
+                      : (es ? 'Tasa no disponible. Intentá de nuevo en un momento.' : 'Rate unavailable. Please try again shortly.')}
                   </p>
                 )}
               </div>
 
               {/* Result + copy + one paid CTA */}
-              {bobAmount && usdAmount && !isLoading && (
+              {validResult && (
                 <div className="rounded-xl border border-emerald-200 dark:border-emerald-800/50 bg-emerald-50/80 dark:bg-emerald-950/20 px-3 py-3 sm:px-4 space-y-2.5">
                   <div className="flex items-center justify-between gap-2">
                     <p className="min-w-0 text-sm font-medium text-gray-800 dark:text-gray-100 leading-snug break-words">
@@ -597,7 +555,7 @@ function CurrencyCalculator() {
               {comparisonMode && !isLoading && rateData && (
                 <div className="rounded-xl border border-gray-200 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700 overflow-hidden">
                   <p className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50">
-                    {es ? 'Mismo monto en otras monedas' : 'Same amount in other currencies'}
+                    {es ? 'Estimaciones con tasa media blue, antes de comisiones' : 'Blue midpoint estimates, before fees'}
                   </p>
                   {Object.entries(currencies).map(([code, data]) => {
                     const usdMid = (Number(rateData.buy_bob_per_usd) + Number(rateData.sell_bob_per_usd)) / 2;
@@ -649,7 +607,7 @@ function CurrencyCalculator() {
                     type="button"
                     onClick={() => {
                       setHistory([]);
-                      localStorage.removeItem('calculatorHistory');
+                      try { localStorage.removeItem('calculatorHistory'); } catch { /* optional history */ }
                     }}
                     className="text-xs text-red-600 dark:text-red-400 font-medium"
                   >
@@ -671,12 +629,15 @@ function CurrencyCalculator() {
                     >
                       <div className="flex items-center justify-between mb-1.5">
                         <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">
-                          {item.rateType === 'official' ? t('official') : t('unofficial')}
+                          {item.rateType === 'official' ? t('official') : isP2PReferenceCurrency(item.currency) ? 'P2P USDT' : t('unofficial')}
                         </span>
                         <span className="text-[10px] text-gray-400">
                           {new Date(item.timestamp).toLocaleTimeString()}
                         </span>
                       </div>
+                      {item.rateType === 'blue' && isP2PReferenceCurrency(item.currency) && item.calculationVersion !== 2 && (
+                        <p className="text-xs text-amber-700 dark:text-amber-300 mb-1">{es ? 'Cálculo anterior: verificá la dirección de la tasa.' : 'Older calculation: verify the rate direction.'}</p>
+                      )}
                       <div className="font-mono tabular-nums">
                         <div className="font-semibold text-gray-900 dark:text-white">
                           {item.fromAmount} {item.from}

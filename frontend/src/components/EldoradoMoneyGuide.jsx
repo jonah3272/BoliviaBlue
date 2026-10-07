@@ -60,6 +60,7 @@ export default function EldoradoMoneyGuide({ offer, direction, onDirectionChange
     </div>
     <div className="mt-5">
       <FinancialOfferButton offer={offer} placement="buy_page_guide" />
+      {offer.handoff && <p className="mt-3 text-sm leading-relaxed text-gray-600 dark:text-gray-300">{offer.handoff}</p>}
       <p className="mt-3 text-xs leading-relaxed text-gray-500 dark:text-gray-400">{offer.disclosure}</p>
     </div>
     <section className="mt-7 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-4 sm:p-5" aria-labelledby="guide-conversion-title">

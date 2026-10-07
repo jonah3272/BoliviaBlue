@@ -43,6 +43,7 @@ export default function FinancialOfferCard({ placement = 'financial_offer', inte
       <Link to={guide} className="inline-flex min-h-[44px] items-center justify-center px-2 text-center text-sm font-semibold text-sky-700 dark:text-sky-300 underline underline-offset-4"
         onClick={() => trackRelatedLinkClicked({ language, destination: guide, link_label: offer.guideLabel, page_type: 'financial_offer' })}>{offer.guideLabel}</Link>
     </div>
+    {offer.handoff && <p className="mt-3 text-sm leading-relaxed text-gray-600 dark:text-gray-300">{offer.handoff}</p>}
     {rateLabel && offer.intent !== RECEIVE_PAYMENTS_INTENT && <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">{es ? `Referencia del mercado: ~${rateLabel} Bs/USD. El precio y monto final se confirman en El Dorado.` : `Market reference: ~${rateLabel} Bs/USD. The final price and amount are confirmed in El Dorado.`}</p>}
     <p className="mt-3 text-xs leading-relaxed text-gray-500 dark:text-gray-400">{offer.disclosure}</p>
   </section>;

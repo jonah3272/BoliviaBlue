@@ -65,7 +65,7 @@ describe('shared initial methodology and history documentation', () => {
       assert.doesNotMatch(html, /<table|<time|dateModified|datePublished|temporalCoverage|updateFrequency|ExchangeRateSpecification|12\.34|12\.56|fixture|50,000|50\.000|No data for this period/);
       assert.equal(schemas(html).some((schema) => schema['@type'] === 'FAQPage'), false);
       assert.deepEqual(page.datasetSchema.distribution.map((d) => d.contentUrl), [PUBLIC_HISTORY_CSV, PUBLIC_HISTORY_JSON]);
-      assert.ok(tags(main(html), 'a').some((a) => a.href === page.local('/contacto')));
+      assert.ok(tags(main(html), 'a').some((a) => a.href === page.local('/contacto#data-request')));
     }
   });
   it('retains English on internal links and leaves exact public export query contracts untouched', () => {

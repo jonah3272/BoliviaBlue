@@ -262,7 +262,7 @@ function Home() {
                 </div>
               </div>
               <Link to="/calculadora" className="mt-2 inline-block text-xs font-medium text-sky-700 dark:text-sky-300">
-                {language === 'es' ? 'Calculadora completa →' : 'Full calculator →'}
+                {language === 'es' ? 'Convertir dólares a bolivianos →' : 'Convert dollars to bolivianos →'}
               </Link>
               {Number.isFinite(Number(quickUsd)) && Number.isFinite(Number(currentRate?.sell)) && (
                 <FinancialOfferButton

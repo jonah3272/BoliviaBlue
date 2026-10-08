@@ -48,7 +48,7 @@ const METHOD_COPY = {
     "historyDescription": "Guardamos un registro de cada actualización, lo que permite consultar series históricas, gráficos y estadísticas. Los datos históricos están disponibles en la página de datos históricos y mediante URLs estables en CSV y JSON.",
     "historyLabel": "Datos históricos",
     "historyLinkDescription": " – gráficos, tabla y descarga por período.",
-    "exportLimits": "Exportación pública: CSV y JSON para 30d o una muestra reciente all, hasta 4.000 filas. Los rangos ampliados pertenecen al backend separado y requieren acceso habilitado.",
+    "exportLimits": "Exportación pública: CSV y JSON para 30d o una muestra reciente all, hasta 4.000 filas. Los rangos ampliados corresponden a un servicio separado; su disponibilidad, cobertura y condiciones requieren revisión manual.",
     "provenanceHeading": "Límites del historial y de las fuentes",
     "provenanceDescription": "Los registros antiguos sin source_observation no acreditan qué plataformas participaron. Los nuevos registros pueden guardar una instantánea de fuentes, precios, versión del esquema e identificador del método; solo se publica cuando coincide con la lectura. En el pasado coexistieron métodos distintos; no las reclasificamos como una serie homogénea. Si sources_used está vacío, la composición de fuentes de esa observación es desconocida. Cambiar el recolector no corrige ni modifica observaciones pasadas.",
     "coverageDescription": "Las descargas públicas tienen un límite de 4.000 filas recientes. Consultá las fechas de cobertura y truncated en el JSON o las cabeceras del CSV antes de citar un período completo. Se conserva la exclusión existente de filas identificadas como interpolación durante una interrupción de 2026.",
@@ -108,7 +108,7 @@ const METHOD_COPY = {
     "historyDescription": "We store a record of each update, which allows you to query historical series, charts and statistics. Historical data is available on the historical data page and via stable URLs in CSV and JSON.",
     "historyLabel": "Historical data",
     "historyLinkDescription": " – charts, table and download by period.",
-    "exportLimits": "Public export: CSV and JSON for 30d or a recent all sample, capped at 4,000 rows. Extended ranges use the separate backend and require enabled access.",
+    "exportLimits": "Public export: CSV and JSON for 30d or a recent all sample, capped at 4,000 rows. Extended ranges belong to a separate service; availability, coverage and terms require manual review.",
     "provenanceHeading": "History and source limitations",
     "provenanceDescription": "Older rows without source_observation do not establish which platforms participated. New records can store a snapshot of sources, quotes, schema version and method identifier; it is published only when it matches the observation. Different methods operated in the past; we do not relabel those rows as a homogeneous series. When sources_used is empty, that observation’s source composition is unknown. Updating the collector does not correct or modify past observations.",
     "coverageDescription": "Public downloads are capped at 4,000 recent rows. Check coverage dates and truncated in JSON or the CSV headers before citing a full period. The existing exclusion of rows identified as interpolation during a 2026 outage is preserved.",
@@ -150,15 +150,15 @@ const HISTORY_COPY = {
     "recordsHeading": "Registros por período",
     "recordsDescription": "Hasta 50 filas visibles; muestras con cobertura indicada en las descargas o en el gráfico.",
     "downloadsHeading": "Descargar o integrar",
-    "downloadsDescription": "Descarga pública: hasta 4.000 observaciones recientes. El JSON informa fechas reales y si el archivo está recortado; el CSV incluye esa información en sus cabeceras HTTP. Para series ampliadas: contacto.",
-    "extendedAccessLabel": "Solicitar acceso ampliado",
+    "downloadsDescription": "Descarga pública: hasta 4.000 observaciones recientes. El JSON informa fechas reales y si el archivo está recortado; el CSV incluye esa información en sus cabeceras HTTP. Para otros períodos, consultá disponibilidad y condiciones; requieren revisión manual.",
+    "extendedAccessLabel": "Consultar datos para mi proyecto",
     "noSignup": "Sin registro",
     "publicRangeDescription": "Últimos 30 días, hasta 4.000 filas · CSV o JSON",
     "teamsLabel": "Empresas y devs",
-    "teamsDescription": "API, volumen y licencias.",
-    "contactLabel": "Contacto",
+    "teamsDescription": "Otros períodos, integración API y condiciones de uso, sujetos a revisión manual.",
+    "contactLabel": "Consultar datos",
     "tableCsvHeading": "CSV de la tabla",
-    "tableCsvDescription": "Exporta los puntos mostrados en la tabla; puede ser una muestra del período. Para series largas, solicitá acceso ampliado."
+    "tableCsvDescription": "Exporta los puntos mostrados en la tabla; puede ser una muestra del período. Para series largas, consultá disponibilidad y condiciones."
   },
   "en": {
     "home": "Home",
@@ -180,15 +180,15 @@ const HISTORY_COPY = {
     "recordsHeading": "Records by period",
     "recordsDescription": "Up to 50 visible chart observations; downloads are separate, capped samples.",
     "downloadsHeading": "Download or integrate",
-    "downloadsDescription": "Public download: up to 4,000 recent observations. JSON reports actual dates and truncation; CSV reports these in HTTP headers. Contact us for extended series.",
-    "extendedAccessLabel": "Request extended access",
+    "downloadsDescription": "Public download: up to 4,000 recent observations. JSON reports actual dates and truncation; CSV reports these in HTTP headers. Ask about availability and terms for other periods; manual review is required.",
+    "extendedAccessLabel": "Ask about data for my project",
     "noSignup": "No signup",
     "publicRangeDescription": "Last 30 days, up to 4,000 rows · CSV or JSON",
     "teamsLabel": "Teams & devs",
-    "teamsDescription": "API, volume, licensing.",
-    "contactLabel": "Contact",
+    "teamsDescription": "Other periods, API integration and usage terms, subject to manual review.",
+    "contactLabel": "Data inquiry",
     "tableCsvHeading": "Table CSV",
-    "tableCsvDescription": "Exports the points shown in the table; this can be a sample of the period. Request extended access for long series."
+    "tableCsvDescription": "Exports the points shown in the table; this can be a sample of the period. Ask about availability and terms for long series."
   }
 };
 

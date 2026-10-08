@@ -546,30 +546,6 @@ const ROUTES = {
       []
     )
   },
-  '/calculadora': {
-    title: 'Calculadora de Dólares a Bolivianos | BoliviaBlue',
-    description: 'Convierte dólares a bolivianos y bolivianos a dólares utilizando las cotizaciones disponibles del mercado paralelo y oficial.',
-    canonical: BASE_URL + '/calculadora',
-    shell: `
-<main class="max-w-7xl mx-auto px-4 py-8" data-seo-shell="calculadora">
-  <div class="text-center space-y-4 mb-8">
-    <h1 class="text-3xl sm:text-5xl font-bold text-gray-900">Calculadora de Dólares a Bolivianos</h1>
-    <p class="text-base text-gray-600 max-w-2xl mx-auto">Convierte entre dólares estadounidenses (USD) y bolivianos (BOB) usando las cotizaciones de referencia del mercado paralelo y oficial disponibles en la plataforma.</p>
-    <nav class="flex flex-wrap justify-center gap-3 mt-4" aria-label="Enlaces relacionados">
-      <a href="/" class="text-blue-600 font-medium">Inicio</a>
-      <a href="/comparacion" class="text-blue-600 font-medium">Comparación</a>
-      <a href="/datos-historicos" class="text-blue-600 font-medium">Datos históricos</a>
-    </nav>
-  </div>
-</main>`.replace(/\n/g, '').trim(),
-    getJsonLd: () => buildStaticJsonLd(
-      '/calculadora',
-      'Calculadora',
-      'Calculadora de Dólares a Bolivianos',
-      'Convierte dólares a bolivianos y bolivianos a dólares utilizando las cotizaciones disponibles del mercado paralelo y oficial.',
-      []
-    )
-  },
   '/blog': {
     title: 'Blog | Bolivia Blue',
     description: 'Consulta guías, análisis y explicaciones sobre el dólar blue, el tipo de cambio y el mercado cambiario en Bolivia.',
@@ -982,7 +958,6 @@ async function main() {
     '/cotiza-dolar-paralelo',
     '/preguntas-frecuentes',
     '/comparacion',
-    '/calculadora',
     '/blog',
     '/noticias',
     '/euro-a-boliviano',
@@ -1008,6 +983,13 @@ async function main() {
     fs.writeFileSync(outPath, routeHtml, 'utf8');
     console.log(`[inject-seo-shell] Wrote ${outPath}`);
   }
+
+  // Calculator identity, presets and guidance share the same model as React.
+  const { renderCalculatorHtml } = await import('../../seo/calculatorSeo.js');
+  const calculatorDir = path.join(DIST, 'calculadora');
+  fs.mkdirSync(calculatorDir, { recursive: true });
+  fs.writeFileSync(path.join(calculatorDir, 'index.html'), renderCalculatorHtml(originalHtml), 'utf8');
+  console.log('[inject-seo-shell] Wrote shared calculator shell');
 
   // Reuse the request-time renderer so the default built guide has identical content.
   const { renderBuyGuideHtml } = await import('../../seo/buyGuideSeo.js');

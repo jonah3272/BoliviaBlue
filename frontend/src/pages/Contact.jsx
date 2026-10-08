@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PageMeta from '../components/PageMeta';
 import Navigation from '../components/Navigation';
+import DataInquiry from '../components/DataInquiry';
 import { Link } from 'react-router-dom';
 
 function Contact() {
@@ -52,8 +53,8 @@ function Contact() {
           ? 'Contacto - Bolivia Blue | Preguntas y Sugerencias'
           : 'Contact - Bolivia Blue | Questions and Suggestions'}
         description={language === 'es'
-          ? 'Contáctanos para preguntas sobre el tipo de cambio del dólar blue en Bolivia, reportar errores, o enviar sugerencias. Respondemos todas las consultas.'
-          : 'Contact us for questions about Bolivia blue dollar exchange rate, report errors, or send suggestions. We respond to all inquiries.'}
+          ? 'Contáctanos para preguntas sobre el tipo de cambio del dólar blue en Bolivia, reportar errores, o enviar sugerencias.'
+          : 'Contact us for questions about Bolivia blue dollar exchange rate, report errors, or send suggestions.'}
         keywords={language === 'es'
           ? 'contacto bolivia blue, soporte dolar blue bolivia, preguntas tipo cambio, ayuda bolivia blue, contactar boliviablue.com'
           : 'contact bolivia blue, bolivia blue dollar support, exchange rate questions, bolivia blue help, contact boliviablue.com'}
@@ -89,6 +90,8 @@ function Contact() {
               : 'We\'re here to help with any questions about the blue dollar in Bolivia'}
           </p>
         </header>
+
+        <DataInquiry key={language} language={language} />
 
         {/* Contact Methods */}
         <section className="grid md:grid-cols-2 gap-6 mb-12">
@@ -244,8 +247,8 @@ function Contact() {
               </h3>
               <p className="text-gray-700 dark:text-gray-300">
                 {language === 'es'
-                  ? 'Respondemos todos los emails en menos de 24 horas (días hábiles)'
-                  : 'We respond to all emails within 24 hours (business days)'}
+                  ? 'El tiempo de respuesta puede variar; las consultas se responden por correo.'
+                  : 'Response times may vary; inquiries are answered by email.'}
               </p>
             </div>
           </div>
@@ -299,8 +302,8 @@ function Contact() {
           <div className="prose prose-lg dark:prose-invert max-w-none">
             <p className="text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">
               {language === 'es'
-                ? 'En Bolivia Blue, valoramos la comunicación con nuestros usuarios. Estamos comprometidos a responder todas tus consultas de manera rápida y profesional. A continuación encontrarás información detallada sobre cómo contactarnos y qué esperar cuando lo hagas.'
-                : 'At Bolivia Blue, we value communication with our users. We are committed to responding to all your inquiries quickly and professionally. Below you will find detailed information on how to contact us and what to expect when you do.'}
+                ? 'En Bolivia Blue, valoramos la comunicación con nuestros usuarios. A continuación encontrarás cómo contactarnos y qué información incluir en tu consulta.'
+                : 'At Bolivia Blue, we value communication with our users. Below you will find how to contact us and what information to include in your inquiry.'}
             </p>
 
             <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4">
@@ -308,8 +311,8 @@ function Contact() {
             </h3>
             <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
               {language === 'es'
-                ? 'Nuestro equipo revisa y responde a todos los correos electrónicos durante días hábiles (lunes a viernes). Aunque no tenemos un horario de oficina físico, nos esforzamos por responder todas las consultas en menos de 24 horas durante días laborables. Para consultas urgentes relacionadas con errores técnicos críticos, hacemos nuestro mejor esfuerzo para responder lo antes posible.'
-                : 'Our team reviews and responds to all emails during business days (Monday to Friday). Although we do not have a physical office schedule, we strive to respond to all inquiries within 24 hours during business days. For urgent inquiries related to critical technical errors, we do our best to respond as soon as possible.'}
+                ? 'El tiempo de respuesta puede variar según la consulta. Para reportar un error técnico, incluí la página afectada y una descripción del problema. Las consultas sobre disponibilidad de datos, cobertura y condiciones requieren revisión manual.'
+                : 'Response times may vary depending on the inquiry. To report a technical error, include the affected page and a description of the problem. Questions about data availability, coverage and terms require manual review.'}
             </p>
 
             <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mt-8 mb-4">
@@ -407,8 +410,8 @@ function Contact() {
                 </h4>
                 <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
                   {language === 'es'
-                    ? 'Nos esforzamos por responder todos los correos en menos de 24 horas durante días hábiles. Para consultas urgentes o errores críticos, intentamos responder lo antes posible, a menudo en menos de 12 horas.'
-                    : 'We strive to respond to all emails within 24 hours during business days. For urgent inquiries or critical errors, we try to respond as soon as possible, often within 12 hours.'}
+                    ? 'El tiempo de respuesta puede variar. Las consultas sobre datos requieren revisar la disponibilidad, cobertura y condiciones; no hay un plazo de respuesta garantizado.'
+                    : 'Response times may vary. Data inquiries require a review of availability, coverage and terms; there is no guaranteed response time.'}
                 </p>
               </div>
 

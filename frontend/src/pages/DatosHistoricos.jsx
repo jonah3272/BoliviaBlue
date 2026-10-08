@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { getDataDocumentationPage } from '../data/dataDocumentation';
+import { DATA_INQUIRY_PATH, getDataInquiry } from '../data/dataInquiry';
 import { useLanguage } from '../contexts/LanguageContext';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -43,6 +44,7 @@ function DatosHistoricos() {
   const language = languageContext?.language || 'es';
   const page = getDataDocumentationPage('/datos-historicos', language);
   const { copy } = page;
+  const inquiry = getDataInquiry(language);
   const [selectedRange, setSelectedRange] = useState('1M');
   const [historyData, setHistoryData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -200,8 +202,8 @@ function DatosHistoricos() {
           '@type': 'Answer',
           text:
             language === 'es'
-              ? `Podés bajar una muestra CSV o JSON de hasta 4.000 observaciones recientes sin registro. ${extendedExportAvailable ? 'El formulario de email habilita rangos ampliados con un máximo de 50.000 filas; consultá la cobertura real del archivo.' : 'La descarga ampliada automática no está disponible aquí; contactanos para solicitarla.'}`
-              : `You can download a CSV or JSON sample of up to 4,000 recent observations without signing up. ${extendedExportAvailable ? 'The email form unlocks extended ranges capped at 50,000 rows; check the file’s actual coverage.' : 'Extended automatic downloads are unavailable here; contact us to request access.'}`,
+              ? `Podés bajar una muestra CSV o JSON de hasta 4.000 observaciones recientes sin registro. ${extendedExportAvailable ? 'El formulario de email habilita rangos ampliados con un máximo de 50.000 filas; consultá la cobertura real del archivo.' : 'La descarga ampliada automática no está disponible aquí; consultá disponibilidad y condiciones, sujetas a revisión manual.'}`
+              : `You can download a CSV or JSON sample of up to 4,000 recent observations without signing up. ${extendedExportAvailable ? 'The email form unlocks extended ranges capped at 50,000 rows; check the file’s actual coverage.' : 'Extended automatic downloads are unavailable here; ask about availability and terms, subject to manual review.'}`,
         },
       },
       {
@@ -211,8 +213,8 @@ function DatosHistoricos() {
           '@type': 'Answer',
           text:
             language === 'es'
-              ? 'Sí: documentación pública en /api-docs y contacto comercial en /contacto para volumen, licencias o integraciones a medida.'
-              : 'Yes: public docs at /api-docs and commercial contact at /contacto for volume, licensing, or custom integration.',
+              ? 'La API pública está documentada en /api-docs. En /contacto#data-request podés consultar otros períodos, integraciones y condiciones; la disponibilidad requiere revisión manual.'
+              : 'The public API is documented at /api-docs. At /contacto#data-request you can ask about other periods, integrations and terms; availability requires manual review.',
         },
       },
       {
@@ -599,7 +601,8 @@ function DatosHistoricos() {
                 {language === 'es'
                   ? 'La descarga automática ampliada no está disponible aquí. Los archivos públicos son muestras limitadas, no el historial completo. '
                   : 'Extended automatic downloads are unavailable here. Public files are bounded samples, not the full archive. '}
-                <Link to="/contacto" className="text-blue-600 underline">{copy.extendedAccessLabel}</Link>
+                <Link to={inquiry.href} onClick={() => trackCommercialAccessClicked({ language, destination: DATA_INQUIRY_PATH, link_label: 'datos_historicos_unavailable_inquiry' })} className="text-blue-600 underline">{copy.extendedAccessLabel}</Link>
+                {' '}{inquiry.limitation}
                 {HAS_EXTENDED_EXPORT_BACKEND && <button type="button" onClick={() => setExportServiceCheck((value) => value + 1)} className="ml-3 text-blue-600 underline">{language === 'es' ? 'Reintentar conexión' : 'Retry connection'}</button>}
               </p>
             )}
@@ -640,7 +643,7 @@ function DatosHistoricos() {
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   <Link
-                    to="/api-docs"
+                    to={page.local('/api-docs')}
                     onClick={() =>
                       trackCommercialAccessClicked({
                         language,
@@ -653,11 +656,11 @@ function DatosHistoricos() {
                     API
                   </Link>
                   <Link
-                    to="/contacto"
+                    to={inquiry.href}
                     onClick={() =>
                       trackCommercialAccessClicked({
                         language,
-                        destination: '/contacto',
+                        destination: DATA_INQUIRY_PATH,
                         link_label: 'datos_historicos_contact_grid',
                       })
                     }
@@ -676,7 +679,7 @@ function DatosHistoricos() {
                 </p>
                 {clientCsvNeedsUnlock && (
                   <p className="mt-2 text-xs text-amber-800 dark:text-amber-200">
-                    {language === 'es' ? 'Período largo: solicitá acceso ampliado.' : 'Long range: request extended access.'}
+                    {language === 'es' ? 'Período largo: consultá disponibilidad y condiciones.' : 'Long range: ask about availability and terms.'}
                   </p>
                 )}
                 <button

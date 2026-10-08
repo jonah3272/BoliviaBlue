@@ -1,11 +1,13 @@
 /**
  * Sitemap XML. Rate pages get today's lastmod on every request.
- * Pages that do not change daily keep a stable date so Google can trust lastmod.
+ * Editorial pages use their last significant content-edit date, not build time.
  */
 
 const BASE = 'https://www.boliviablue.com';
 const STABLE_LASTMOD = '2026-09-26T12:00:00+00:00';
 
+// Set lastmod only for a verified significant edit; ordinary deploys must not bump it.
+// The methodology/provenance and newsroom snapshot content changed on 2026-10-08.
 const PAGES = [
   { path: '/', changefreq: 'hourly', priority: '1.0' },
   { path: '/dolar-blue-hoy', changefreq: 'hourly', priority: '1.0' },
@@ -33,10 +35,10 @@ const PAGES = [
   { path: '/peso-chileno-a-boliviano', changefreq: 'hourly', priority: '0.9' },
   { path: '/bancos', changefreq: 'monthly', priority: '0.75' },
   { path: '/preguntas-frecuentes', changefreq: 'monthly', priority: '0.85' },
-  { path: '/fuente-de-datos', changefreq: 'monthly', priority: '0.75' },
+  { path: '/fuente-de-datos', lastmod: '2026-10-08', changefreq: 'monthly', priority: '0.75' },
   { path: '/api-docs', changefreq: 'monthly', priority: '0.75' },
   { path: '/widget', changefreq: 'monthly', priority: '0.9' },
-  { path: '/prensa', changefreq: 'monthly', priority: '0.9' },
+  { path: '/prensa', lastmod: '2026-10-08', changefreq: 'monthly', priority: '0.9' },
   { path: '/guia-dinero-bolivia', changefreq: 'weekly', priority: '0.9' },
   { path: '/bolivia-money-guide', changefreq: 'weekly', priority: '0.9' },
   { path: '/publicitar', changefreq: 'monthly', priority: '0.85' },
@@ -87,7 +89,8 @@ function buildSitemapXml(date = new Date()) {
 `;
   for (const page of PAGES) {
     const fresh = page.changefreq === 'hourly' || page.changefreq === 'daily';
-    xml += urlEntry(page.path, fresh ? today : STABLE_LASTMOD, page.changefreq, page.priority);
+    const lastmod = page.lastmod || (fresh ? today : STABLE_LASTMOD);
+    xml += urlEntry(page.path, lastmod, page.changefreq, page.priority);
   }
   for (const article of BLOG) {
     xml += urlEntry(article.path, article.lastmod, 'monthly', '0.7');

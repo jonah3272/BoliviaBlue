@@ -7,7 +7,7 @@ import Navigation from '../components/Navigation';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import { Link } from 'react-router-dom';
-import { getApiEndpoint } from '../utils/apiUrl';
+import { DATA_INQUIRY_PATH, getDataInquiry } from '../data/dataInquiry';
 import { trackApiDocsViewed, trackCommercialAccessClicked } from '../utils/analyticsEvents';
 
 function ApiDocs() {
@@ -17,6 +17,7 @@ function ApiDocs() {
   const languageContext = useLanguage();
   const language = languageContext?.language || 'es';
   const apiDocsViewedRef = useRef(false);
+  const inquiry = getDataInquiry(language);
 
   useEffect(() => {
     if (apiDocsViewedRef.current) return;
@@ -79,20 +80,7 @@ function ApiDocs() {
       example: { url: 'https://www.boliviablue.com/api/health', response: { ok: true, updated_at_iso: '2026-10-03T12:00:00Z', history_points: 29250, host: 'vercel' } },
     },
   ];
-  if (import.meta.env.VITE_API_URL) {
-    endpoints.push({
-      method: 'GET', path: getApiEndpoint('/api/historical-data.json'),
-      description: language === 'es'
-        ? 'Backend separado para descargas ampliadas: 90d, 1y y all requieren el token del formulario de email en /datos-historicos. Conserva su límite de 50.000 filas y metadatos de cobertura; no es el contrato de la API pública www.'
-        : 'Separate extended-export backend: 90d, 1y and all require a token from the email form on /datos-historicos. Its 50,000-row limit and coverage metadata apply; this is separate from the public www API contract.',
-      parameters: [
-        { name: 'range', type: 'string', required: true, options: ['90d', '1y', 'all'], description: 'Extended ranges' },
-        { name: 'token', type: 'string', required: true, description: 'Use only the token issued after your existing email/consent unlock.' },
-      ],
-      response: 'JSON: { metadata, data: [{ timestamp, buy, sell, mid, official_buy, official_sell, official_mid }] }. CSV uses timestamp as its first column. Both formats disclose coverage and truncation.',
-      example: { url: getApiEndpoint('/api/historical-data.json?range=90d&token=YOUR_TOKEN'), response: { metadata: { range_requested: '90d', limit: 50000, truncated: false }, data: [] } },
-    });
-  }
+
 
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
@@ -158,16 +146,20 @@ function ApiDocs() {
         {/* Commercial / higher-volume CTA */}
         <div className="bg-slate-100 dark:bg-slate-800/80 rounded-xl p-6 mb-8 border border-slate-200 dark:border-slate-600">
           <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
-            {language === 'es' ? '¿Necesitás más volumen o acceso automático?' : 'Need higher volume or automated access?'}
+            {inquiry.heading}
           </h2>
           <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">
-            {language === 'es'
-              ? 'La API pública cubre tasas en vivo e histórico por intervalos. Para scraping intensivo, white-label, o licencias de datos, escribinos.'
-              : 'The public API covers live rates and history by interval. For heavy scraping, white-label, or data licensing, contact us.'}
+            {inquiry.introduction}
           </p>
+          <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">
+            {language === 'es'
+              ? 'La API pública y sus muestras siguen disponibles sin registro. Las descargas ampliadas automáticas del servicio separado no están disponibles aquí; cualquier cobertura o acceso adicional requiere revisión manual.'
+              : 'The public API and its samples remain available without signup. Automatic extended downloads from the separate service are unavailable here; any additional coverage or access requires manual review.'}
+          </p>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{inquiry.limitation}</p>
           <div className="flex flex-wrap gap-3">
             <Link
-              to="/datos-historicos"
+              to={language === 'en' ? '/datos-historicos?lang=en' : '/datos-historicos'}
               onClick={() =>
                 trackCommercialAccessClicked({
                   language,
@@ -180,17 +172,17 @@ function ApiDocs() {
               {language === 'es' ? 'Descargas en datos históricos →' : 'Downloads on historical data →'}
             </Link>
             <Link
-              to="/contacto"
+              to={inquiry.href}
               onClick={() =>
                 trackCommercialAccessClicked({
                   language,
-                  destination: '/contacto',
+                  destination: DATA_INQUIRY_PATH,
                   link_label: 'api_docs_contact_commercial',
                 })
               }
               className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline"
             >
-              {language === 'es' ? 'Contacto comercial →' : 'Commercial contact →'}
+              {language === 'es' ? 'Preparar una consulta de datos →' : 'Prepare a data inquiry →'}
             </Link>
           </div>
         </div>
@@ -429,7 +421,7 @@ def get_blue_rate():
           </h3>
           <div className="flex flex-wrap gap-4">
             <Link
-              to="/datos-historicos"
+              to={language === 'en' ? '/datos-historicos?lang=en' : '/datos-historicos'}
               className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
             >
               {language === 'es' ? '📊 Datos Históricos' : '📊 Historical Data'}

@@ -24,7 +24,7 @@ const fixture = {
   buy_bob_per_ars: 0.01, sell_bob_per_ars: 0.011,
   buy_bob_per_clp: 0.012, sell_bob_per_clp: 0.013,
 };
-let language, rateResponse, copied, events, navigate, schema, Calculator, CalculatorPage, calculatorRate, refresh;
+let language, rateResponse, copied, events, navigate, schema, Calculator, CalculatorPage, calculatorRate, getCalculatorPage, refresh;
 const nativeSetInterval = globalThis.setInterval;
 const translations = { es: { bolivianos: 'Bolivianos', swapCurrencies: 'Intercambiar monedas', official: 'Oficial', unofficial: 'Blue' }, en: { bolivianos: 'Bolivianos', swapCurrencies: 'Swap currencies', official: 'Official', unofficial: 'Blue' } };
 globalThis.__calculatorTest = {
@@ -69,6 +69,7 @@ before(async () => {
   Calculator = await loadComponent('frontend/src/components/CurrencyCalculator.jsx');
   CalculatorPage = await loadComponent('frontend/src/pages/Calculator.jsx');
   ({ calculatorRate } = await import('../frontend/src/utils/calculatorRates.js'));
+  ({ getCalculatorPage } = await import('../frontend/src/data/calculatorPage.js'));
 });
 beforeEach(() => {
   globalThis.setInterval = (callback, delay, ...args) => { if (delay === 60000) refresh = callback; return nativeSetInterval(callback, delay, ...args); };
@@ -112,17 +113,17 @@ describe('calculator P2P direction', () => {
     assert.equal(history().length, 4);
   });
   it('uses URL USD and BOB presets, resets incompatible currency/rate modes, and handles Back', async () => {
-    mount('/calculadora?usd=500'); await result('5985.00', '500');
+    mount('/calculadora?usd=1000'); await result('11970.00', '1000');
     click('EUR'); click('Oficial');
     await React.act(async () => navigate('/calculadora?bob=1201'));
     await result('1201', '100.0000');
     assert.match(document.querySelector('label[for="calculator-foreign"]').textContent, /USD/);
-    await React.act(async () => navigate(-1)); await result('5985.00', '500');
+    await React.act(async () => navigate(-1)); await result('11970.00', '1000');
   });
   it('reapplies repeated same-URL scenario presets after currency, rate and amount changes', async () => {
     for (const scenario of [
-      { route: '/calculadora?usd=500', link: /Remesa \$500/, initialBob: '5985.00', initialForeign: '500' },
-      { route: '/calculadora?bob=5000', link: /Viaje 5.000 Bs/, initialBob: '5000', initialForeign: '416.3197' },
+      { route: '/calculadora?usd=1000', link: /1\.000 dólares a bolivianos/, initialBob: '11970.00', initialForeign: '1000' },
+      { route: '/calculadora?bob=5000', link: /5\.000 bolivianos a dólares/, initialBob: '5000', initialForeign: '416.3197' },
     ]) {
       mount(scenario.route, CalculatorPage); await result(scenario.initialBob, scenario.initialForeign);
       click('EUR'); click('Oficial'); change(foreign(), '700');
@@ -146,33 +147,33 @@ describe('calculator P2P direction', () => {
     }
   });
   it('does not reset the current calculator for modified scenario clicks intended for another tab', async () => {
-    mount('/calculadora?usd=500', CalculatorPage); await result('5985.00', '500');
+    mount('/calculadora?usd=1000', CalculatorPage); await result('11970.00', '1000');
     click('EUR'); click('Oficial'); change(foreign(), '700'); await result('5277.80', '700');
     const preventBrowserNavigation = (event) => event.preventDefault();
     document.addEventListener('click', preventBrowserNavigation);
     try {
       for (const modifier of ['ctrlKey', 'metaKey', 'shiftKey', 'altKey']) {
-        fireEvent.click(screen.getByRole('link', { name: /Remesa \$500/ }), { [modifier]: true });
+        fireEvent.click(screen.getByRole('link', { name: /1\.000 dólares a bolivianos/ }), { [modifier]: true });
         await result('5277.80', '700');
       }
     } finally { document.removeEventListener('click', preventBrowserNavigation); }
   });
   it('preserves edited currency, rate and amount on hash navigation and hash Back/Forward', async () => {
-    mount('/calculadora?usd=500', CalculatorPage); await result('5985.00', '500');
+    mount('/calculadora?usd=1000', CalculatorPage); await result('11970.00', '1000');
     click('EUR'); click('Oficial'); change(foreign(), '700'); await result('5277.80', '700');
-    await React.act(async () => navigate('/calculadora?usd=500#google_vignette'));
+    await React.act(async () => navigate('/calculadora?usd=1000#google_vignette'));
     await result('5277.80', '700');
     await React.act(async () => navigate(-1)); await result('5277.80', '700');
     await React.act(async () => navigate(1)); await result('5277.80', '700');
     // An intentional same-query scenario click still applies from a hash URL.
-    fireEvent.click(screen.getByRole('link', { name: /Remesa \$500/ }));
-    await result('5985.00', '500');
+    fireEvent.click(screen.getByRole('link', { name: /1\.000 dólares a bolivianos/ }));
+    await result('11970.00', '1000');
   });
   it('preserves edits for native BrowserRouter hash changes after a scenario click', async () => {
     window.history.replaceState(null, '', '/calculadora?usd=100');
     render(h(BrowserRouter, null, h(CalculatorPage)));
     await result('1197.00', '100');
-    fireEvent.click(screen.getByRole('link', { name: /Remesa \$500/ })); await result('5985.00', '500');
+    fireEvent.click(screen.getByRole('link', { name: /1\.000 dólares a bolivianos/ })); await result('11970.00', '1000');
     click('EUR'); click('Oficial'); change(foreign(), '700'); await result('5277.80', '700');
     await React.act(async () => {
       window.location.hash = 'calculator-section';
@@ -194,7 +195,7 @@ describe('calculator P2P direction', () => {
       await new Promise((resolve) => setTimeout(resolve, 20));
     });
     await result('5277.80', '700');
-    fireEvent.click(screen.getByRole('link', { name: /Remesa \$500/ })); await result('5985.00', '500');
+    fireEvent.click(screen.getByRole('link', { name: /1\.000 dólares a bolivianos/ })); await result('11970.00', '1000');
     assert.equal(window.location.hash, '');
   });
   it('copies and saves the displayed direction/result with P2P qualifications in ES and EN', async () => {
@@ -269,13 +270,44 @@ describe('calculator P2P direction', () => {
     try { mount(); await result('1197.00', '100'); change(bob(), '1201'); await result('1201', '100.0000'); }
     finally { Object.defineProperty(globalThis, 'localStorage', original); }
   });
-  it('keeps page scenarios, explanatory examples and metadata aligned in ES and EN', async () => {
+  it('renders the shared identity, formulas, caveats and presets in ES and EN below the calculator', async () => {
     for (const locale of ['es', 'en']) {
       language = locale; mount('/calculadora', CalculatorPage); await result('1197.00', '100');
-      assert.match(document.body.textContent, /5985/); assert.match(document.body.textContent, /416.32/);
-      assert.doesNotMatch(document.body.textContent, /6005|Bs en efectivo|BOB cash/);
-      assert.equal(schema.structuredData[0].currentExchangeRate, '11.97');
+      const page = getCalculatorPage(locale);
+      assert.equal(screen.getByRole('heading', { level: 1 }).textContent, page.heading);
+      assert.equal(schema.title, page.title); assert.equal(schema.description, page.description);
+      assert.equal(schema.canonical, '/calculadora');
+      assert.deepEqual(schema.structuredData, [page.webAppSchema]);
+      for (const paragraph of [page.introduction, ...page.sections.flatMap((section) => section.paragraphs)]) {
+        assert.ok(document.body.textContent.includes(paragraph), paragraph);
+      }
+      for (const preset of page.presets) assert.equal(screen.getByRole('link', { name: preset.label }).getAttribute('href'), preset.href);
+      assert.equal(screen.getByRole('link', { name: page.methodology.label }).getAttribute('href'), page.methodology.href);
+      assert.ok(foreign().compareDocumentPosition(screen.getByRole('heading', { name: page.helpHeading })) & window.Node.DOCUMENT_POSITION_FOLLOWING);
+      assert.doesNotMatch(JSON.stringify(schema.structuredData), /aggregateRating|ratingValue|reviewCount|dateModified|currentExchangeRate/);
       assert.match(document.body.textContent, /0.04 Bs/);
+      cleanup(); localStorage.clear();
+    }
+  });
+  it('applies every common amount link in both locales, including repeated clicks and Back/Forward', async () => {
+    for (const locale of ['es', 'en']) {
+      language = locale;
+      const page = getCalculatorPage(locale);
+      mount(locale === 'en' ? '/calculadora?lang=en' : '/calculadora', CalculatorPage);
+      await result('1197.00', '100');
+      for (const preset of page.presets) {
+        click('EUR'); click(locale === 'es' ? 'Oficial' : 'Official'); change(foreign(), '700');
+        fireEvent.click(screen.getByRole('link', { name: preset.label }));
+        const expected = preset.preset.usd
+          ? [(Number(preset.preset.usd) * fixture.sell_bob_per_usd).toFixed(2), preset.preset.usd]
+          : [preset.preset.bob, (Number(preset.preset.bob) / fixture.buy_bob_per_usd).toFixed(4)];
+        await result(...expected);
+        change(foreign(), '700');
+        fireEvent.click(screen.getByRole('link', { name: preset.label }));
+        await result(...expected);
+      }
+      await React.act(async () => navigate(-1)); await result('119700.00', '10000');
+      await React.act(async () => navigate(1)); await result('5000', '416.3197');
       cleanup(); localStorage.clear();
     }
   });
@@ -313,5 +345,6 @@ describe('calculator P2P direction', () => {
     rateResponse = () => new Promise(() => {}); mount('/calculadora', CalculatorPage);
     assert.doesNotMatch(document.body.textContent, /~0 BOB|~0.00 USD/);
     assert.equal(schema.structuredData.length, 1);
+    assert.equal(screen.getAllByRole('link', { name: /dólares a bolivianos|bolivianos a dólares/ }).length, 5);
   });
 });

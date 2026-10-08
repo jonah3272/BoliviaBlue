@@ -11,6 +11,7 @@ import { fetchBlueRate, fetchBlueHistory } from '../utils/api';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import CurrencyCalculator from '../components/CurrencyCalculator';
 import { calculatorRate } from '../utils/calculatorRates';
+import { getCalculatorPage } from '../data/calculatorPage';
 
 function CalculatorStats({ language, currentRate, weekChangePct }) {
   const es = language === 'es';
@@ -54,64 +55,30 @@ function CalculatorStats({ language, currentRate, weekChangePct }) {
   );
 }
 
-function CalculatorScenarios({ language, currentRate, onPreset }) {
-  const es = language === 'es';
-  const toBob = calculatorRate(currentRate, 'USD', false, false);
-  const fromBob = calculatorRate(currentRate, 'USD', false, true);
-  if (!toBob || !fromBob) return null;
-
-  const scenarios = [
-    {
-      href: '/calculadora?usd=500',
-      preset: { usd: '500' },
-      emoji: '💸',
-      title: es ? 'Remesa $500 (referencia)' : '$500 remittance reference',
-      sub: es ? `≈ ${(toBob * 500).toFixed(0)} Bs antes de comisiones` : `≈ ${(toBob * 500).toFixed(0)} BOB before fees`,
-    },
-    {
-      href: '/calculadora?bob=5000',
-      preset: { bob: '5000' },
-      emoji: '✈️',
-      title: es ? 'Viaje 5.000 Bs' : '5,000 BOB trip',
-      sub: es ? `≈ $${(5000 / fromBob).toFixed(2)} USD` : `≈ $${(5000 / fromBob).toFixed(2)} USD`,
-    },
-    {
-      href: '/calculadora?usd=100',
-      preset: { usd: '100' },
-      emoji: '🛒',
-      title: es ? '$100 a bolivianos' : '$100 to bolivianos',
-      sub: es ? `≈ ${(toBob * 100).toFixed(0)} Bs, referencia P2P` : `≈ ${(toBob * 100).toFixed(0)} BOB, P2P reference`,
-    },
-  ];
-
+function CalculatorPresets({ page, onPreset }) {
   return (
-    <div>
-      <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
-        {es ? 'Casos comunes' : 'Common scenarios'}
+    <section aria-labelledby="calculator-presets-heading" className="space-y-2">
+      <h2 id="calculator-presets-heading" className="text-sm font-semibold text-gray-900 dark:text-white">
+        {page.presetsHeading}
       </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-        {scenarios.map((s) => (
+      <nav className="flex flex-wrap gap-2" aria-label={page.presetsHeading}>
+        {page.presets.map(({ href, label, preset }) => (
           <Link
-            key={s.href}
-            to={s.href}
+            key={href}
+            to={href}
             onClick={(event) => {
               if (!event.defaultPrevented && event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
-                onPreset({ ...s.preset });
+                onPreset({ ...preset });
               }
             }}
-            className="flex items-start gap-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-3 hover:border-sky-300 dark:hover:border-sky-700 hover:bg-sky-50/50 dark:hover:bg-sky-950/20 transition-colors touch-manipulation"
+            className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2.5 text-sm font-medium text-sky-700 dark:text-sky-300 hover:border-sky-400 transition-colors touch-manipulation"
           >
-            <span className="text-xl" aria-hidden>
-              {s.emoji}
-            </span>
-            <div className="min-w-0">
-              <div className="text-sm font-semibold text-gray-900 dark:text-white">{s.title}</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400 font-mono tabular-nums">{s.sub}</div>
-            </div>
+            {label}
           </Link>
         ))}
-      </div>
-    </div>
+      </nav>
+      <p className="text-xs text-gray-600 dark:text-gray-400">{page.presetsNote}</p>
+    </section>
   );
 }
 
@@ -120,7 +87,7 @@ function CalculatorQuickLinks({ language }) {
   const links = [
     { to: '/dolar-blue-hoy', label: es ? 'Cotización hoy' : 'Today’s rate' },
     { to: '/#price-alerts', label: es ? 'Crear alerta' : 'Set alert' },
-    { to: '/comprar-dolares', label: es ? 'Comprar USD' : 'Buy USD' },
+    { to: '/comprar-dolares', label: es ? 'Guía para comprar o vender USDT' : 'Guide to buying or selling USDT' },
     { to: '/datos-historicos', label: es ? 'Histórico' : 'History' },
   ];
 
@@ -139,65 +106,18 @@ function CalculatorQuickLinks({ language }) {
   );
 }
 
-function CalculatorHelpContent({ language, currentRate, compact = false }) {
-  const es = language === 'es';
-  const toBob = calculatorRate(currentRate, 'USD', false, false);
-  const fromBob = calculatorRate(currentRate, 'USD', false, true);
-
+function CalculatorHelpContent({ page }) {
   return (
     <>
-      <p className="text-gray-700 dark:text-gray-300">
-        {es
-          ? 'Ingresá un monto y elegí USD→BOB o BOB→USD. La referencia blue proviene de mercados P2P de USDT y se actualiza cada 15 minutos. Al vender USDT recibís BOB con la tasa de venta; al comprar USDT con BOB se usa la tasa de compra.'
-          : 'Enter an amount and pick USD→BOB or BOB→USD. The blue reference comes from USDT P2P markets and updates every 15 minutes. Selling USDT for BOB uses the sell rate; buying USDT with BOB uses the buy rate.'}
-      </p>
-
-      {!compact && (
-        <>
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3 not-prose">
-            {es ? '¿Por qué el dólar blue?' : 'Why the blue dollar?'}
-          </h3>
-          <p className="text-gray-700 dark:text-gray-300">
-            {es
-              ? 'Es una referencia informativa de USDT/BOB. Los cálculos en USD suponen una paridad de 1:1 con USDT; no garantizan esa paridad, liquidez ni una cotización de dólares en efectivo. Las comisiones y condiciones de cada operación pueden cambiar el resultado.'
-              : 'It is an informational USDT/BOB reference. USD calculations assume 1:1 with USDT; that parity, liquidity and a cash-dollar quote are not guaranteed. Fees and individual trading conditions can change the result.'}
-          </p>
-        </>
-      )}
-
-      <h3 className={`font-semibold text-gray-900 dark:text-white mb-2 not-prose ${compact ? 'mt-4 text-base' : 'mt-6 text-xl'}`}>
-        {es ? 'Ejemplos' : 'Examples'}
-      </h3>
-      <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-1.5">
-        {es ? (
-          <>
-            <li>
-              <strong>Remesa $500:</strong> {toBob ? `~${(toBob * 500).toFixed(0)}` : '—'} BOB (venta P2P {toBob ? toBob.toFixed(2) : '—'}, antes de comisiones)
-            </li>
-            <li>
-              <strong>Gastar 5.000 BOB:</strong> {fromBob ? `~${(5000 / fromBob).toFixed(2)}` : '—'} USD estimados (compra P2P {fromBob ? fromBob.toFixed(2) : '—'}, antes de comisiones)
-            </li>
-          </>
-        ) : (
-          <>
-            <li>
-              <strong>$500 remittance:</strong> {toBob ? `~${(toBob * 500).toFixed(0)}` : '—'} BOB (P2P sell {toBob ? toBob.toFixed(2) : '—'}, before fees)
-            </li>
-            <li>
-              <strong>Spend 5,000 BOB:</strong> {fromBob ? `~${(5000 / fromBob).toFixed(2)}` : '—'} estimated USD (P2P buy {fromBob ? fromBob.toFixed(2) : '—'}, before fees)
-            </li>
-          </>
-        )}
-      </ul>
-
-      <p className={`text-sm text-gray-600 dark:text-gray-400 ${compact ? 'mt-4' : 'mt-6'}`}>
-        {es ? 'Solo informativo — verificá la tasa antes de operar. ' : 'Informational only — verify the rate before transacting. '}
-        <Link to="/fuente-de-datos" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
-          {es ? 'Metodología' : 'Methodology'}
-        </Link>
-        {' · '}
-        <Link to="/preguntas-frecuentes" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
-          {es ? 'FAQ' : 'FAQ'}
+      {page.sections.map(({ id, title, paragraphs }) => (
+        <section key={id} id={id}>
+          <h3 className="font-semibold text-lg text-gray-900 dark:text-white mt-6 mb-3 not-prose">{title}</h3>
+          {paragraphs.map((paragraph) => <p key={paragraph} className="text-gray-700 dark:text-gray-300">{paragraph}</p>)}
+        </section>
+      ))}
+      <p className="mt-6 text-sm">
+        <Link to={page.methodology.href} className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+          {page.methodology.label}
         </Link>
       </p>
     </>
@@ -209,14 +129,14 @@ function Calculator() {
   useAdsenseReady();
   
   const languageContext = useLanguage();
-  const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
+  const page = getCalculatorPage(language);
   const [showOfficial, setShowOfficial] = useState(false);
   const [currentRate, setCurrentRate] = useState(null);
   const [weekChangePct, setWeekChangePct] = useState(null);
   const [presetRequest, setPresetRequest] = useState(null);
   
-  // Load current rate for structured data
+  // Load current rates for the visible comparison cards
   useEffect(() => {
     const loadRate = async () => {
       try {
@@ -250,60 +170,13 @@ function Calculator() {
       .catch(() => {});
   }, []);
 
-  // CurrencyConverter schema
-  const currencyConverterSchema = currentRate ? {
-    "@context": "https://schema.org",
-    "@type": "CurrencyConverter",
-    "name": language === 'es' ? "Calculadora de Divisas USD/BOB" : "USD/BOB Currency Calculator",
-    "description": language === 'es'
-      ? "Calculadora gratuita para convertir dólares estadounidenses a bolivianos usando el tipo de cambio blue en tiempo real"
-      : "Free calculator to convert US dollars to bolivianos using real-time blue exchange rate",
-    "provider": {
-      "@type": "Organization",
-      "name": "Bolivia Blue",
-      "url": "https://boliviablue.com"
-    },
-    "fromCurrency": "USD",
-    "toCurrency": "BOB",
-    "currentExchangeRate": calculatorRate(currentRate, 'USD', false, false).toFixed(2),
-    "dateModified": new Date().toISOString()
-  } : null;
-
-  // WebApplication schema with AggregateRating for star ratings in search
-  const webAppSchema = {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": language === 'es' ? "Calculadora Dólar Blue Bolivia" : "Bolivia Blue Dollar Calculator",
-    "applicationCategory": "FinanceApplication",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
-    },
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.8",
-      "bestRating": "5",
-      "worstRating": "1",
-      "ratingCount": "342",
-      "reviewCount": "98"
-    }
-  };
-  
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
-        title={language === 'es' 
-          ? "Calculadora USD/BOB Gratis | Actualizada Cada 15 Min - Bolivia Blue"
-          : "Free USD/BOB Calculator | Updated Every 15 Min - Bolivia Blue"}
-        description={language === 'es'
-          ? "Calculadora gratuita para convertir dólares a bolivianos y viceversa usando el tipo de cambio blue en tiempo real. Actualizado cada 15 minutos. Sin registro, 100% gratis."
-          : "Free calculator to convert US dollars to bolivianos and vice versa using real-time blue exchange rate. Updated every 15 minutes. No registration, 100% free."}
-        keywords={language === 'es'
-          ? "calculadora dólar bolivia, convertir usd a bob, convertir bob a usd, calculadora divisas bolivia, tipo cambio calculadora, calculadora cambio bolivia, convertir dólar a boliviano, convertir boliviano a dólar, calculadora binance p2p, mejor calculadora dólar bolivia"
-          : "bolivia dollar calculator, convert usd to bob, convert bob to usd, currency calculator bolivia, exchange rate calculator, bolivia exchange calculator, convert dollar to boliviano, convert boliviano to dollar, binance p2p calculator, best bolivia dollar calculator"}
+        title={page.title}
+        description={page.description}
         canonical="/calculadora"
-        structuredData={currencyConverterSchema ? [currencyConverterSchema, webAppSchema] : [webAppSchema]}
+        structuredData={[page.webAppSchema]}
       />
       
       <Header />
@@ -314,8 +187,9 @@ function Calculator() {
       <main className="google-anno-skip max-w-xl md:max-w-3xl mx-auto px-3 sm:px-4 py-3 sm:py-6 md:py-8 flex flex-col gap-3 sm:gap-5 pb-[max(5rem,calc(3.5rem+env(safe-area-inset-bottom)))] md:pb-8">
         <div className="text-center space-y-1">
           <h1 className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
-            {language === 'es' ? 'Calculadora USD/BOB' : 'USD/BOB Calculator'}
+            {page.heading}
           </h1>
+          <p className="text-sm text-gray-600 dark:text-gray-400">{page.introduction}</p>
           {currentRate && (
             <p className="text-xs sm:text-sm font-mono text-gray-500 dark:text-gray-400 tabular-nums">
               {language === 'es' ? 'Blue hoy' : 'Blue today'}:{' '}
@@ -345,7 +219,7 @@ function Calculator() {
           />
         )}
 
-        <CalculatorScenarios language={language} currentRate={currentRate} onPreset={setPresetRequest} />
+        <CalculatorPresets page={page} onPreset={setPresetRequest} />
 
         <CalculatorQuickLinks language={language} />
 
@@ -355,10 +229,10 @@ function Calculator() {
 
         <section className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 p-4 sm:p-6">
           <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
-            {language === 'es' ? 'Guía rápida' : 'Quick guide'}
+            {page.helpHeading}
           </h2>
           <div className="prose prose-sm dark:prose-invert max-w-none md:prose-base">
-            <CalculatorHelpContent language={language} currentRate={currentRate} compact={false} />
+            <CalculatorHelpContent page={page} />
           </div>
         </section>
       </main>

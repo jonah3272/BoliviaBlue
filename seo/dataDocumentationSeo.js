@@ -1,4 +1,5 @@
 import { getDataDocumentationPage, PUBLIC_HISTORY_CSV, PUBLIC_HISTORY_JSON } from '../frontend/src/data/dataDocumentation.js';
+import { getDataInquiry } from '../frontend/src/data/dataInquiry.js';
 import { sanitizeLangSearch } from '../frontend/src/utils/urlLang.js';
 
 const BASE = 'https://www.boliviablue.com';
@@ -37,10 +38,11 @@ function sourceContent(page) {
 
 function historyContent(page) {
   const { copy: c, methodology: m, local } = page;
+  const inquiry = getDataInquiry(page.language);
   return section('cobertura', m.provenanceHeading, paragraph(c.datasetDescription) + paragraph(m.provenanceDescription) + paragraph(m.coverageDescription))
     + section('historical-chart-heading', c.chartHeading, paragraph(page.initialDataNotice) + paragraph(c.chartDescription))
     + section('', c.recordsHeading, paragraph(c.recordsDescription) + paragraph(c.tableCsvDescription))
-    + section('descargas', c.downloadsHeading, paragraph(c.downloadsDescription) + paragraph(c.noSignup) + paragraph(c.publicRangeDescription) + nav([[PUBLIC_HISTORY_CSV, 'CSV'], [PUBLIC_HISTORY_JSON, 'JSON']]) + paragraph(c.teamsDescription) + nav([[local('/api-docs'), 'API'], [local('/contacto'), c.extendedAccessLabel]]))
+    + section('descargas', c.downloadsHeading, paragraph(c.downloadsDescription) + paragraph(c.noSignup) + paragraph(c.publicRangeDescription) + nav([[PUBLIC_HISTORY_CSV, 'CSV'], [PUBLIC_HISTORY_JSON, 'JSON']]) + paragraph(c.teamsDescription) + paragraph(inquiry.limitation) + nav([[local('/api-docs'), 'API'], [inquiry.href, c.extendedAccessLabel]]))
     + citation(page);
 }
 

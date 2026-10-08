@@ -74,6 +74,8 @@ export function RateProvider({ children }) {
         buy_change_24h: data.buy_change_24h,
         sell_change_24h: data.sell_change_24h,
         sources_used: data.sources_used,
+        source_observation: data.source_observation ?? null,
+        source_provenance: data.source_provenance ?? null,
         eur_derivation: data.eur_derivation || null,
         eur_updated_at_iso: data.eur_updated_at_iso || null,
         cop_derivation: data.cop_derivation || null,

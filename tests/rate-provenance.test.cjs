@@ -6,23 +6,21 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 
 describe('rate provenance', () => {
-  it('never assigns cached source composition to a different stored observation', () => {
+  it('reads persisted sources after a cold start and never assigns them to another observation', () => {
+    const provenance = require('../shared/rateProvenance.cjs');
     const context = {
       module: { exports: {} }, console, Date,
-      require: () => ({ STALE_MS: 1200000, isRateStale: () => false }),
+      require: (name) => name.includes('rateProvenance') ? provenance : ({ STALE_MS: 1200000, isRateStale: () => false }),
     };
-    vm.runInNewContext(fs.readFileSync(path.join(root, 'api/blue-rate.js'), 'utf8') + '\nmodule.exports.test = { toPayload, setSources: (value) => { lastSourceObservation = value; } };', context);
-    const { toPayload, setSources } = context.module.exports.test;
+    vm.runInNewContext(fs.readFileSync(path.join(root, 'api/blue-rate.js'), 'utf8') + '\nmodule.exports.test = { toPayload };', context);
+    const { toPayload } = context.module.exports.test;
     const row = { t: '2026-10-03T12:00:00Z', buy: 12.34, sell: 12.56 };
-    const cold = toPayload(row);
-    assert.equal(cold.source_count, 0);
-    assert.equal(cold.source_provenance, 'unavailable_for_stored_row');
-    assert.equal(cold.buy_bob_per_usd, row.buy);
-    setSources({ t: row.t, sources: ['eldorado'] });
+    assert.equal(toPayload(row).source_provenance, 'unavailable_for_stored_row');
+    row.source_observation = provenance.createSourceObservation({ ...row, platforms: [{ id: 'eldorado', buy: row.buy, sell: row.sell }] }, row.t);
     assert.equal(toPayload(row).source, 'eldorado-p2p');
-    assert.equal(toPayload(row).source_provenance, 'observed_this_refresh');
+    assert.equal(toPayload(row).source_provenance, 'persisted_observation');
     assert.equal(toPayload({ ...row, t: '2026-10-03T12:05:00Z' }).source_count, 0);
-    assert.equal(toPayload({ ...row, t: '2026-10-03T12:05:00Z' }).source_provenance, 'unavailable_for_stored_row');
+    assert.equal(toPayload({ ...row, t: '2026-10-03T12:00:00+00:00' }).source_count, 1);
   });
   it('the backend refresh uses the same cross-source USD/BOB collector and preserves conversion units', async () => {
     const source = fs.readFileSync(path.join(root, 'backend/p2pClient.js'), 'utf8');
@@ -33,7 +31,8 @@ describe('rate provenance', () => {
     const requestedFiats = [];
     const context = {
       module: { exports: {} }, console, Date,
-      fetchCrossSourceBobRates: async () => { bobCalls++; return { buy: 12, sell: 14, sources_used: ['binance', 'eldorado'], platforms: [{ buy: 11, sell: 13 }, { buy: 13, sell: 15 }] }; },
+      createSourceObservation: require('../shared/rateProvenance.cjs').createSourceObservation,
+      fetchCrossSourceBobRates: async () => { bobCalls++; return { buy: 12, sell: 14, sources_used: ['binance', 'eldorado'], platforms: [{ id: 'binance', buy: 11, sell: 13 }, { id: 'eldorado', buy: 13, sell: 15 }] }; },
       getCurrentBlueRateForFiat: async (fiat) => { requestedFiats.push(fiat); return { buy: 4, sell: 5 }; },
       fetch: async () => { throw new Error('Unexpected network request'); },
     };

@@ -1,3 +1,4 @@
+import { rateReadingGuide } from '../frontend/src/data/rateReadingGuide.js';
 import { buildDollarRateSearchCopy, DOLLAR_SEARCH_PAGES } from '../frontend/src/utils/dollarRateSearchCopy.js';
 
 const escape = (value) => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
@@ -29,7 +30,9 @@ export function renderDollarRateHtml(html, path, rates = null, language = 'es', 
   const conversion = (path === '/' || path === '/cuanto-esta-dolar-bolivia') && es
     ? `<p class="text-lg font-semibold text-gray-800">100 USD ≈ <span data-live-usd100>${model.hasRates ? Math.round(Number(model.buyStr) * 100) : '—'}</span> Bs${path === '/' ? ' (compra P2P)' : ''}. <a href="/calculadora" class="text-blue-600 font-medium">Calculadora</a></p>` : '';
   const pair = path === '/' && es ? `<p class="text-2xl sm:text-3xl font-bold text-gray-900 tabular-nums">Compra <span data-live-buy>${model.buyStr || '—'}</span> · Venta <span data-live-sell>${model.sellStr || '—'}</span></p>` : '';
-  const shell = `<main class="max-w-7xl mx-auto px-4 py-8" data-seo-shell="${es ? DOLLAR_SEARCH_PAGES[path] : 'english'}"><div class="text-center space-y-4 mb-8"><h1 class="text-3xl sm:text-5xl font-bold text-gray-900">${es ? HEADINGS[path].es : escape(model.title)}</h1>${path === '/' && es ? '<p class="text-base text-gray-600">Bolivian Blue · dólar blue hoy en Bolivia</p>' : ''}${pair}<p class="text-base text-gray-600 max-w-3xl mx-auto" data-dollar-rate-answer>${escape(model.answer)}</p>${conversion}${nav}</div></main>`;
+  const guide = rateReadingGuide(language);
+  const readingGuide = `<section class="max-w-3xl mx-auto space-y-4" data-rate-reading-guide><h2 class="text-2xl font-bold">${escape(guide.heading)}</h2>${guide.items.map(([q, a]) => `<div><h3 class="font-semibold">${escape(q)}</h3><p>${escape(a)}</p></div>`).join('')}<p><a href="/prensa#corte-informativo">${es ? 'Corte informativo para prensa' : 'Newsroom snapshot'}</a> · <a href="/fuente-de-datos">${es ? 'Metodología y límites' : 'Methodology and limits'}</a> · <a href="/datos-historicos">${es ? 'Gráfico y descargas históricas' : 'History chart and downloads'}</a></p></section>`;
+  const shell = `<main class="max-w-7xl mx-auto px-4 py-8" data-seo-shell="${es ? DOLLAR_SEARCH_PAGES[path] : 'english'}"><div class="text-center space-y-4 mb-8"><h1 class="text-3xl sm:text-5xl font-bold text-gray-900">${es ? HEADINGS[path].es : escape(model.title)}</h1>${path === '/' && es ? '<p class="text-base text-gray-600">Bolivian Blue · dólar blue hoy en Bolivia</p>' : ''}${pair}<p class="text-base text-gray-600 max-w-3xl mx-auto" data-dollar-rate-answer>${escape(model.answer)}</p>${conversion}${nav}</div>${readingGuide}</main>`;
   out = out.replace(mainPattern, () => shell);
   // Initial shells contain only WebPage/Breadcrumb. Update that existing WebPage, not new hidden facts.
   out = out.replace(/(<script\b[^>]*type=["']application\/ld\+json["'][^>]*>)([\s\S]*?)(<\/script>)/gi, (all, start, json, end) => {

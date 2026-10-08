@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import logger from './logger';
+import { sourceObservationModel } from './sourceObservation';
 
 /**
  * Retry wrapper for API calls
@@ -234,8 +235,10 @@ export async function fetchBlueRate(currency = 'USD') {
                   ? (fresh.buy_bob_per_clp + fresh.sell_bob_per_clp) / 2
                   : data.mid_bob_per_clp,
               source: fresh.source ?? data.source,
-              sources_used: fresh.sources_used ?? data.sources_used,
-              source_count: fresh.source_count ?? data.source_count,
+              source_observation: fresh.source_observation ?? null,
+              source_provenance: fresh.source_provenance ?? null,
+              sources_used: fresh.sources_used ?? [],
+              source_count: fresh.source_count ?? null,
               eur_derivation: fresh.eur_derivation ?? data.eur_derivation,
               eur_updated_at_iso: fresh.eur_updated_at_iso ?? data.eur_updated_at_iso,
               cop_derivation: fresh.cop_derivation ?? data.cop_derivation,
@@ -350,14 +353,17 @@ export async function fetchBlueRate(currency = 'USD') {
       sellChange = ((sellRate - yesterdaySell) / yesterdaySell * 100).toFixed(2);
     }
     
+    const provenance = sourceObservationModel({ ...data, updated_at_iso: data.t });
+
     // Format response to match expected structure (always use buy_bob_per_* naming for consistency)
     const response = {
       source: data.source || 'stored-p2p-reference',
-      sources_used: data.sources_used || [],
-      source_count: data.source_count ?? (data.sources_used?.length ?? 0),
-      source_provenance: data.source_provenance || 'unavailable_for_stored_row',
+      sources_used: provenance.platforms.map(p => p.id),
+      source_count: provenance.available ? provenance.platforms.length : null,
+      source_provenance: provenance.available ? 'persisted_observation' : 'unavailable_for_stored_row',
       quote_kind: 'usdt_p2p_median',
       updated_at_iso: data.t,
+      source_observation: provenance.observation,
       generated_at_iso: new Date().toISOString(),
       is_stale: Number.isFinite(ageAfterHealMs) && ageAfterHealMs > STALE_HEAL_MS,
       buy_change_24h: buyChange,

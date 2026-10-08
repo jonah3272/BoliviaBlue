@@ -1,3 +1,5 @@
+import rateProvenance from '../shared/rateProvenance.cjs';
+const { readSourceObservation } = rateProvenance;
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 import crypto from 'crypto';
@@ -52,10 +54,16 @@ export async function insertRate(t, buy, sell, mid, official_buy, official_sell,
     extras = {};
   }
 
+  const observation = readSourceObservation({ t, buy, sell, source_observation: extras.source_observation });
+  if (extras.source_observation != null && !observation) {
+    throw new Error('Invalid source observation; refusing to discard supplied provenance');
+  }
+
   const { data, error } = await supabase
     .from('rates')
     .insert({
       t,
+      source_observation: observation,
       buy,
       sell,
       mid,

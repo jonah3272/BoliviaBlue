@@ -194,7 +194,7 @@ describe('homepage brand sitelink candidates', () => {
 describe('priority crawl shells', () => {
   for (const expected of [
     { path: '/euro-a-boliviano', h1: 'Euro Blue Bolivia – EUR a BOB', shellId: 'euro-a-boliviano', must: ['USDT', '/dolar-blue-hoy', '/calculadora'] },
-    { path: '/prensa', h1: 'Kit de prensa y backlinks', shellId: 'prensa', must: ['medios', '/api-docs', 'data-live-buy', 'historical-data.csv', '/embed.html'] },
+    { path: '/prensa', h1: 'Datos y recursos para prensa', shellId: 'prensa', must: ['medios', '/api-docs', 'data-live-buy', 'historical-data.csv', '/embed.html'] },
     { path: '/api-docs', h1: 'API del Dólar Blue Bolivia', shellId: 'api-docs', must: ['REST', '/dolar-blue-hoy'] },
     { path: '/real-a-boliviano', h1: 'Real Blue Bolivia – BRL a BOB', shellId: 'real-a-boliviano', must: ['USDT', '/euro-a-boliviano'] },
     { path: '/peso-a-boliviano', h1: 'Peso colombiano a boliviano – COP a BOB', shellId: 'peso-a-boliviano', must: ['USDT/COP', '/euro-a-boliviano', '/calculadora'] },

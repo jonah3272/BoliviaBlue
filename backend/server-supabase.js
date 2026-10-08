@@ -1,3 +1,5 @@
+import rateProvenance from '../shared/rateProvenance.cjs';
+const { sourcePayload } = rateProvenance;
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -62,6 +64,7 @@ app.get('/api/blue-rate', async (req, res) => {
       
       return res.json({
         ...cache.latestRate,
+        ...sourcePayload(cache.latestRate),
         is_stale: isStale
       });
     }
@@ -79,7 +82,7 @@ app.get('/api/blue-rate', async (req, res) => {
     const isStale = Date.now() - new Date(dbRate.t).getTime() > STALE_THRESHOLD;
     
     res.json({
-      source: 'binance-p2p',
+      ...sourcePayload(dbRate),
       buy_bob_per_usd: dbRate.buy,
       sell_bob_per_usd: dbRate.sell,
       official_buy: dbRate.official_buy,

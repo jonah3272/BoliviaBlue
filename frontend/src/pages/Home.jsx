@@ -1,5 +1,7 @@
 import { normalizeDollarRatePayload } from '../utils/dollarRateSearchCopy.js';
 import Header from '../components/Header';
+import SourceObservationPanel from '../components/SourceObservationPanel';
+import { rateReadingGuide } from '../data/rateReadingGuide';
 import MobileHeroRates from '../components/MobileHeroRates';
 import MobileMoneyActions from '../components/MobileMoneyActions';
 import Footer from '../components/Footer';
@@ -345,6 +347,13 @@ function Home() {
             </div>
           </section>
         </div>
+
+        <SourceObservationPanel rate={currentRate} language={language} loading={rateLoading} error={rateError} />
+
+        <section className="max-w-3xl mx-auto space-y-4 text-gray-700 dark:text-gray-200" data-rate-reading-guide>
+          <h2 className="text-2xl font-bold">{rateReadingGuide(language).heading}</h2>
+          {rateReadingGuide(language).items.map(([question, answer]) => <div key={question}><h3 className="font-semibold">{question}</h3><p className="text-sm">{answer}</p></div>)}
+        </section>
 
         {/* Chart */}
         <section>

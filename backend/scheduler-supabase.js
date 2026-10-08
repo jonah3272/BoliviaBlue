@@ -67,7 +67,7 @@ export async function refreshBlueRate() {
     const officialMid = median([officialRateData.official_buy, officialRateData.official_sell]);
     
     // Store in Supabase with all currencies
-    await insertRate(
+    const storedRate = await insertRate(
       blueRateData.updated_at_iso,
       blueRateData.buy_bob_per_usd,
       blueRateData.sell_bob_per_usd,
@@ -85,6 +85,7 @@ export async function refreshBlueRate() {
       blueRateData.sell_bob_per_cop || null,
       blueRateData.mid_bob_per_cop || null,
       {
+        source_observation: blueRateData.source_observation,
         buy_bob_per_pen: blueRateData.buy_bob_per_pen || null,
         sell_bob_per_pen: blueRateData.sell_bob_per_pen || null,
         mid_bob_per_pen: blueRateData.mid_bob_per_pen || null,
@@ -100,6 +101,8 @@ export async function refreshBlueRate() {
     // Update cache with both rates
     cache.latestRate = {
       ...blueRateData,
+      // LOCAL_MODE skips INSERT; never label its in-memory sample persisted.
+      source_observation: storedRate?.source_observation ?? null,
       official_buy: officialRateData.official_buy,
       official_sell: officialRateData.official_sell,
       official_source: officialRateData.source

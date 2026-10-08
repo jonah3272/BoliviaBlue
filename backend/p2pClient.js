@@ -3,6 +3,7 @@ import { createRequire } from 'module';
 import { median } from './median.js';
 
 const require = createRequire(import.meta.url);
+const { createSourceObservation } = require('../shared/rateProvenance.cjs');
 const { fetchCrossSourceBobRates } = require('../api/_lib/p2pCrossSource.js');
 
 const BINANCE_P2P_URL = 'https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search';
@@ -225,13 +226,15 @@ export async function getAllCurrentBlueRates() {
       throw new Error('Failed to fetch BOB rate (required for all calculations)');
     }
 
+    const observedAt = new Date().toISOString();
     const result = {
+      source_observation: createSourceObservation(bobRate, observedAt),
       source: bobRate.sources_used.length > 1 ? 'p2p-cross-median' : `${bobRate.sources_used[0]}-p2p`,
       sources_used: bobRate.sources_used,
       // USD rates (BOB per USDT, which is approximately BOB per USD)
       buy_bob_per_usd: bobRate.buy,
       sell_bob_per_usd: bobRate.sell,
-      updated_at_iso: new Date().toISOString(),
+      updated_at_iso: observedAt,
       sample_buy: bobRate.platforms.map((p) => p.buy).slice(0, 5),
       sample_sell: bobRate.platforms.map((p) => p.sell).slice(0, 5)
     };

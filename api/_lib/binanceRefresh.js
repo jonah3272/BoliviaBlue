@@ -1,3 +1,4 @@
+const { createSourceObservation } = require('../../shared/rateProvenance.cjs');
 const { createClient } = require('@supabase/supabase-js');
 const { fetchBinanceSide, fetchCrossSourceBobRates } = require('./p2pCrossSource');
 const {
@@ -173,6 +174,7 @@ async function refreshBlueFromBinance(supabase = createSupabaseClient()) {
   const nowIso = new Date().toISOString();
   const row = {
     t: nowIso,
+    source_observation: createSourceObservation(cross, nowIso),
     buy,
     sell,
     mid,

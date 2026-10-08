@@ -1,3 +1,4 @@
+const { sourcePayload } = require('../../shared/rateProvenance.cjs');
 const MAX_ROWS = 4000;
 const PAGE_SIZE = 1000;
 const COLUMNS = 't,buy,sell,mid,official_buy,official_sell,official_mid';
@@ -33,7 +34,7 @@ async function fetchHistoricalExport(supabase, options) {
   const collected = [];
   let offset = 0;
   while (collected.length <= options.limit) {
-    let query = supabase.from('rates').select(COLUMNS)
+    let query = supabase.from('rates').select(`${COLUMNS},source_observation`)
       .lte('t', options.requested_end).order('t', { ascending: false })
       .order('id', { ascending: false })
       .range(offset, offset + PAGE_SIZE - 1);
@@ -46,7 +47,8 @@ async function fetchHistoricalExport(supabase, options) {
     offset += page.length;
   }
   const truncated = collected.length > options.limit;
-  const points = collected.slice(0, options.limit).reverse();
+  const points = collected.slice(0, options.limit).reverse().map(row => ({ ...row, ...sourcePayload(row) }));
+  const recorded = points.filter(row => row.source_observation).length;
   return {
     range: options.range, count: points.length, points,
     metadata: {
@@ -56,7 +58,10 @@ async function fetchHistoricalExport(supabase, options) {
       rows_returned: points.length, limit: options.limit, truncated,
       selection: 'most_recent', order: 'ascending',
       source: 'Bolivia Blue stored rate observations',
-      source_provenance: 'unavailable_for_historical_rows',
+      source_provenance: recorded === 0 ? 'unavailable_for_historical_rows' : recorded === points.length ? 'persisted_observation' : 'mixed',
+      provenance_rows_recorded: recorded,
+      provenance_rows_unavailable: points.length - recorded,
+      csv_provenance: 'not_included_use_json',
       excluded_interpolated_gap: true,
       attribution: 'https://www.boliviablue.com/fuente-de-datos',
       generated_at: options.requested_end,

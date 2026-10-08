@@ -1,3 +1,5 @@
+import rateProvenance from '../shared/rateProvenance.cjs';
+const { sourcePayload } = rateProvenance;
 // IMMEDIATE STARTUP LOGGING - This should appear FIRST in Railway logs
 console.log('🚀 SERVER STARTING...');
 console.log('📅 Time:', new Date().toISOString());
@@ -260,7 +262,7 @@ app.get('/api/blue-rate', async (req, res) => {
       
       return res.json({
         ...cache.latestRate,
-        source_provenance: cache.latestRate.sources_used?.length ? 'observed_this_refresh' : 'unavailable_for_stored_row',
+        ...sourcePayload(cache.latestRate),
         is_stale: isStale
       });
     }
@@ -278,10 +280,7 @@ app.get('/api/blue-rate', async (req, res) => {
     const isStale = Date.now() - new Date(dbRate.t).getTime() > STALE_THRESHOLD;
     
     res.json({
-      source: 'stored-p2p-reference',
-      sources_used: [],
-      source_count: 0,
-      source_provenance: 'unavailable_for_stored_row',
+      ...sourcePayload(dbRate),
       buy_bob_per_usd: dbRate.buy,
       sell_bob_per_usd: dbRate.sell,
       official_buy: dbRate.official_buy,

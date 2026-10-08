@@ -13,7 +13,7 @@ import { useRate } from '../contexts/RateContext';
 import { SITE_URL } from '../config/brand';
 import { liveBobParts, ratesFromBluePayload } from '../utils/seoRateMeta';
 import CiteShareBar from '../components/CiteShareBar';
-import OutreachDesk from '../components/OutreachDesk';
+import NewsroomSnapshot from '../components/NewsroomSnapshot';
 
 const HIST_CSV = `${SITE_URL}/api/historical-data.csv?range=30d`;
 
@@ -81,10 +81,10 @@ function PressKit() {
   const languageContext = useLanguage();
   const language = languageContext?.language || 'es';
   const CITE_METHODOLOGY = language === 'es'
-    ? `Metodología actual: ${SITE_URL}/fuente-de-datos — mediana de referencias P2P disponibles por plataforma. Se intentan actualizaciones periódicas y puede haber demoras. La composición de fuentes de los registros históricos no está registrada; el método actual no acredita la procedencia de cada observación guardada. CSV 30 días: ${HIST_CSV}`
-    : `Current methodology: ${SITE_URL}/fuente-de-datos — median of available per-platform P2P references. Updates are attempted periodically and may be delayed. Historical source composition is not recorded; the current method does not establish the provenance of each stored observation. 30-day CSV: ${HIST_CSV}`;
+    ? `Metodología actual: ${SITE_URL}/fuente-de-datos — mediana de referencias P2P disponibles por plataforma. Se intentan actualizaciones periódicas y puede haber demoras. Algunos registros históricos no tienen composición de fuentes guardada; el método actual no acredita la procedencia de cada observación guardada. CSV 30 días: ${HIST_CSV}`
+    : `Current methodology: ${SITE_URL}/fuente-de-datos — median of available per-platform P2P references. Updates are attempted periodically and may be delayed. Some historical records have no stored source composition; the current method does not establish the provenance of each stored observation. 30-day CSV: ${HIST_CSV}`;
   const [copied, setCopied] = useState('');
-  const { rateData } = useRate();
+  const { rateData, isLoading, error } = useRate();
   const live = liveBobParts(rateData);
   const rateBits = ratesFromBluePayload(rateData);
   const liveLine = buildRateAnswerParagraph({
@@ -154,14 +154,16 @@ function PressKit() {
 
         <header className="space-y-3">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">
-            {language === 'es' ? 'Kit de prensa y backlinks' : 'Press kit & backlinks'}
+            {language === 'es' ? 'Datos y recursos para prensa' : 'Data and resources for the press'}
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-300">
             {language === 'es'
-              ? 'Menciones con enlace. Cadecocruz ya cita un portal rival: el trabajo es que citen boliviablue.com. Abajo hay pitches listos para Gmail y un checklist de 5 envíos esta semana.'
-              : 'Linked mentions. Cadecocruz already cites a rival portal — the job is to get them citing boliviablue.com. Below: Gmail-ready pitches and a 5-send weekly checklist.'}
+              ? 'Consultá una lectura fechada del mercado P2P USDT/BOB, sus fuentes cuando están disponibles y los límites para citarla. Recursos gratuitos para periodistas y creadores.'
+              : 'Find a timestamped P2P USDT/BOB observation, its sources when available, and citation limits. Free resources for journalists and creators.'}
           </p>
         </header>
+
+        <NewsroomSnapshot rate={rateData} language={language} loading={isLoading} error={error} />
 
         <section className="rounded-xl border border-sky-200 dark:border-sky-800 bg-sky-50/80 dark:bg-sky-950/30 p-6 space-y-3">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
@@ -218,33 +220,6 @@ function PressKit() {
                   : 'Copy AI citation'}
             </button>
           </div>
-        </section>
-
-        <section className="space-y-3">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-            {language === 'es' ? 'Email listo para enviar' : 'Ready-to-send pitch email'}
-          </h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            {language === 'es'
-              ? 'Copiá y mandalo a redacción de economía (El Deber, Los Tiempos, Opinión, Eju, etc.).'
-              : 'Copy and send to economy desks.'}
-          </p>
-          <pre className="bg-gray-900 text-gray-100 text-sm p-4 rounded-lg overflow-x-auto whitespace-pre-wrap">
-            {language === 'es' ? PITCH_EMAIL_ES : PITCH_EMAIL_EN}
-          </pre>
-          <button
-            type="button"
-            onClick={() => copy(language === 'es' ? PITCH_EMAIL_ES : PITCH_EMAIL_EN, 'pitch')}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium"
-          >
-            {copied === 'pitch'
-              ? language === 'es'
-                ? 'Copiado'
-                : 'Copied'
-              : language === 'es'
-                ? 'Copiar email'
-                : 'Copy email'}
-          </button>
         </section>
 
         <section className="space-y-3">
@@ -392,7 +367,7 @@ function PressKit() {
           </ul>
         </section>
 
-        <OutreachDesk liveLine={liveLine} language={language} />
+
 
         <section className="bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 rounded-xl p-5">
           <h2 className="font-semibold text-gray-900 dark:text-white mb-2">

@@ -140,7 +140,7 @@ function Home() {
         {/* Mobile: compact title + rate + $100 on the first screen */}
         <div className="md:hidden text-center">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white leading-tight">
-            {language === 'es' ? 'Bolivia Blue' : 'Bolivian Blue'}
+            {language === 'es' ? 'Dólar blue en Bolivia hoy' : 'Blue dollar in Bolivia today'}
           </h1>
           <MobileHeroRates
             live={live}
@@ -176,7 +176,7 @@ function Home() {
               {language === 'es' ? 'Actualizado cada 15 min' : 'Updated every 15 min'}
             </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight">
-              {language === 'es' ? 'Bolivia Blue' : 'Bolivian Blue'}
+              {language === 'es' ? 'Dólar blue en Bolivia hoy' : 'Blue dollar in Bolivia today'}
             </h1>
             <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 max-w-lg mx-auto">
               {language === 'es'

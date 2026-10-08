@@ -429,12 +429,13 @@ export function buildLiveRateSeoMeta({
   buy,
   sell,
   updatedAt = null,
+  sourceRate = null,
   language = 'es',
   page = 'home',
   isStale = false,
   now = Date.now(),
 } = {}) {
-  if (Object.values(DOLLAR_SEARCH_PAGES).includes(page)) return buildDollarRateSearchCopy({ page, buy, sell, updatedAt, isStale, language, now });
+  if (Object.values(DOLLAR_SEARCH_PAGES).includes(page)) return buildDollarRateSearchCopy({ page, buy, sell, updatedAt, sourceRate, isStale, language, now });
   const buyStr = fmt(buy);
   const sellStr = fmt(sell);
   const hasRates = buyStr != null && sellStr != null;

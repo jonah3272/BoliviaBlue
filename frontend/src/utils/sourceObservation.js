@@ -1,7 +1,9 @@
-import { validObservationTime } from './dollarRateSearchCopy.js';
+import { validObservationTime } from './observationTime.js';
 
 export const SOURCE_NAMES = { binance: 'Binance P2P', eldorado: 'El Dorado', okx: 'OKX P2P', bybit: 'Bybit P2P' };
 const positive = value => typeof value === 'number' && Number.isFinite(value) && value > 0;
+// Remove float-storage noise for display only; never rewrite persisted quotes.
+export const formatObservationRate = value => positive(value) ? Number(value.toPrecision(7)).toFixed(2) : '—';
 const median = values => { const a = [...values].sort((a, b) => a - b); const n = a.length; return n % 2 ? a[(n - 1) / 2] : (a[n / 2 - 1] + a[n / 2]) / 2; };
 
 /** Never infer contributors from a source label or a list without stored quotes. */
@@ -16,7 +18,7 @@ export function sourceObservationModel(rate, now = Date.now()) {
     && validObservationTime(raw.observed_at) && Date.parse(raw.observed_at) === Date.parse(observedAt)
     && Array.isArray(rows) && rows.length > 0 && rows.length <= 4
     && new Set(rows.map(row => row?.id)).size === rows.length
-    && rows.every(row => Object.hasOwn(SOURCE_NAMES, row?.id) && positive(row.buy) && positive(row.sell))
+    && rows.every(row => typeof row?.id === 'string' && Object.hasOwn(SOURCE_NAMES, row.id) && positive(row.buy) && positive(row.sell))
     && positive(buy) && positive(sell)
     && Math.abs(median(rows.map(row => row.buy)) - buy) <= 2**-23 * Math.max(1, Math.abs(buy))
     && Math.abs(median(rows.map(row => row.sell)) - sell) <= 2**-23 * Math.max(1, Math.abs(sell));
@@ -34,15 +36,16 @@ export function newsroomReport(rate, language = 'es', now = Date.now()) {
   const m = sourceObservationModel(rate, now); const es = language === 'es';
   const lines = [es ? 'Bolivia Blue: corte informativo P2P USDT/BOB' : 'Bolivia Blue: P2P USDT/BOB snapshot', observationLabel(m.observedAt, language)];
   if (m.stale) lines.push(es ? 'Lectura desactualizada; no presentar como precio actual.' : 'Stale observation; do not present as a current price.');
-  if (m.buy && m.sell) lines.push(es ? `Referencia recogida: compra Bs ${m.buy.toFixed(2)}; venta Bs ${m.sell.toFixed(2)} por USDT.` : `Collected reference: buy Bs ${m.buy.toFixed(2)}; sell Bs ${m.sell.toFixed(2)} per USDT.`);
+  if (m.buy && m.sell) lines.push(es ? `Referencia recogida: compra Bs ${formatObservationRate(m.buy)}; venta Bs ${formatObservationRate(m.sell)} por USDT.` : `Collected reference: buy Bs ${formatObservationRate(m.buy)}; sell Bs ${formatObservationRate(m.sell)} per USDT.`);
   else lines.push(es ? 'Cotización no disponible.' : 'Quote unavailable.');
   lines.push(es ? 'Referencia digital P2P USDT/BOB; no es cotización de dólares físicos ni tipo oficial del BCB.' : 'Digital P2P USDT/BOB reference; not a physical-dollar quote or the BCB official rate.');
   if (m.available) {
     lines.push(es ? `Fuentes guardadas con esta lectura (${m.platforms.length}):` : `Sources stored with this observation (${m.platforms.length}):`);
-    for (const p of m.platforms) lines.push(`${p.name}: ${es ? 'compra' : 'buy'} ${p.buy.toFixed(2)} · ${es ? 'venta' : 'sell'} ${p.sell.toFixed(2)} BOB/USDT`);
+    for (const p of m.platforms) lines.push(`${p.name}: ${es ? 'compra' : 'buy'} ${formatObservationRate(p.buy)} · ${es ? 'venta' : 'sell'} ${formatObservationRate(p.sell)} BOB/USDT`);
 
   } else lines.push(es ? 'Desglose de fuentes no disponible para este registro; no significa que se consultaron cero plataformas.' : 'Source breakdown unavailable for this record. This does not mean zero platforms were queried.');
 
+  lines.push(es ? 'Valores mostrados redondeados; el JSON conserva la precisión guardada.' : 'Displayed values are rounded; JSON retains the stored precision.');
   lines.push('Fuente / Source: https://www.boliviablue.com/prensa', `Observación / Observation: ${m.observedAt || 'no disponible / unavailable'}`);
   return { ...m, text: lines.join('\n\n') };
 }

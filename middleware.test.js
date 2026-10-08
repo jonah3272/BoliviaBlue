@@ -149,7 +149,7 @@ describe('applyLiveSeo', () => {
     assert.match(html, /compra Bs 12\.34, venta Bs 12\.56/);
     assert.match(html, /Referencia P2P USDT\/BOB/);
     assert.match(html, new RegExp(`og:title" content="${meta.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`));
-    assert.match(html, /twitter:description" content="Referencia P2P USDT\/BOB/);
+    assert.match(html, /twitter:description" content="Consultá la referencia P2P USDT\/BOB/);
   });
 
   it('marks a missing rate honestly instead of retaining a build quote', () => {

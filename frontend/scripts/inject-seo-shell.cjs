@@ -328,7 +328,7 @@ function buildStaticJsonLd(routePath, routeName, pageName, pageDescription, extr
 const SHELL_HOME = `
 <main class="max-w-7xl mx-auto px-4 py-8" data-seo-shell="home">
   <div class="text-center space-y-4 mb-8">
-    <h1 class="text-3xl sm:text-5xl font-bold text-gray-900">Bolivia Blue</h1>
+    <h1 class="text-3xl sm:text-5xl font-bold text-gray-900">Dólar blue en Bolivia hoy</h1>
     <p class="text-base text-gray-600">Bolivian Blue · dólar blue hoy en Bolivia</p>
     <p class="text-2xl sm:text-3xl font-bold text-gray-900 tabular-nums">
       Compra <span data-live-buy>—</span> · Venta <span data-live-sell>—</span>
@@ -369,8 +369,8 @@ const SHELL_HOME = `
 /** Route config: path -> { title, description, canonical, shell, getJsonLd } */
 const ROUTES = {
   '/': {
-    title: 'Dólar Blue Bolivia | Bolivia Blue',
-    description: 'El dólar paralelo (blue) en Bolivia: lectura verificada desde Bolivia Blue. Variaciones en tiempo real y gráficos.',
+    title: 'Dólar blue Bolivia hoy: compra y venta P2P | Bolivia Blue',
+    description: 'Consultá la referencia P2P USDT/BOB del dólar blue en Bolivia: compra, venta, hora de lectura e historial. No es cotización de efectivo.',
     canonical: BASE_URL + '/',
     shell: SHELL_HOME,
     getJsonLd: () => buildStaticJsonLd('/', 'Inicio', 'Dólar Blue Bolivia Hoy', 'Dólar blue Bolivia hoy: compra y venta de referencia P2P (USDT), actualizadas cada 15 min.', [])

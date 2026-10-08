@@ -32,7 +32,7 @@ describe('buildLiveRateSeoMeta', () => {
       language: 'es',
       page: 'home',
     });
-    assert.equal(meta.title, 'Dólar Blue Bolivia: Compra 11.98 · Venta 11.92 | Bolivia Blue');
+    assert.equal(meta.title, 'Dólar blue Bolivia hoy: compra y venta P2P | Bolivia Blue');
     assert.match(meta.description, /P2P USDT\/BOB/);
     assert.doesNotMatch(meta.description, /para la compra/);
   });
@@ -45,7 +45,7 @@ describe('buildLiveRateSeoMeta', () => {
       page: 'home',
     });
     assert.doesNotMatch(meta.title, /0\.00/);
-    assert.equal(meta.title, 'Dólar Blue Bolivia | Bolivia Blue');
+    assert.equal(meta.title, 'Dólar blue Bolivia hoy: compra y venta P2P | Bolivia Blue');
   });
 
   it('uses 1.000 COP in Bs for the peso page (per-peso rate is < 1)', () => {

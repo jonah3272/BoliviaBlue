@@ -31,7 +31,7 @@ const BADGE_HTML = `<a href="${SITE_URL}/dolar-blue-hoy?utm_source=badge" rel="n
 
 const STATIC_BADGE_HTML = `<a href="${SITE_URL}/dolar-blue-hoy?utm_source=badge" rel="noopener"><img src="${SITE_URL}/badge.svg" alt="Bolivia Blue live rate" width="200" height="40" /></a>`;
 
-const IFRAME_HTML = `<iframe src="${SITE_URL}/embed.html" title="Dólar blue Bolivia" width="360" height="190" loading="lazy" style="border:0;max-width:100%"></iframe>
+const IFRAME_HTML = `<iframe src="${SITE_URL}/embed.html" title="Dólar blue Bolivia" width="360" height="300" loading="lazy" style="border:0;max-width:100%"></iframe>
 <p>Fuente: <a href="${SITE_URL}/dolar-blue-hoy">Bolivia Blue</a></p>`;
 
 function pitchEmailEs(cite, liveLine) {

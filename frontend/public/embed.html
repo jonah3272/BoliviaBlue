@@ -6,53 +6,41 @@
   <meta name="robots" content="noindex" />
   <title>Dólar blue Bolivia — Bolivia Blue</title>
   <style>
-    :root { color-scheme: light dark; }
-    body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background: #fff; color: #111827; }
-    .box { border: 1px solid #e5e7eb; border-radius: 12px; padding: 14px 16px; max-width: 360px; box-sizing: border-box; }
-    .row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 10px; }
-    .live { font-size: 11px; color: #ef4444; font-weight: 700; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-    .cell { background: #f3f4f6; border-radius: 8px; padding: 10px; }
-    .lbl { font-size: 11px; color: #6b7280; }
-    .num { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
-    .unit { font-size: 12px; font-weight: 500; color: #6b7280; }
-    .when { font-size: 11px; color: #6b7280; margin-bottom: 8px; }
-    a { font-size: 12px; color: #2563eb; text-decoration: none; font-weight: 600; }
+    body { margin: 0; background: transparent; }
+    /* Keep previously published 190px iframes readable, including scrolling="no". */
+    @media (max-height: 220px) {
+      [data-bb-widget] { padding: 7px 10px !important; line-height: 1.2 !important; }
+      [data-bb-heading] { font-size: 14px !important; }
+      [data-bb-source] { font-size: 10px !important; margin: 1px 0 3px !important; }
+      [data-bb-status-text] { font-size: 10px !important; margin-bottom: 4px !important; }
+      [data-bb-rates] { gap: 6px !important; margin-bottom: 4px !important; }
+      [data-bb-cell] { display: flex; align-items: center; justify-content: space-between; gap: 4px; padding: 5px 6px !important; }
+      [data-bb-label] { font-size: 10px !important; }
+      [data-bb-buy], [data-bb-sell] { font-size: 18px !important; line-height: 1.1 !important; }
+      [data-bb-time] { font-size: 10px !important; margin-bottom: 3px !important; }
+      [data-bb-caveat] { font-size: 10px !important; margin-bottom: 4px !important; }
+      [data-bb-attribution] { font-size: 11px !important; }
+    }
   </style>
 </head>
 <body>
-  <div class="box" id="w">Cargando dólar blue Bolivia…</div>
+  <div id="w">Cargando referencia P2P USDT/BOB…</div>
+  <noscript><a href="https://www.boliviablue.com/dolar-blue-hoy?utm_source=embed&amp;utm_medium=iframe" target="_blank" rel="noopener">Datos de Bolivia Blue →</a></noscript>
   <script>
     (function () {
-      var API = 'https://www.boliviablue.com/api/blue-rate';
-      var HOME = 'https://www.boliviablue.com/dolar-blue-hoy?utm_source=embed&utm_medium=iframe';
-      var el = document.getElementById('w');
-      function fmt(n) {
-        var x = Number(n);
-        if (!isFinite(x) || x < 1) return '—';
-        return x.toFixed(2);
-      }
-      fetch(API)
-        .then(function (r) { if (!r.ok) throw new Error('http'); return r.json(); })
-        .then(function (d) {
-          var buy = fmt(d.buy_bob_per_usd);
-          var sell = fmt(d.sell_bob_per_usd);
-          var when = '';
-          try {
-            when = new Date(d.updated_at_iso).toLocaleString('es-BO', { dateStyle: 'short', timeStyle: 'short' });
-          } catch (e) {}
-          el.innerHTML =
-            '<div class="row"><strong>Dólar Blue Bolivia</strong><span class="live">LIVE</span></div>' +
-            '<div class="grid">' +
-            '<div class="cell"><div class="lbl">Compra</div><div class="num">' + buy + ' <span class="unit">BOB</span></div></div>' +
-            '<div class="cell"><div class="lbl">Venta</div><div class="num">' + sell + ' <span class="unit">BOB</span></div></div>' +
-            '</div>' +
-            (when ? '<div class="when">Actualizado: ' + when + '</div>' : '') +
-            '<a href="' + HOME + '" target="_blank" rel="noopener">Datos de boliviablue.com →</a>';
-        })
-        .catch(function () {
-          el.innerHTML = '<a href="' + HOME + '" target="_blank" rel="noopener">Ver cotización en boliviablue.com</a>';
-        });
+      var params = new URLSearchParams(window.location.search);
+      var lang = params.get('lang') === 'en' ? 'en' : 'es';
+      document.documentElement.lang = lang === 'en' ? 'en' : 'es-BO';
+      var script = document.createElement('script');
+      script.src = '/embed.js';
+      script.setAttribute('data-target', 'w');
+      script.setAttribute('data-lang', lang);
+      script.setAttribute('data-theme', params.get('theme') === 'dark' ? 'dark' : 'light');
+      script.setAttribute('data-medium', 'iframe');
+      script.onerror = function () {
+        document.getElementById('w').innerHTML = '<a href="https://www.boliviablue.com/dolar-blue-hoy?utm_source=embed&utm_medium=iframe" target="_blank" rel="noopener">' + (lang === 'en' ? 'Observation unavailable. See Bolivia Blue →' : 'Lectura no disponible. Ver Bolivia Blue →') + '</a>';
+      };
+      document.body.appendChild(script);
     })();
   </script>
 </body>

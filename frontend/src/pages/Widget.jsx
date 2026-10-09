@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -16,23 +16,27 @@ const EMBED_SNIPPET = `<div id="bolivia-blue-widget"></div>
 const EMBED_DARK = `<div id="bolivia-blue-widget"></div>
 <script src="${SITE_URL}/embed.js" data-theme="dark" data-lang="es" async></script>`;
 
-const IFRAME_SNIPPET = `<iframe src="${SITE_URL}/embed.html" title="Dólar blue Bolivia" width="360" height="190" loading="lazy" style="border:0;max-width:100%"></iframe>
+const IFRAME_SNIPPET = `<iframe src="${SITE_URL}/embed.html" title="Dólar blue Bolivia" width="360" height="300" loading="lazy" style="border:0;max-width:100%"></iframe>
 <p>Fuente: <a href="${SITE_URL}/dolar-blue-hoy">Bolivia Blue</a></p>`;
 
 const BADGE_SNIPPET = `<a href="${SITE_URL}/dolar-blue-hoy?utm_source=badge" rel="noopener"><img src="${SITE_URL}/api/badge.svg" alt="Dólar blue Bolivia — Bolivia Blue" width="320" height="40" /></a>`;
 
-function EmbedPreview() {
+function EmbedPreview({ language }) {
+  const targetRef = useRef(null);
   useEffect(() => {
-    if (document.getElementById('bb-embed-preview-script')) return;
+    const target = targetRef.current;
     const s = document.createElement('script');
-    s.id = 'bb-embed-preview-script';
     s.src = '/embed.js';
     s.async = true;
-    s.setAttribute('data-target', 'bolivia-blue-widget-preview');
-    s.setAttribute('data-lang', 'es');
+    s.setAttribute('data-target', target.id);
+    s.setAttribute('data-lang', language);
     document.body.appendChild(s);
-  }, []);
-  return <div id="bolivia-blue-widget-preview" />;
+    return () => {
+      s.remove();
+      window.BoliviaBlueWidget?.unmount(target);
+    };
+  }, [language]);
+  return <div ref={targetRef} id="bolivia-blue-widget-preview" />;
 }
 
 function Widget() {
@@ -76,8 +80,8 @@ function Widget() {
         }
         description={
           language === 'es'
-            ? 'Pon la cotización del dólar blue en vivo en tu web o blog. Widget gratis, actualizado cada 15 min. Solo pide un enlace a boliviablue.com.'
-            : 'Put the live Bolivia blue dollar rate on your site or blog. Free widget, updated every 15 min. Just link back to boliviablue.com.'
+            ? 'Publica la referencia P2P USDT/BOB en tu web o blog. Widget gratis con hora de Bolivia, estado de la lectura y enlace a boliviablue.com.'
+            : 'Publish the P2P USDT/BOB reference on your site or blog. Free widget with Bolivia time, observation status and a link to boliviablue.com.'
         }
         keywords="widget dólar blue bolivia, embed cotización dólar bolivia, api dólar paralelo, badge bolivia blue"
         canonical="/widget"
@@ -101,8 +105,8 @@ function Widget() {
           </h1>
           <p className="text-gray-600 dark:text-gray-300 text-lg">
             {language === 'es'
-              ? 'Herramienta lista para medios, blogs y canales: cotización en vivo + enlace de atribución a boliviablue.com (así ganas menciones y tráfico).'
-              : 'Ready for media, blogs and channels: live quote + attribution link to boliviablue.com (mentions and traffic).'}
+              ? 'Referencia P2P USDT/BOB para medios y blogs, con fecha, hora de Bolivia y enlace de atribución. Consulta nuevas lecturas cada minuto; no representa dólares en efectivo ni el tipo oficial del BCB.'
+              : 'P2P USDT/BOB reference for media and blogs, with a date, Bolivia time and attribution link. Checks for new observations every minute; it does not represent cash dollars or the BCB official rate.'}
           </p>
         </header>
 
@@ -110,7 +114,7 @@ function Widget() {
           <h2 className="font-semibold text-gray-900 dark:text-white mb-3">
             {language === 'es' ? 'Vista previa' : 'Preview'}
           </h2>
-          <EmbedPreview />
+          <EmbedPreview language={language} />
         </section>
 
         <section className="space-y-3">

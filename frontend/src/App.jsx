@@ -76,7 +76,9 @@ function LoadingFallback() {
   );
 }
 
-function AppContent() {
+function AppContent({ initialHome }) {
+  // A direct homepage load already resolved this component before replacing the SEO shell.
+  const HomePage = initialHome || Home;
   useAdReservedSpace();
   // Track page views, scroll depth, and time on page
   usePageTracking();
@@ -85,7 +87,7 @@ function AppContent() {
     <>
       <Suspense fallback={<LoadingFallback />}>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<HomePage />} />
           <Route path="/guia-dinero-bolivia" element={<TravelersMoneyGuide />} />
           <Route path="/bolivia-money-guide" element={<TravelersMoneyGuide />} />
           <Route path="/travelers-guide" element={<Redirect to="/bolivia-money-guide" />} />
@@ -190,9 +192,9 @@ function AppContent() {
   );
 }
 
-function App() {
+function App({ initialHome }) {
   return (
-    <AppContent />
+    <AppContent initialHome={initialHome} />
   );
 }
 

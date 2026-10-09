@@ -62,6 +62,19 @@
     <meta name="geo.placename" content="Bolivia" data-rh="true" />
     <meta name="theme-color" content="#10B981" />
     
+    <!-- Match Home's visible mobile/desktop H1 before the application CSS loads.
+         Home's desktop md:text-5xl also sets line-height: 1 in generated Tailwind. -->
+    <style>
+      [data-home-heading] { font-size: 1.5rem; line-height: 1.25; letter-spacing: normal; font-weight: 700; }
+      [data-home-rate-line] { font-size: 1.5rem; line-height: 2rem; font-weight: 700; }
+      [data-home-conversion] { font-size: 0.875rem; line-height: 1.25rem; font-weight: 600; }
+      @media (min-width: 768px) {
+        [data-home-heading] { font-size: 3rem; line-height: 1; letter-spacing: -0.025em; }
+        [data-home-rate-line] { font-size: 1.875rem; line-height: 2.25rem; }
+        [data-home-conversion] { font-size: 1.125rem; line-height: 1.75rem; }
+      }
+    </style>
+
     <!-- Critical Resource Hints for Performance -->
     <!-- Note: main.jsx is loaded as module, preload not needed for ES modules -->
     <link rel="preload" href="/src/index.css" as="style">

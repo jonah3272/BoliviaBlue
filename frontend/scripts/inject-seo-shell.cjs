@@ -328,15 +328,15 @@ function buildStaticJsonLd(routePath, routeName, pageName, pageDescription, extr
 const SHELL_HOME = `
 <main class="max-w-7xl mx-auto px-4 py-8" data-seo-shell="home">
   <div class="text-center space-y-4 mb-8">
-    <h1 class="text-3xl sm:text-5xl font-bold text-gray-900">Dólar blue en Bolivia hoy</h1>
+    <h1 data-home-heading class="font-bold text-gray-900">Dólar blue en Bolivia hoy</h1>
     <p class="text-base text-gray-600">Bolivian Blue · dólar blue hoy en Bolivia</p>
-    <p class="text-2xl sm:text-3xl font-bold text-gray-900 tabular-nums">
+    <p data-home-rate-line class="font-bold text-gray-900 tabular-nums">
       Compra <span data-live-buy>—</span> · Venta <span data-live-sell>—</span>
     </p>
     <p class="text-base sm:text-lg text-gray-700 max-w-2xl mx-auto" data-seo-rate-sentence>
       El dólar paralelo (blue) en Bolivia cotiza hoy en Bs <span data-live-buy>—</span> para la compra y Bs <span data-live-sell>—</span> para la venta, con lectura verificada el <time data-live-when datetime="">—</time>, desde Bolivia Blue.
     </p>
-    <p class="text-lg font-semibold text-gray-800">
+    <p data-home-conversion class="font-semibold text-gray-800">
       100 USD ≈ <span data-live-usd100>—</span> Bs (compra P2P).
       <a href="/calculadora" class="text-blue-600 font-medium">Calculadora</a>
     </p>

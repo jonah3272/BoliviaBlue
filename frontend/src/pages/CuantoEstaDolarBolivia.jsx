@@ -10,7 +10,8 @@ import BinanceBanner from '../components/BinanceBanner';
 import { Link } from 'react-router-dom';
 import { fetchBlueRate } from '../utils/api';
 import { getWebPage, getBreadcrumbList, getOrganizationSchema, getWebSiteSchema } from '../utils/seoSchema';
-import { buildLiveRateSeoMeta, liveBobParts } from '../utils/seoRateMeta';
+import { buildLiveRateSeoMeta } from '../utils/seoRateMeta';
+import { getCuantoConversionGuide } from '../data/cuantoConversionGuide';
 import { lazy, Suspense } from 'react';
 const BlueChart = lazy(() => import('../components/BlueChart'));
 import PrimaryRateLink from '../components/PrimaryRateLink';
@@ -22,11 +23,10 @@ function CuantoEstaDolarBolivia() {
   useAdsenseReady();
   
   const languageContext = useLanguage();
-  const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
   const [showOfficial, setShowOfficial] = useState(false);
   const [currentRate, setCurrentRate] = useState(null);
-  const live = liveBobParts(currentRate);
+  const conversionGuide = getCuantoConversionGuide(language);
 
   useEffect(() => {
     const loadRate = async () => {
@@ -112,8 +112,8 @@ function CuantoEstaDolarBolivia() {
         </h1>
         <p className="text-center text-base text-gray-600 dark:text-gray-400 mb-1">
           {language === 'es'
-            ? 'Respuesta directa al “¿cuánto está?” y al precio del dólar hoy: compra/venta blue (paralelo / mercado negro de referencia P2P) abajo, conversiones comunes ($1, $100, $1000) y calculadora. No es el monitor EN VIVO ni la guía de cómo cotizar.'
-            : 'Direct answer to “how much is it?”: blue buy/sell below, common conversions ($1, $100, $1000), and a calculator for any amount. Not the LIVE monitor or the how-to-quote guide.'}
+            ? 'Consultá la referencia de compra y venta P2P del dólar blue, la hora de lectura y la calculadora para estimar 100, 1000 u otra cantidad de dólares en bolivianos.'
+            : 'See the blue dollar P2P buy and sell reference, its observation time, and the calculator to estimate 100, 1000, or any other dollar amount in bolivianos.'}
         </p>
         <p className="text-center text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-3 sm:mb-6">
             {liveSeo.observation}
@@ -132,46 +132,44 @@ function CuantoEstaDolarBolivia() {
                 ? 'Respuesta Rápida'
                 : 'Quick Answer'}
             </h2>
-            {currentRate && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md">
-                  <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                    {language === 'es' ? 'Compra' : 'Buy'}
-                  </div>
-                  <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                    {live.buyStr || '—'} BOB
-                  </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                    {language === 'es' ? 'por 1 USD' : 'per 1 USD'}
-                  </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4" data-cuanto-reference-cards>
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md">
+                <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                  {conversionGuide.buyLabel}
                 </div>
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md">
-                  <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                    {language === 'es' ? 'Venta' : 'Sell'}
-                  </div>
-                  <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                    {live.sellStr || '—'} BOB
-                  </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                    {language === 'es' ? 'por 1 USD' : 'per 1 USD'}
-                  </div>
+                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                  {liveSeo.buyStr || '—'}
                 </div>
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md">
-                  <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                    {language === 'es' ? '$100 USD =' : '$100 USD ='}
-                  </div>
-                  <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                    {live.times(100) || '—'} BOB
-                  </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                    {language === 'es' ? 'Aproximadamente' : 'Approximately'}
-                  </div>
+                <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                  {conversionGuide.unit}
                 </div>
               </div>
-            )}
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md">
+                <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                  {conversionGuide.sellLabel}
+                </div>
+                <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                  {liveSeo.sellStr || '—'}
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                  {conversionGuide.unit}
+                </div>
+              </div>
+            </div>
             <p className="text-sm text-gray-600 dark:text-gray-400">
               {liveSeo.answer}
             </p>
+            <div className="mt-6 space-y-3" data-cuanto-conversion-guide>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{conversionGuide.heading}</h3>
+              <p className="text-sm text-gray-700 dark:text-gray-300">{conversionGuide.explanation}</p>
+              <div className="flex flex-wrap justify-center gap-3">
+                {conversionGuide.presets.map((preset) => (
+                  <Link key={preset.amount} to={preset.href} className="inline-flex items-center min-h-11 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+                    {preset.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 
@@ -211,26 +209,9 @@ function CuantoEstaDolarBolivia() {
               
               <p className="text-gray-700 dark:text-gray-300 mb-6">
                 {language === 'es' 
-                  ? <>Cuando alguien pregunta <strong>¿cuánto está el dólar en Bolivia?</strong>, casi siempre quiere un número usable ya: cuántos bolivianos recibe por USD al tipo <strong>blue / paralelo</strong> (no el BCB). Aquí mostramos compra y venta en vivo, tablas de conversión rápidas y enlace a la <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline">calculadora</Link>. Para seguir el mercado minuto a minuto usa <Link to="/dolar-paralelo-bolivia-en-vivo" className="text-blue-600 dark:text-blue-400 hover:underline">dólar paralelo EN VIVO</Link>; para el cierre del día con fecha, <Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline">dólar blue hoy</Link>.</>
-                  : <>When people ask <strong>how much is the dollar in Bolivia?</strong>, they usually want a usable number now: how many bolivianos per USD at the <strong>blue / parallel</strong> rate (not BCB). Here you’ll find live buy/sell, quick conversion tables, and the <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline">calculator</Link>. For minute-by-minute watching use <Link to="/dolar-paralelo-bolivia-en-vivo" className="text-blue-600 dark:text-blue-400 hover:underline">parallel dollar LIVE</Link>; for a dated daily close, <Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline">blue dollar today</Link>.</>}
+                  ? <>Para responder <strong>¿cuánto está el dólar en Bolivia?</strong>, mostramos referencias de compra y venta P2P con su hora de lectura. Usá la <Link to="/calculadora" className="text-blue-600 dark:text-blue-400 hover:underline">calculadora</Link> para estimar una conversión según el sentido de la operación. También podés consultar el <Link to="/dolar-paralelo-bolivia-en-vivo" className="text-blue-600 dark:text-blue-400 hover:underline">monitor del dólar paralelo</Link> y la <Link to="/dolar-blue-hoy" className="text-blue-600 dark:text-blue-400 hover:underline">cotización del dólar blue hoy</Link>.</>
+                  : <>To answer <strong>how much is the dollar in Bolivia?</strong>, we show P2P buy and sell references with their observation time. Use the <Link to="/calculadora?lang=en" className="text-blue-600 dark:text-blue-400 hover:underline">calculator</Link> to estimate a conversion for your trade direction. You can also check the <Link to="/dolar-paralelo-bolivia-en-vivo?lang=en" className="text-blue-600 dark:text-blue-400 hover:underline">parallel dollar monitor</Link> and <Link to="/dolar-blue-hoy?lang=en" className="text-blue-600 dark:text-blue-400 hover:underline">today’s blue dollar quote</Link>.</>}
               </p>
-
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
-                {language === 'es' 
-                  ? 'Conversiones Comunes'
-                  : 'Common Conversions'}
-              </h3>
-              {live.buyStr && (
-                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-6">
-                  <ul className="space-y-2 text-gray-700 dark:text-gray-300">
-                    {[1, 10, 50, 100, 500, 1000].map((n) => (
-                      <li key={n}>
-                        <strong>${n} USD</strong> = {live.times(n)} BOB
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
 
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6 mb-3">
                 {language === 'es' 
@@ -278,15 +259,15 @@ function CuantoEstaDolarBolivia() {
                 <ul className="space-y-3 text-gray-700 dark:text-gray-300">
                   {language === 'es' ? (
                     <>
-                      <li><strong>Precio de Compra:</strong> Es cuántos bolivianos necesitás para obtener 1 USD en el paralelo. El número de compra en las tarjetas de arriba es esa referencia P2P, no un precio de ventanilla.</li>
-                      <li><strong>Precio de Venta:</strong> Es el precio al que puedes vender dólares. Generalmente es ligeramente más bajo que el precio de compra.</li>
+                      <li><strong>Precio de Compra:</strong> Referencia de BOB que pagás por cada USDT que comprás en P2P.</li>
+                      <li><strong>Precio de Venta:</strong> Referencia de BOB que recibís por cada USDT que vendés en P2P. Confirmá las condiciones de la oferta antes de operar.</li>
                       <li><strong>Precio Promedio (Mid):</strong> Es el promedio entre compra y venta, útil para estimaciones generales.</li>
                       <li><strong>Brecha Cambiaria:</strong> La diferencia entre el dólar blue y el dólar oficial indica la presión sobre la moneda local.</li>
                     </>
                   ) : (
                     <>
-                      <li><strong>Buy Price:</strong> How many bolivianos you need to obtain 1 USD on the parallel market. The buy number on the cards above is that P2P reference, not a cash-desk price.</li>
-                      <li><strong>Sell Price:</strong> This is the price at which you can sell dollars. Generally it\'s slightly lower than the buy price.</li>
+                      <li><strong>Buy Price:</strong> The reference in BOB you pay for each USDT you buy through P2P.</li>
+                      <li><strong>Sell Price:</strong> The reference in BOB you receive for each USDT you sell through P2P. Confirm the offer’s terms before trading.</li>
                       <li><strong>Average Price (Mid):</strong> This is the average between buy and sell, useful for general estimates.</li>
                       <li><strong>Exchange Gap:</strong> The difference between the blue dollar and the official dollar indicates pressure on the local currency.</li>
                     </>
@@ -305,13 +286,7 @@ function CuantoEstaDolarBolivia() {
                     {language === 'es' ? '¿Cuánto está el dólar en Bolivia hoy?' : 'How much is the dollar in Bolivia today?'}
                   </h4>
                   <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                    {language === 'es'
-                      ? live.buyStr && live.sellStr
-                        ? `El dólar blue en Bolivia hoy está en ${live.buyStr} BOB por USD para compra y ${live.sellStr} BOB por USD para venta. Esta cotización se actualiza cada 15 minutos en nuestra plataforma.`
-                        : 'El dólar blue (paralelo) en Bolivia se publica en vivo aquí. La cotización se actualiza cada 15 minutos.'
-                      : live.buyStr && live.sellStr
-                        ? `The blue dollar in Bolivia today is ${live.buyStr} BOB per USD for buying and ${live.sellStr} BOB per USD for selling. This quote is updated every 15 minutes on our platform.`
-                        : 'The blue dollar in Bolivia is published live here. The quote updates every 15 minutes.'}
+                    {liveSeo.answer}
                   </p>
                 </div>
 
@@ -331,9 +306,7 @@ function CuantoEstaDolarBolivia() {
                     {language === 'es' ? '¿Cuál precio debo usar?' : 'Which price should I use?'}
                   </h4>
                   <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                    {language === 'es'
-                      ? 'Depende de tu situación. Si puedes acceder al dólar oficial, úsalo. Si no, el dólar blue es el precio real al que puedes realizar transacciones. Muchos bolivianos usan el dólar blue porque es más accesible y refleja el mercado real.'
-                      : 'It depends on your situation. If you can access the official dollar, use it. If not, the blue dollar is the real price at which you can make transactions. Many Bolivians use the blue dollar because it\'s more accessible and reflects the real market.'}
+                    {conversionGuide.explanation}
                   </p>
                 </div>
               </div>

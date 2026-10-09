@@ -82,12 +82,13 @@ describe('primary dollar search copy', () => {
     assert.equal(west.stdout, east.stdout);
     assert.match(JSON.parse(west.stdout)[1].observation, /10\/3\/26, 11:26 PM \(Bolivia\)/);
   });
-  it('retains route navigation, canonical ownership, initial arithmetic and unrelated routes', () => {
+  it('retains route navigation, canonical ownership, homepage arithmetic and unrelated routes', () => {
     for (const path of Object.keys(DOLLAR_SEARCH_PAGES)) {
       const initial = sourceHtml(path), result = renderDollarRateHtml(initial, path, normalizeRates(payload));
       for (const nav of initial.matchAll(/<nav\b[^>]*>[\s\S]*?<\/nav>/g)) assert.ok(result.includes(nav[0]));
       assert.equal(result.match(/<h1[^>]*>(.*?)<\/h1>/)[1], initial.match(/<h1[^>]*>(.*?)<\/h1>/)[1]);
-      if (path !== '/dolar-blue-hoy') assert.match(result, /data-live-usd100>1235<\/span>/);
+      if (path === '/') assert.match(result, /data-live-usd100>1235<\/span>/);
+      else assert.doesNotMatch(result, /data-live-usd100/);
       assert.ok(result.includes('<body class="google-anno-skip"'));
       assert.doesNotMatch(result, /data-overlays=/);
     }

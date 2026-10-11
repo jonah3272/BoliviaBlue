@@ -1,0 +1,80 @@
+[
+  {
+    "t": "2026-10-08T19:14:34.043+00:00",
+    "buy": 11.93,
+    "sell": 11.88,
+    "mid": 11.905,
+    "official_buy": 11.85,
+    "official_sell": 11.85,
+    "official_mid": 11.85,
+    "source_observation": {
+      "version": 1,
+      "observed_at": "2026-10-08T19:14:34.043Z",
+      "method": "median_of_platform_quotes",
+      "quote_asset": "USDT",
+      "fiat": "BOB",
+      "platforms": [
+        {
+          "id": "binance",
+          "buy": 11.93,
+          "sell": 11.88
+        },
+        {
+          "id": "eldorado",
+          "buy": 11.996,
+          "sell": 11.763
+        },
+        {
+          "id": "bybit",
+          "buy": 11.907,
+          "sell": 11.894
+        }
+      ]
+    },
+    "source": "p2p-cross-median",
+    "source_provenance": "persisted_observation",
+    "sources_used": [
+      "binance",
+      "eldorado",
+      "bybit"
+    ],
+    "source_count": 3,
+    "quote_kind": "usdt_p2p_median"
+  },
+  {
+    "t": "2026-10-08T19:36:24.631+00:00",
+    "buy": 11.958,
+    "sell": 11.8215,
+    "mid": 11.8897,
+    "official_buy": 11.85,
+    "official_sell": 11.85,
+    "official_mid": 11.85,
+    "source_observation": {
+      "version": 1,
+      "observed_at": "2026-10-08T19:36:24.631Z",
+      "method": "median_of_platform_quotes",
+      "quote_asset": "USDT",
+      "fiat": "BOB",
+      "platforms": [
+        {
+          "id": "binance",
+          "buy": 11.92,
+          "sell": 11.88
+        },
+        {
+          "id": "eldorado",
+          "buy": 11.996,
+          "sell": 11.763
+        }
+      ]
+    },
+    "source": "p2p-cross-median",
+    "source_provenance": "persisted_observation",
+    "sources_used": [
+      "binance",
+      "eldorado"
+    ],
+    "source_count": 2,
+    "quote_kind": "usdt_p2p_median"
+  }
+]

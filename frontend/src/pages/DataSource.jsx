@@ -11,6 +11,7 @@ import { Link } from 'react-router-dom';
 import { BASE_URL } from '../utils/seoSchema';
 import { trackMethodologyPageViewed, trackRelatedLinkClicked } from '../utils/analyticsEvents';
 import { LLMS_TXT_URL } from '../utils/citationCopy';
+import SourceCompositionExample from '../components/SourceCompositionExample';
 
 function DataSource() {
   // Signal to AdSense that this page has sufficient content
@@ -252,6 +253,8 @@ function DataSource() {
             {copy.coverageDescription}
           </p>
         </section>
+
+        <SourceCompositionExample language={language} />
 
         {/* About Our Data - kept for continuity, shortened */}
         <section className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 mb-8">

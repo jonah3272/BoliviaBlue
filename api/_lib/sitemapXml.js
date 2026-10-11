@@ -7,7 +7,7 @@ const BASE = 'https://www.boliviablue.com';
 const STABLE_LASTMOD = '2026-09-26T12:00:00+00:00';
 
 // Set lastmod only for a verified significant edit; ordinary deploys must not bump it.
-// The methodology/provenance and newsroom snapshot content changed on 2026-10-08.
+// The methodology gained a reproducible source-composition example on 2026-10-10.
 const PAGES = [
   { path: '/', changefreq: 'hourly', priority: '1.0' },
   { path: '/dolar-blue-hoy', changefreq: 'hourly', priority: '1.0' },
@@ -35,7 +35,7 @@ const PAGES = [
   { path: '/peso-chileno-a-boliviano', changefreq: 'hourly', priority: '0.9' },
   { path: '/bancos', changefreq: 'monthly', priority: '0.75' },
   { path: '/preguntas-frecuentes', changefreq: 'monthly', priority: '0.85' },
-  { path: '/fuente-de-datos', lastmod: '2026-10-08', changefreq: 'monthly', priority: '0.75' },
+  { path: '/fuente-de-datos', lastmod: '2026-10-10', changefreq: 'monthly', priority: '0.75' },
   { path: '/api-docs', changefreq: 'monthly', priority: '0.75' },
   { path: '/widget', changefreq: 'monthly', priority: '0.9' },
   { path: '/prensa', lastmod: '2026-10-08', changefreq: 'monthly', priority: '0.9' },

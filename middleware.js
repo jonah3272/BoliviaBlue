@@ -1,6 +1,6 @@
 import { buildDollarRateSearchCopy, DOLLAR_SEARCH_PAGES, normalizeDollarRatePayload } from './frontend/src/utils/dollarRateSearchCopy.js';
 import { renderDollarRateHtml } from './seo/dollarRateSeo.js';
-import { dataDocumentationPageForSearch, renderDataDocumentationHtml } from './seo/dataDocumentationSeo.js';
+import { dataDocumentationPageForSearch, renderDataDocumentationHtml, renderSourceCompositionPressLink } from './seo/dataDocumentationSeo.js';
 import { articleRequest, loadArticle, renderArticleHtml } from './seo/articleSeo.js';
 import { buyGuidePageForSearch, renderBuyGuideHtml } from './seo/buyGuideSeo.js';
 import { platformComparisonPageForSearch, renderPlatformComparisonHtml } from './seo/platformComparisonSeo.js';
@@ -517,7 +517,7 @@ export function applyEnglishAnnotations(html, path, pair) {
   };
   out = replaceMeta(out, enMeta.title, enMeta.description);
   out = out.replace(/<meta property="og:locale:alternate" content="[^"]*"/i, '<meta property="og:locale:alternate" content="es_BO"');
-  const shell = `<main data-seo-shell="english" class="max-w-3xl mx-auto px-4 py-8"><h1>${escapeHtml(enMeta.title)}</h1><p>${escapeHtml(enMeta.description)}</p>${pair?.updatedAt ? `<p>Observation: <time datetime="${escapeAttr(pair.updatedAt)}">${escapeHtml(pair.updatedAt)}</time></p>` : ''}<nav><a href="/?lang=en">Home</a> · <a href="/dolar-blue-hoy?lang=en">Today's quote</a> · <a href="/fuente-de-datos?lang=en">Methodology</a> · <a href="/datos-historicos?lang=en">Historical data</a></nav></main>`;
+  const shell = `<main data-seo-shell="english" class="max-w-3xl mx-auto px-4 py-8"><h1>${escapeHtml(enMeta.title)}</h1><p>${escapeHtml(enMeta.description)}</p>${pair?.updatedAt ? `<p>Observation: <time datetime="${escapeAttr(pair.updatedAt)}">${escapeHtml(pair.updatedAt)}</time></p>` : ''}${path === '/prensa' ? renderSourceCompositionPressLink('en') : ''}<nav><a href="/?lang=en">Home</a> · <a href="/dolar-blue-hoy?lang=en">Today's quote</a> · <a href="/fuente-de-datos?lang=en">Methodology</a> · <a href="/datos-historicos?lang=en">Historical data</a></nav></main>`;
   out = out.replace(/<main\b[^>]*data-seo-shell=["'][^"']*["'][^>]*>[\s\S]*?<\/main>/i, () => shell);
   out = out.replace(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>/gi, '');
   const schema = { '@context': 'https://schema.org', '@type': 'WebPage', name: enMeta.title, description: enMeta.description, url: enCanon, inLanguage: 'en-US', isPartOf: { '@type': 'WebSite', name: 'Bolivia Blue', url: 'https://www.boliviablue.com' } };

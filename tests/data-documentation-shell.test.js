@@ -72,7 +72,7 @@ describe('shared initial methodology and history documentation', () => {
     for (const path of DATA_DOCUMENTATION_PATHS) for (const language of ['es', 'en']) {
       const page = getDataDocumentationPage(path, language);
       const html = renderDataDocumentationHtml(template, path, `?lang=${language}&range=all&utm_source=arbitrary`);
-      for (const a of tags(main(html), 'a').filter((a) => a.href.startsWith('/'))) assert.equal(new URL(a.href, 'https://www.boliviablue.com').searchParams.get('lang'), language === 'en' ? 'en' : null);
+      for (const a of tags(main(html), 'a').filter((a) => a.href.startsWith('/') && !a.href.startsWith('/data/examples/'))) assert.equal(new URL(a.href, 'https://www.boliviablue.com').searchParams.get('lang'), language === 'en' ? 'en' : null);
       const exports = tags(main(html), 'a').filter((a) => a.href.includes('/api/historical-data.'));
       assert.deepEqual(exports.map((a) => a.href), [PUBLIC_HISTORY_CSV, PUBLIC_HISTORY_JSON]);
       assert.equal(identity(html, 'link', 'rel', 'canonical')[0].href, page.canonical);

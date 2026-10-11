@@ -1,4 +1,5 @@
 import { getDataDocumentationPage, PUBLIC_HISTORY_CSV, PUBLIC_HISTORY_JSON } from '../frontend/src/data/dataDocumentation.js';
+import { getSourceCompositionExample } from '../frontend/src/data/sourceCompositionExample.js';
 import { getDataInquiry } from '../frontend/src/data/dataInquiry.js';
 import { sanitizeLangSearch } from '../frontend/src/utils/urlLang.js';
 
@@ -20,6 +21,28 @@ function citation(page) {
   return section('citar', m.citeHeading, paragraph(m.citeIntroduction) + `<p class="rounded-lg bg-gray-50 p-4 font-mono text-sm dark:bg-gray-900">${esc(m.citation)}</p>` + paragraph(m.citationAlternatives) + (page.history ? link(page.local('/fuente-de-datos#citar'), page.methodologyLabel) : ''));
 }
 
+export function renderSourceCompositionExample(language = 'es') {
+  const e = getSourceCompositionExample(language);
+  return `<section id="${e.id}" aria-labelledby="${e.id}-title" class="scroll-mt-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6 mb-8 space-y-4 text-gray-800 dark:text-gray-200">
+<p class="text-sm text-gray-600 dark:text-gray-400">${esc(e.date)}</p>
+<h2 id="${e.id}-title" class="text-2xl font-bold text-gray-900 dark:text-white">${esc(e.title)}</h2>
+<p class="font-semibold">${esc(e.summary)}</p>${paragraph(e.explanation)}
+<div class="overflow-x-auto" role="region" aria-label="${esc(e.caption)}" tabindex="0"><table class="w-full text-sm text-left">
+<caption class="text-left pb-3 text-gray-600 dark:text-gray-400">${esc(e.caption)}</caption>
+<thead><tr class="border-b border-gray-300 dark:border-gray-600"><th scope="col" class="py-2 pr-3">${esc(e.source)}</th>${e.times.map((time) => `<th scope="col" class="p-2 whitespace-nowrap"><time datetime="${time.iso}">${time.label}</time></th>`).join('')}</tr></thead>
+<tbody>${e.rows.map((row) => `<tr class="border-b border-gray-200 dark:border-gray-700"><th scope="row" class="py-2 pr-3 font-medium">${esc(row.label)}</th>${row.values.map((value) => `<td class="p-2 tabular-nums whitespace-nowrap">${esc(value)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
+<h3 class="font-semibold">${esc(e.calculationHeading)}</h3><ol class="list-decimal pl-5 space-y-2 text-sm break-words">${e.formulas.map((formula) => `<li>${esc(formula)}</li>`).join('')}</ol>
+<p class="rounded-lg bg-amber-50 dark:bg-amber-950/20 p-4 text-sm">${esc(e.caveat)}</p>
+<details class="text-sm space-y-3"><summary class="cursor-pointer font-semibold">${esc(e.evidenceHeading)}</summary>${[e.evidence, e.coverage, e.limitations].map(paragraph).join('')}</details>
+<a href="${esc(e.jsonUrl)}" download class="inline-block text-blue-600 dark:text-blue-400 underline">${esc(e.download)}</a>
+<h3 class="font-semibold">${esc(e.citationLabel)}</h3><p class="select-text break-words rounded-lg bg-gray-50 dark:bg-gray-900 p-4 text-sm">${esc(e.citation)}</p></section>`;
+}
+
+export function renderSourceCompositionPressLink(language = 'es') {
+  const e = getSourceCompositionExample(language);
+  return `<aside class="rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-2 text-sm text-gray-700 dark:text-gray-300">${link(e.path, e.pressLabel)}${paragraph(e.pressDescription)}</aside>`;
+}
+
 function sourceContent(page) {
   const { copy: c, local } = page;
   return section('', c.citationGuideHeading, paragraph(c.citationGuideDescription) + nav([[local('/dolar-blue-hoy'), c.todayLabel], [local('/prensa'), c.pressLabel], [local('/api-docs'), 'API'], [`${BASE}/llms.txt`, 'llms.txt']]))
@@ -29,6 +52,7 @@ function sourceContent(page) {
     + section('blue-vs-oficial', c.officialHeading, paragraph(c.officialDescription) + paragraph(c.officialSeparation) + link(local('/comparacion'), c.comparisonLabel))
     + section('historicos', c.historyHeading, paragraph(c.historyDescription) + paragraph(c.exportLimits) + nav([[local('/datos-historicos'), c.historyLabel], [PUBLIC_HISTORY_CSV, 'CSV (30d)'], [PUBLIC_HISTORY_JSON, 'JSON (30d)']]))
     + section('provenance', c.provenanceHeading, paragraph(c.provenanceDescription) + paragraph(c.coverageDescription))
+    + renderSourceCompositionExample(page.language)
     + section('api', c.apiHeading, paragraph(c.apiDescription) + `<p class="break-words font-mono text-sm">GET ${esc(BASE)}/api/blue-rate</p>` + paragraph(c.apiIntroduction) + link(local('/api-docs'), c.apiLabel))
     + citation(page)
     + section('limitaciones', c.limitationsHeading, [c.limitationsDescription, c.executionWarning, c.delayWarning].map(paragraph).join(''))
@@ -46,7 +70,7 @@ function historyContent(page) {
     + citation(page);
 }
 
-/** Editorial content only: no history/rate/backend calls and no observation dates. */
+/** Editorial content only: no history/rate/backend calls. Methodology includes a fixed, dated case study. */
 export function renderDataDocumentationHtml(html, path, search = '') {
   const rootPattern = /(<div id="root">)[\s\S]*?(<\/div>\s*(?:<script|<\/body>))/;
   if (!/<html\b/i.test(html) || !/<\/head>/i.test(html) || !rootPattern.test(html)) throw new Error('Documentation shell is invalid');

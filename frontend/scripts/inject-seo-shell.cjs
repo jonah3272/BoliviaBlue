@@ -945,6 +945,8 @@ async function main() {
   fs.writeFileSync(indexPath, homeHtml, 'utf8');
   console.log('[inject-seo-shell] Injected SEO shell + JSON-LD for / into dist/index.html');
 
+  const { renderSourceCompositionPressLink } = await import('../../seo/dataDocumentationSeo.js');
+
   // 2) Other routes – write dist/<path>/index.html with route-specific meta, shell, and JSON-LD
   const otherPaths = [
     '/dolar-blue-hoy',
@@ -975,7 +977,10 @@ async function main() {
     const r = ROUTES[routePath];
     if (!r) continue;
     let routeHtml = replaceMeta(originalHtml, routePath);
-    routeHtml = injectRootShell(routeHtml, r.shell);
+    const shell = routePath === '/prensa'
+      ? r.shell.replace('</section>', `</section>${renderSourceCompositionPressLink('es')}`)
+      : r.shell;
+    routeHtml = injectRootShell(routeHtml, shell);
     routeHtml = injectStaticJsonLd(routeHtml, routePath);
     const dir = path.join(DIST, routePath.slice(1));
     fs.mkdirSync(dir, { recursive: true });

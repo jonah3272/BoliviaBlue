@@ -5,6 +5,7 @@ import { articleRequest, loadArticle, renderArticleHtml } from './seo/articleSeo
 import { buyGuidePageForSearch, renderBuyGuideHtml } from './seo/buyGuideSeo.js';
 import { platformComparisonPageForSearch, renderPlatformComparisonHtml } from './seo/platformComparisonSeo.js';
 import { calculatorPageForSearch, renderCalculatorHtml } from './seo/calculatorSeo.js';
+import { realPageForSearch, renderRealConversionHtml } from './seo/realConversionSeo.js';
 
 /**
  * Vercel Edge Middleware: inject live buy/sell into homepage HTML for every visitor,
@@ -598,6 +599,33 @@ export default async function middleware(request) {
 
   const url = new URL(request.url);
   const path = normalizePath(url.pathname);
+  // BRL uses the same truthful dated reference and explanatory content for every visitor.
+  if (path === '/real-a-boliviano') {
+    try {
+      const shell = await fetch(new URL('/real-a-boliviano/index.html', url.origin), {
+        headers: { [SKIP_HEADER]: '1', Accept: 'text/html' },
+        signal: withTimeout(HTML_TIMEOUT_MS),
+      });
+      if (!shell.ok) throw new Error('BRL shell unavailable');
+      let rate = null;
+      try {
+        const response = await fetch(new URL('/api/blue-rate', url.origin), {
+          headers: { [SKIP_HEADER]: '1', Accept: 'application/json' },
+          signal: withTimeout(RATE_TIMEOUT_MS),
+        });
+        if (response.ok) rate = await response.json();
+      } catch { /* Re-render as unavailable rather than retaining a build-time quote. */ }
+      const headers = new Headers(shell.headers);
+      headers.set('content-type', 'text/html; charset=utf-8');
+      headers.set('cache-control', 'public, s-maxage=60, stale-while-revalidate=60');
+      headers.delete('content-length');
+      return new Response(request.method === 'HEAD' ? null : renderRealConversionHtml(await shell.text(), url.search, rate), { status: 200, headers });
+    } catch {
+      const es = realPageForSearch(url.search).language === 'es';
+      const title = es ? 'Página temporalmente no disponible' : 'Page temporarily unavailable';
+      return new Response(request.method === 'HEAD' ? null : `<!doctype html><html lang="${es ? 'es' : 'en'}"><head><meta name="robots" content="noindex, follow"><title>${title} | Bolivia Blue</title></head><body><h1>${title}</h1></body></html>`, { status: 503, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex, follow', 'retry-after': '60' } });
+    }
+  }
   // Editorial documentation must be useful in either locale even if all rate APIs fail.
   if (path === '/fuente-de-datos' || path === '/datos-historicos') {
     try {

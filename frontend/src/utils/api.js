@@ -198,12 +198,14 @@ export async function fetchBlueRate(currency = 'USD') {
               mid: (buy + sell) / 2,
               official_buy: fresh.official_buy ?? data.official_buy,
               official_sell: fresh.official_sell ?? data.official_sell,
-              buy_bob_per_brl: fresh.buy_bob_per_brl ?? data.buy_bob_per_brl,
-              sell_bob_per_brl: fresh.sell_bob_per_brl ?? data.sell_bob_per_brl,
+              buy_bob_per_brl: fresh.buy_bob_per_brl ?? null,
+              sell_bob_per_brl: fresh.sell_bob_per_brl ?? null,
               mid_bob_per_brl:
                 fresh.buy_bob_per_brl != null && fresh.sell_bob_per_brl != null
-                  ? (fresh.buy_bob_per_brl + fresh.sell_bob_per_brl) / 2
-                  : data.mid_bob_per_brl,
+                  ? (Number.isFinite(fresh.buy_bob_per_brl + fresh.sell_bob_per_brl)
+                    ? (fresh.buy_bob_per_brl + fresh.sell_bob_per_brl) / 2
+                    : fresh.buy_bob_per_brl / 2 + fresh.sell_bob_per_brl / 2)
+                  : null,
               buy_bob_per_eur: fresh.buy_bob_per_eur ?? data.buy_bob_per_eur,
               sell_bob_per_eur: fresh.sell_bob_per_eur ?? data.sell_bob_per_eur,
               mid_bob_per_eur:

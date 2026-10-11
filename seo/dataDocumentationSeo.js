@@ -23,7 +23,7 @@ function citation(page) {
 
 export function renderSourceCompositionExample(language = 'es') {
   const e = getSourceCompositionExample(language);
-  return `<section id="${e.id}" aria-labelledby="${e.id}-title" class="scroll-mt-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6 mb-8 space-y-4 text-gray-800 dark:text-gray-200">
+  return `<section id="${e.id}" aria-labelledby="${e.id}-title" class="scroll-mt-[calc(var(--bb-header-height,81px)_+_1rem)] md:scroll-mt-[calc(var(--bb-header-height,81px)_+_4rem)] bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6 mb-8 space-y-4 text-gray-800 dark:text-gray-200">
 <p class="text-sm text-gray-600 dark:text-gray-400">${esc(e.date)}</p>
 <h2 id="${e.id}-title" class="text-2xl font-bold text-gray-900 dark:text-white">${esc(e.title)}</h2>
 <p class="font-semibold">${esc(e.summary)}</p>${paragraph(e.explanation)}

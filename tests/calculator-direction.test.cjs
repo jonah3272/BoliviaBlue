@@ -348,3 +348,40 @@ describe('calculator P2P direction', () => {
     assert.equal(screen.getAllByRole('link', { name: /dólares a bolivianos|bolivianos a dólares/ }).length, 5);
   });
 });
+
+describe('current BRL availability', () => {
+  it('never falls back to a cached BRL ratio when either current side is missing or invalid', () => {
+    for (const invalid of [null, undefined, 0, -1, NaN, Infinity, 'bad']) {
+      for (const side of ['buy_bob_per_brl', 'sell_bob_per_brl']) {
+        const data = { ...fixture, [side]: invalid };
+        for (const official of [false, true]) for (const reverse of [false, true]) {
+          assert.equal(calculatorRate(data, 'BRL', official, reverse, { BRL: 5 }), 0);
+          assert.equal(calculatorRate(data, 'EUR', official, reverse), calculatorRate(fixture, 'EUR', official, reverse));
+          assert.equal(calculatorRate(data, 'USD', official, reverse), calculatorRate(fixture, 'USD', official, reverse));
+        }
+      }
+    }
+    assert.equal(calculatorRate(fixture, 'BRL'), 2.4);
+    assert.equal(calculatorRate(fixture, 'BRL', false, true), 2.5);
+  });
+  it('clears forward/reverse BRL output and comparison state on valid → null, then recovers', async () => {
+    mount(); await result('1197.00', '100');
+    click('BRL'); await result('240.00', '100');
+    click('Comparar');
+    const brlRow = () => screen.getByText('🇧🇷 BRL', { selector: 'span' }).parentElement;
+    assert.doesNotMatch(brlRow().textContent, /—/);
+    const count = history().length;
+    rateResponse = async () => ({ ...fixture, buy_bob_per_brl: null, sell_bob_per_brl: null });
+    await React.act(async () => refresh()); await result('', '100');
+    assert.match(screen.getByRole('status').textContent, /Tasa no disponible/);
+    assert.match(brlRow().textContent, /—/);
+    assert.equal(history().length, count);
+    change(bob(), '250'); await result('250', '');
+    assert.equal(screen.queryByRole('button', { name: 'Copiar', exact: true }), null);
+    rateResponse = async () => ({ ...fixture });
+    await React.act(async () => refresh()); await result('250', '100.0000');
+    assert.doesNotMatch(brlRow().textContent, /—/);
+    assert.equal(screen.queryByRole('status'), null);
+    change(foreign(), '100'); await result('240.00', '100');
+  });
+});

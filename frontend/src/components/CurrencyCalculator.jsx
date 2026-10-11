@@ -117,7 +117,10 @@ function CurrencyCalculator({ presetRequest }) {
         const ars = Number(data.buy_bob_per_ars);
         const clp = Number(data.buy_bob_per_clp);
         if (usdBuy > 0 && eur > 0) next.EUR = usdBuy / eur;
-        if (usdBuy > 0 && brl > 0) next.BRL = usdBuy / brl;
+        const brlSell = Number(data.sell_bob_per_brl);
+        const brlRatio = usdBuy / brl;
+        next.BRL = brl > 0 && Number.isFinite(brl) && brlSell > 0 && Number.isFinite(brlSell)
+          && Number.isFinite(brlRatio) && brlRatio > 0 ? brlRatio : null;
         if (usdBuy > 0 && cop > 0) next.COP = usdBuy / cop;
         if (usdBuy > 0 && pen > 0) next.PEN = usdBuy / pen;
         if (usdBuy > 0 && ars > 0) next.ARS = usdBuy / ars;

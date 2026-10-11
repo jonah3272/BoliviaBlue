@@ -192,12 +192,7 @@ export async function getAllCurrentBlueRates() {
         return null;
       }),
       getCurrentBlueRateForFiat('BRL').catch(err => {
-        // Silently handle BRL rate failures - we have a fallback calculation
-        if (err.message && err.message.includes('insufficient data')) {
-          console.log('BRL rate not available from Binance P2P, will use USD-based fallback');
-        } else {
-          console.warn('Failed to fetch BRL rate:', err.message);
-        }
+        console.warn('BRL P2P unavailable; leaving BRL conversion empty:', err.message);
         return null;
       }),
       getCurrentBlueRateForFiat('EUR').catch(err => {
@@ -239,31 +234,17 @@ export async function getAllCurrentBlueRates() {
       sample_sell: bobRate.platforms.map((p) => p.sell).slice(0, 5)
     };
 
-    // Calculate BRL rates: BOB/BRL = (USDT/BOB) / (USDT/BRL)
-    if (brlRate) {
-      result.buy_bob_per_brl = bobRate.buy / brlRate.buy;
-      result.sell_bob_per_brl = bobRate.sell / brlRate.sell;
-      result.mid_bob_per_brl = (result.buy_bob_per_brl + result.sell_bob_per_brl) / 2;
-    } else {
-      // Fallback: Calculate BRL from USD rates if Binance P2P doesn't have BRL pairs
-      // Using approximate conversion: 1 USD ≈ 5.0 BRL
-      // We need to ensure there's always a spread, so we'll use a slightly different rate for buy/sell
-      const USD_TO_BRL_BUY = 5.0;   // Slightly lower for buy (you get more BRL per USD)
-      const USD_TO_BRL_SELL = 5.05; // Slightly higher for sell (you pay more BRL per USD)
-      console.warn('BRL rate not available from Binance P2P, using USD-based calculation with spread');
-      
-      // Calculate with spread: buy should be lower (better for buyer), sell should be higher (better for seller)
-      result.buy_bob_per_brl = bobRate.buy / USD_TO_BRL_BUY;
-      result.sell_bob_per_brl = bobRate.sell / USD_TO_BRL_SELL;
-      
-      // Ensure minimum spread of at least 0.01
-      const spread = result.sell_bob_per_brl - result.buy_bob_per_brl;
-      if (spread < 0.01) {
-        result.sell_bob_per_brl = result.buy_bob_per_brl + 0.01;
-      }
-      
-      result.mid_bob_per_brl = (result.buy_bob_per_brl + result.sell_bob_per_brl) / 2;
-    }
+    // Same-side indicative cross only when both observed BRL inputs are valid.
+    // Missing BRL liquidity must not become a fixed USD/BRL guess or invented spread.
+    const validBrl = brlRate && [bobRate.buy, bobRate.sell, brlRate.buy, brlRate.sell]
+      .every(value => typeof value === 'number' && Number.isFinite(value) && value > 0);
+    const brlBuy = validBrl ? bobRate.buy / brlRate.buy : null;
+    const brlSell = validBrl ? bobRate.sell / brlRate.sell : null;
+    const validCross = Number.isFinite(brlBuy) && brlBuy > 0 && Number.isFinite(brlSell) && brlSell > 0;
+    result.buy_bob_per_brl = validCross ? brlBuy : null;
+    result.sell_bob_per_brl = validCross ? brlSell : null;
+    const brlMid = (brlBuy + brlSell) / 2;
+    result.mid_bob_per_brl = validCross ? (Number.isFinite(brlMid) ? brlMid : brlBuy / 2 + brlSell / 2) : null;
 
     // Calculate EUR rates: BOB/EUR = (USDT/BOB) / (USDT/EUR)
     if (eurRate) {

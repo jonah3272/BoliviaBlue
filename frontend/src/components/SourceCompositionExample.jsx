@@ -16,7 +16,7 @@ export default function SourceCompositionExample({ language = 'es' }) {
     catch { setStatus(example.copyFailed); }
   };
 
-  return <section ref={section} id={example.id} aria-labelledby={`${example.id}-title`} className="scroll-mt-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6 mb-8 space-y-4 text-gray-800 dark:text-gray-200">
+  return <section ref={section} id={example.id} aria-labelledby={`${example.id}-title`} className="scroll-mt-[calc(var(--bb-header-height,81px)_+_1rem)] md:scroll-mt-[calc(var(--bb-header-height,81px)_+_4rem)] bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6 mb-8 space-y-4 text-gray-800 dark:text-gray-200">
     <p className="text-sm text-gray-600 dark:text-gray-400">{example.date}</p>
     <h2 id={`${example.id}-title`} className="text-2xl font-bold text-gray-900 dark:text-white">{example.title}</h2>
     <p className="font-semibold">{example.summary}</p>

@@ -14,7 +14,7 @@ describe('sitemap xml', () => {
     for (const now of ['2026-10-08T18:00:00Z', '2026-10-09T02:00:00Z', '2027-01-01T00:00:00Z']) {
       const xml = buildSitemapXml(new Date(now));
       for (const pagePath of ['/fuente-de-datos', '/prensa']) {
-        assert.equal(lastmodFor(xml, pagePath), '2026-10-08');
+        assert.equal(lastmodFor(xml, pagePath), pagePath === '/fuente-de-datos' ? '2026-10-10' : '2026-10-08');
       }
       assert.equal(lastmodFor(xml, '/terminos'), '2026-09-26T12:00:00+00:00');
       assert.equal(lastmodFor(xml, '/api-docs'), '2026-09-26T12:00:00+00:00');

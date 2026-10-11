@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { HelmetProvider } from 'react-helmet-async';
 import App from './App';
+import { startInitialApp } from './utils/startInitialApp';
 import { BrowserRouter } from 'react-router-dom';
 import './index.css';
 import './styles/ui-enhancements.css';
@@ -196,26 +197,32 @@ if (!rootElement) {
     </div>
   `;
 } else {
-  ReactDOM.createRoot(rootElement).render(
-    <React.StrictMode>
-      <ErrorBoundary>
-        <HelmetProvider>
-          <ThemeProvider>
-            <BrowserRouter>
-            <LanguageProvider>
-              <CurrencyProvider>
-                <RateProvider>
-                  <ToastProvider>
-                    <App />
-                  </ToastProvider>
-                </RateProvider>
-              </CurrencyProvider>
-            </LanguageProvider>
-            </BrowserRouter>
-          </ThemeProvider>
-        </HelmetProvider>
-      </ErrorBoundary>
-    </React.StrictMode>
-  );
+  startInitialApp({
+    rootElement,
+    location: window.location,
+    loadHome: () => import('./pages/Home'),
+    retry: () => window.location.reload(),
+    mount: (initialHome) => ReactDOM.createRoot(rootElement).render(
+      <React.StrictMode>
+        <ErrorBoundary>
+          <HelmetProvider>
+            <ThemeProvider>
+              <BrowserRouter>
+                <LanguageProvider>
+                  <CurrencyProvider>
+                    <RateProvider>
+                      <ToastProvider>
+                        <App initialHome={initialHome} />
+                      </ToastProvider>
+                    </RateProvider>
+                  </CurrencyProvider>
+                </LanguageProvider>
+              </BrowserRouter>
+            </ThemeProvider>
+          </HelmetProvider>
+        </ErrorBoundary>
+      </React.StrictMode>
+    ),
+  });
 }
 

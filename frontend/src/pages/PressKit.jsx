@@ -14,6 +14,7 @@ import { SITE_URL } from '../config/brand';
 import { liveBobParts, ratesFromBluePayload } from '../utils/seoRateMeta';
 import CiteShareBar from '../components/CiteShareBar';
 import NewsroomSnapshot from '../components/NewsroomSnapshot';
+import { getSourceCompositionExample } from '../data/sourceCompositionExample';
 
 const HIST_CSV = `${SITE_URL}/api/historical-data.csv?range=30d`;
 
@@ -80,6 +81,7 @@ function PressKit() {
   useAdsenseReady();
   const languageContext = useLanguage();
   const language = languageContext?.language || 'es';
+  const example = getSourceCompositionExample(language);
   const CITE_METHODOLOGY = language === 'es'
     ? `Metodología actual: ${SITE_URL}/fuente-de-datos — mediana de referencias P2P disponibles por plataforma. Se intentan actualizaciones periódicas y puede haber demoras. Algunos registros históricos no tienen composición de fuentes guardada; el método actual no acredita la procedencia de cada observación guardada. CSV 30 días: ${HIST_CSV}`
     : `Current methodology: ${SITE_URL}/fuente-de-datos — median of available per-platform P2P references. Updates are attempted periodically and may be delayed. Some historical records have no stored source composition; the current method does not establish the provenance of each stored observation. 30-day CSV: ${HIST_CSV}`;
@@ -164,6 +166,11 @@ function PressKit() {
         </header>
 
         <NewsroomSnapshot rate={rateData} language={language} loading={isLoading} error={error} />
+
+        <aside className="rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-2 text-sm text-gray-700 dark:text-gray-300">
+          <Link to={example.path} className="font-semibold text-blue-600 dark:text-blue-400 underline">{example.pressLabel}</Link>
+          <p>{example.pressDescription}</p>
+        </aside>
 
         <section className="rounded-xl border border-sky-200 dark:border-sky-800 bg-sky-50/80 dark:bg-sky-950/30 p-6 space-y-3">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">

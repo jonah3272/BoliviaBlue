@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
+import { createRequire } from 'node:module';
 import { getSourceCompositionExample, SOURCE_COMPOSITION_ANCHOR, SOURCE_COMPOSITION_JSON } from '../frontend/src/data/sourceCompositionExample.js';
 import { renderDataDocumentationHtml, renderSourceCompositionPressLink } from '../seo/dataDocumentationSeo.js';
 import { applyEnglishAnnotations } from '../middleware.js';
@@ -93,5 +94,34 @@ test('English newsroom initial HTML retains the shared example link with or with
     assert.equal((html.match(new RegExp(e.id, 'g')) || []).length, 1);
     const other = applyEnglishAnnotations(pressTemplate, '/euro-a-boliviano', pair);
     assert.ok(!other.includes(e.id), 'Other English routes remain untouched');
+  }
+});
+
+test('example anchors clear the measured header and desktop navigation with matching responsive CSS', async () => {
+  const component = readFileSync(new URL('../frontend/src/components/SourceCompositionExample.jsx', import.meta.url), 'utf8');
+  const classes = ['scroll-mt-[calc(var(--bb-header-height,81px)_+_1rem)]', 'md:scroll-mt-[calc(var(--bb-header-height,81px)_+_4rem)]'];
+  for (const className of classes) {
+    assert.ok(component.includes(className));
+    for (const language of ['es', 'en']) assert.ok(renderDataDocumentationHtml(template, '/fuente-de-datos', `?lang=${language}`).includes(className));
+  }
+  assert.ok(!component.includes('scroll-mt-6'));
+  const require = createRequire(new URL('../frontend/package.json', import.meta.url));
+  const postcss = require('postcss');
+  const tailwindcss = require('tailwindcss');
+  const css = await postcss([tailwindcss({ content: [{ raw: classes.join(' '), extension: 'html' }], corePlugins: { preflight: false } })]).process('@tailwind utilities;', { from: undefined });
+  const offsets = [];
+  css.root.walkDecls('scroll-margin-top', (declaration) => {
+    const media = declaration.parent.parent;
+    offsets.push({ value: declaration.value, minWidth: media.type === 'atrule' ? Number(media.params.match(/min-width: (\d+)px/)[1]) : 0 });
+  });
+  assert.deepEqual(offsets, [
+    { value: 'calc(var(--bb-header-height,81px) + 1rem)', minWidth: 0 },
+    { value: 'calc(var(--bb-header-height,81px) + 4rem)', minWidth: 768 },
+  ]);
+  for (const width of [390, 640, 767, 768, 1280]) {
+    const rem = width < 768 ? 1 : 4;
+    // Desktop navigation is 47px (20px line + 24px padding + 3px borders).
+    const navigationHeight = width < 768 ? 0 : 47;
+    assert.ok(rem * 16 - navigationHeight >= 16, `Header/navigation clearance at ${width}px`);
   }
 });

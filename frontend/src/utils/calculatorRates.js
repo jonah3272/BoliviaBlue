@@ -5,6 +5,9 @@ export const isP2PReferenceCurrency = (currency) => ['USD', 'USDT', 'USDC'].incl
 
 export function calculatorRate(rateData, currency = 'USD', official = false, fromBOB = false, exchangeRates = {}) {
   if (!rateData) return 0;
+  // BRL must come from the current complete pair, never a retained foreign-currency ratio.
+  if (currency === 'BRL' && ![rateData.buy_bob_per_brl, rateData.sell_bob_per_brl]
+    .every(value => Number.isFinite(Number(value)) && Number(value) > 0)) return 0;
   const usdBuy = Number(rateData.buy_bob_per_usd ?? rateData.buy);
   const usdSell = Number(rateData.sell_bob_per_usd ?? rateData.sell);
   const usdOfficial = Number(fromBOB ? rateData.official_sell : rateData.official_buy);

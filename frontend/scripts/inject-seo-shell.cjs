@@ -275,15 +275,6 @@ function applyLiveRatesToRoutes(buy, sell, updatedAt, extra = {}) {
     euro.shell = fillLiveRateSlots(euro.shell, eurB, eurS, extra.eurUpdatedAt || updatedAt);
   }
 
-  const brlB = fmtRate(extra.buyBrl);
-  const brlS = fmtRate(extra.sellBrl);
-  const real = ROUTES['/real-a-boliviano'];
-  if (real && brlB && brlS) {
-    real.title = `Real Blue Bolivia Hoy: Compra ${brlB} · Venta ${brlS}`;
-    real.description = `Real brasileño blue / paralelo en Bolivia: compra Bs ${brlB} y venta Bs ${brlS}. Derivado vía USDT.`;
-    real.shell = fillLiveRateSlots(real.shell, brlB, brlS, updatedAt);
-  }
-
   const copB = fmtCopThousand(extra.buyCop);
   const copS = fmtCopThousand(extra.sellCop);
   const peso = ROUTES['/peso-a-boliviano'];
@@ -1009,6 +1000,12 @@ async function main() {
   fs.mkdirSync(comparisonDir, { recursive: true });
   fs.writeFileSync(path.join(comparisonDir, 'index.html'), renderPlatformComparisonHtml(originalHtml), 'utf8');
   console.log('[inject-seo-shell] Wrote shared platform comparison shell');
+
+  // BRL has no invented build-time quote; its renderer is shared with request-time locale variants.
+  const { renderRealConversionHtml } = await import('../../seo/realConversionSeo.js');
+  const realDir = path.join(DIST, 'real-a-boliviano');
+  fs.mkdirSync(realDir, { recursive: true });
+  fs.writeFileSync(path.join(realDir, 'index.html'), renderRealConversionHtml(originalHtml), 'utf8');
 
   // Documentation content shares its editorial copy with the interactive pages.
   const { renderDataDocumentationHtml } = await import('../../seo/dataDocumentationSeo.js');

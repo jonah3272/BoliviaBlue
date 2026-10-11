@@ -122,6 +122,11 @@ async function refreshBlueFromBinance(supabase = createSupabaseClient()) {
     if (brl) {
       buyBrl = bobPerFiatFromUsdtP2p(buy, brl.buy);
       sellBrl = bobPerFiatFromUsdtP2p(sell, brl.sell);
+      // Reject an incomplete or overflowed BRL result without altering other fiat calculations.
+      if (![buyBrl, sellBrl].every(value => Number.isFinite(value) && value > 0)) {
+        buyBrl = null;
+        sellBrl = null;
+      }
     }
   } catch {
     /* optional — BRL P2P is often thin */
@@ -183,7 +188,8 @@ async function refreshBlueFromBinance(supabase = createSupabaseClient()) {
     official_mid: official.official_mid,
     buy_bob_per_brl: buyBrl,
     sell_bob_per_brl: sellBrl,
-    mid_bob_per_brl: buyBrl != null && sellBrl != null ? (buyBrl + sellBrl) / 2 : null,
+    mid_bob_per_brl: buyBrl != null && sellBrl != null
+      ? (Number.isFinite(buyBrl + sellBrl) ? (buyBrl + sellBrl) / 2 : buyBrl / 2 + sellBrl / 2) : null,
     buy_bob_per_eur: buyEur,
     sell_bob_per_eur: sellEur,
     mid_bob_per_eur: buyEur != null && sellEur != null ? (buyEur + sellEur) / 2 : null,

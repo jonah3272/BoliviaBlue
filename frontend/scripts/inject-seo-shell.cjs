@@ -937,6 +937,12 @@ async function main() {
   console.log('[inject-seo-shell] Injected SEO shell + JSON-LD for / into dist/index.html');
 
   const { renderSourceCompositionPressLink } = await import('../../seo/dataDocumentationSeo.js');
+  const { getContextualDiscovery } = await import('../src/data/contextualDiscovery.js');
+  const { renderContextualDiscoveryLink } = await import('../../seo/contextualDiscoverySeo.js');
+  for (const [route, language] of [['/guia-dinero-bolivia', 'es'], ['/bolivia-money-guide', 'en']]) {
+    const cashGuidance = renderContextualDiscoveryLink(getContextualDiscovery(language).travelerReal);
+    ROUTES[route].shell = ROUTES[route].shell.replace('<nav ', `${cashGuidance}<nav `);
+  }
 
   // 2) Other routes – write dist/<path>/index.html with route-specific meta, shell, and JSON-LD
   const otherPaths = [

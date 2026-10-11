@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { getDataDocumentationPage } from '../data/dataDocumentation';
+import { getContextualDiscovery } from '../data/contextualDiscovery';
+import ContextualDiscoveryLink from '../components/ContextualDiscoveryLink';
 import { DATA_INQUIRY_PATH, getDataInquiry } from '../data/dataInquiry';
 import { useLanguage } from '../contexts/LanguageContext';
 import Header from '../components/Header';
@@ -335,6 +337,7 @@ function DatosHistoricos() {
           <h2 className="mb-3 text-xl font-bold text-gray-900 dark:text-white">{page.methodology.provenanceHeading}</h2>
           <p className="text-gray-700 dark:text-gray-300">{copy.datasetDescription}</p>
           <p className="mt-3 text-gray-700 dark:text-gray-300">{page.methodology.provenanceDescription}</p>
+          <ContextualDiscoveryLink link={getContextualDiscovery(language).historySources} />
           <p className="mt-3 text-gray-700 dark:text-gray-300">{page.methodology.coverageDescription}</p>
         </section>
 

@@ -1,9 +1,12 @@
+import { getContextualDiscovery } from './contextualDiscovery.js';
+
 const BASE = 'https://www.boliviablue.com';
 const PATH = '/calculadora';
 
 /** Shared, rate-independent calculator copy for React and initial HTML. */
 export function getCalculatorPage(language = 'es') {
   const es = language !== 'en';
+  const discovery = getContextualDiscovery(language);
   const local = (path) => path + (es ? '' : `${path.includes('?') ? '&' : '?'}lang=en`);
   const title = es
     ? 'Dólares a bolivianos: calculadora USD/BOB | Bolivia Blue'
@@ -81,8 +84,10 @@ export function getCalculatorPage(language = 'es') {
       ],
     },
   ];
+  sections.find(section => section.id === 'limites-de-la-estimacion').contextualLink = discovery.calculatorPayment;
   return {
     language: es ? 'es' : 'en', title, description, heading, canonical, presets, sections,
+    realGuidance: discovery.calculatorReal,
     introduction: es
       ? 'Ingresá cuánto querés convertir de dólares a bolivianos o de bolivianos a dólares. Elegí referencia P2P o tipo oficial y revisá qué tasa se aplica antes de comparar el resultado.'
       : 'Enter how much you want to convert from dollars to bolivianos or from bolivianos to dollars. Choose the P2P reference or official rate and check which rate applies before comparing the result.',

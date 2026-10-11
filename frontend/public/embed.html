@@ -25,12 +25,30 @@
 </head>
 <body>
   <div id="w">Cargando referencia P2P USDT/BOB…</div>
-  <noscript><a href="https://www.boliviablue.com/dolar-blue-hoy?utm_source=embed&amp;utm_medium=iframe" target="_blank" rel="noopener">Datos de Bolivia Blue →</a></noscript>
+  <noscript><a href="https://www.boliviablue.com/dolar-blue-hoy?utm_source=embed&amp;utm_medium=iframe" target="_blank" rel="noopener">Datos de Bolivia Blue →</a><p>BOB/USD: <a href="https://www.boliviablue.com/guia-dinero-bolivia#payment-cost-comparison" target="_blank" rel="noopener noreferrer">Guía de pagos</a> · <a href="https://www.boliviablue.com/bolivia-money-guide#payment-cost-comparison" target="_blank" rel="noopener noreferrer">Payment guide</a>. JavaScript es necesario para calcular / is required to calculate.</p></noscript>
   <script>
     (function () {
       var params = new URLSearchParams(window.location.search);
       var lang = params.get('lang') === 'en' ? 'en' : 'es';
       document.documentElement.lang = lang === 'en' ? 'en' : 'es-BO';
+      if (params.get('mode') === 'payment-cost') {
+        document.title = lang === 'en' ? 'Compare BOB/USD payments — Bolivia Blue' : 'Comparar pagos BOB/USD — Bolivia Blue';
+        var target = document.getElementById('w');
+        var guide = lang === 'en' ? '/bolivia-money-guide' : '/guia-dinero-bolivia';
+        function paymentFallback() {
+          target.innerHTML = '<p style="padding:16px;font:16px system-ui"><a href="https://www.boliviablue.com' + guide + '#payment-cost-comparison" target="_blank" rel="noopener noreferrer">' + (lang === 'en' ? 'Open the payment-cost checker on Bolivia Blue →' : 'Abrir el comparador de pagos en Bolivia Blue →') + '</a></p>';
+        }
+        paymentFallback();
+        var css = document.createElement('link');
+        css.rel = 'stylesheet';
+        css.href = '/payment-cost/payment-cost.css';
+        document.head.appendChild(css);
+        var paymentScript = document.createElement('script');
+        paymentScript.src = '/payment-cost/payment-cost.js';
+        paymentScript.onerror = paymentFallback;
+        document.body.appendChild(paymentScript);
+        return;
+      }
       var script = document.createElement('script');
       script.src = '/embed.js';
       script.setAttribute('data-target', 'w');

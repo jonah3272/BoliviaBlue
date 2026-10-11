@@ -12,6 +12,7 @@ import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import CurrencyCalculator from '../components/CurrencyCalculator';
 import { calculatorRate } from '../utils/calculatorRates';
 import { getCalculatorPage } from '../data/calculatorPage';
+import ContextualDiscoveryLink from '../components/ContextualDiscoveryLink';
 
 function CalculatorStats({ language, currentRate, weekChangePct }) {
   const es = language === 'es';
@@ -109,10 +110,11 @@ function CalculatorQuickLinks({ language }) {
 function CalculatorHelpContent({ page }) {
   return (
     <>
-      {page.sections.map(({ id, title, paragraphs }) => (
+      {page.sections.map(({ id, title, paragraphs, contextualLink }) => (
         <section key={id} id={id}>
           <h3 className="font-semibold text-lg text-gray-900 dark:text-white mt-6 mb-3 not-prose">{title}</h3>
           {paragraphs.map((paragraph) => <p key={paragraph} className="text-gray-700 dark:text-gray-300">{paragraph}</p>)}
+          {contextualLink && <ContextualDiscoveryLink link={contextualLink} />}
         </section>
       ))}
       <p className="mt-6 text-sm">
@@ -207,6 +209,7 @@ function Calculator() {
         <CalculatorStats language={language} currentRate={currentRate} weekChangePct={weekChangePct} />
 
         <CurrencyCalculator presetRequest={presetRequest} />
+        <ContextualDiscoveryLink link={page.realGuidance} />
 
         {currentRate && (
           <RateTrioStrip

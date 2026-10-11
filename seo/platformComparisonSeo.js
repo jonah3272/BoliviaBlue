@@ -1,5 +1,6 @@
 import { getPlatformComparisonPage, REVIEWED_AT, SOURCES, BINANCE_HELP, ELDORADO_HELP } from '../frontend/src/data/platformComparison.js';
 import { sanitizeLangSearch } from '../frontend/src/utils/urlLang.js';
+import { renderRemittanceComparisonHtml } from './remittanceComparisonSeo.js';
 
 const BASE = 'https://www.boliviablue.com';
 const PATH = '/plataformas';
@@ -31,6 +32,7 @@ ${platform.partner === 'eldorado' ? `<p>${link(buyGuide, copy.firstPurchase)}</p
 <section class="min-w-0 rounded-2xl border border-amber-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 space-y-3"><p>${esc(offer.brand)} · ${esc(copy.referralLabel)}</p><h2 class="text-2xl font-bold">${esc(offer.headline)}</h2><p>${esc(offer.body)}</p><p class="text-sm">${esc(offer.qualification)}</p><p>${link(offer.href, offer.cta, true, true)}</p><p>${link(buyGuide, offer.guideLabel)}</p><p class="text-sm">${esc(offer.disclosure)}</p></section>
 <section id="comparacion" class="space-y-5"><h2 class="text-2xl font-bold">${esc(copy.comparisonHeading)}</h2><p>${esc(copy.comparisonIntroduction)}</p><div class="grid min-w-0 gap-5 lg:grid-cols-2">${cards}</div></section>
 <section class="space-y-4"><h2 class="text-2xl font-bold">${esc(copy.stepsHeading)}</h2><ol class="list-decimal pl-5 space-y-3">${page.compareSteps.map((step) => `<li>${esc(step)}</li>`).join('')}</ol></section>
+${renderRemittanceComparisonHtml(language)}
 <section data-payment-safety class="rounded-2xl border border-amber-300 p-5 space-y-4"><h2 class="text-2xl font-bold">${esc(copy.safetyHeading)}</h2><dl class="space-y-3">${page.safety.map(([label, text]) => `<div><dt class="font-semibold">${esc(label)}</dt><dd>${esc(text)}</dd></div>`).join('')}</dl><p>${esc(copy.safetyWarning)}</p><nav class="flex flex-wrap gap-4">${link(BINANCE_HELP, copy.binanceAppeal, true)}${link(ELDORADO_HELP, copy.eldoradoDispute, true)}</nav></section>
 <section class="space-y-4"><h2 class="text-xl font-bold">${esc(copy.nextHeading)}</h2><nav class="flex flex-wrap gap-4">${link(buyGuide, copy.buyGuideCta)}${link(local('/calculadora'), copy.calculatorLabel)}</nav></section>
 <section class="text-sm space-y-3"><h2 class="font-semibold">${esc(copy.sourcesHeading)}</h2><p>${esc(copy.reviewedLabel)}<time datetime="${REVIEWED_AT}">${esc(copy.reviewedDate)}</time>. ${esc(copy.sourcesNote)}</p>${link(local('/bancos'), copy.banksLabel)}</section></main>`;

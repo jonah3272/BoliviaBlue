@@ -2,6 +2,8 @@ import { getDataDocumentationPage, PUBLIC_HISTORY_CSV, PUBLIC_HISTORY_JSON } fro
 import { getSourceCompositionExample } from '../frontend/src/data/sourceCompositionExample.js';
 import { getDataInquiry } from '../frontend/src/data/dataInquiry.js';
 import { sanitizeLangSearch } from '../frontend/src/utils/urlLang.js';
+import { getContextualDiscovery } from '../frontend/src/data/contextualDiscovery.js';
+import { renderContextualDiscoveryLink } from './contextualDiscoverySeo.js';
 
 const BASE = 'https://www.boliviablue.com';
 const esc = (value) => String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
@@ -63,7 +65,7 @@ function sourceContent(page) {
 function historyContent(page) {
   const { copy: c, methodology: m, local } = page;
   const inquiry = getDataInquiry(page.language);
-  return section('cobertura', m.provenanceHeading, paragraph(c.datasetDescription) + paragraph(m.provenanceDescription) + paragraph(m.coverageDescription))
+  return section('cobertura', m.provenanceHeading, paragraph(c.datasetDescription) + paragraph(m.provenanceDescription) + renderContextualDiscoveryLink(getContextualDiscovery(page.language).historySources) + paragraph(m.coverageDescription))
     + section('historical-chart-heading', c.chartHeading, paragraph(page.initialDataNotice) + paragraph(c.chartDescription))
     + section('', c.recordsHeading, paragraph(c.recordsDescription) + paragraph(c.tableCsvDescription))
     + section('descargas', c.downloadsHeading, paragraph(c.downloadsDescription) + paragraph(c.noSignup) + paragraph(c.publicRangeDescription) + nav([[PUBLIC_HISTORY_CSV, 'CSV'], [PUBLIC_HISTORY_JSON, 'JSON']]) + paragraph(c.teamsDescription) + paragraph(inquiry.limitation) + nav([[local('/api-docs'), 'API'], [inquiry.href, c.extendedAccessLabel]]))

@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html { color-scheme: light; }
+html.dark { color-scheme: dark; }
+body { margin: 0; font-family: system-ui, sans-serif; background: #f9fafb; }
+.dark body { background: #111827; }
+/* Keep all fields, errors, explanations and results reachable inside an iframe. */
+[data-payment-cost-embed] { min-width: 0; overflow-wrap: anywhere; }
+[data-payment-cost-embed] [data-payment-cost-checker] { margin-top: 0.75rem; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; }
+}

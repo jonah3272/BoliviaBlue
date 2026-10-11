@@ -15,6 +15,8 @@ import SantaCruzPartnerLinks from '../components/SantaCruzPartnerLinks';
 import { SITE_URL } from '../config/brand';
 import NewsletterSignup from '../components/NewsletterSignup';
 import PaymentCostChecker from '../components/PaymentCostChecker';
+import ContextualDiscoveryLink from '../components/ContextualDiscoveryLink';
+import { getContextualDiscovery } from '../data/contextualDiscovery';
 
 const PUBLISHED = '2026-09-14';
 
@@ -23,6 +25,7 @@ export default function TravelersMoneyGuide() {
   const { pathname } = useLocation();
   const language = pathname.startsWith(TRAVEL_GUIDE_EN) ? 'en' : 'es';
   const es = language === 'es';
+  const discovery = getContextualDiscovery(language);
   const canonical = pathname.startsWith(TRAVEL_GUIDE_EN) ? TRAVEL_GUIDE_EN : TRAVEL_GUIDE_ES;
 
   const [rate, setRate] = useState(null);
@@ -327,6 +330,7 @@ export default function TravelersMoneyGuide() {
                 : 'Confirm the agreed currency, net amount and charges; count the bolivianos at the counter before completing the exchange.'}
             </li>
           </ul>
+          <ContextualDiscoveryLink link={discovery.travelerReal} className="mt-3 text-gray-700 dark:text-gray-300" />
         </section>
 
         <section id="cajeros" className="mt-12 scroll-mt-24">

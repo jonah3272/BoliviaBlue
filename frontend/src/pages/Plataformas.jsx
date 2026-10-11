@@ -10,6 +10,7 @@ import { trackNavigation } from '../utils/analytics';
 import { trackReferralClicked } from '../utils/analyticsEvents';
 import { getPlatformComparisonPage, REVIEWED_AT, SOURCES, BINANCE_HELP, ELDORADO_HELP } from '../data/platformComparison.js';
 import RateBinanceCta from '../components/RateBinanceCta';
+import RemittanceComparison from '../components/RemittanceComparison';
 
 function Plataformas() {
   useAdsenseReady();
@@ -61,6 +62,7 @@ function Plataformas() {
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{copy.stepsHeading}</h2>
         <ol className="mt-5 list-decimal pl-5 space-y-4 text-gray-700 dark:text-gray-300">{compareSteps.map((step) => <li key={step} className="pl-1">{step}</li>)}</ol>
       </section>
+      <RemittanceComparison language={language} />
       <section data-payment-safety className="rounded-2xl border border-amber-300 dark:border-amber-800 bg-amber-50/60 dark:bg-amber-950/20 p-5 sm:p-7">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{copy.safetyHeading}</h2>
         <dl className="mt-5 grid gap-5 sm:grid-cols-2 text-sm leading-relaxed text-gray-700 dark:text-gray-300">{safety.map(([label, text]) => <div key={label}><dt className="font-bold text-gray-900 dark:text-white">{label}</dt><dd className="mt-1">{text}</dd></div>)}</dl>

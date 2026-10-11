@@ -60,7 +60,10 @@ describe('initial calculator content', () => {
       for (const query of ['usd=15', 'usd=100', 'usd=1000', 'usd=10000', 'bob=5000', 'usd=%3Cscript%3E&ref=tracking']) {
         const html = renderCalculatorHtml(template, `?lang=${language}&${query}`);
         assertPage(html, page);
-        for (const link of tags(main(html), 'a')) assert.equal(new URL(link.href, 'https://www.boliviablue.com').searchParams.get('lang'), language === 'en' ? 'en' : null);
+        for (const link of tags(main(html), 'a')) {
+          const destination = new URL(link.href, 'https://www.boliviablue.com');
+          assert.equal(languageForLocation(destination), language);
+        }
       }
     }
   });

@@ -1,4 +1,5 @@
 import { getCalculatorPage } from '../frontend/src/data/calculatorPage.js';
+import { renderContextualDiscoveryLink } from './contextualDiscoverySeo.js';
 import { sanitizeLangSearch } from '../frontend/src/utils/urlLang.js';
 
 const BASE = 'https://www.boliviablue.com';
@@ -19,10 +20,11 @@ export function renderCalculatorHtml(html, search = '') {
   const shell = `<main data-seo-shell="calculadora" class="google-anno-skip max-w-3xl mx-auto px-4 py-8 space-y-6 text-gray-900 dark:text-white">
 <header class="space-y-3"><h1 class="text-3xl font-bold">${esc(page.heading)}</h1><p>${esc(page.introduction)}</p></header>
 <noscript><p>${esc(page.interactiveNote)}</p></noscript>
+${renderContextualDiscoveryLink(page.realGuidance)}
 <section aria-labelledby="calculator-presets-heading" class="space-y-3"><h2 id="calculator-presets-heading" class="text-xl font-semibold">${esc(page.presetsHeading)}</h2>
 <nav class="flex flex-wrap gap-3" aria-label="${esc(page.presetsHeading)}">${page.presets.map(({ href, label }) => `<a class="${linkClass}" href="${esc(href)}">${esc(label)}</a>`).join('')}</nav><p class="text-sm">${esc(page.presetsNote)}</p></section>
 <section class="space-y-5"><h2 class="text-2xl font-bold">${esc(page.helpHeading)}</h2>
-${page.sections.map(({ id, title, paragraphs }) => `<section id="${id}" class="space-y-3"><h3 class="text-xl font-semibold">${esc(title)}</h3>${paragraphs.map((paragraph) => `<p>${esc(paragraph)}</p>`).join('')}</section>`).join('')}
+${page.sections.map(({ id, title, paragraphs, contextualLink }) => `<section id="${id}" class="space-y-3"><h3 class="text-xl font-semibold">${esc(title)}</h3>${paragraphs.map((paragraph) => `<p>${esc(paragraph)}</p>`).join('')}${contextualLink ? renderContextualDiscoveryLink(contextualLink) : ''}</section>`).join('')}
 <p><a class="${linkClass}" href="${esc(page.methodology.href)}">${esc(page.methodology.label)}</a></p></section></main>`;
 
   // Helmet adopts these identity tags on mount; createRoot replaces the visible shell.

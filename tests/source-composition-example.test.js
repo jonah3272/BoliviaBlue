@@ -70,7 +70,8 @@ test('initial HTML includes the same bilingual evidence, limitations, anchor and
     assert.ok(press.includes(e.path) && press.includes(e.pressLabel) && press.includes(e.pressDescription));
   }
   const history = renderDataDocumentationHtml(template, '/datos-historicos');
-  assert.ok(!history.includes(SOURCE_COMPOSITION_ANCHOR), 'Does not add the case study to live history');
+  assert.ok(!history.includes(`id="${SOURCE_COMPOSITION_ANCHOR}"`), 'Links to the case study without adding it to live history');
+  assert.ok(!history.includes(getSourceCompositionExample('es').summary), 'Historical charts do not embed the fixed example values');
 });
 
 test('integrates as one methodology section and a newsroom link without replacing the snapshot', () => {

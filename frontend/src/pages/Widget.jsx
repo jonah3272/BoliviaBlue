@@ -44,6 +44,12 @@ function Widget() {
   const languageContext = useLanguage();
   const language = languageContext?.language || 'es';
   const [copied, setCopied] = useState('');
+  const paymentLanguage = language === 'en' ? 'en' : 'es';
+  const paymentGuide = paymentLanguage === 'en' ? '/bolivia-money-guide' : '/guia-dinero-bolivia';
+  const paymentTitle = paymentLanguage === 'en' ? 'Compare paying in BOB or USD — Bolivia Blue' : 'Comparar pagos en BOB o USD — Bolivia Blue';
+  const paymentSrc = `/embed.html?mode=payment-cost&lang=${paymentLanguage}`;
+  const paymentSnippet = `<iframe src="${SITE_URL}/embed.html?mode=payment-cost&amp;lang=${paymentLanguage}" title="${paymentTitle}" width="100%" height="900" loading="lazy" style="border:0;max-width:100%"></iframe>
+<p><a href="${SITE_URL}${paymentGuide}#payment-cost-comparison">${paymentLanguage === 'en' ? 'Payment-cost checker by Bolivia Blue' : 'Comparador de pagos de Bolivia Blue'}</a></p>`;
 
   const copy = async (text, key) => {
     try {
@@ -51,7 +57,7 @@ function Widget() {
       setCopied(key);
       setTimeout(() => setCopied(''), 2000);
     } catch {
-      /* ignore */
+      setCopied(`${key}-error`);
     }
   };
 
@@ -107,6 +113,11 @@ function Widget() {
             {language === 'es'
               ? 'Referencia P2P USDT/BOB para medios y blogs, con fecha, hora de Bolivia y enlace de atribución. Consulta nuevas lecturas cada minuto; no representa dólares en efectivo ni el tipo oficial del BCB.'
               : 'P2P USDT/BOB reference for media and blogs, with a date, Bolivia time and attribution link. Checks for new observations every minute; it does not represent cash dollars or the BCB official rate.'}
+          </p>
+          <p className="text-sm">
+            <a href="#payment-cost" className="inline-flex min-h-[44px] items-center text-blue-600 dark:text-blue-300 underline">
+              {language === 'es' ? '¿Tu página explica cómo pagar un hotel o tour? Agregá el comparador BOB/USD ↓' : 'Does your page explain paying for a hotel or tour? Add the BOB/USD cost checker ↓'}
+            </a>
           </p>
         </header>
 
@@ -209,6 +220,44 @@ function Widget() {
                 ? 'Copiar badge'
                 : 'Copy badge'}
           </button>
+        </section>
+
+        <section id="payment-cost" className="min-w-0 scroll-mt-[calc(var(--bb-header-height,117px)+4rem)] space-y-4" aria-labelledby="payment-embed-title">
+          <h2 id="payment-embed-title" className="text-xl font-semibold text-gray-900 dark:text-white">
+            {language === 'es' ? '5. Comparador de costos para viajeros' : '5. Payment-cost checker for travelers'}
+          </h2>
+          <p className="text-gray-700 dark:text-gray-300">
+            {language === 'es'
+              ? 'Para guías de viaje, hoteles y operadores turísticos: dejá que tus lectores comparen dos precios de la misma compra con la tasa y las comisiones que realmente pueden usar. Comienza sin precios ni tasa; no toma la referencia P2P del recuadro anterior.'
+              : 'For travel guides, hotels and tour operators: let readers compare two prices for the same purchase using the rate and fees they can actually use. Prices and rate start blank; it does not use the P2P reference in the box above.'}
+          </p>
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            {language === 'es'
+              ? 'Los cálculos quedan en el navegador. El comparador no guarda ni envía los datos ingresados, no obtiene cotizaciones de efectivo o tarjetas y no garantiza ahorros. Cada comercio debe confirmar los métodos aceptados y sus precios.'
+              : 'Calculations stay in the browser. The checker does not save or send entered values, obtain cash or card quotes, or guarantee savings. Each merchant must confirm accepted payment methods and prices.'}
+          </p>
+          <iframe src={paymentSrc} title={paymentTitle} width="100%" height="900" loading="lazy" className="max-w-full rounded-xl border border-gray-300 dark:border-gray-600" />
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            {language === 'es' ? 'Podés desplazarte dentro del recuadro para ver todos los campos y resultados. ' : 'Scroll inside the box to reach all fields and results. '}
+            <a href={`${SITE_URL}${paymentGuide}#payment-cost-comparison`} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-[44px] items-center text-blue-600 dark:text-blue-300 underline">
+              {language === 'es' ? 'Abrir el comparador en la guía ↗' : 'Open the checker in the guide ↗'}
+            </a>
+          </p>
+          <label htmlFor="payment-embed-code" className="block font-semibold text-gray-900 dark:text-white">
+            {language === 'es' ? 'Código iframe para tu página' : 'Iframe code for your page'}
+          </label>
+          <textarea id="payment-embed-code" readOnly value={paymentSnippet} rows={6} onFocus={(event) => event.target.select()} className="w-full min-w-0 rounded-lg border border-gray-400 bg-gray-900 p-4 font-mono text-sm text-gray-100" aria-describedby="payment-embed-instructions" />
+          <p id="payment-embed-instructions" className="text-sm text-gray-600 dark:text-gray-300">
+            {language === 'es'
+              ? 'Pegá el código en un bloque HTML de tu CMS si admite iframes. Usá lang=es o lang=en y agregá &theme=dark si querés el tema oscuro. El ancho se adapta; podés aumentar la altura. Conservá el desplazamiento y el enlace de atribución. Si tu CMS bloquea iframes, enlazá al comparador en la guía.'
+              : 'Paste the code into a CMS HTML block if it allows iframes. Use lang=es or lang=en and add &theme=dark for dark mode. Width adapts; you can increase the height. Keep scrolling enabled and preserve the attribution link. If your CMS blocks iframes, link to the checker in the guide.'}
+          </p>
+          <button type="button" onClick={() => copy(paymentSnippet, 'payment')} className="min-h-[44px] rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-sky-600">
+            {copied === 'payment' ? (language === 'es' ? 'Copiado' : 'Copied') : (language === 'es' ? 'Copiar comparador' : 'Copy checker code')}
+          </button>
+          <p role="status" aria-live="polite" className="text-sm text-gray-700 dark:text-gray-300">
+            {copied === 'payment' ? (language === 'es' ? 'Código copiado.' : 'Code copied.') : copied === 'payment-error' ? (language === 'es' ? 'No se pudo copiar automáticamente. Seleccioná el código de arriba y copialo manualmente.' : 'Automatic copying failed. Select the code above and copy it manually.') : ''}
+          </p>
         </section>
 
         <section className="text-gray-700 dark:text-gray-300 space-y-3">

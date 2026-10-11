@@ -7,12 +7,13 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node scripts/inject-seo-shell.cjs && node scripts/drop-static-sitemap.cjs",
+    "build": "vite build && npm run build:payment-embed && node scripts/inject-seo-shell.cjs && node scripts/drop-static-sitemap.cjs",
     "preview": "vite preview",
     "test": "vitest",
     "generate-sitemap": "node scripts/generate-sitemap.js",
     "insert-blog-articles": "node scripts/insert-blog-articles.js",
-    "prebuild": "npm run generate-sitemap"
+    "prebuild": "npm run generate-sitemap",
+    "build:payment-embed": "vite build --config vite.payment-embed.config.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.81.1",

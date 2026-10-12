@@ -28,7 +28,6 @@ import Navigation from '../components/Navigation';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Link } from 'react-router-dom';
 import { articlesEs, articlesEn } from '../data/blogArticles';
-import { formatDateTime } from '../utils/formatters';
 import { useRate } from '../contexts/RateContext';
 import { getWebPage, getBreadcrumbList, getOrganizationSchema, getWebSiteSchema } from '../utils/seoSchema';
 import { buildLiveRateSeoMeta, liveBobParts } from '../utils/seoRateMeta';
@@ -136,54 +135,45 @@ function Home() {
       <AdSenseAutoAds />
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-5 sm:py-8 md:py-10 space-y-6 sm:space-y-8 md:space-y-10 pb-[max(5rem,calc(3.5rem+env(safe-area-inset-bottom)))] md:pb-[max(1.5rem,env(safe-area-inset-bottom))]">
-        {/* Mobile: compact title + rate + $100 on the first screen */}
-        <div className="md:hidden text-center">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white leading-tight">
-            {language === 'es' ? 'Dólar blue en Bolivia hoy' : 'Blue dollar in Bolivia today'}
-          </h1>
-          <MobileHeroRates
-            live={live}
-            rate={currentRate}
-            loading={rateLoading || Boolean(contextRate?.buy && contextRate?.sell && !currentRate)}
-            error={rateError}
-            language={language}
-          />
-          <div className="mt-3 flex flex-col items-center gap-2">
-            <FinancialOfferButton placement="home_mobile_hero" className="h-11 w-full max-w-xs justify-center">
-              {language === 'es' ? 'Crear mi cuenta El Dorado' : 'Create my El Dorado account'}
-            </FinancialOfferButton>
-            <p className="text-[11px] text-gray-500 dark:text-gray-400">{language === 'es' ? 'Podemos recibir una comisión' : 'We may earn a commission'}</p>
-            <MobileMoneyActions language={language} />
-          </div>
-        </div>
-
-        {/* Hero — desktop only */}
-        <div className="hidden md:block relative text-center mb-1 overflow-hidden rounded-3xl border border-sky-200/60 dark:border-sky-800/40 px-4 py-8 sm:px-8 sm:py-10">
+      <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-5 sm:py-8 md:py-6 space-y-6 sm:space-y-8 md:space-y-10 pb-[max(5rem,calc(3.5rem+env(safe-area-inset-bottom)))] md:pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+        {/* The same primary USD/BOB answer leads on mobile and desktop. */}
+        <section data-home-rate-hero className="relative text-center md:overflow-hidden md:rounded-3xl md:border md:border-sky-200/60 md:dark:border-sky-800/40 md:px-6 md:py-6">
           <div
-            className="pointer-events-none absolute inset-0"
+            className="hidden md:block pointer-events-none absolute inset-0"
             style={{
               background:
                 'radial-gradient(ellipse 90% 70% at 50% -20%, rgba(56,189,248,0.22), transparent 55%), radial-gradient(ellipse 50% 40% at 100% 80%, rgba(245,197,24,0.12), transparent 50%)',
             }}
           />
-          <div className="relative space-y-4">
-            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-              </span>
-              {language === 'es' ? 'Actualizado cada 15 min' : 'Updated every 15 min'}
-            </div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight">
+          <div className="relative">
+            <h1 className="md:hidden text-2xl font-bold text-gray-900 dark:text-white leading-tight">
               {language === 'es' ? 'Dólar blue en Bolivia hoy' : 'Blue dollar in Bolivia today'}
             </h1>
-            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 max-w-lg mx-auto">
-              {language === 'es'
-                ? 'Mediana de varias plataformas P2P. Sin registro.'
-                : 'Median across P2P platforms. No signup.'}
+            <h1 className="hidden md:block text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight">
+              {language === 'es' ? 'Dólar blue en Bolivia hoy' : 'Blue dollar in Bolivia today'}
+            </h1>
+            <p className="hidden md:block mt-3 text-sm text-gray-600 dark:text-gray-300">
+              {language === 'es' ? 'Referencia P2P USDT/BOB · Bs por USD' : 'P2P USDT/BOB reference · Bs per USD'}
             </p>
-            <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
+            <MobileHeroRates
+              live={live}
+              rate={currentRate}
+              loading={rateLoading || Boolean(contextRate?.buy && contextRate?.sell && !currentRate)}
+              error={rateError}
+              language={language}
+            />
+            <AiCitationBlock
+              answerOverride={liveSeo.answer}
+              summaryLabel={language === 'es' ? 'Referencia P2P · Bolivia Blue' : 'P2P reference · Bolivia Blue'}
+              language={language}
+              buy={currentRate?.buy ?? currentRate?.buy_bob_per_usd}
+              sell={currentRate?.sell ?? currentRate?.sell_bob_per_usd}
+              updatedAt={currentRate?.updated_at_iso}
+              sourcesUsed={currentRate?.sources_used}
+              citePath="/"
+              className="mt-4 max-w-3xl mx-auto text-left"
+            />
+            <div className="hidden md:flex flex-wrap items-center justify-center gap-3 mt-4" data-home-secondary-actions>
               <Link
                 to={PRIMARY_RATE_URL}
                 className="inline-flex h-11 items-center justify-center rounded-xl bg-sky-500 px-5 text-sm font-bold text-white shadow-md shadow-sky-500/25 transition hover:bg-sky-400"
@@ -203,19 +193,19 @@ function Home() {
                 {language === 'es' ? 'Crear alerta' : 'Set a price alert'}
               </a>
             </div>
+            <div className="mt-3 flex flex-col md:hidden items-center gap-2">
+              <FinancialOfferButton placement="home_mobile_hero" className="h-11 w-full max-w-xs justify-center">
+                {language === 'es' ? 'Crear mi cuenta El Dorado' : 'Create my El Dorado account'}
+              </FinancialOfferButton>
+              <p className="text-[11px] text-gray-500 dark:text-gray-400">{language === 'es' ? 'Podemos recibir una comisión' : 'We may earn a commission'}</p>
+              <MobileMoneyActions language={language} />
+            </div>
           </div>
-        </div>
+        </section>
 
         {/* Rates + buy CTA — first composition */}
         <div className="relative rounded-2xl px-1 py-4 sm:px-4 sm:py-6 -mx-1 sm:mx-0 bg-gradient-to-b from-sky-50/90 via-transparent to-transparent dark:from-sky-950/40 dark:via-transparent">
           <section>
-            {currentRate?.updated_at_iso && (
-              <p className="hidden md:flex text-sm text-gray-500 dark:text-gray-400 mb-3 text-center items-center justify-center gap-2">
-                <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden />
-                {language === 'es' ? 'Actualizado' : 'Updated'}:{' '}
-                {formatDateTime(currentRate.updated_at_iso, language === 'es' ? 'es-BO' : 'en-US')}
-              </p>
-            )}
             <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} showTimestampInCards={false} showCrossSourceBadge={false} />
             <div className="mt-4 max-w-5xl mx-auto">
               <RateTrioStrip
@@ -230,17 +220,7 @@ function Home() {
             <div className="mt-4 max-w-3xl mx-auto">
               <RateBinanceCta placement="home_after_rates" midRate={midRate} />
             </div>
-            <AiCitationBlock
-              answerOverride={liveSeo.answer}
-              summaryLabel={language === 'es' ? 'Referencia P2P · Bolivia Blue' : 'P2P reference · Bolivia Blue'}
-              language={language}
-              buy={currentRate?.buy ?? currentRate?.buy_bob_per_usd}
-              sell={currentRate?.sell ?? currentRate?.sell_bob_per_usd}
-              updatedAt={currentRate?.updated_at_iso}
-              sourcesUsed={currentRate?.sources_used}
-              citePath="/"
-              className="mt-4 max-w-3xl mx-auto"
-            />
+
             <div className="google-anno-skip mt-4 w-full min-w-0 max-w-md mx-auto rounded-xl border border-sky-200 dark:border-sky-800 bg-white/80 dark:bg-gray-800/80 p-3">
               <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1" htmlFor="home-quick-usd">
                 {language === 'es' ? 'Convertir USD → BOB (venta P2P)' : 'Convert USD → BOB (P2P sell)'}

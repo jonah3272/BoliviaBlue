@@ -1,6 +1,6 @@
 import { formatDateTime } from '../utils/formatters';
 
-/** Keep the mobile hero's three quote rows present while RateContext settles. */
+/** Keep the homepage quote rows present while RateContext settles at every width. */
 export default function MobileHeroRates({ live, rate, loading, error, language }) {
   const es = language === 'es';
   const observed = formatDateTime(rate?.updated_at_iso, es ? 'es-BO' : 'en-US');
@@ -10,15 +10,15 @@ export default function MobileHeroRates({ live, rate, loading, error, language }
   const state = hasQuote ? (rate?.is_stale ? 'stale' : 'ready') : pending ? 'loading' : 'unavailable';
 
   return (
-    <div data-mobile-hero-rates data-state={state} aria-busy={pending}>
-      <p className="mt-2 flex min-h-16 flex-col justify-center gap-x-1 text-2xl font-bold leading-8 tabular-nums text-gray-900 dark:text-white min-[400px]:min-h-8 min-[400px]:flex-row">
+    <div data-mobile-hero-rates data-home-hero-rates data-state={state} aria-busy={pending}>
+      <p data-home-rate-line className="mt-2 flex min-h-16 flex-col justify-center gap-x-1 text-2xl font-bold leading-8 tabular-nums text-gray-900 dark:text-white min-[400px]:min-h-8 min-[400px]:flex-row md:min-h-10 md:text-4xl md:leading-10">
         <span>{es ? 'Compra' : 'Buy'} {live.buyStr || '—'}</span>{' '}
         <span>· {es ? 'Venta' : 'Sell'} {live.sellStr || '—'}</span>
       </p>
-      <p className="mt-2 min-h-5 text-sm font-semibold leading-5 text-gray-800 dark:text-gray-200">
-        100 USD ≈ {conversion || '—'} Bs
+      <p data-home-conversion className="mt-2 min-h-5 text-sm font-semibold leading-5 md:min-h-7 md:text-lg md:leading-7 text-gray-800 dark:text-gray-200">
+        100 USD ≈ {conversion || '—'} Bs ({es ? 'compra P2P' : 'P2P buy'})
       </p>
-      <p className={`mt-1 min-h-8 text-xs leading-4 ${error && !rate ? 'text-amber-700 dark:text-amber-300' : 'text-gray-500 dark:text-gray-400'}`}>
+      <p data-home-observation className={`mt-1 min-h-8 text-xs leading-4 ${error && !rate ? 'text-amber-700 dark:text-amber-300' : 'text-gray-500 dark:text-gray-400'}`}>
         {observed ? (
           <>
             <span className="block">

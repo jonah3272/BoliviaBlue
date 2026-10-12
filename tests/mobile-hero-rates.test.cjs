@@ -18,17 +18,18 @@ const fixture = { buy: 12.34, sell: 12.56, updated_at_iso: '2026-10-04T20:16:00Z
 const render = (rate, { language = 'es', loading = false, error = null } = {}) => renderToStaticMarkup(React.createElement(Component, { rate, live: liveBobParts(rate), language, loading, error }));
 const text = (html) => html.replace(/<[^>]*>/g, '').replaceAll('&#x27;', "'").replaceAll('&amp;', '&');
 
-describe('mobile hero reserved quote rows', () => {
+describe('homepage hero reserved quote rows', () => {
   it('keeps three rows and identical geometry classes across pending, ready, stale and unavailable states', () => {
     for (const language of ['es', 'en']) {
       const renders = [render(null, { language, loading: true }), render(fixture, { language }), render({ ...fixture, is_stale: true }, { language }), render(null, { language, error: 'offline' }), render(null, { language }), render({ ...fixture, updated_at_iso: null }, { language })];
-      const geometries = renders.map((html) => [...html.matchAll(/<p class="([^"]*)"/g)].map((m) => m[1].replace(/text-(?:amber|gray)-\d+|dark:text-(?:amber|gray)-\d+/g, 'color')));
+      const geometries = renders.map((html) => [...html.matchAll(/<p[^>]* class="([^"]*)"/g)].map((m) => m[1].replace(/text-(?:amber|gray)-\d+|dark:text-(?:amber|gray)-\d+/g, 'color')));
       for (const geometry of geometries) {
         assert.equal(geometry.length, 3);
         assert.deepEqual(geometry, geometries[0]);
         assert.ok(geometry[0].includes('min-h-16') && geometry[0].includes('min-[400px]:min-h-8'));
         assert.ok(geometry[0].includes('flex-col') && geometry[0].includes('min-[400px]:flex-row'));
         assert.ok(geometry[1].includes('min-h-5') && geometry[2].includes('min-h-8'));
+        assert.ok(geometry[0].includes('md:text-4xl') && geometry[0].includes('md:leading-10') && geometry[0].includes('md:min-h-10'));
       }
     }
   });
@@ -69,12 +70,15 @@ describe('mobile hero reserved quote rows', () => {
       }
     }
   });
-  it('is mounted unconditionally only inside the existing mobile hero before the unchanged offer', () => {
+  it('is mounted once for all widths before sources, secondary actions and the unchanged mobile offer', () => {
     const home = readFileSync(join(__dirname, '../frontend/src/pages/Home.jsx'), 'utf8');
-    const hero = home.slice(home.indexOf('{/* Mobile: compact title'), home.indexOf('{/* Hero — desktop only */}'));
+    const hero = home.slice(home.indexOf('<section data-home-rate-hero'), home.indexOf('{/* Rates + buy CTA'));
     assert.equal((hero.match(/<MobileHeroRates\b/g) || []).length, 1);
     assert.ok(hero.indexOf('<MobileHeroRates') < hero.indexOf('<FinancialOfferButton'));
-    assert.match(hero, /className="md:hidden text-center"/);
+    assert.ok(hero.indexOf('<MobileHeroRates') < hero.indexOf('<AiCitationBlock'));
+    assert.ok(hero.indexOf('<AiCitationBlock') < hero.indexOf('data-home-secondary-actions'));
+    assert.match(hero, /hidden md:block text-3xl sm:text-4xl md:text-5xl/);
+    assert.match(hero, /Referencia P2P USDT\/BOB · Bs por USD/);
     assert.match(hero, /placement="home_mobile_hero"/);
     assert.doesNotMatch(hero, /live\.buyStr &&|live\.times\(100\) &&|updated_at_iso &&/);
     const source = readFileSync(join(__dirname, '../frontend/src/components/MobileHeroRates.jsx'), 'utf8');

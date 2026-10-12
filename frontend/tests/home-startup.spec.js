@@ -31,7 +31,7 @@ async function typography(locator) {
   });
 }
 
-for (const language of ['es', 'en']) for (const width of [390, 640, 700, 767, 768, 1280]) {
+for (const language of ['es', 'en']) for (const width of [320, 390, 640, 700, 767, 768, 1170, 1280]) {
   test(`${language} ${width}px: delayed Home keeps its shell and stable heading through mount`, async ({ page }, testInfo) => {
     await page.setViewportSize({ width, height: 900 });
     let release;
@@ -45,8 +45,9 @@ for (const language of ['es', 'en']) for (const width of [390, 640, 700, 767, 76
     await expect(shell).toBeVisible();
     const initial = await typography(shell.locator('h1'));
     expect(initial.size).toBe(width < 768 ? '24px' : '48px');
-    const initialRates = language === 'es' && width < 768 ? await typography(shell.locator('[data-home-rate-line]')) : null;
-    const initialConversion = language === 'es' && width < 768 ? await typography(shell.locator('[data-home-conversion]')) : null;
+    const initialRates = await typography(shell.locator('[data-home-rate-line]'));
+    const initialGeometry = await shell.locator('[data-home-rate-line]').evaluate(node => ({ height: node.getBoundingClientRect().height }));
+    const initialConversion = await typography(shell.locator('[data-home-conversion]'));
     await page.screenshot({ path: testInfo.outputPath('initial-shell.png') });
     expect(await page.evaluate(() => window.__homeLoadingFallbackSeen)).toBe(false);
     release();
@@ -57,6 +58,7 @@ for (const language of ['es', 'en']) for (const width of [390, 640, 700, 767, 76
     if (initialRates) {
       const rates = page.locator('[data-mobile-hero-rates]');
       expect(await typography(rates.locator('p').nth(0))).toEqual(initialRates);
+      expect(await rates.locator('[data-home-rate-line]').evaluate(node => ({ height: node.getBoundingClientRect().height }))).toEqual(initialGeometry);
       expect(await typography(rates.locator('p').nth(1))).toEqual(initialConversion);
     }
     expect(await page.evaluate(() => window.__homeLoadingFallbackSeen)).toBe(false);
@@ -78,5 +80,24 @@ for (const language of ['es', 'en']) {
     await expect(page.locator('[data-seo-shell]')).toHaveCount(0);
     await expect(page.locator('main h1:visible')).toHaveCount(1);
     expect(await page.evaluate(() => window.__homeLoadingFallbackSeen)).toBe(false);
+  });
+}
+
+for (const language of ['es', 'en']) {
+  test(`${language}: desktop primary answer and observation precede secondary actions above the fold`, async ({ page }) => {
+    await page.setViewportSize({ width: 1170, height: 751 });
+    await page.goto(`/?lang=${language}`, { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('[data-seo-shell]')).toHaveCount(0);
+    const hero = page.locator('[data-home-rate-hero]');
+    const quote = await hero.locator('[data-home-rate-line]').boundingBox();
+    const observation = await hero.locator('[data-home-observation]').boundingBox();
+    const answer = await hero.locator('[data-ai-citation]').boundingBox();
+    const actions = await hero.locator('[data-home-secondary-actions]').boundingBox();
+    expect(quote.y + quote.height).toBeLessThan(751);
+    expect(observation.y + observation.height).toBeLessThan(751);
+    expect(answer.y).toBeLessThan(actions.y);
+    expect(quote.y).toBeLessThan(observation.y);
+    expect(await typography(hero.locator('[data-home-rate-line]'))).toMatchObject({ size: '36px', leading: '40px' });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   });
 }

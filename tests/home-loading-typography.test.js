@@ -28,7 +28,7 @@ test('critical H1 typography matches actual built Home utilities on both sides o
   const postcss = require('postcss');
   const css = readdirSync(assets).filter(name => name.endsWith('.css')).map(name => readFileSync(new URL(name, assets), 'utf8')).join('\n');
   const mobileRates = readFileSync(new URL('../frontend/src/components/MobileHeroRates.jsx', import.meta.url), 'utf8');
-  const rateClasses = [...mobileRates.matchAll(/<p className="([^"]+)"/g)].map(match => match[1].split(' '));
+  const rateClasses = [...mobileRates.matchAll(/<p[^>]* className="([^"]+)"/g)].map(match => match[1].split(' '));
   const headings = [...home.matchAll(/<h1 className="([^"]+)"/g)].map(match => match[1].split(' '));
   assert.equal(headings.length, 2);
 
@@ -48,14 +48,14 @@ test('critical H1 typography matches actual built Home utilities on both sides o
     return result;
   }
 
-  for (const width of [390, 639, 640, 700, 767, 768, 1280]) {
+  for (const width of [320, 390, 639, 640, 700, 767, 768, 1280]) {
     const classes = headings[width < 768 ? 0 : 1];
     const final = typography(css, width, selector => classes.some(name => selector === '.' + name.replaceAll(':', '\\:')));
     const initial = typography(critical, width, selector => selector === '[data-home-heading]');
     assert.deepEqual(initial, final, `H1 cascade mismatch at ${width}px`);
     assert.equal(initial['font-size'], width < 768 ? '1.5rem' : '3rem');
     assert.equal(initial['line-height'], width < 768 ? '1.25' : '1');
-    if (width < 768) {
+    {
       for (const [i, marker] of ['data-home-rate-line', 'data-home-conversion'].entries()) {
         const finalRate = typography(css, width, selector => rateClasses[i].some(name => selector === '.' + name.replaceAll(':', '\\:')));
         const initialRate = typography(critical, width, selector => selector === '[' + marker + ']');

@@ -1,26 +1,46 @@
-import { Suspense, useEffect, useRef, useState } from 'react';
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import LazyErrorBoundary from './LazyErrorBoundary';
+
+function isCurrentHashTarget(id) {
+  try { return decodeURIComponent(window.location.hash.slice(1)) === id; } catch { return false; }
+}
 
 /** Keep optional below-fold work off the quote's initial render path. */
 export default function DeferredSection({ id, title, description, language, className = '', forceLoad = false, children }) {
   const [started, setStarted] = useState(false);
+  const [hashRequest, setHashRequest] = useState(0);
   const regionRef = useRef(null);
   const focusOnStart = useRef(false);
+  const requestedEntry = useRef(null);
   const es = language === 'es';
 
+  const reveal = useCallback(() => {
+    if (regionRef.current?.contains(document.activeElement)) focusOnStart.current = true;
+    setStarted(true);
+  }, []);
+
   useEffect(() => {
-    if (started) return undefined;
-    const reveal = () => {
-      if (regionRef.current?.contains(document.activeElement)) focusOnStart.current = true;
-      setStarted(true);
-    };
     const revealHashTarget = () => {
-      let hash;
-      try { hash = decodeURIComponent(window.location.hash.slice(1)); } catch { return; }
-      if (hash === id) reveal();
+      if (isCurrentHashTarget(id)) {
+        // Native hashchange and router navigation can describe the same entry.
+        const entry = `${window.location.href}|${window.history.state?.key || ''}`;
+        if (requestedEntry.current === entry) return;
+        requestedEntry.current = entry;
+        reveal();
+        setHashRequest(request => request + 1);
+      } else requestedEntry.current = null;
     };
     revealHashTarget();
     window.addEventListener('hashchange', revealHashTarget);
+    window.addEventListener('bolivia-blue:home-hash', revealHashTarget);
+    return () => {
+      window.removeEventListener('hashchange', revealHashTarget);
+      window.removeEventListener('bolivia-blue:home-hash', revealHashTarget);
+    };
+  }, [id, reveal]);
+
+  useEffect(() => {
+    if (started) return undefined;
     let observer;
     if (forceLoad || typeof IntersectionObserver === 'undefined') {
       reveal();
@@ -37,9 +57,25 @@ export default function DeferredSection({ id, title, description, language, clas
     }
     return () => {
       observer?.disconnect();
-      window.removeEventListener('hashchange', revealHashTarget);
     };
-  }, [started, forceLoad, id]);
+  }, [started, forceLoad, reveal]);
+
+  useEffect(() => {
+    if (!started || !hashRequest) return undefined;
+    // The crawl shell has no optional-section anchors. Wait until React has
+    // mounted the target and its mobile parent has expanded, then honor only
+    // the still-current explicit hash. IO activation and rerenders never scroll.
+    const events = ['wheel', 'touchstart', 'pointerdown', 'keydown', 'scroll'];
+    let cancelled = false;
+    const cancel = () => { cancelled = true; window.cancelAnimationFrame(frame); removeListeners(); };
+    const removeListeners = () => events.forEach(event => window.removeEventListener(event, cancel));
+    const frame = window.requestAnimationFrame(() => {
+      removeListeners();
+      if (!cancelled && isCurrentHashTarget(id)) regionRef.current?.scrollIntoView?.({ block: 'start', behavior: 'auto' });
+    });
+    events.forEach(event => window.addEventListener(event, cancel, { passive: true }));
+    return () => { window.cancelAnimationFrame(frame); removeListeners(); };
+  }, [started, hashRequest, id]);
 
   useEffect(() => {
     if (started && focusOnStart.current) {

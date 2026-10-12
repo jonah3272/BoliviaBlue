@@ -19,6 +19,18 @@ export function usePageTracking() {
   const language = languageContext?.language || 'es';
   const lastPageKeyRef = useRef('');
   const initialEntryRef = useRef({ ...location, settled: false });
+  const lastHashLocationRef = useRef(null);
+  useEffect(() => {
+    // pushState navigation does not emit a native hashchange event. Optional
+    // homepage sections own their post-mount scroll, including panel expansion.
+    const previous = lastHashLocationRef.current;
+    lastHashLocationRef.current = location;
+    // Changing locale/query parameters is not a request to revisit the anchor.
+    // A repeated same-URL navigation still is, and receives a new history key.
+    const queryOnlyChange = previous && previous.pathname === location.pathname &&
+      previous.hash === location.hash && previous.search !== location.search;
+    if (location.pathname === '/' && !queryOnlyChange) window.dispatchEvent(new Event('bolivia-blue:home-hash'));
+  }, [location.key, location.pathname, location.search, location.hash]);
   // A same-URL router navigation has a new key even when the tracking effect's
   // pathname/search/hash dependencies do not change. Cancel only this waiter.
   useEffect(() => {
@@ -37,13 +49,19 @@ export function usePageTracking() {
     if (!sameInitialEntry) initial.settled = true;
     const hashId = (location.hash || '').replace(/^#/, '');
     const isAdHash = IGNORED_HASHES.has(hashId);
+    // These sections handle their own post-mount/expanded-state anchor scroll.
+    let isDeferredHomeHash = false;
+    try {
+      isDeferredHomeHash = location.pathname === '/' &&
+        ['home-history', 'home-sentiment', 'home-news'].includes(decodeURIComponent(hashId));
+    } catch { /* Leave malformed hashes to the existing generic behavior. */ }
 
     if (isPaymentCostGuide(location) && sameInitialEntry) {
       if (!initial.settled) {
         paymentHashCleanup = waitForPaymentCostAnchor(() => { initial.settled = true; });
         initial.cancel = paymentHashCleanup;
       }
-    } else if (location.hash && !isAdHash) {
+    } else if (location.hash && !isAdHash && !isDeferredHomeHash) {
       const scrollToHash = () => {
         const el = document.getElementById(hashId);
         if (el) {

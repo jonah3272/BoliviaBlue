@@ -68,7 +68,11 @@ function Home() {
     };
     revealNewsTarget();
     window.addEventListener('hashchange', revealNewsTarget);
-    return () => window.removeEventListener('hashchange', revealNewsTarget);
+    window.addEventListener('bolivia-blue:home-hash', revealNewsTarget);
+    return () => {
+      window.removeEventListener('hashchange', revealNewsTarget);
+      window.removeEventListener('bolivia-blue:home-hash', revealNewsTarget);
+    };
   }, []);
 
   const midRate = useMemo(() => {

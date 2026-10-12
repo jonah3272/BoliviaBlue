@@ -136,9 +136,9 @@ describe('mobile homepage seller next step', () => {
 
   it('is mounted only in the mobile hero after the unchanged signup button and commission line', () => {
     const home = readFileSync(join(__dirname, '../frontend/src/pages/Home.jsx'), 'utf8');
-    const hero = home.slice(home.indexOf('{/* Mobile: compact title'), home.indexOf('{/* Hero — desktop only */}'));
+    const hero = home.slice(home.indexOf('<div className="mt-3 flex flex-col md:hidden'), home.indexOf('{/* Rates + buy CTA'));
     assert.equal((home.match(/<MobileMoneyActions\b/g) || []).length, 1);
-    assert.match(hero, /className="md:hidden text-center"/);
+    assert.match(hero, /className="mt-3 flex flex-col md:hidden items-center gap-2"/);
     assert.match(hero, /<FinancialOfferButton placement="home_mobile_hero" className="h-11 w-full max-w-xs justify-center">\s*\{language === 'es' \? 'Crear mi cuenta El Dorado' : 'Create my El Dorado account'\}\s*<\/FinancialOfferButton>\s*<p className="text-\[11px\] text-gray-500 dark:text-gray-400">\{language === 'es' \? 'Podemos recibir una comisión' : 'We may earn a commission'\}<\/p>\s*<MobileMoneyActions language=\{language\} \/>/);
     assert.doesNotMatch(hero, /live\.[^\n]*&&[^\n]*MobileMoneyActions|currentRate[^\n]*&&[^\n]*MobileMoneyActions/);
   });

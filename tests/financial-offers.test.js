@@ -59,7 +59,7 @@ describe('financial offer intent and destinations', () => {
   });
   it('keeps a short visible commission disclosure directly below the mobile home offer', () => {
     const home = source('pages/Home.jsx');
-    const hero = home.slice(home.indexOf('{/* Mobile: compact title'), home.indexOf('{/* Hero — desktop only */}'));
+    const hero = home.slice(home.indexOf('<div className="mt-3 flex flex-col md:hidden'), home.indexOf('{/* Rates + buy CTA'));
     assert.match(hero, /<FinancialOfferButton placement="home_mobile_hero"[^>]*>[\s\S]*?<\/FinancialOfferButton>\s*<p className="text-\[11px\] text-gray-500 dark:text-gray-400">\{language === 'es' \? 'Podemos recibir una comisión' : 'We may earn a commission'\}<\/p>/);
     assert.match(hero, /Crear mi cuenta El Dorado/);
     assert.match(hero, /Create my El Dorado account/);

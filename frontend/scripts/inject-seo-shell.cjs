@@ -322,7 +322,7 @@ const SHELL_HOME = `
     <h1 data-home-heading class="font-bold text-gray-900">Dólar blue en Bolivia hoy</h1>
     <p class="text-base text-gray-600">Bolivian Blue · dólar blue hoy en Bolivia</p>
     <p data-home-rate-line class="font-bold text-gray-900 tabular-nums">
-      Compra <span data-live-buy>—</span> · Venta <span data-live-sell>—</span>
+      <span>Compra <span data-live-buy>—</span></span> <span>· Venta <span data-live-sell>—</span></span>
     </p>
     <p class="text-base sm:text-lg text-gray-700 max-w-2xl mx-auto" data-seo-rate-sentence>
       El dólar paralelo (blue) en Bolivia cotiza hoy en Bs <span data-live-buy>—</span> para la compra y Bs <span data-live-sell>—</span> para la venta, con lectura verificada el <time data-live-when datetime="">—</time>, desde Bolivia Blue.

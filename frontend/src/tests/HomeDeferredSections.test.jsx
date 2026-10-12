@@ -1,7 +1,8 @@
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { BrowserRouter, MemoryRouter, useNavigate } from 'react-router-dom';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import Home from '../pages/Home';
+import { usePageTracking } from '../hooks/usePageTracking';
 
 const mocks = vi.hoisted(() => ({
   language: 'en', t: key => key, chart: vi.fn(), sentiment: vi.fn(), news: vi.fn(), tweets: vi.fn(),
@@ -30,6 +31,7 @@ vi.mock('../components/NewsFeed', () => ({ default: () => { mocks.news(); return
 vi.mock('../components/TweetsFeed', () => ({ default: () => { mocks.tweets(); return <p>X archive loaded</p>; } }));
 vi.mock('../components/RateAlertForm', () => ({ default: () => <p>Price alerts loaded</p> }));
 vi.mock('../utils/adsenseLoader', () => ({ blockAdsOnThisPage: vi.fn() }));
+vi.mock('../utils/analytics', () => ({ trackPageView: vi.fn(), initScrollDepthTracking: vi.fn(), initTimeOnPageTracking: vi.fn() }));
 
 let observers;
 beforeEach(() => {
@@ -43,7 +45,7 @@ beforeEach(() => {
     disconnect() {}
   });
 });
-afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
+afterEach(() => { cleanup(); vi.unstubAllGlobals(); vi.restoreAllMocks(); });
 const mount = async () => { await act(async () => render(<MemoryRouter><Home /></MemoryRouter>)); };
 
 for (const language of ['es', 'en']) it(`${language}: initial quote, source and alerts stay available without mounting optional sections`, async () => {
@@ -122,4 +124,45 @@ it('falls back to rendering optional content when the browser lacks Intersection
   expect(await screen.findByText('Chart official: false')).toBeInTheDocument();
   expect(document.querySelector('#home-news-panel')).toHaveClass('hidden');
   expect(screen.getByRole('button', { name: 'News & Twitter' })).toHaveAttribute('aria-expanded', 'false');
+});
+
+it('expands and scrolls same-page router hash navigation, including a repeated visit after collapse', async () => {
+  const frames = new Map(); let frameId = 0;
+  vi.spyOn(window, 'requestAnimationFrame').mockImplementation(callback => { frames.set(++frameId, callback); return frameId; });
+  vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(id => frames.delete(id));
+  vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
+  const flush = () => act(() => { const pending = [...frames.values()]; frames.clear(); pending.forEach(callback => callback(0)); });
+  function Navigation() {
+    usePageTracking();
+    const navigate = useNavigate();
+    return <>
+      <button onClick={() => navigate('/#home-news')}>Go to news</button>
+      <button onClick={() => navigate('/?lang=es#home-news')}>Change language</button>
+    </>;
+  }
+  await act(async () => render(<BrowserRouter><Navigation /><Home /></BrowserRouter>));
+  const target = document.getElementById('home-news');
+  target.scrollIntoView = vi.fn();
+  const nav = screen.getByRole('button', { name: 'Go to news' });
+  nav.focus();
+  await act(async () => fireEvent.click(nav));
+  expect(await screen.findByText('News loaded')).toBeInTheDocument();
+  expect(document.querySelector('#home-news-panel')).toHaveClass('block');
+  flush();
+  expect(target.scrollIntoView).toHaveBeenCalledTimes(1);
+  expect(nav).toHaveFocus();
+  fireEvent.click(screen.getByRole('button', { name: 'News & Twitter' }));
+  expect(document.querySelector('#home-news-panel')).toHaveClass('hidden');
+  await act(async () => fireEvent.click(nav));
+  flush();
+  expect(document.querySelector('#home-news-panel')).toHaveClass('block');
+  expect(target.scrollIntoView).toHaveBeenCalledTimes(2);
+  const language = screen.getByRole('button', { name: 'Change language' });
+  language.focus();
+  await act(async () => fireEvent.click(language));
+  flush();
+  expect(window.location.search).toBe('?lang=es');
+  expect(document.querySelector('#home-news-panel')).toHaveClass('block');
+  expect(target.scrollIntoView).toHaveBeenCalledTimes(2);
+  expect(language).toHaveFocus();
 });

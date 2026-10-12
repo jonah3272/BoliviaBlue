@@ -318,9 +318,10 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
     return (buy + sell) / 2;
   }, [data]);
   const vsBluePct = useMemo(() => {
-    if (!effectiveRate || !blueMid || blueMid <= 0) return null;
+    // Card FX is always BOB/USD; the selected P2P quote can use another unit.
+    if (currency !== 'USD' || !effectiveRate || !blueMid || blueMid <= 0) return null;
     return ((effectiveRate - blueMid) / blueMid) * 100;
-  }, [effectiveRate, blueMid]);
+  }, [currency, effectiveRate, blueMid]);
 
   const exchangeRateSchema = useMemo(() => data && data.buy_bob_per_usd && data.sell_bob_per_usd ? {
     "@context": "https://schema.org",
@@ -476,8 +477,8 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
           {currency !== 'USD' && (
             <p className="text-center text-xs text-amber-700 dark:text-amber-300">
               {language === 'es'
-                ? 'Las tasas de tarjeta US se muestran en BOB por USD.'
-                : 'US card rates are shown as BOB per USD.'}
+                ? 'Las tasas de tarjeta US se muestran en BOB por USD. Seleccioná USD para comparar con la referencia P2P en la misma unidad.'
+                : 'US card rates are shown as BOB per USD. Select USD to compare with the P2P reference in the same units.'}
             </p>
           )}
 

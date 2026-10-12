@@ -151,10 +151,11 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
   const { currency } = useCurrency();
-  const [data, setData] = useState(null);
+  const [loadedData, setData] = useState(null);
   const [cardRates, setCardRates] = useState(null);
   const [cardError, setCardError] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isCardLoading, setIsCardLoading] = useState(true);
+  const [requestLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [issuerId, setIssuerId] = useState('0');
   
@@ -196,6 +197,10 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
   const abortControllerRef = React.useRef(null);
   const currentCurrencyRef = React.useRef(currency);
   const dataRef = React.useRef(null);
+  // A currency change renders before the debounced request starts. Never label
+  // a previous currency's quote (or stale fallback) as the new currency.
+  const data = loadedData?.currency === currency ? loadedData : null;
+  const isLoading = requestLoading || currentCurrencyRef.current !== currency;
 
   const loadData = useCallback(async (targetCurrency, { silent = false } = {}) => {
     if (abortControllerRef.current) {
@@ -208,27 +213,38 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
 
     if (!silent) {
       setIsLoading(true);
+      setIsCardLoading(true);
     }
     setError(null);
 
+    const isCurrentRequest = () =>
+      !abortController.signal.aborted && currentCurrencyRef.current === targetCurrency;
+
+    // Card FX has its own lookup/refresh service. A slow or unavailable card
+    // quote must not keep an already available P2P quote behind a skeleton.
+    fetchCardRates()
+      .then((cards) => {
+        if (!isCurrentRequest()) return;
+        setCardRates(cards);
+        setCardError(null);
+      })
+      .catch((err) => {
+        if (!isCurrentRequest()) return;
+        console.warn('Card rates fetch failed:', err.message);
+        setCardError(err.message);
+      })
+      .finally(() => {
+        if (isCurrentRequest()) setIsCardLoading(false);
+      });
+
     try {
-      const [result, cards] = await Promise.all([
-        fetchBlueRate(targetCurrency),
-        fetchCardRates().catch((err) => {
-          console.warn('Card rates fetch failed:', err.message);
-          setCardError(err.message);
-          return null;
-        })
-      ]);
+      const result = await fetchBlueRate(targetCurrency);
       
-      if (!abortController.signal.aborted && currentCurrencyRef.current === targetCurrency) {
-        setData(result);
-        dataRef.current = result;
+      if (isCurrentRequest()) {
+        const nextData = { ...result, currency: targetCurrency };
+        setData(nextData);
+        dataRef.current = nextData;
         setError(null);
-        if (cards) {
-          setCardRates(cards);
-          setCardError(null);
-        }
         
         if (result?.buy_bob_per_usd && result?.sell_bob_per_usd) {
           trackRateUpdate(
@@ -246,7 +262,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
       
       if (currentCurrencyRef.current === targetCurrency) {
         console.error('Error loading rate:', err);
-        if (dataRef.current) {
+        if (dataRef.current?.currency === targetCurrency) {
           setData({ ...dataRef.current, is_stale: true });
           setError(null);
         } else {
@@ -496,7 +512,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
               {t('cardRateEffective')}
             </div>
 
-            {isLoading ? (
+            {isCardLoading ? (
               <div className="skeleton h-14 w-40 mb-2" />
             ) : effectiveRate == null ? (
               <div className="text-sm text-gray-600 dark:text-gray-400">
@@ -511,6 +527,13 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
                   {language === 'es' ? 'Bs. por USD' : 'Bs. per USD'}
                 </div>
                 <div className="mt-3 text-xs text-gray-600 dark:text-gray-400 space-y-1">
+                  {cardError && (
+                    <p role="status" className="text-amber-700 dark:text-amber-300">
+                      {language === 'es'
+                        ? 'No se pudo actualizar la tasa de tarjeta. Se muestra la lectura anterior.'
+                        : 'The card rate could not be refreshed. Showing the previous reading.'}
+                    </p>
+                  )}
                   <div>
                     {t('cardRateBase')}: {networkRate != null ? formatRate(networkRate, 'USD') : '—'}
                     {' · '}

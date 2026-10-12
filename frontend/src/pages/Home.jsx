@@ -14,6 +14,7 @@ import { PRIMARY_RATE_URL } from '../config/seo';
 import NewsletterSignup from '../components/NewsletterSignup';
 import SocialShare from '../components/SocialShare';
 import LazyErrorBoundary from '../components/LazyErrorBoundary';
+import DeferredSection from '../components/DeferredSection';
 import { FinancialOfferButton } from '../components/FinancialOfferCard';
 import { lazy, Suspense, useState, useEffect, useMemo } from 'react';
 
@@ -58,6 +59,17 @@ function Home() {
   const [isNewsExpanded, setIsNewsExpanded] = useState(false);
   const [isArticlesExpanded, setIsArticlesExpanded] = useState(false);
   const [quickUsd, setQuickUsd] = useState('100');
+
+  useEffect(() => {
+    const revealNewsTarget = () => {
+      let hash;
+      try { hash = decodeURIComponent(window.location.hash.slice(1)); } catch { return; }
+      if (hash === 'home-news') setIsNewsExpanded(true);
+    };
+    revealNewsTarget();
+    window.addEventListener('hashchange', revealNewsTarget);
+    return () => window.removeEventListener('hashchange', revealNewsTarget);
+  }, []);
 
   const midRate = useMemo(() => {
     const buy = currentRate?.buy ?? currentRate?.buy_bob_per_usd;
@@ -337,26 +349,28 @@ function Home() {
 
         {/* Chart */}
         <section>
-          <LazyErrorBoundary>
-            <Suspense fallback={
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 animate-pulse">
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-4"></div>
-                {/* Match actual chart height: h-[240px] sm:h-[320px] md:h-[420px] */}
-                <div className="h-[240px] sm:h-[320px] md:h-[420px] bg-gray-200 dark:bg-gray-700 rounded"></div>
-              </div>
-            }>
-              <BlueChart showOfficial={showOfficial} />
-            </Suspense>
-          </LazyErrorBoundary>
+          <DeferredSection
+            id="home-history"
+            title={t('historicalPriceChart')}
+            description={language === 'es' ? 'Explorá el historial de compra y venta P2P por período.' : 'Explore historical P2P buy and sell rates by period.'}
+            language={language}
+            className="min-h-[440px] sm:min-h-[480px] md:min-h-[600px]"
+          >
+            <BlueChart showOfficial={showOfficial} />
+          </DeferredSection>
         </section>
 
         {/* Combined Sentiment + News Card — after chart on mobile */}
         <section>
-          <LazyErrorBoundary>
-            <Suspense fallback={<ComponentLoader />}>
-              <SentimentNewsCard />
-            </Suspense>
-          </LazyErrorBoundary>
+          <DeferredSection
+            id="home-sentiment"
+            title={language === 'es' ? 'Sentimiento del USD hoy' : "Today's USD sentiment"}
+            description={language === 'es' ? 'Noticias recientes y su análisis de sentimiento sobre el dólar.' : 'Recent news and its sentiment analysis about the dollar.'}
+            language={language}
+            className="min-h-[320px]"
+          >
+            <SentimentNewsCard />
+          </DeferredSection>
         </section>
 
 
@@ -365,6 +379,8 @@ function Home() {
           <div className="md:hidden">
             <button
               onClick={() => setIsNewsExpanded(!isNewsExpanded)}
+              aria-expanded={isNewsExpanded}
+              aria-controls="home-news-panel"
               className="w-full flex items-center justify-between p-4 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors mb-2"
             >
               <h2 className="text-lg font-bold text-gray-900 dark:text-white">
@@ -380,12 +396,17 @@ function Home() {
               </svg>
             </button>
           </div>
-          <div className={`${isNewsExpanded ? 'block' : 'hidden'} md:block`}>
-            <LazyErrorBoundary>
-              <Suspense fallback={<ComponentLoader />}>
-                <NewsTabs />
-              </Suspense>
-            </LazyErrorBoundary>
+          <div id="home-news-panel" className={`${isNewsExpanded ? 'block' : 'hidden'} md:block`}>
+            <DeferredSection
+              id="home-news"
+              title={language === 'es' ? 'Noticias económicas y archivo de X' : 'Economic news and X archive'}
+              description={language === 'es' ? 'Consultá las noticias económicas y cambiá de pestaña para ver el archivo de X.' : 'Read economic news and switch tabs to browse the X archive.'}
+              language={language}
+              forceLoad={isNewsExpanded}
+              className="min-h-[480px]"
+            >
+              <NewsTabs />
+            </DeferredSection>
           </div>
         </section>
 

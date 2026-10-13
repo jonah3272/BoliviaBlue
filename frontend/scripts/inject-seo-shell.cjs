@@ -247,12 +247,6 @@ function applyLiveRatesToRoutes(buy, sell, updatedAt, extra = {}) {
     cba.shell = fillLiveRateSlots(cba.shell, b, s, updatedAt);
   }
 
-  const prensa = ROUTES['/prensa'];
-  if (prensa) {
-    prensa.description = `Cita lista: dólar blue Bolivia compra Bs ${b} · venta Bs ${s}. CSV histórico, metodología y badge.`;
-    prensa.shell = fillLiveRateSlots(prensa.shell, b, s, updatedAt);
-  }
-
   const guia = ROUTES['/guia-dinero-bolivia'];
   if (guia) {
     guia.title = `Guía de dinero Bolivia 2026 | Blue compra ${b} · venta ${s}`;
@@ -720,7 +714,7 @@ const ROUTES = {
 <main class="max-w-3xl mx-auto px-4 py-8" data-seo-shell="prensa">
   <div class="text-center space-y-4 mb-8">
     <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">Datos y recursos para prensa</h1>
-    <p class="text-base text-gray-700 max-w-2xl mx-auto">Cita lista para medios: el dólar blue (paralelo) en Bolivia cotiza hoy compra <span data-live-buy>—</span> · venta <span data-live-sell>—</span> Bs por USD. Lectura: <time data-live-when datetime="">—</time>. 100 USD ≈ <span data-live-usd100>—</span> Bs (referencia P2P USDT/BOB para el USD; no efectivo ni BCB).</p>
+    <p class="text-base text-gray-700 max-w-2xl mx-auto">Recursos para medios: consultá el <a href="/prensa#corte-informativo" class="text-blue-600 font-medium">corte informativo con hora de observación</a> antes de citar valores. Referencia digital P2P USDT/BOB usada como referencia del USD; no es una cotización de dólares físicos ni el tipo oficial del BCB.</p>
     <p class="text-sm text-gray-600 max-w-2xl mx-auto">CSV 30 días: <a href="/api/historical-data.csv?range=30d" class="text-blue-600 font-medium">descargar CSV</a>. Metodología: <a href="/fuente-de-datos" class="text-blue-600 font-medium">fuente de datos</a>. Widget: <a href="/widget" class="text-blue-600 font-medium">embed</a>. Iframe: <a href="/embed.html" class="text-blue-600 font-medium">embed.html</a>.</p>
     <section id="corte-informativo" class="space-y-3 text-left"><h2 class="text-2xl font-bold">Corte informativo para citar</h2><p>Una lectura fechada P2P USDT/BOB, no un cierre diario. El desglose por plataforma se muestra cuando fue guardado con el registro. La ausencia de ese desglose no equivale a cero plataformas consultadas.</p><p>Conservá la hora de observación y la unidad. Compra y venta son campos del recolector, no una oferta ejecutable de dólares físicos. Los registros sin procedencia no prueban comparabilidad de fuentes o método ni una tendencia diaria o semanal.</p><p>La vista interactiva permite copiar el corte y descargarlo como texto o JSON. El <a href="/datos-historicos">gráfico histórico</a> y las <a href="/api/historical-data.json?range=30d">descargas JSON</a> sirven para análisis exploratorio con esos límites.</p></section>
     <nav class="flex flex-wrap justify-center gap-3 mt-4" aria-label="Enlaces relacionados">

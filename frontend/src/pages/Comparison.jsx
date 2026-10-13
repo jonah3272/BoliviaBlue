@@ -81,7 +81,7 @@ function Comparison() {
 
   const hasOfficial = currentRate && currentRate.official_buy != null && currentRate.official_sell != null;
   const blueMid = currentRate && (currentRate.mid != null ? currentRate.mid : (currentRate.buy + currentRate.sell) / 2);
-  const officialMid = hasOfficial && (currentRate.official_mid != null ? currentRate.official_mid : (currentRate.official_buy + currentRate.official_sell) / 2);
+  const officialMid = hasOfficial ? (currentRate.official_mid != null ? currentRate.official_mid : (currentRate.official_buy + currentRate.official_sell) / 2) : null;
   const spreadBob = (blueMid != null && officialMid != null) ? blueMid - officialMid : null;
   const spreadPct = (spreadBob != null && officialMid > 0) ? (spreadBob / officialMid) * 100 : null;
 
@@ -96,7 +96,7 @@ function Comparison() {
           ? 'El Banco Central de Bolivia (BCB) publica diariamente el valor referencial del dólar estadounidense (compra/venta) como referencia del sistema formal. En esta página lo mostramos junto al dólar blue.'
           : 'The Central Bank of Bolivia (BCB) publishes daily the US Dollar reference rate (buy/sell) as a benchmark for the formal system. On this page we show it alongside the blue dollar.',
     },
-    { q: language === 'es' ? '¿Qué es el dólar blue?' : 'What is the blue dollar?', a: language === 'es' ? 'El dólar blue es el tipo de cambio del mercado paralelo: el precio al que se compra y vende el dólar fuera del sistema bancario oficial (por ejemplo en plataformas P2P como Binance). Refleja la oferta y la demanda real.' : 'The blue dollar is the parallel market exchange rate: the price at which the dollar is bought and sold outside the official banking system (e.g. on P2P platforms like Binance). It reflects real supply and demand.' },
+    { q: language === 'es' ? '¿Qué es el dólar blue?' : 'What is the blue dollar?', a: language === 'es' ? 'El dólar blue es el tipo de cambio del mercado paralelo. En esta página usamos una referencia agregada de precios públicos P2P USDT/BOB para aproximarlo. No es una cotización garantizada de dólares en efectivo.' : 'The blue dollar is the parallel market exchange rate. On this page we approximate it with an aggregated reference from public P2P USDT/BOB prices. It is not a guaranteed cash-dollar quote.' },
     {
       q:
         language === 'es'
@@ -138,7 +138,7 @@ function Comparison() {
     },
     {
       feature: language === 'es' ? 'Fuente de datos' : 'Data source',
-      boliviablue: language === 'es' ? 'Binance P2P en tiempo real' : 'Real-time Binance P2P',
+      boliviablue: language === 'es' ? 'Referencia P2P agregada' : 'Aggregated P2P reference',
       competitor: language === 'es' ? 'Datos agregados' : 'Aggregated data',
       winner: 'boliviablue'
     },
@@ -228,18 +228,27 @@ function Comparison() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">{language === 'es' ? 'Dólar blue (compra/venta)' : 'Blue dollar (buy/sell)'}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">{language === 'es' ? 'Referencia P2P (compras / vendes USDT)' : 'P2P reference (you buy / sell USDT)'}</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {currentRate ? `${Number(currentRate.buy).toFixed(2)} / ${Number(currentRate.sell).toFixed(2)} BOB` : '—'}
+                {currentRate ? `${Number(currentRate.buy).toFixed(2)} / ${Number(currentRate.sell).toFixed(2)} BOB/USDT` : '—'}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{language === 'es' ? 'Fuente: Binance P2P' : 'Source: Binance P2P'}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                {language === 'es' ? 'Fuente: referencia P2P agregada. ' : 'Source: aggregated P2P reference. '}
+                <Link
+                  to={language === 'es' ? '/fuente-de-datos' : '/fuente-de-datos?lang=en'}
+                  onClick={trackRel('/fuente-de-datos', 'quote_methodology')}
+                  className="text-blue-600 dark:text-blue-400 underline"
+                >
+                  {language === 'es' ? 'Metodología P2P' : 'P2P methodology'}
+                </Link>
+              </p>
             </div>
             <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-4">
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                {language === 'es' ? 'Valor referencial (BCB) (compra/venta)' : 'US Dollar reference rate (BCB) (buy/sell)'}
+                {language === 'es' ? 'BCB (la entidad compra / vende USD)' : 'BCB (the institution buys / sells USD)'}
               </p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {hasOfficial ? `${Number(currentRate.official_buy).toFixed(2)} / ${Number(currentRate.official_sell).toFixed(2)} BOB` : '—'}
+                {hasOfficial ? `${Number(currentRate.official_buy).toFixed(2)} / ${Number(currentRate.official_sell).toFixed(2)} BOB/USD` : '—'}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{language === 'es' ? 'Fuente: BCB' : 'Source: BCB'}</p>
             </div>
@@ -260,6 +269,11 @@ function Comparison() {
               </p>
             </div>
           </div>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+            {language === 'es'
+              ? 'En P2P, compra = BOB que pagas por 1 USDT; venta = BOB que recibes por 1 USDT, antes de comisiones. En BCB, compra/venta se expresa desde la perspectiva de la entidad: la entidad compra o vende USD. La brecha compara puntos medios como referencia; USDT no es USD en efectivo y las etiquetas no representan la misma dirección para el cliente.'
+              : 'For P2P, buy = BOB you pay for 1 USDT; sell = BOB you receive for 1 USDT, before fees. BCB buy/sell is from the institution’s perspective: the institution buys or sells USD. The gap compares midpoints as a reference; USDT is not cash USD and the labels do not represent the same customer direction.'}
+          </p>
           {avgSpread != null && (
             <p className="text-sm text-gray-600 dark:text-gray-400">
               {language === 'es'
@@ -283,8 +297,8 @@ function Comparison() {
           </h2>
           <p className="text-gray-700 dark:text-gray-300 mb-2">
             {language === 'es'
-              ? 'El valor referencial del dólar estadounidense lo publica el Banco Central de Bolivia (BCB) y lo usan los bancos como referencia. El dólar blue es el precio en el mercado paralelo (P2P) y refleja la oferta y demanda real. No deben confundirse: muchas operaciones (remesas, importadores, casas de cambio) usan el blue como referencia.'
-              : 'The US Dollar reference rate is published by the Central Bank of Bolivia (BCB) and used by banks as a benchmark. The blue dollar is the price in the parallel (P2P) market and reflects real supply and demand. They should not be confused: many operations (remittances, importers, exchange houses) use the blue as reference.'}
+              ? 'El valor referencial del dólar estadounidense lo publica el Banco Central de Bolivia (BCB) y lo usan los bancos como referencia. La referencia blue de esta página agrega precios públicos P2P USDT/BOB de las fuentes disponibles. La composición puede variar entre lecturas, incluso incluir una sola fuente. El precio final depende del monto, método de pago, contraparte y comisiones.'
+              : 'The US Dollar reference rate is published by the Central Bank of Bolivia (BCB) and used by banks as a benchmark. This page’s blue reference aggregates public P2P USDT/BOB prices from available sources. Composition can vary between readings, including just one source. The final price depends on the amount, payment method, counterparty and fees.'}
           </p>
           <p className="text-sm text-gray-600 dark:text-gray-400">
             {language === 'es' ? 'Metodología: ' : 'Methodology: '}
@@ -424,8 +438,8 @@ function Comparison() {
               </h3>
               <p className="text-gray-700 dark:text-gray-300">
                 {language === 'es'
-                  ? 'Mientras bolivianblue.net actualiza cada hora o diariamente, nosotros actualizamos cada 15 minutos con datos en tiempo real de Binance P2P. Esto significa que siempre tendrás la información más actualizada.'
-                  : 'While bolivianblue.net updates hourly or daily, we update every 15 minutes with real-time Binance P2P data. This means you always have the most up-to-date information.'}
+                  ? 'Consultamos periódicamente precios públicos P2P USDT/BOB y agregamos las referencias válidas disponibles. Las fuentes externas pueden demorarse; revisa la hora de la observación antes de usarla.'
+                  : 'We periodically query public P2P USDT/BOB prices and aggregate the available valid references. External sources can be delayed; check the observation time before using it.'}
               </p>
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md">
@@ -706,17 +720,17 @@ function Comparison() {
             <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
               <div className="text-4xl mb-4 text-center">📊</div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 text-center">
-                {language === 'es' ? 'Fuente de Datos Superior' : 'Superior Data Source'}
+                {language === 'es' ? 'Fuente de datos P2P' : 'P2P data source'}
               </h3>
               <p className="text-gray-700 dark:text-gray-300 mb-3">
                 {language === 'es'
-                  ? 'Usamos datos directos de Binance P2P, la mayor plataforma de intercambio P2P en Bolivia. Datos más precisos y confiables.'
-                  : 'We use direct data from Binance P2P, the largest P2P exchange platform in Bolivia. More accurate and reliable data.'}
+                  ? 'La referencia agrega precios públicos P2P USDT/BOB. Solo el desglose guardado y coincidente con cada observación acredita qué fuentes participaron en esa lectura.'
+                  : 'The reference aggregates public P2P USDT/BOB prices. Only a stored breakdown matching each observation establishes which sources contributed to that reading.'}
               </p>
               <div className="text-sm text-gray-600 dark:text-gray-400 italic">
                 {language === 'es'
-                  ? '"Datos en tiempo real de miles de transacciones reales"'
-                  : '"Real-time data from thousands of actual transactions"'}
+                  ? 'Precios de referencia; no son un registro de transacciones ejecutadas.'
+                  : 'Reference prices; these are not a record of executed transactions.'}
               </div>
             </div>
           </div>

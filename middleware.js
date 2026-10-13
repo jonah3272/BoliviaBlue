@@ -217,7 +217,7 @@ export function metaForPath(path, buy, sell, updatedAt = null, isStale = false) 
     case '/prensa':
       return {
         title: 'Prensa Bolivia Blue | Kit de medios, citas y datos',
-        description: `Cita lista: dólar blue Bolivia compra Bs ${buy} · venta Bs ${sell}. CSV histórico, metodología y badge.`,
+        description: 'Recursos gratis para periodistas: citas con hora de observación, CSV histórico, metodología y badge.',
       };
     case '/guia-dinero-bolivia':
       return {
@@ -435,7 +435,7 @@ export function metaForPathEn(path, buy, sell, updatedAt = null, isStale = false
     case '/prensa':
       return {
         title: 'Bolivia Blue Press | Media kit, citations & data',
-        description: `Ready citation: Bolivia blue dollar buy Bs ${buy} · sell Bs ${sell}. Historical CSV, methodology and badge.`,
+        description: 'Free journalist resources: timestamped citations, historical CSV, methodology and badge.',
       };
     case '/':
     default:
@@ -518,7 +518,8 @@ export function applyEnglishAnnotations(html, path, pair) {
   };
   out = replaceMeta(out, enMeta.title, enMeta.description);
   out = out.replace(/<meta property="og:locale:alternate" content="[^"]*"/i, '<meta property="og:locale:alternate" content="es_BO"');
-  const shell = `<main data-seo-shell="english" class="max-w-3xl mx-auto px-4 py-8"><h1>${escapeHtml(enMeta.title)}</h1><p>${escapeHtml(enMeta.description)}</p>${pair?.updatedAt ? `<p>Observation: <time datetime="${escapeAttr(pair.updatedAt)}">${escapeHtml(pair.updatedAt)}</time></p>` : ''}${path === '/prensa' ? renderSourceCompositionPressLink('en') : ''}<nav><a href="/?lang=en">Home</a> · <a href="/dolar-blue-hoy?lang=en">Today's quote</a> · <a href="/fuente-de-datos?lang=en">Methodology</a> · <a href="/datos-historicos?lang=en">Historical data</a></nav></main>`;
+  const pressContext = path === '/prensa' ? '<section id="corte-informativo"><h2>Snapshot for citation</h2><p>Check the <a href="/prensa?lang=en#corte-informativo">snapshot with observation time</a> before quoting values. Digital P2P USDT/BOB reference used as a USD proxy; not a physical-dollar quote or the BCB official rate.</p><p>The interactive view lets you copy and download a dated observation. Keep its timestamp and units. Buy/sell are collector fields, not an executable cash offer. Source composition is available only when valid stored source_observation matches the record; otherwise, it is unknown.</p></section>' + renderSourceCompositionPressLink('en') : '';
+  const shell = `<main data-seo-shell="english" class="max-w-3xl mx-auto px-4 py-8"><h1>${escapeHtml(enMeta.title)}</h1><p>${escapeHtml(enMeta.description)}</p>${path !== '/prensa' && pair?.updatedAt ? `<p>Observation: <time datetime="${escapeAttr(pair.updatedAt)}">${escapeHtml(pair.updatedAt)}</time></p>` : ''}${pressContext}<nav><a href="/?lang=en">Home</a> · <a href="/dolar-blue-hoy?lang=en">Today's quote</a> · <a href="/fuente-de-datos?lang=en">Methodology</a> · <a href="/datos-historicos?lang=en">Historical data</a></nav></main>`;
   out = out.replace(/<main\b[^>]*data-seo-shell=["'][^"']*["'][^>]*>[\s\S]*?<\/main>/i, () => shell);
   out = out.replace(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>/gi, '');
   const schema = { '@context': 'https://schema.org', '@type': 'WebPage', name: enMeta.title, description: enMeta.description, url: enCanon, inLanguage: 'en-US', isPartOf: { '@type': 'WebSite', name: 'Bolivia Blue', url: 'https://www.boliviablue.com' } };

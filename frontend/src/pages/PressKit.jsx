@@ -8,25 +8,15 @@ import Breadcrumbs from '../components/Breadcrumbs';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import { getWebPage, getBreadcrumbList } from '../utils/seoSchema';
-import { LLMS_TXT_URL, PLAIN_CITE_EN, PLAIN_CITE_ES, buildRateAnswerParagraph } from '../utils/citationCopy';
+import { LLMS_TXT_URL, PLAIN_CITE_EN, PLAIN_CITE_ES } from '../utils/citationCopy';
 import { useRate } from '../contexts/RateContext';
 import { SITE_URL } from '../config/brand';
-import { liveBobParts, ratesFromBluePayload } from '../utils/seoRateMeta';
+import { buildPressCitations } from '../utils/pressCitations';
 import CiteShareBar from '../components/CiteShareBar';
 import NewsroomSnapshot from '../components/NewsroomSnapshot';
 import { getSourceCompositionExample } from '../data/sourceCompositionExample';
 
 const HIST_CSV = `${SITE_URL}/api/historical-data.csv?range=30d`;
-
-function citeHtml(buyStr, sellStr) {
-  const rateBit = buyStr && sellStr ? ` Compra Bs ${buyStr} · venta Bs ${sellStr}.` : '';
-  return `<p>Fuente: <a href="${SITE_URL}/dolar-blue-hoy">Bolivia Blue</a> — dólar blue / paralelo Bolivia.${rateBit} Referencia P2P USDT/BOB usada como referencia del USD; no es una cotización de efectivo. CSV 30 días: <a href="${HIST_CSV}">historical-data.csv</a>. Metodología: <a href="${SITE_URL}/fuente-de-datos">fuente-de-datos</a>. Widget: <a href="${SITE_URL}/widget">widget</a>.</p>`;
-}
-
-function citeMd(buyStr, sellStr) {
-  const rateBit = buyStr && sellStr ? ` Compra Bs ${buyStr} · venta Bs ${sellStr}.` : '';
-  return `Fuente: [Bolivia Blue](${SITE_URL}/dolar-blue-hoy) — dólar blue / paralelo Bolivia.${rateBit} Referencia P2P USDT/BOB usada como referencia del USD; no es una cotización de efectivo. CSV: [${HIST_CSV}](${HIST_CSV}). Metodología: [${SITE_URL}/fuente-de-datos](${SITE_URL}/fuente-de-datos).`;
-}
 
 const BADGE_HTML = `<a href="${SITE_URL}/dolar-blue-hoy?utm_source=badge" rel="noopener"><img src="${SITE_URL}/api/badge.svg" alt="Dólar blue Bolivia — Bolivia Blue" width="320" height="40" /></a>`;
 
@@ -87,18 +77,7 @@ function PressKit() {
     : `Current methodology: ${SITE_URL}/fuente-de-datos — median of available per-platform P2P references. Updates are attempted periodically and may be delayed. Some historical records have no stored source composition; the current method does not establish the provenance of each stored observation. 30-day CSV: ${HIST_CSV}`;
   const [copied, setCopied] = useState('');
   const { rateData, isLoading, error } = useRate();
-  const live = liveBobParts(rateData);
-  const rateBits = ratesFromBluePayload(rateData);
-  const liveLine = buildRateAnswerParagraph({
-    buy: rateBits.buy,
-    sell: rateBits.sell,
-    updatedAt: rateBits.updatedAt,
-    sourcesUsed: rateData?.sources_used,
-    language,
-    citePath: '/dolar-blue-hoy',
-  });
-  const CITE_HTML = citeHtml(live.buyStr, live.sellStr);
-  const CITE_MD = citeMd(live.buyStr, live.sellStr);
+  const { text: liveLine, html: CITE_HTML, markdown: CITE_MD } = buildPressCitations(rateData, language);
   const PITCH_EMAIL_ES = pitchEmailEs(CITE_HTML, liveLine);
   const PITCH_EMAIL_EN = pitchEmailEn(CITE_HTML, liveLine);
 
@@ -174,7 +153,7 @@ function PressKit() {
 
         <section className="rounded-xl border border-sky-200 dark:border-sky-800 bg-sky-50/80 dark:bg-sky-950/30 p-6 space-y-3">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-            {language === 'es' ? 'Cita de una línea (con cotización en vivo)' : 'One-line quote (live rate)'}
+            {language === 'es' ? 'Cita con hora de observación' : 'Quote with observation time'}
           </h2>
           <p className="text-sm text-gray-700 dark:text-gray-300">{liveLine}</p>
           <CiteShareBar liveLine={liveLine} htmlCite={CITE_HTML} language={language} />

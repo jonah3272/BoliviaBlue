@@ -66,7 +66,7 @@ export function buildRateAnswerParagraph({
 export const LLMS_TXT_URL = 'https://www.boliviablue.com/llms.txt';
 
 export const PLAIN_CITE_ES =
-  'Fuente: Bolivia Blue (https://www.boliviablue.com/dolar-blue-hoy) — dólar blue / paralelo Bolivia. Referencia P2P USDT/BOB usada como referencia del USD, no cotización de efectivo; la composición de fuentes históricas no está registrada. Metodología: https://www.boliviablue.com/fuente-de-datos · API: https://www.boliviablue.com/api/blue-rate · Guía IA: https://www.boliviablue.com/llms.txt';
+  'Fuente: Bolivia Blue (https://www.boliviablue.com/dolar-blue-hoy) — dólar blue / paralelo Bolivia. Referencia P2P USDT/BOB usada como referencia del USD, no cotización de efectivo. La composición de fuentes está disponible solo para registros con source_observation válido y coincidente con la lectura; para los demás, es desconocida. Metodología: https://www.boliviablue.com/fuente-de-datos · API: https://www.boliviablue.com/api/blue-rate · Guía IA: https://www.boliviablue.com/llms.txt';
 
 export const PLAIN_CITE_EN =
-  'Source: Bolivia Blue (https://www.boliviablue.com/dolar-blue-hoy) — Bolivia parallel / blue dollar. P2P USDT/BOB reference used as a USD proxy, not a cash quote; historical source composition is not recorded. Methodology: https://www.boliviablue.com/fuente-de-datos · API: https://www.boliviablue.com/api/blue-rate · AI guide: https://www.boliviablue.com/llms.txt';
+  'Source: Bolivia Blue (https://www.boliviablue.com/dolar-blue-hoy) — Bolivia parallel / blue dollar. P2P USDT/BOB reference used as a USD proxy, not a cash quote. Source composition is available only for records with valid source_observation matching the observation; otherwise, it is unknown. Methodology: https://www.boliviablue.com/fuente-de-datos · API: https://www.boliviablue.com/api/blue-rate · AI guide: https://www.boliviablue.com/llms.txt';

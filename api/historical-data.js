@@ -13,6 +13,8 @@ function client() {
 }
 
 module.exports = async function handler(req, res) {
+  // Share this existing function so evidence reports stay within the free function cap.
+  if (req.query.feature === 'daily-evidence') return require('./_lib/dailyReport')(req, res);
   res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');

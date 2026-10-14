@@ -1,7 +1,7 @@
 const { createClient } = require('@supabase/supabase-js');
-const { reportPath, sourceCsv, completedDate } = require('../shared/dailyEvidence.cjs');
-const { readReport, listReports, revisionsForDate, seedReport } = require('./_lib/dailyEvidenceStore');
-const { reportHtml, chartSvg, citation, esc } = require('../shared/dailyEvidenceRender.cjs');
+const { reportPath, sourceCsv, completedDate } = require('../../shared/dailyEvidence.cjs');
+const { readReport, listReports, revisionsForDate, seedReport } = require('./dailyEvidenceStore');
+const { reportHtml, chartSvg, citation, esc } = require('../../shared/dailyEvidenceRender.cjs');
 function client() {
   const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
   const key = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_KEY;

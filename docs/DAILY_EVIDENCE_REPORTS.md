@@ -6,6 +6,7 @@ This replaces the narrative daily generator. The previous generator's daily perc
 
 - `/prensa/informes/YYYY-MM-DD/v1` is the server-rendered, bilingual report (English: `?lang=en`). It works without JavaScript.
 - Sibling `datos.json`, `fuentes.csv`, `grafico.svg` and `cita.txt` downloads derive from the same verified payload. SVG is the supported chart download; PNG is deliberately not promised without a reproducible server-side font/rasterization setup.
+- The report endpoint is routed through the existing historical-data serverless function, keeping the deployment at its existing free-plan function count.
 - `/prensa` and `/blog` expose the archive. `/api/daily-report?view=archive` is date-paginated; `next_before` requests older dates. There is no rolling-30-day storage dependency.
 - Five source-backed launch editions cover October 9–13, 2026. October 8 has incomplete provenance; earlier aggregate history cannot establish a fixed source basket. No seven-day/month source-backed history is claimed.
 - The edition creation timestamp and source retrieval timestamp are distinct from the observation date. Launch payloads are generated on October 14, not backdated to the observed day.

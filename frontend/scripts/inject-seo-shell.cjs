@@ -1007,6 +1007,12 @@ async function main() {
   fs.mkdirSync(realDir, { recursive: true });
   fs.writeFileSync(path.join(realDir, 'index.html'), renderRealConversionHtml(originalHtml), 'utf8');
 
+  // The API reference uses the same endpoint contract as the interactive page.
+  const { renderApiDocumentationHtml } = await import('../../seo/apiDocumentationSeo.js');
+  const apiDocsDir = path.join(DIST, 'api-docs');
+  fs.mkdirSync(apiDocsDir, { recursive: true });
+  fs.writeFileSync(path.join(apiDocsDir, 'index.html'), renderApiDocumentationHtml(originalHtml), 'utf8');
+
   // Documentation content shares its editorial copy with the interactive pages.
   const { renderDataDocumentationHtml } = await import('../../seo/dataDocumentationSeo.js');
   for (const route of ['/fuente-de-datos', '/datos-historicos']) {

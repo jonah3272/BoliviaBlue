@@ -8,6 +8,7 @@ import Breadcrumbs from '../components/Breadcrumbs';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import { Link } from 'react-router-dom';
 import { DATA_INQUIRY_PATH, getDataInquiry } from '../data/dataInquiry';
+import { getApiDocumentation } from '../data/apiDocumentation';
 import { trackApiDocsViewed, trackCommercialAccessClicked } from '../utils/analyticsEvents';
 
 function ApiDocs() {
@@ -30,72 +31,20 @@ function ApiDocs() {
     { name: language === 'es' ? 'Documentación API' : 'API Documentation', url: '/api-docs' }
   ];
 
-  // API schema for structured data
-  const apiSchema = {
-    "@context": "https://schema.org",
-    "@type": "APIReference",
-    "name": language === 'es' 
-      ? "API del Dólar Blue Bolivia"
-      : "Bolivia Blue Dollar API",
-    "description": language === 'es'
-      ? "API gratuita para acceder a datos en tiempo real del dólar blue en Bolivia. Incluye tasas actuales, observaciones históricas y estado del archivo."
-      : "Free API to access real-time blue dollar data in Bolivia. Includes current rates, historical observations and archive status.",
-    "url": "https://boliviablue.com/api-docs",
-    "provider": {
-      "@type": "Organization",
-      "name": "Bolivia Blue",
-      "url": "https://boliviablue.com"
-    },
-    "documentation": "https://boliviablue.com/api-docs",
-    "termsOfService": "https://boliviablue.com/politica-de-privacidad"
-  };
-
-  // Document the deployed public API contract. The optional backend has separate routes.
-  const endpoints = [
-    {
-      method: 'GET', path: '/api/blue-rate',
-      description: language === 'es' ? 'Cotización actual USD/BOB. La composición de fuentes puede no estar registrada para la fila guardada.' : 'Current USD/BOB quote. Source composition may be unavailable for the stored row.',
-      parameters: [],
-      response: { buy_bob_per_usd: 'number', sell_bob_per_usd: 'number', updated_at_iso: 'ISO 8601', is_stale: 'boolean', sources_used: 'array (empty when provenance is unknown)', source_provenance: 'string' },
-      example: { url: 'https://www.boliviablue.com/api/blue-rate', response: { buy_bob_per_usd: 12.34, sell_bob_per_usd: 12.56, updated_at_iso: '2026-10-03T12:00:00Z', is_stale: false, sources_used: [], source_provenance: 'unavailable_for_stored_row' } },
-    },
-    ...['csv', 'json'].map((format) => ({
-      method: 'GET', path: `/api/historical-data.${format}`,
-      description: language === 'es'
-        ? 'Hasta 4.000 observaciones recientes, ordenadas por fecha ascendente. 30d limita el período; all selecciona las últimas filas disponibles, no todo el archivo. 90d y 1y devuelven 400. No se requiere token para estas muestras públicas.'
-        : 'Up to 4,000 recent observations in ascending date order. 30d limits the period; all selects the latest available rows, not the entire archive. 90d and 1y return 400. These public samples do not require a token.',
-      parameters: [
-        { name: 'range', type: 'string', required: false, options: ['30d', 'all'], description: 'Default: 30d' },
-        { name: 'limit', type: 'integer', required: false, description: '1–4000; default 4000. Larger values are capped at 4000.' },
-      ],
-      response: format === 'csv'
-        ? 'CSV columns: t,buy,sell,mid,official_buy,official_sell,official_mid. Coverage headers: X-Data-Range, X-Data-Rows, X-Data-Limit, X-Data-Truncated, X-Data-Start, X-Data-End, X-Data-Provenance.'
-        : 'JSON: { range, count, points: [{ t, buy, sell, mid, official_buy, official_sell, official_mid }], metadata: { range_requested, requested_start, requested_end, returned_start, returned_end, rows_returned, limit, truncated, selection, order, source_provenance, generated_at } }',
-      example: { url: `https://www.boliviablue.com/api/historical-data.${format}?range=30d`, response: format === 'csv' ? { note: 'Read HTTP coverage headers before citing a time span.' } : { range: '30d', count: 1, points: [{ t: '2026-10-03T12:00:00Z', buy: 12.34, sell: 12.56, mid: 12.45 }], metadata: { returned_start: '2026-10-03T12:00:00Z', returned_end: '2026-10-03T12:00:00Z', rows_returned: 1, limit: 4000, truncated: false, source_provenance: 'unavailable_for_historical_rows' } } },
-    })),
-    {
-      method: 'GET', path: '/api/health',
-      description: language === 'es' ? 'Estado del archivo y fecha de la última observación.' : 'Archive status and latest observation time.',
-      parameters: [], response: { ok: 'boolean', updated_at_iso: 'ISO 8601 or null', history_points: 'number', host: 'vercel' },
-      example: { url: 'https://www.boliviablue.com/api/health', response: { ok: true, updated_at_iso: '2026-10-03T12:00:00Z', history_points: 29250, host: 'vercel' } },
-    },
-  ];
+  const page = getApiDocumentation(language);
+  const { copy, endpoints } = page;
 
 
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
-        title={language === 'es' 
-          ? 'API del Dólar Blue Bolivia | Documentación Completa'
-          : 'Bolivia Blue Dollar API | Complete Documentation'}
-        description={language === 'es'
-          ? 'Documentación completa de la API gratuita del dólar blue en Bolivia. Accede a tasas actuales, datos históricos y noticias financieras mediante endpoints REST.'
-          : 'Complete documentation for the free Bolivia blue dollar API. Access current rates, historical data and financial news via REST endpoints.'}
+        title={copy.title}
+        description={copy.description}
         keywords={language === 'es'
           ? 'API dólar blue bolivia, API tipo cambio bolivia, API bolivia blue rate, documentación API, REST API bolivia, API gratuita dólar blue'
           : 'bolivia blue dollar API, bolivia exchange rate API, bolivia blue rate API, API documentation, REST API bolivia, free blue dollar API'}
         canonical="/api-docs"
-        structuredData={[apiSchema]}
+        structuredData={[page.apiSchema]}
       />
 
       <Header />
@@ -112,9 +61,7 @@ function ApiDocs() {
               : '🔌 Bolivia Blue Dollar API'}
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            {language === 'es'
-              ? 'API REST gratuita para acceder a datos en tiempo real del dólar blue en Bolivia. Muestras públicas sin autenticación; revisá la fecha de cada observación.'
-              : 'Free REST API to access real-time blue dollar data in Bolivia. Public samples need no authentication; check each observation timestamp.'}
+            {copy.introduction}
           </p>
         </div>
 
@@ -152,9 +99,7 @@ function ApiDocs() {
             {inquiry.introduction}
           </p>
           <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">
-            {language === 'es'
-              ? 'La API pública y sus muestras siguen disponibles sin registro. Las descargas ampliadas automáticas del servicio separado no están disponibles aquí; cualquier cobertura o acceso adicional requiere revisión manual.'
-              : 'The public API and its samples remain available without signup. Automatic extended downloads from the separate service are unavailable here; any additional coverage or access requires manual review.'}
+            {copy.additionalAccess}
           </p>
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{inquiry.limitation}</p>
           <div className="flex flex-wrap gap-3">
@@ -187,6 +132,11 @@ function ApiDocs() {
           </div>
         </div>
 
+        <section aria-labelledby="api-interpretation" className="bg-white dark:bg-gray-800 rounded-xl p-6 mb-8 border border-gray-200 dark:border-gray-700 space-y-4 text-gray-700 dark:text-gray-300">
+          <h2 id="api-interpretation" className="text-2xl font-bold text-gray-900 dark:text-white">{copy.interpretationHeading}</h2>
+          {page.notes.map((note) => <p key={note} className="break-words">{note}</p>)}
+        </section>
+
         {/* API Details */}
         <div className="space-y-8 mb-8">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
@@ -195,7 +145,7 @@ function ApiDocs() {
           
           {endpoints.map((endpoint, index) => (
             <div key={index} className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 border-2 border-gray-200 dark:border-gray-700">
-              <div className="flex items-start gap-4 mb-4">
+              <div className="flex flex-wrap items-start gap-4 mb-4">
                 <span className={`px-3 py-1 rounded text-sm font-bold ${
                   endpoint.method === 'GET' 
                     ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
@@ -203,7 +153,7 @@ function ApiDocs() {
                 }`}>
                   {endpoint.method}
                 </span>
-                <code className="text-xl font-mono text-gray-900 dark:text-white">
+                <code className="min-w-0 break-all text-xl font-mono text-gray-900 dark:text-white">
                   {endpoint.path}
                 </code>
               </div>
@@ -249,9 +199,15 @@ function ApiDocs() {
               )}
 
               <div className="mb-6">
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-3">{copy.fieldsHeading}</h3>
+                <pre className="whitespace-pre-wrap break-words rounded-lg bg-gray-50 dark:bg-gray-700 p-4 text-sm font-mono text-gray-700 dark:text-gray-300">{typeof endpoint.response === 'string' ? endpoint.response : JSON.stringify(endpoint.response, null, 2)}</pre>
+              </div>
+
+              <div className="mb-6">
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
                   {language === 'es' ? 'Respuesta' : 'Response'}
                 </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{copy.exampleNotice}</p>
                 <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto">
                   <pre className="text-green-400 text-sm font-mono">
                     {JSON.stringify(endpoint.example.response, null, 2)}

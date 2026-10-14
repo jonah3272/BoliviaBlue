@@ -1,3 +1,4 @@
+import { renderLegacyDailyNotice } from '../frontend/src/data/legacyDailyNotice.js';
 import { articlesEs, articlesEn } from '../frontend/src/data/blogArticles.js';
 import { newsArticlePath, newsIdFromSlugParam } from '../frontend/src/utils/newsSlug.js';
 
@@ -28,6 +29,7 @@ export async function loadArticle(request, { fetcher = fetch, env = process.env 
       endpoint.searchParams.set('select', kind === 'blog' ? 'slug,title,excerpt,published_at,created_at,author,language' : 'id,title,summary,published_at,source,url');
       endpoint.searchParams.set(kind === 'blog' ? 'slug' : 'id', `eq.${kind === 'blog' ? slug : id}`);
       endpoint.searchParams.set(kind === 'blog' ? 'language' : 'type', `eq.${kind === 'blog' ? language : 'article'}`);
+      if (kind === 'blog') endpoint.searchParams.set('category', 'neq.daily-evidence');
       endpoint.searchParams.set('limit', '1');
       const response = await fetcher(endpoint, { headers: { apikey: key, Authorization: `Bearer ${key}`, Accept: 'application/json' }, signal: AbortSignal.timeout(4000) });
       if (!response.ok) throw new Error('Content lookup unavailable');
@@ -73,6 +75,6 @@ export function renderArticleHtml(html, article, request) {
     tags.push(`<script type="application/ld+json" data-rh="true">${JSON.stringify(schema).replace(/</g, '\\u003c')}</script>`);
   }
   out = out.replace('</head>', () => tags.join('\n') + '\n</head>');
-  const shell = `<main data-seo-shell="article" class="max-w-3xl mx-auto px-4 py-8"><h1>${esc(title)}</h1><p>${esc(description)}</p><a href="/${request.kind}">${es ? 'Volver' : 'Back'}</a></main>`;
+  const shell = `<main data-seo-shell="article" class="max-w-3xl mx-auto px-4 py-8"><h1>${esc(title)}</h1>${request.kind === 'blog' ? renderLegacyDailyNotice(request.slug, article.language) : ''}<p>${esc(description)}</p><a href="/${request.kind}">${es ? 'Volver' : 'Back'}</a></main>`;
   return out.replace(/(<div id="root">)[\s\S]*?(<\/div>\s*(?:<script|<\/body>))/, (_match, open, close) => open + shell + close);
 }

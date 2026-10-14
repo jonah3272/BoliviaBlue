@@ -150,6 +150,11 @@
   "outputDirectory": "frontend/dist",
   "installCommand": "npm install && cd frontend && npm install",
   "rewrites": [
+    {"source": "/prensa/informes/:date/v:revision/datos.json", "destination": "/api/daily-report?date=:date&revision=:revision&format=json"},
+    {"source": "/prensa/informes/:date/v:revision/fuentes.csv", "destination": "/api/daily-report?date=:date&revision=:revision&format=csv"},
+    {"source": "/prensa/informes/:date/v:revision/grafico.svg", "destination": "/api/daily-report?date=:date&revision=:revision&format=svg"},
+    {"source": "/prensa/informes/:date/v:revision/cita.txt", "destination": "/api/daily-report?date=:date&revision=:revision&format=txt"},
+    {"source": "/prensa/informes/:date/v:revision", "destination": "/api/daily-report?date=:date&revision=:revision&format=html"},
     {
       "source": "/sitemap.xml",
       "destination": "/api/sitemap"

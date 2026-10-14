@@ -9,8 +9,10 @@ export async function fetchBlogArticles(language = 'es') {
   try {
     const { data, error } = await supabase
       .from('blog_articles')
-      .select('*')
+      .select('id,slug,language,title,excerpt,author,category,featured,read_time,published_at,created_at')
       .eq('language', language)
+      .neq('category', 'daily-evidence')
+      .not('slug', 'like', 'analisis-diario-%')
       .order('published_at', { ascending: false });
 
     if (error) {
@@ -39,6 +41,7 @@ export async function fetchBlogArticleBySlug(slug, language = 'es') {
       .select('*')
       .eq('slug', slug)
       .eq('language', language)
+      .neq('category', 'daily-evidence')
       .single();
 
     if (error) {
@@ -65,6 +68,8 @@ export async function fetchFeaturedBlogArticles(language = 'es', limit = 5) {
       .from('blog_articles')
       .select('*')
       .eq('language', language)
+      .neq('category', 'daily-evidence')
+      .not('slug', 'like', 'analisis-diario-%')
       .eq('featured', true)
       .order('published_at', { ascending: false })
       .limit(limit);

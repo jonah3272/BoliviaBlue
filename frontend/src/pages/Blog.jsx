@@ -12,6 +12,8 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { fetchBlogArticles, fetchBlogArticleBySlug } from '../utils/blogApi';
 import { selectRelatedArticles } from '../utils/relatedArticles';
 import { articlesEs, articlesEn } from '../data/blogArticles'; // Fallback
+import DailyEvidenceArchive from '../components/DailyEvidenceArchive';
+import { legacyDailyNotice } from '../data/legacyDailyNotice';
 import { useAdsenseReadyWhen } from '../hooks/useAdsenseReady';
 
 // Do not newly promote these legacy guides while their safety and financial-claim
@@ -34,6 +36,7 @@ function Blog() {
   const [articles, setArticles] = useState([]);
   const [relatedCollection, setRelatedCollection] = useState({ language: null, items: [] });
   const isArticleView = Boolean(slug);
+  const legacyNotice = legacyDailyNotice(slug, language);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   
@@ -258,6 +261,7 @@ function Blog() {
             </div>
           ) : selectedArticleData ? (
           <>
+          {legacyNotice && <aside role="note" className="rounded-xl border border-amber-300 bg-amber-50 text-amber-950 p-5 mb-6"><h2 className="font-bold text-lg">{legacyNotice.title}</h2><p className="text-sm mt-2">{legacyNotice.body}</p><a className="underline font-semibold mt-3 inline-block" href={legacyNotice.path}>{legacyNotice.label}</a></aside>}
           <article className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 md:p-8">
             <header className="mb-6">
               <div className="flex flex-wrap items-center gap-3 mb-3">
@@ -414,6 +418,7 @@ function Blog() {
       <Navigation />
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <DailyEvidenceArchive language={language} />
         {/* Rate Cards */}
         <section className="mb-8">
           <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} />

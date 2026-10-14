@@ -14,6 +14,7 @@ import { SITE_URL } from '../config/brand';
 import { buildPressCitations } from '../utils/pressCitations';
 import CiteShareBar from '../components/CiteShareBar';
 import NewsroomSnapshot from '../components/NewsroomSnapshot';
+import DailyEvidenceArchive from '../components/DailyEvidenceArchive';
 import { getSourceCompositionExample } from '../data/sourceCompositionExample';
 
 const HIST_CSV = `${SITE_URL}/api/historical-data.csv?range=30d`;
@@ -143,6 +144,8 @@ function PressKit() {
               : 'Find a timestamped P2P USDT/BOB observation, its sources when available, and citation limits. Free resources for journalists and creators.'}
           </p>
         </header>
+
+        <DailyEvidenceArchive language={language} />
 
         <NewsroomSnapshot rate={rateData} language={language} loading={isLoading} error={error} />
 

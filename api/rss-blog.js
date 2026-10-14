@@ -27,6 +27,8 @@ module.exports = async function handler(req, res) {
       .from('blog_articles')
       .select('slug, title, excerpt, published_at, language')
       .eq('language', 'es')
+      .neq('category', 'daily-evidence')
+      .not('slug', 'like', 'analisis-diario-%')
       .order('published_at', { ascending: false })
       .limit(30);
 

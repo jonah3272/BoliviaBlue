@@ -24,7 +24,7 @@ Reports use existing `blog_articles` storage with category `daily-evidence` and 
 
 The application inserts each revision once, reads it back, and never updates/upserts it. A correction must create a new revision with a reason and previous revision hash. Old revision routes remain available. Seed editions also have repository-backed copies.
 
-IMPORTANT: The existing table has publicly writable policies. The owner explicitly accepted this existing risk and requested no permission changes. Application version preservation is not database immutability, tamper resistance or authenticity. SHA-256 detects inconsistent payloads; a coordinated content/hash replacement is not prevented. No policies, grants, tables or credentials are changed by this feature.
+IMPORTANT: Version preservation is enforced by this publisher and remains dependent on the existing storage permissions. It is not database immutability, tamper resistance or authenticity. SHA-256 detects inconsistent payloads; it does not prove original-publication authenticity if both content and hash are replaced. No policies, grants, tables or credentials are changed by this feature.
 
 Storage is bounded to 500 KB compressed-record text and 8 MB expanded JSON per edition. A real 72-observation day plus comparison evidence is ~97 KB JSON and ~10.6 KB stored text, approximately 3.9 MB per year before row/index overhead. Reports are retained. The actual database was ~47 MiB at review; future storage and egress limits still apply. No paid service or model call is introduced.
 

@@ -17,7 +17,7 @@ export default function PageMeta({
   structuredData,
   /** When true (default), inject sitewide Organization + WebSite brand graph */
   includeBrandSchema = true,
-  /** Separate locale URLs (not ?lang=) — used by the traveler guide. */
+  /** Explicit translated URLs, including any canonical language query. */
   localePaths = null,
   contentLanguage,
   availableLanguages = ['es', 'en'],
@@ -44,11 +44,7 @@ export default function PageMeta({
     : canonicalPath === '/'
       ? `${baseUrl}/?lang=en`
       : `${baseUrl}${canonicalPath}?lang=en`;
-  const fullCanonical = localePaths
-    ? `${baseUrl}${canonicalPath}`
-    : language === 'en'
-      ? enUrl
-      : esUrl;
+  const fullCanonical = language === 'en' ? enUrl : esUrl;
   const fullOgImage = ogImage.startsWith('http') ? ogImage : `${baseUrl}${ogImage}`;
 
   const alternateEs = esUrl;

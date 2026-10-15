@@ -938,6 +938,8 @@ async function main() {
     ROUTES[route].shell = ROUTES[route].shell.replace('<nav ', `${cashGuidance}<nav `);
   }
 
+  const { renderArchiveHtml } = await import('../src/data/dailyEvidenceArchive.js');
+
   // 2) Other routes – write dist/<path>/index.html with route-specific meta, shell, and JSON-LD
   const otherPaths = [
     '/dolar-blue-hoy',
@@ -969,7 +971,7 @@ async function main() {
     if (!r) continue;
     let routeHtml = replaceMeta(originalHtml, routePath);
     const shell = routePath === '/prensa'
-      ? r.shell.replace('</section>', `</section>${renderSourceCompositionPressLink('es')}`)
+      ? r.shell.replace('</section>', `</section>${renderArchiveHtml()}${renderSourceCompositionPressLink('es')}`)
       : r.shell;
     routeHtml = injectRootShell(routeHtml, shell);
     routeHtml = injectStaticJsonLd(routeHtml, routePath);

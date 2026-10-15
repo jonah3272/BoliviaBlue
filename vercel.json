@@ -150,6 +150,12 @@
   "outputDirectory": "frontend/dist",
   "installCommand": "npm install && cd frontend && npm install",
   "rewrites": [
+    {"source": "/api/daily-report", "destination": "/api/historical-data?feature=daily-evidence"},
+    {"source": "/prensa/informes/:date/v:revision/datos.json", "destination": "/api/historical-data?feature=daily-evidence&date=:date&revision=:revision&format=json"},
+    {"source": "/prensa/informes/:date/v:revision/fuentes.csv", "destination": "/api/historical-data?feature=daily-evidence&date=:date&revision=:revision&format=csv"},
+    {"source": "/prensa/informes/:date/v:revision/grafico.svg", "destination": "/api/historical-data?feature=daily-evidence&date=:date&revision=:revision&format=svg"},
+    {"source": "/prensa/informes/:date/v:revision/cita.txt", "destination": "/api/historical-data?feature=daily-evidence&date=:date&revision=:revision&format=txt"},
+    {"source": "/prensa/informes/:date/v:revision", "destination": "/api/historical-data?feature=daily-evidence&date=:date&revision=:revision&format=html"},
     {
       "source": "/sitemap.xml",
       "destination": "/api/sitemap"

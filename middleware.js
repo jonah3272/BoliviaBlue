@@ -5,6 +5,7 @@ import { articleRequest, loadArticle, renderArticleHtml } from './seo/articleSeo
 import { buyGuidePageForSearch, renderBuyGuideHtml } from './seo/buyGuideSeo.js';
 import { platformComparisonPageForSearch, renderPlatformComparisonHtml } from './seo/platformComparisonSeo.js';
 import { calculatorPageForSearch, renderCalculatorHtml } from './seo/calculatorSeo.js';
+import { renderArchiveHtml, DAILY_EVIDENCE_SEEDS } from './frontend/src/data/dailyEvidenceArchive.js';
 import { realPageForSearch, renderRealConversionHtml } from './seo/realConversionSeo.js';
 
 /**
@@ -600,6 +601,24 @@ export default async function middleware(request) {
 
   const url = new URL(request.url);
   const path = normalizePath(url.pathname);
+  // Press archive is server-visible for every visitor, including without JavaScript.
+  if (path === '/prensa') {
+    try {
+      const shell = await fetch(new URL('/prensa/index.html', url.origin), { headers: { [SKIP_HEADER]: '1', Accept: 'text/html' }, signal: withTimeout(HTML_TIMEOUT_MS) });
+      if (!shell.ok) throw new Error('Press shell unavailable');
+      let reports = DAILY_EVIDENCE_SEEDS, unavailable = true, nextBefore = null;
+      try {
+        const response = await fetch(new URL('/api/daily-report?view=archive' + (url.searchParams.has('before') ? '&before=' + encodeURIComponent(url.searchParams.get('before')) : ''), url.origin), { signal: withTimeout(RATE_TIMEOUT_MS) });
+        if (response.ok) { const archive = await response.json(); if (Array.isArray(archive.reports)) { reports = archive.reports; unavailable = Boolean(archive.unavailable); nextBefore = archive.next_before; } }
+      } catch { /* Keep the verified launch editions and label archive freshness. */ }
+      let html = await shell.text();
+      if (url.searchParams.get('lang') === 'en') html = applyEnglishAnnotations(html, '/prensa', null);
+      html = html.replace(/<section\b[^>]*data-daily-evidence-archive[^>]*>[\s\S]*?<\/section>/g, '');
+      html = html.replace('</main>', renderArchiveHtml(reports, url.searchParams.get('lang') === 'en' ? 'en' : 'es', { unavailable, nextBefore, olderPage: url.searchParams.has('before') }) + '</main>');
+      const headers = new Headers(shell.headers); headers.set('content-type', 'text/html; charset=utf-8'); headers.set('cache-control', unavailable ? 'no-store' : 'public, s-maxage=300, stale-while-revalidate=600'); headers.delete('content-length');
+      return new Response(request.method === 'HEAD' ? null : html, { status: 200, headers });
+    } catch { return; }
+  }
   // BRL uses the same truthful dated reference and explanatory content for every visitor.
   if (path === '/real-a-boliviano') {
     try {

@@ -1,6 +1,8 @@
 import { renderLegacyDailyNotice } from '../frontend/src/data/legacyDailyNotice.js';
 import { articlesEs, articlesEn } from '../frontend/src/data/blogArticles.js';
 import { newsArticlePath, newsIdFromSlugParam } from '../frontend/src/utils/newsSlug.js';
+import { languageForLocation } from '../frontend/src/utils/pageLocale.js';
+import { blogLocalePaths } from '../frontend/src/utils/blogLocale.js';
 
 const BASE = 'https://www.boliviablue.com';
 const esc = (value) => String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
@@ -9,7 +11,11 @@ const plain = (value) => String(value || '').replace(/<[^>]*>/g, '').replace(/\s
 export function articleRequest(path, search = '') {
   const match = path.match(/^\/(blog|noticias)\/([^/]+)$/);
   if (!match || match[2] === 'rss.xml') return null;
-  return { kind: match[1], slug: decodeURIComponent(match[2]), language: new URLSearchParams(search).get('lang') === 'en' ? 'en' : 'es' };
+  const slug = decodeURIComponent(match[2]);
+  const language = match[1] === 'blog'
+    ? languageForLocation({ pathname: `/blog/${slug}`, search })
+    : new URLSearchParams(search).get('lang') === 'en' ? 'en' : 'es';
+  return { kind: match[1], slug, language };
 }
 
 /** Read only the published content fields already exposed by the public SPA. */
@@ -71,6 +77,12 @@ export function renderArticleHtml(html, article, request) {
     ...[['og:type', found ? 'article' : 'website'], ['og:url', canonical], ['og:title', displayTitle], ['og:description', description], ['og:locale', es ? 'es_BO' : 'en_US'], ['og:site_name', 'Bolivia Blue'], ['og:image', BASE + '/header-og-image.jpg']].map(([name, value]) => `<meta property="${name}" content="${esc(value)}" data-rh="true" />`),
   ];
   if (found) {
+    const localePaths = request.kind === 'blog' && blogLocalePaths(request.slug);
+    if (localePaths) {
+      for (const [language, path] of Object.entries({ ...localePaths, 'x-default': localePaths.es })) {
+        tags.push(`<link rel="alternate" hreflang="${language}" href="${esc(BASE + path)}" data-rh="true" />`);
+      }
+    }
     const schema = { '@context': 'https://schema.org', '@type': request.kind === 'blog' ? 'BlogPosting' : 'NewsArticle', headline: title, description, url: canonical, mainEntityOfPage: canonical, inLanguage: es ? 'es-BO' : 'en-US', datePublished: article.published, author: { '@type': 'Organization', name: article.author }, publisher: { '@type': 'Organization', name: 'Bolivia Blue', url: BASE } };
     tags.push(`<script type="application/ld+json" data-rh="true">${JSON.stringify(schema).replace(/</g, '\\u003c')}</script>`);
   }

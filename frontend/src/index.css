@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Published USDT callouts have a light inline background. Keep their existing
+   content and light theme intact while matching the inherited dark-theme text. */
+.dark .blog-content[data-article-slug="que-es-usdt-tether-guia-completa"] div[style*="background: #ECFDF5"],
+.dark .blog-content[data-article-slug="what-is-usdt-tether-complete-guide"] div[style*="background: #ECFDF5"] {
+  background: #052e16 !important;
+}
+
 /* Font optimization - ensure font-display: swap */
 @font-face {
   font-family: 'Inter';

@@ -48,7 +48,7 @@ describe('data inquiry contract', () => {
     assert.doesNotMatch(contact, /(?:12|24) (?:horas|hours)/);
   });
   it('removes unavailable self-service backend examples but retains the public API and history workflow', () => {
-    const api = read('frontend/src/pages/ApiDocs.jsx');
+    const api = read('frontend/src/pages/ApiDocs.jsx') + read('frontend/src/data/apiDocumentation.js');
     assert.doesNotMatch(api, /YOUR_TOKEN|email form|formulario de email|50000|50,000|50\.000/);
     assert.match(api, /require[s]? manual review/);
     assert.match(api, /to=\{inquiry.href\}/);

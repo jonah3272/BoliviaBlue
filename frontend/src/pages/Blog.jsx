@@ -14,6 +14,7 @@ import { selectRelatedArticles } from '../utils/relatedArticles';
 import { articlesEs, articlesEn } from '../data/blogArticles'; // Fallback
 import DailyEvidenceArchive from '../components/DailyEvidenceArchive';
 import { legacyDailyNotice } from '../data/legacyDailyNotice';
+import { blogLocalePaths } from '../utils/blogLocale';
 import { useAdsenseReadyWhen } from '../hooks/useAdsenseReady';
 
 // Do not newly promote these legacy guides while their safety and financial-claim
@@ -198,6 +199,7 @@ function Blog() {
 
   if (selectedArticleData) {
     // Article detail view
+    const localePaths = blogLocalePaths(selectedArticleData.slug);
     const relatedArticles = selectRelatedArticles(
       relatedCollection.language === language ? relatedCollection.items : [], selectedArticleData, 2, RELATED_ARTICLE_REVIEW_HOLD
     );
@@ -233,7 +235,8 @@ function Blog() {
             ? `${(selectedArticleData.category || '').toLowerCase()}, dólar blue bolivia, tipo de cambio bolivia, binance p2p, usdt bolivia, finanzas personales bolivia`
             : `${(selectedArticleData.category || '').toLowerCase()}, blue dollar bolivia, exchange rate bolivia, binance p2p, usdt bolivia, personal finance bolivia`}
           canonical={`/blog/${selectedArticleData.slug}`}
-          availableLanguages={[language]}
+          localePaths={localePaths}
+          availableLanguages={localePaths ? ['es', 'en'] : [language]}
           ogType="article"
           structuredData={articleSchema}
         />
@@ -305,7 +308,8 @@ function Blog() {
               </div>
             </header>
 
-            <div 
+            <div
+              data-article-slug={selectedArticleData.slug}
               className="blog-content max-w-full overflow-x-hidden
                 [&_h1]:text-3xl [&_h1]:font-bold [&_h1]:text-gray-900 [&_h1]:dark:text-white [&_h1]:mt-8 [&_h1]:mb-4
                 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-gray-900 [&_h2]:dark:text-white [&_h2]:mt-6 [&_h2]:mb-3

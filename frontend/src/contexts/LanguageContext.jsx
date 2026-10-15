@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { trackLanguageSwitched } from '../utils/analyticsEvents';
 import { useLocation, useNavigate, useNavigationType } from 'react-router-dom';
-import { languageForLocation, localizedLocation, normalizeLocalePath } from '../utils/pageLocale';
+import { languageForLocation, languageForPath, localizedLocation } from '../utils/pageLocale';
 
 const LanguageContext = createContext();
 
@@ -660,9 +660,9 @@ export function LanguageProvider({ children }) {
     const isNewNavigation = previousLocation.current !== location.key;
     previousLocation.current = location.key;
     let nextLanguage = languageForLocation(location);
-    const isGuide = ['/guia-dinero-bolivia', '/bolivia-money-guide'].includes(normalizeLocalePath(location.pathname));
+    const hasPathLanguage = languageForPath(location.pathname) !== null;
     // Keep an English session on internal links; direct loads and Back/Forward use the URL.
-    if (isNewNavigation && navigationType === 'PUSH' && !isGuide &&
+    if (isNewNavigation && navigationType === 'PUSH' && !hasPathLanguage &&
         !new URLSearchParams(location.search).has('lang') && language === 'en') {
       nextLanguage = 'en';
     }

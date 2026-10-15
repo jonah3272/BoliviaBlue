@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-const { createClient } = require('@supabase/supabase-js');
 const fs = require('node:fs');
 const { createReport, completedDate, priorDate, dayBounds, verifyReport } = require('../shared/dailyEvidence.cjs');
 const { readStored, readReport, seedReport, insertReport, fetchDayRows, encodeReport } = require('../api/_lib/dailyEvidenceStore.js');
@@ -19,6 +18,9 @@ async function publishDate(client, date, { now = new Date().toISOString(), dryRu
   return { ...saved, status: saved.inserted ? 'published' : 'already-published' };
 }
 async function main() {
+  // Backend callers supply their own client and may install dependencies only
+  // under backend/. Resolve the root CLI dependency only when executing here.
+  const { createClient } = require('@supabase/supabase-js');
   const now = new Date().toISOString(), explicitDate = process.env.REPORT_DATE || '', dryRun = process.env.DRY_RUN !== 'false';
   if (process.env.GITHUB_ACTIONS === 'true' && !dryRun && process.env.GITHUB_REF !== 'refs/heads/main') throw new Error('Publishing is restricted to main');
   const url = process.env.SUPABASE_URL, key = process.env.SUPABASE_SERVICE_KEY;

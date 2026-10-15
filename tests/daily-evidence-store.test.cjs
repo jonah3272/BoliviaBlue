@@ -12,3 +12,18 @@ function response(){return {headers:{},statusCode:null,body:null,setHeader(k,v){
 test('report endpoint serves HTML, JSON, CSV, SVG, citations and HEAD from frozen seed',async()=>{const handler=createHandler(()=>database());for(const format of ['html','json','csv','svg','txt']){const res=response();await handler({method:'GET',query:{date:seed.date,revision:'1',format},headers:{}},res);assert.equal(res.statusCode,200);assert.equal(res.headers['X-Evidence-SHA256'],seed.sha256);assert.ok(res.body.includes(seed.sha256));}const head=response();await handler({method:'HEAD',query:{date:seed.date,format:'html'}},head);assert.equal(head.statusCode,200);assert.equal(head.body,null);});
 test('endpoint rejects invalid parameters and corrupt evidence without numbers',async()=>{let res=response();await createHandler(()=>database())({method:'GET',query:{date:'2026-99-99'}},res);assert.equal(res.statusCode,400);res=response();await createHandler(()=>database([{...record(),slug:'evidence-p2p-2026-10-15-v1',content:'bad'}]))({method:'GET',query:{date:'2026-10-15',format:'html'}},res);assert.equal(res.statusCode,503);assert.doesNotMatch(res.body,/11\.86175/);assert.equal(res.headers['X-Robots-Tag'],'noindex, follow');});
 module.exports={database,record};
+test('backend callers can import the publisher without a root database-client installation',()=>{
+  const {spawnSync}=require('node:child_process');
+  const publisherPath=require.resolve('../scripts/publish-daily-evidence.cjs');
+  const child=spawnSync(process.execPath,['-e',`
+    const Module=require('node:module');
+    const original=Module._load;
+    Module._load=function(name,...args){
+      if(name==='@supabase/supabase-js')throw new Error('Root database client is deliberately unavailable');
+      return original.call(this,name,...args);
+    };
+    const publisher=require(${JSON.stringify(publisherPath)});
+    if(typeof publisher.publishDate!=='function')throw new Error('Publisher export missing');
+  `],{encoding:'utf8'});
+  assert.equal(child.status,0,child.stderr);
+});

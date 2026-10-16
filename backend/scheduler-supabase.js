@@ -37,34 +37,12 @@ export async function refreshBlueRate() {
     // Fetch both rates in parallel
     const [blueRateData, officialRateData] = await Promise.all([
       getAllCurrentBlueRates(),
-      getOfficialRate().catch(async (err) => {
-        console.warn('Official rate fetch failed, using last stored BCB (not a static fallback):', err.message);
-        const { data: lastOff } = await supabase
-          .from('rates')
-          .select('official_buy, official_sell, official_mid')
-          .not('official_buy', 'is', null)
-          .not('official_sell', 'is', null)
-          .order('t', { ascending: false })
-          .limit(1)
-          .maybeSingle();
-        if (lastOff?.official_buy != null && lastOff?.official_sell != null) {
-          return {
-            source: 'rates-table',
-            official_buy: lastOff.official_buy,
-            official_sell: lastOff.official_sell,
-          };
-        }
-        return {
-          source: 'unavailable',
-          official_buy: null,
-          official_sell: null,
-        };
-      })
+      getOfficialRate(supabase)
     ]);
     
     // Calculate mid prices
     const blueMid = median([blueRateData.buy_bob_per_usd, blueRateData.sell_bob_per_usd]);
-    const officialMid = median([officialRateData.official_buy, officialRateData.official_sell]);
+    const officialMid = officialRateData.official_mid;
     
     // Store in Supabase with all currencies
     const storedRate = await insertRate(
@@ -86,6 +64,7 @@ export async function refreshBlueRate() {
       blueRateData.mid_bob_per_cop || null,
       {
         source_observation: blueRateData.source_observation,
+        official_observation: officialRateData.official_observation,
         buy_bob_per_pen: blueRateData.buy_bob_per_pen || null,
         sell_bob_per_pen: blueRateData.sell_bob_per_pen || null,
         mid_bob_per_pen: blueRateData.mid_bob_per_pen || null,
@@ -105,7 +84,8 @@ export async function refreshBlueRate() {
       source_observation: storedRate?.source_observation ?? null,
       official_buy: officialRateData.official_buy,
       official_sell: officialRateData.official_sell,
-      official_source: officialRateData.source
+      official_mid: officialRateData.official_mid,
+      official_observation: officialRateData.official_observation
     };
     cache.lastUpdate = new Date();
     cache.isHealthy = true;

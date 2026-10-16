@@ -186,6 +186,7 @@ async function refreshBlueFromBinance(supabase = createSupabaseClient()) {
     official_buy: official.official_buy,
     official_sell: official.official_sell,
     official_mid: official.official_mid,
+    official_observation: official.official_observation,
     buy_bob_per_brl: buyBrl,
     sell_bob_per_brl: sellBrl,
     mid_bob_per_brl: buyBrl != null && sellBrl != null

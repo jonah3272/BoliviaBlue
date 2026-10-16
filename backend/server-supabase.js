@@ -1,3 +1,5 @@
+import officialProvenance from '../shared/officialProvenance.cjs';
+const { officialPayload, officialMetadata } = officialProvenance;
 import rateProvenance from '../shared/rateProvenance.cjs';
 const { sourcePayload } = rateProvenance;
 import express from 'express';
@@ -65,6 +67,7 @@ app.get('/api/blue-rate', async (req, res) => {
       return res.json({
         ...cache.latestRate,
         ...sourcePayload(cache.latestRate),
+        ...officialPayload(cache.latestRate),
         is_stale: isStale
       });
     }
@@ -85,8 +88,7 @@ app.get('/api/blue-rate', async (req, res) => {
       ...sourcePayload(dbRate),
       buy_bob_per_usd: dbRate.buy,
       sell_bob_per_usd: dbRate.sell,
-      official_buy: dbRate.official_buy,
-      official_sell: dbRate.official_sell,
+      ...officialPayload(dbRate),
       updated_at_iso: dbRate.t,
       is_stale: isStale,
       sample_buy: [],
@@ -146,7 +148,8 @@ app.get('/api/blue-history', async (req, res) => {
       mid: row.mid,
       official_buy: row.official_buy,
       official_sell: row.official_sell,
-      official_mid: row.official_mid
+      official_mid: row.official_mid,
+      ...officialMetadata(row)
     }));
     
     res.json({

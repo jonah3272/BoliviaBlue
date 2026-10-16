@@ -8,6 +8,7 @@ const { parseBcbHomepage, asOfficialRate } = require('./officialRate');
 const CURRENT_CARD = `
 <article class="bcb-kpi2-card is-tc-oficial has-range-label">
   <p class="bcb-kpi2-name">Tipo de cambio oficial</p>
+  <time datetime="2026-10-16">16 de octubre</time>
   <div class="bcb-tco-value">
     <div class="bcb-tco-amount">
       <!--<span class="bcb-tco-bs">Bs</span>-->
@@ -35,18 +36,15 @@ describe('parseBcbHomepage', () => {
     const parsed = parseBcbHomepage(CURRENT_CARD);
     assert.equal(parsed.buy, 11.53);
     assert.equal(parsed.sell, 11.53);
+    assert.equal(parsed.source_date, '2026-10-16');
   });
 
-  it('still reads the old Bs → mid', () => {
-    const parsed = parseBcbHomepage(LEGACY_ARROW);
-    assert.equal(parsed.buy, 12.15);
-    assert.equal(parsed.sell, 12.15);
+  it('rejects the undated old Bs → layout rather than invent provenance', () => {
+    assert.equal(parseBcbHomepage(LEGACY_ARROW), null);
   });
 
-  it('still reads Compra/Venta under Valor referencial', () => {
-    const parsed = parseBcbHomepage(LEGACY_COMPRA_VENTA);
-    assert.equal(parsed.buy, 6.96);
-    assert.equal(parsed.sell, 6.86);
+  it('rejects undated unscoped legacy values', () => {
+    assert.equal(parseBcbHomepage(LEGACY_COMPRA_VENTA), null);
   });
 
   it('does not invent a rate from empty HTML', () => {

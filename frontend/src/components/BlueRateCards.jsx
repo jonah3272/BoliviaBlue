@@ -5,6 +5,8 @@ import { formatRate, formatCopThousand, formatDateTime, isStale } from '../utils
 import { useLanguage } from '../contexts/LanguageContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 import CrossSourceBadge from './CrossSourceBadge';
+import { officialRateModel } from '../utils/officialRate';
+import OfficialRateNote from './OfficialRateNote';
 import { trackRateCardView, trackOfficialRateToggle, trackRateUpdate } from '../utils/analytics';
 import {
   effectiveBobPerUsd
@@ -299,6 +301,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
     [data?.updated_at_iso, data?.is_stale]
   );
 
+  const official = officialRateModel(data, language);
   const buyChange = data?.buy_change_24h;
   const sellChange = data?.sell_change_24h;
 
@@ -335,7 +338,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
       "unitCode": "USD"
     },
     "validFrom": data.updated_at_iso,
-    "rateType": rateMode === 'official' ? "Official" : rateMode === 'card' ? "US Card Network" : "Blue Market (Parallel)",
+    "rateType": "Blue Market (Parallel)",
     "exchangeRateSpread": (data.sell_bob_per_usd - data.buy_bob_per_usd).toFixed(4)
   } : null, [data, rateMode]);
 
@@ -443,28 +446,29 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
 
       {rateMode === 'official' && (
         <div>
+          <p className="text-xs text-center text-gray-600 dark:text-gray-400 mb-3"><OfficialRateNote rate={official} language={language} /></p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
             <RateCard
               type="buy"
-              rate={data?.official_buy}
-              timestamp={data?.updated_at_iso}
-              isStaleData={false}
+              rate={official.official_buy}
+              timestamp={null}
+              isStaleData={official.stale}
               isLoading={isLoading}
               error={error}
               isOfficial={true}
-              currency={currency}
+              currency="USD"
               language={language}
               showTimestampInCards={showTimestampInCards}
             />
             <RateCard
               type="sell"
-              rate={data?.official_sell}
-              timestamp={data?.updated_at_iso}
-              isStaleData={false}
+              rate={official.official_sell}
+              timestamp={null}
+              isStaleData={official.stale}
               isLoading={isLoading}
               error={error}
               isOfficial={true}
-              currency={currency}
+              currency="USD"
               language={language}
               showTimestampInCards={showTimestampInCards}
             />

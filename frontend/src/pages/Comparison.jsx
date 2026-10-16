@@ -8,6 +8,8 @@ import BlueRateCards from '../components/BlueRateCards';
 import BinanceBanner from '../components/BinanceBanner';
 import { Link } from 'react-router-dom';
 import { fetchBlueRate, fetchBlueHistory } from '../utils/api';
+import { officialRateModel } from '../utils/officialRate';
+import OfficialRateNote from '../components/OfficialRateNote';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import { getWebPage, getBreadcrumbList, getFAQPage } from '../utils/seoSchema';
@@ -61,7 +63,7 @@ function Comparison() {
         let sumBob = 0, sumPct = 0, n = 0;
         points.forEach(p => {
           const blueMid = p.mid != null ? p.mid : (p.buy + p.sell) / 2;
-          const offMid = p.official_mid != null ? p.official_mid : (p.official_buy + p.official_sell) / 2;
+          const offMid = officialRateModel(p).official_mid;
           if (Number.isFinite(blueMid) && Number.isFinite(offMid) && offMid > 0) {
             sumBob += blueMid - offMid;
             sumPct += ((blueMid - offMid) / offMid) * 100;
@@ -79,9 +81,10 @@ function Comparison() {
     { name: language === 'es' ? 'Comparación' : 'Comparison', url: '/comparacion' }
   ];
 
-  const hasOfficial = currentRate && currentRate.official_buy != null && currentRate.official_sell != null;
+  const official = officialRateModel(currentRate, language);
+  const hasOfficial = official.available;
   const blueMid = currentRate && (currentRate.mid != null ? currentRate.mid : (currentRate.buy + currentRate.sell) / 2);
-  const officialMid = hasOfficial ? (currentRate.official_mid != null ? currentRate.official_mid : (currentRate.official_buy + currentRate.official_sell) / 2) : null;
+  const officialMid = official.official_mid;
   const spreadBob = (blueMid != null && officialMid != null) ? blueMid - officialMid : null;
   const spreadPct = (spreadBob != null && officialMid > 0) ? (spreadBob / officialMid) * 100 : null;
 
@@ -245,12 +248,12 @@ function Comparison() {
             </div>
             <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-4">
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                {language === 'es' ? 'BCB (la entidad compra / vende USD)' : 'BCB (the institution buys / sells USD)'}
+                {hasOfficial ? (language === 'es' ? 'BCB (la entidad compra / vende USD)' : 'BCB (the institution buys / sells USD)') : official.label}
               </p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {hasOfficial ? `${Number(currentRate.official_buy).toFixed(2)} / ${Number(currentRate.official_sell).toFixed(2)} BOB/USD` : '—'}
+                {hasOfficial ? `${Number(official.official_buy).toFixed(2)} / ${Number(official.official_sell).toFixed(2)} BOB/USD` : '—'}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{language === 'es' ? 'Fuente: BCB' : 'Source: BCB'}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1"><OfficialRateNote rate={official} language={language} /></p>
             </div>
             <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-4">
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">{language === 'es' ? 'Diferencia (mid)' : 'Difference (mid)'}</p>

@@ -88,7 +88,7 @@ function BlueChart({ showOfficial = false }) {
       setIsLoading(true);
       try {
         // Fetch the selected range only (1W default is fast; 1D loads full day's points when clicked)
-        const result = await fetchBlueHistory(range, currency);
+        const result = await fetchBlueHistory(range, showOfficial ? 'USD' : currency);
 
         // Store raw data for candlestick / area transforms
         setRawData(result.points);
@@ -273,9 +273,9 @@ function BlueChart({ showOfficial = false }) {
     // Convert raw API data to rate data format for transformer
     const rateData = rawData.map((point) => ({
       t: point.t, // Already ISO string from API
-      buy: showOfficial ? (point.official_buy || point.buy || 0) : (point.buy || 0),
-      sell: showOfficial ? (point.official_sell || point.sell || 0) : (point.sell || 0),
-      mid: point.mid || ((point.buy || 0) + (point.sell || 0)) / 2, // Calculate mid if not available
+      buy: showOfficial ? point.official_buy : (point.buy || 0),
+      sell: showOfficial ? point.official_sell : (point.sell || 0),
+      mid: showOfficial ? point.official_mid : point.mid || ((point.buy || 0) + (point.sell || 0)) / 2, // Calculate mid if not available
     })).filter(point => point.buy > 0 && point.sell > 0); // Filter out invalid data
     
     // Transform to OHLC
@@ -392,6 +392,7 @@ function BlueChart({ showOfficial = false }) {
           <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">
             {t('historicalPriceChart')}
           </h2>
+          {showOfficial && <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">{language === 'es' ? 'Solo observaciones BCB verificadas, en BOB/USD. Las fechas del eje son las del registro P2P; una observación BCB puede repetirse como último valor verificado.' : 'Verified BCB observations only, in BOB/USD. Axis dates are P2P record dates; a BCB observation may be repeated as the last verified value.'}</p>}
           {stats.latestBuy > 0 && (
             <div className="flex items-center gap-2 sm:gap-3 md:gap-4 text-xs sm:text-sm flex-wrap">
               <span className="font-mono font-semibold text-green-600 dark:text-green-400">

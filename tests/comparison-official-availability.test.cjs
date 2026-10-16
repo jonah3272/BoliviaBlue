@@ -4,6 +4,7 @@ const { readFileSync } = require('node:fs');
 const { createRequire } = require('node:module');
 const path = require('node:path');
 const vm = require('node:vm');
+const { officialPayload } = require('../shared/officialProvenance.cjs');
 
 const repo = path.resolve(__dirname, '..');
 const requireFrontend = createRequire(path.join(repo, 'frontend/package.json'));
@@ -16,7 +17,10 @@ const { render, screen, waitFor, cleanup } = requireFrontend('@testing-library/r
 const { MemoryRouter } = requireFrontend('react-router-dom');
 const { build } = requireFrontend('esbuild');
 
-const official = { official_buy: 6.86, official_sell: 6.96, official_mid: 6.91 };
+const observedAt = new Date().toISOString();
+const sourceDate = new Date(Date.now() - 4 * 3600000).toISOString().slice(0, 10);
+const legacy = { official_buy: 6.86, official_sell: 6.96, official_mid: 6.91 };
+const official = { ...legacy, official_observation: { version: 1, status: 'verified', source: 'bcb', source_url: 'https://www.bcb.gob.bo/', source_date: sourceDate, observed_at: observedAt, buy: 6.86, sell: 6.96, mid: 6.91 } };
 const missing = { official_buy: null, official_sell: null, official_mid: null };
 let Comparison, sourceObservationModel, language, reader, response;
 const queries = [];
@@ -48,7 +52,7 @@ function actualReader({ fields = missing, fallback = 'none', buy = 12.02, sell =
     return query;
   } };
   const context = {
-    supabase, sourceObservationModel, logger: { warn() {}, error() {} },
+    supabase, sourceObservationModel, officialPayload, logger: { warn() {}, error() {} },
     // The source's fresh-row path needs no network and no retry; the timeout
     // boundary is disabled so a successful local test leaves no 18s timer.
     setTimeout: () => 0,
@@ -105,21 +109,30 @@ for (const locale of ['es', 'en']) describe(`Comparison actual reader to UI (${l
     ['missing sell side', { fields: { ...official, official_sell: null } }],
     ['a stored midpoint without a valid pair', { fields: { ...missing, official_mid: 6.91 } }],
     ['omitted official fields', { fields: {} }],
-    ['a returned lookup error', { fallback: 'error' }],
-    ['a thrown lookup error', { fallback: 'throw' }],
+    ['legacy values without provenance', { fields: legacy }],
+    ['unavailable values despite an older numeric fallback', { fallback: 'valid' }],
+    ['unrelated P2P provenance', { fields: { ...legacy, source_observation: { version: 1, source: 'bcb' } } }],
   ]) it(`shows no gap for ${name}`, async () => {
     language = locale;
     const values = await mount(options);
     assert.equal(response.buy, 12.02);
     assert.equal(response.sell, 11.98);
     assert.ok(response.official_buy == null || response.official_sell == null);
-    assert.ok(queries.includes('official_buy, official_sell, official_mid'));
+    assert.ok(!queries.includes('official_buy, official_sell, official_mid'));
+    if (options.fields === legacy) assert.equal(response.official_status, 'unverified');
     assert.deepEqual(values, ['12.02 / 11.98 BOB/USDT', '—', '—', '—']);
   });
 
-  for (const fallback of ['none', 'valid']) it(`preserves healthy official comparison (${fallback === 'valid' ? 'recovered fallback' : 'current row'})`, async () => {
+  for (const status of ['verified', 'stale']) it(`preserves verified provenance and dates (${status})`, async () => {
     language = locale;
-    assert.deepEqual(await mount({ fields: fallback === 'valid' ? missing : official, fallback }), ['12.02 / 11.98 BOB/USDT', '6.86 / 6.96 BOB/USD', '+5.09 BOB', '+73.7%']);
+    const fields = { ...official, official_observation: { ...official.official_observation, status } };
+    assert.deepEqual(await mount({ fields }), ['12.02 / 11.98 BOB/USDT', '6.86 / 6.96 BOB/USD', '+5.09 BOB', '+73.7%']);
+    assert.equal(response.official_status, status);
+    assert.equal(response.official_observed_at, observedAt);
+    assert.equal(response.official_source_date, sourceDate);
+    assert.ok(document.querySelector(`time[datetime="${observedAt}"]`));
+    assert.ok(screen.getByText(sourceDate));
+    if (status === 'stale') assert.ok(screen.getByText(locale === 'es' ? 'Último BCB verificado' : 'Last verified BCB'));
   });
 
   it('keeps a legitimate zero difference visible', async () => {

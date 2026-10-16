@@ -10,7 +10,7 @@ import type { IChartApi, ISeriesApi, Time, UTCTimestamp } from 'lightweight-char
 
 export interface TimeValuePoint {
   time: string | number;
-  value: number;
+  value?: number;
 }
 
 export interface HistoricalAreaChartProps {
@@ -30,17 +30,17 @@ function toUnixSeconds(time: string | number): number {
 }
 
 /** Dedupe by UTC second — Lightweight Charts rejects duplicate times. */
-function toUniqueSeries(points: TimeValuePoint[] | undefined) {
-  const byTime = new Map<number, number>();
+export function toUniqueSeries(points: TimeValuePoint[] | undefined) {
+  const byTime = new Map<number, number | undefined>();
   for (const point of points || []) {
-    if (!Number.isFinite(point.value) || point.value <= 0) continue;
+    if (point.value !== undefined && (!Number.isFinite(point.value) || point.value <= 0)) continue;
     const t = toUnixSeconds(point.time);
     if (!Number.isFinite(t)) continue;
     byTime.set(t, point.value);
   }
   return [...byTime.entries()]
     .sort((a, b) => a[0] - b[0])
-    .map(([time, value]) => ({ time: time as UTCTimestamp, value }));
+    .map(([time, value]) => value === undefined ? { time: time as UTCTimestamp } : { time: time as UTCTimestamp, value });
 }
 
 function readIsDark() {
@@ -89,8 +89,8 @@ export default function HistoricalAreaChart({
     try {
       const buy = toUniqueSeries(buyDataRef.current);
       const sell = toUniqueSeries(sellDataRef.current);
-      if (buy.length) buySeriesRef.current.setData(buy);
-      if (sell.length) sellSeriesRef.current.setData(sell);
+      buySeriesRef.current.setData(buy);
+      sellSeriesRef.current.setData(sell);
       // Refit both axes so 1D vs 1W vs 1M show that period's own movement
       chartRef.current.priceScale('right').applyOptions({ autoScale: true });
       chartRef.current.timeScale().fitContent();

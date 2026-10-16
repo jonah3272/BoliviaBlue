@@ -18,7 +18,7 @@ vi.mock('../components/BlueRateCards', () => ({ default: () => null }));
 vi.mock('../components/BinanceBanner', () => ({ default: () => null }));
 
 const observedAt = '2026-10-13T12:00:00Z';
-const rate = { buy: 12.02, sell: 11.98, official_buy: 6.86, official_sell: 6.96, updated_at_iso: observedAt };
+const rate = { buy: 12.02, sell: 11.98, official_buy: 6.86, official_sell: 6.96, official_mid: 6.91, official_observation: { version: 1, status: 'verified', source: 'bcb', source_url: 'https://www.bcb.gob.bo/', source_date: '2026-10-13', observed_at: observedAt, buy: 6.86, sell: 6.96, mid: 6.91 }, updated_at_iso: observedAt };
 const observation = platforms => ({
   version: 1, observed_at: observedAt, method: 'median_of_platform_quotes',
   quote_asset: 'USDT', fiat: 'BOB', platforms,

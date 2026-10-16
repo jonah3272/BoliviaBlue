@@ -1,3 +1,4 @@
+const { officialPayload } = require('../shared/officialProvenance.cjs');
 const { sourcePayload } = require('../shared/rateProvenance.cjs');
 const {
   STALE_MS,
@@ -104,9 +105,7 @@ function toPayload(data, extras = {}) {
     ...sourcePayload(data),
     buy_bob_per_usd: data.buy,
     sell_bob_per_usd: data.sell,
-    official_buy: data.official_buy,
-    official_sell: data.official_sell,
-    official_mid: data.official_mid,
+    ...officialPayload(data),
     buy_bob_per_brl: data.buy_bob_per_brl,
     sell_bob_per_brl: data.sell_bob_per_brl,
     buy_bob_per_eur: data.buy_bob_per_eur,

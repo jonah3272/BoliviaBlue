@@ -168,6 +168,8 @@ export default function NewsArticle() {
                 sell={sell}
                 officialBuy={rate?.official_buy}
                 officialSell={rate?.official_sell}
+                officialMid={rate?.official_mid}
+                officialObservation={rate?.official_observation}
                 language={language}
                 updatedAt={rate?.updated_at_iso}
               />

@@ -1,3 +1,5 @@
+import officialProvenance from '../shared/officialProvenance.cjs';
+const { officialPayload, officialMetadata } = officialProvenance;
 import rateProvenance from '../shared/rateProvenance.cjs';
 const { sourcePayload } = rateProvenance;
 // IMMEDIATE STARTUP LOGGING - This should appear FIRST in Railway logs
@@ -263,6 +265,7 @@ app.get('/api/blue-rate', async (req, res) => {
       return res.json({
         ...cache.latestRate,
         ...sourcePayload(cache.latestRate),
+        ...officialPayload(cache.latestRate),
         is_stale: isStale
       });
     }
@@ -283,8 +286,7 @@ app.get('/api/blue-rate', async (req, res) => {
       ...sourcePayload(dbRate),
       buy_bob_per_usd: dbRate.buy,
       sell_bob_per_usd: dbRate.sell,
-      official_buy: dbRate.official_buy,
-      official_sell: dbRate.official_sell,
+      ...officialPayload(dbRate),
       updated_at_iso: dbRate.t,
       is_stale: isStale,
       sample_buy: [],
@@ -344,7 +346,8 @@ app.get('/api/blue-history', async (req, res) => {
       mid: row.mid,
       official_buy: row.official_buy,
       official_sell: row.official_sell,
-      official_mid: row.official_mid
+      official_mid: row.official_mid,
+      ...officialMetadata(row)
     }));
     
     res.json({
@@ -461,7 +464,8 @@ app.get('/api/historical-data.csv', async (req, res) => {
       'X-Data-Start': metadata.returned_start || '',
       'X-Data-End': metadata.returned_end || '',
       'X-Data-Provenance': metadata.source_provenance,
-      'Access-Control-Expose-Headers': 'X-Data-Truncated, X-Data-Rows, X-Data-Start, X-Data-End, X-Data-Provenance',
+      'X-Official-Provenance': 'legacy-values-unverified; per-row-status-in-json',
+      'Access-Control-Expose-Headers': 'X-Data-Truncated, X-Data-Rows, X-Data-Start, X-Data-End, X-Data-Provenance, X-Official-Provenance',
       'Cache-Control': `public, max-age=${EXPORT_CACHE_MAX_AGE}`,
       'Access-Control-Allow-Origin': '*'
     });
@@ -504,7 +508,8 @@ app.get('/api/historical-data.json', async (req, res) => {
       mid: row.mid,
       official_buy: row.official_buy,
       official_sell: row.official_sell,
-      official_mid: row.official_mid
+      official_mid: row.official_mid,
+      ...officialMetadata(row)
     }));
 
     const payload = {
@@ -515,7 +520,7 @@ app.get('/api/historical-data.json', async (req, res) => {
         range_requested: range,
         rows_returned: data.length,
         generated_at: new Date().toISOString(),
-        fields: ['timestamp', 'buy', 'sell', 'mid', 'official_buy', 'official_sell', 'official_mid']
+        fields: ['timestamp', 'buy', 'sell', 'mid', 'official_buy', 'official_sell', 'official_mid', 'official_observation', 'official_status', 'official_source', 'official_source_date', 'official_observed_at']
       },
       data
     };

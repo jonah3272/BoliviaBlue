@@ -47,10 +47,10 @@ describe('chart requests only the selected period', () => {
     assert.equal(result.state.error, null);
     assert.equal('unusedAge' in result.state, false);
   });
-  it('retains every explicit period, selected currency, locale and official series', async () => {
+  it('retains every explicit period, selected P2P currency, locale and USD-denominated official series', async () => {
     for (const range of ['1D', '1W', '1M', '1Y', 'ALL']) for (const currency of ['USD', 'EUR']) for (const language of ['es', 'en']) for (const showOfficial of [false, true]) {
       const { requests, state } = await load({ range, currency, language, showOfficial });
-      assert.deepEqual(requests, [[range, currency]]);
+      assert.deepEqual(requests, [[range, showOfficial ? 'USD' : currency]]);
       assert.equal(state.data.length, 2);
       assert.equal(state.stats.latestBuy, showOfficial ? 6.5 : 12);
       assert.equal(state.data[0].buy, showOfficial ? 6 : 11);

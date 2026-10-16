@@ -6,6 +6,7 @@ import { trackCalculatorUsage, trackCalculatorCurrencySwitch, trackCalculatorSwa
 import { trackCalculatorUsed } from '../utils/analyticsEvents';
 import { calculatorRate, isP2PReferenceCurrency } from '../utils/calculatorRates';
 import { FinancialOfferButton } from './FinancialOfferCard';
+import OfficialRateNote from './OfficialRateNote';
 
 function CurrencyCalculator({ presetRequest }) {
   const languageContext = useLanguage();
@@ -488,6 +489,7 @@ function CurrencyCalculator({ presetRequest }) {
                     </div>
                   </div>
                 </div>
+                {useOfficial && <p className="mt-2 text-center text-[11px] text-gray-500 dark:text-gray-400"><OfficialRateNote rate={rateData} language={language} />{selectedCurrency !== 'USD' && <span className="block">{es ? 'La conversión de esta moneda es una estimación derivada; el BCB verificado corresponde a USD/BOB.' : 'This currency conversion is a derived estimate; the verified BCB observation is USD/BOB.'}</span>}</p>}
                 {p2pReference && (
                   <p className="mt-2 text-center text-[11px] text-gray-500 dark:text-gray-400">
                     {es ? 'Referencia P2P USDT, antes de comisiones. BOB → USDT: comprás; USDT → BOB: vendés.' : 'USDT P2P reference, before fees. BOB → USDT: you buy; USDT → BOB: you sell.'}

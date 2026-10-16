@@ -1,3 +1,5 @@
+import officialProvenance from '../shared/officialProvenance.cjs';
+const { officialPayload } = officialProvenance;
 import rateProvenance from '../shared/rateProvenance.cjs';
 const { readSourceObservation } = rateProvenance;
 import { createClient } from '@supabase/supabase-js';
@@ -59,6 +61,7 @@ export async function insertRate(t, buy, sell, mid, official_buy, official_sell,
     throw new Error('Invalid source observation; refusing to discard supplied provenance');
   }
 
+  const official = officialPayload({ official_buy, official_sell, official_mid, official_observation: extras.official_observation });
   const { data, error } = await supabase
     .from('rates')
     .insert({
@@ -67,9 +70,10 @@ export async function insertRate(t, buy, sell, mid, official_buy, official_sell,
       buy,
       sell,
       mid,
-      official_buy,
-      official_sell,
-      official_mid,
+      official_buy: official.official_buy,
+      official_sell: official.official_sell,
+      official_mid: official.official_mid,
+      official_observation: official.official_observation,
       buy_bob_per_brl,
       sell_bob_per_brl,
       mid_bob_per_brl,
@@ -139,7 +143,7 @@ export async function getRatesInRange(startDate) {
   while (hasMore) {
     let query = supabase
       .from('rates')
-      .select('t, buy, sell, mid, official_buy, official_sell, official_mid')
+      .select('t, buy, sell, mid, official_buy, official_sell, official_mid, official_observation')
       .gte('t', startDate)
       .order('t', { ascending: true })
       .limit(batchSize);
@@ -192,7 +196,7 @@ export async function getAllRates() {
 
   const { data, error } = await supabase
     .from('rates')
-    .select('t, buy, sell, mid, official_buy, official_sell, official_mid')
+    .select('t, buy, sell, mid, official_buy, official_sell, official_mid, official_observation')
     .order('t', { ascending: true });
 
   if (error) {

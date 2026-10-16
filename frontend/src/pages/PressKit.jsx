@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Navigation from '../components/Navigation';
@@ -16,6 +16,7 @@ import CiteShareBar from '../components/CiteShareBar';
 import NewsroomSnapshot from '../components/NewsroomSnapshot';
 import DailyEvidenceArchive from '../components/DailyEvidenceArchive';
 import { getSourceCompositionExample } from '../data/sourceCompositionExample';
+import { archiveLocalePaths, normalizeArchiveBefore } from '../data/dailyEvidenceArchive';
 
 const HIST_CSV = `${SITE_URL}/api/historical-data.csv?range=30d`;
 
@@ -70,6 +71,9 @@ Best regards`;
 
 function PressKit() {
   useAdsenseReady();
+  const { search } = useLocation();
+  const before = normalizeArchiveBefore(new URLSearchParams(search).get('before'));
+  const localePaths = archiveLocalePaths(before);
   const languageContext = useLanguage();
   const language = languageContext?.language || 'es';
   const example = getSourceCompositionExample(language);
@@ -122,6 +126,7 @@ function PressKit() {
         }
         keywords="kit prensa dólar blue, citar cotización bolivia, badge bolivia blue, datos para medios bolivia"
         canonical="/prensa"
+        localePaths={localePaths}
         structuredData={[webPage, crumbs]}
       />
       <Header />
@@ -145,7 +150,7 @@ function PressKit() {
           </p>
         </header>
 
-        <DailyEvidenceArchive language={language} />
+        <DailyEvidenceArchive key={before || 'latest'} language={language} before={before} />
 
         <NewsroomSnapshot rate={rateData} language={language} loading={isLoading} error={error} />
 

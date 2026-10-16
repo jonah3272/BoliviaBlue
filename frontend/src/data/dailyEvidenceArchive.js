@@ -1,6 +1,17 @@
 import { DAILY_EVIDENCE_SEEDS } from './dailyEvidenceSeeds.js';
 export { DAILY_EVIDENCE_SEEDS };
 const datePattern = /^\d{4}-\d{2}-\d{2}$/;
+// Match the report API's calendar-date boundary; invalid cursors mean page one.
+export function normalizeArchiveBefore(value) {
+  if (typeof value !== 'string' || !datePattern.test(value) || value < '2026-01-01') return null;
+  const time = Date.parse(`${value}T04:00:00Z`);
+  return Number.isFinite(time) && new Date(time).toISOString().slice(0, 10) === value ? value : null;
+}
+export function archiveLocalePaths(value) {
+  const before = normalizeArchiveBefore(value);
+  const es = before ? `/prensa?before=${before}` : '/prensa';
+  return { es, en: `${es}${before ? '&' : '?'}lang=en` };
+}
 export function validArchiveRow(row) {
   return row && datePattern.test(row.date) && new Date(`${row.date}T04:00:00Z`).toISOString().slice(0,10) === row.date && Number.isInteger(row.revision) && row.revision > 0 && row.revision <= 99 && row.path === `/prensa/informes/${row.date}/v${row.revision}`;
 }

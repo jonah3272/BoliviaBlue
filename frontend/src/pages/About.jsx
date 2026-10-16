@@ -7,7 +7,7 @@ import Footer from '../components/Footer';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { useState } from 'react';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
-import { getBreadcrumbList } from '../utils/seoSchema';
+import { getAboutPage } from '../data/aboutPage.js';
 
 function About() {
   // Signal to AdSense that this page has sufficient content
@@ -18,29 +18,20 @@ function About() {
   const language = languageContext?.language || 'es';
   const [showOfficial, setShowOfficial] = useState(false);
 
-  const breadcrumbs = [
-    { name: language === 'es' ? 'Inicio' : 'Home', url: '/' },
-    { name: language === 'es' ? 'Acerca de' : 'About', url: '/acerca-de' },
-  ];
-  const breadcrumbSchema = getBreadcrumbList(breadcrumbs);
+  const page = getAboutPage(language);
+  const { breadcrumbs, breadcrumbSchema } = page;
 
   return (
     <div className="min-h-screen bg-brand-bg dark:bg-gray-900 transition-colors">
       <PageMeta
-        title={language === 'es'
-          ? 'Sobre Bolivia Blue | Metodología y transparencia del dólar paralelo'
-          : 'About Bolivia Blue | Methodology and parallel dollar transparency'}
-        description={language === 'es'
-          ? "Conoce cómo funciona Bolivia Blue. Metodología transparente, fuentes verificadas, análisis con IA, y cotización del dólar blue actualizada cada pocos minutos."
-          : "Learn how Bolivia Blue works. Transparent methodology, verified sources, AI analysis, and blue dollar quotes updated every few minutes."}
-        keywords={language === 'es'
-          ? "acerca de bolivia blue, metodología tipo cambio, cómo funciona dólar blue, transparencia bolivia, cómo se calcula dólar blue, fuente datos bolivia blue, metodología binance p2p"
-          : "about bolivia blue, exchange rate methodology, how blue dollar works, bolivia transparency, how blue dollar calculated, bolivia blue data source, binance p2p methodology"}
+        title={page.title}
+        description={page.description}
+        keywords={page.keywords}
         canonical="/acerca-de"
         structuredData={breadcrumbSchema}
       />
       
-      <Header />
+      <Header subtitle={page.copy.aboutHeaderSubtitle} />
 
       {/* Navigation */}
       <Navigation />
@@ -56,7 +47,7 @@ function About() {
 
             <article className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 sm:p-8 lg:p-12">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-            {language === 'es' ? 'Sobre Bolivia Blue' : 'About Bolivia Blue'}
+            {t('aboutHeading')}
           </h1>
 
           {/* Mission Section */}
@@ -71,36 +62,26 @@ function About() {
               {t('aboutMissionDesc2')}
             </p>
             <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
-              {language === 'es' 
-                ? 'En un mercado donde la información sobre el tipo de cambio puede ser confusa o difícil de acceder, Bolivia Blue se compromete a proporcionar datos precisos, actualizados y completamente transparentes. Creemos que cada boliviano tiene derecho a conocer el precio real del dólar, ya sea para tomar decisiones financieras personales, realizar transacciones comerciales, o simplemente mantenerse informado sobre la situación económica del país.'
-                : 'In a market where exchange rate information can be confusing or difficult to access, Bolivia Blue is committed to providing accurate, up-to-date, and completely transparent data. We believe every Bolivian has the right to know the real price of the dollar, whether for personal financial decisions, commercial transactions, or simply staying informed about the country\'s economic situation.'}
+              {t('aboutMissionContext')}
             </p>
             <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-              {language === 'es' 
-                ? 'Nuestra plataforma es completamente gratuita y accesible para todos, sin necesidad de registro ni suscripción. Operamos con total transparencia, mostrando exactamente cómo calculamos nuestras tasas y de dónde provienen nuestros datos. Este compromiso con la transparencia es fundamental para construir confianza y ayudar a los usuarios a tomar decisiones informadas.'
-                : 'Our platform is completely free and accessible to everyone, with no registration or subscription required. We operate with complete transparency, showing exactly how we calculate our rates and where our data comes from. This commitment to transparency is fundamental to building trust and helping users make informed decisions.'}
+              {t('aboutFreeAccess')}
             </p>
           </section>
 
           {/* Why We Built This Section */}
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
-              {language === 'es' ? '¿Por Qué Construimos Esta Plataforma?' : 'Why We Built This Platform'}
+              {t('aboutWhyTitle')}
             </h2>
             <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
-              {language === 'es' 
-                ? 'El mercado cambiario en Bolivia ha sido históricamente opaco y difícil de navegar. Muchos bolivianos dependen del dólar para sus transacciones diarias, remesas familiares, o inversiones, pero encontrar información precisa y actualizada sobre el tipo de cambio real ha sido un desafío constante. Las tasas oficiales del Banco Central no siempre reflejan el precio real al que se pueden realizar transacciones en el mercado paralelo.'
-                : 'The exchange market in Bolivia has historically been opaque and difficult to navigate. Many Bolivians depend on the dollar for their daily transactions, family remittances, or investments, but finding accurate and up-to-date information about the real exchange rate has been a constant challenge. The Central Bank\'s official rates do not always reflect the real price at which transactions can be made in the parallel market.'}
+              {t('aboutWhyContext')}
             </p>
             <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
-              {language === 'es' 
-                ? 'Con la llegada de plataformas digitales como Binance P2P, el mercado paralelo se ha vuelto más accesible y transparente. Sin embargo, aún existe una necesidad de una fuente centralizada de información que agregue datos de múltiples fuentes, los analice, y los presente de manera clara y comprensible. Bolivia Blue nació de esta necesidad: crear una plataforma que democratice el acceso a información precisa sobre el tipo de cambio del dólar blue.'
-                : 'With the arrival of digital platforms like Binance P2P, the parallel market has become more accessible and transparent. However, there is still a need for a centralized source of information that aggregates data from multiple sources, analyzes it, and presents it in a clear and understandable way. Bolivia Blue was born from this need: to create a platform that democratizes access to accurate information about the blue dollar exchange rate.'}
+              {t('aboutWhySources')}
             </p>
             <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-              {language === 'es' 
-                ? 'Hoy es más importante que nunca tener acceso a información precisa sobre el mercado cambiario. Nuestra plataforma ofrece datos en tiempo real, análisis de tendencias, noticias relevantes y herramientas como calculadora y alertas de precio — todo en un solo lugar.'
-                : 'Accurate exchange market information matters more than ever. Our platform offers real-time data, trend analysis, relevant news, and tools like a calculator and price alerts — all in one place.'}
+              {t('aboutTools')}
             </p>
           </section>
 

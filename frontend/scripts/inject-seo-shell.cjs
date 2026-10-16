@@ -1024,8 +1024,13 @@ async function main() {
     console.log(`[inject-seo-shell] Wrote shared documentation shell ${route}`);
   }
 
+  // About uses the same editorial copy before and after React loads.
+  const { renderAboutHtml } = await import('../../seo/aboutSeo.js');
+  const aboutDir = path.join(DIST, 'acerca-de');
+  fs.mkdirSync(aboutDir, { recursive: true });
+  fs.writeFileSync(path.join(aboutDir, 'index.html'), renderAboutHtml(originalHtml), 'utf8');
+
   const extraSpa = [
-    ['/acerca-de', 'Sobre Bolivia Blue', 'Qué es Bolivia Blue, metodología y transparencia del dólar paralelo.'],
     ['/publicitar', 'Publicitar en Bolivia Blue', 'Opciones de publicidad en Bolivia Blue.'],
     ['/contacto', 'Contacto Bolivia Blue', 'Contacto y consultas sobre el dólar blue en Bolivia.'],
     ['/politica-de-privacidad', 'Política de privacidad', 'Política de privacidad de Bolivia Blue.'],

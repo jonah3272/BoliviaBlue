@@ -1,3 +1,4 @@
+import { aboutPageForSearch, renderAboutHtml } from './seo/aboutSeo.js';
 import { buildDollarRateSearchCopy, DOLLAR_SEARCH_PAGES, normalizeDollarRatePayload } from './frontend/src/utils/dollarRateSearchCopy.js';
 import { renderDollarRateHtml } from './seo/dollarRateSeo.js';
 import { dataDocumentationPageForSearch, renderDataDocumentationHtml, renderSourceCompositionPressLink } from './seo/dataDocumentationSeo.js';
@@ -25,9 +26,9 @@ export const config = {
     '/index.html',
     '/blog/:slug',
     '/noticias/:slug',
-    '/:page(dolar-blue-hoy|bolivian-blue|dolar-paralelo-bolivia-en-vivo|cuanto-esta-dolar-bolivia|cotiza-dolar-paralelo|euro-a-boliviano|real-a-boliviano|peso-a-boliviano|sol-a-boliviano|peso-argentino-a-boliviano|peso-chileno-a-boliviano|dolar-blue-santa-cruz|dolar-blue-la-paz|dolar-blue-cochabamba|prensa|guia-dinero-bolivia|bolivia-money-guide|comprar-dolares|fuente-de-datos|datos-historicos|api-docs|calculadora|plataformas)',
-    '/:page(dolar-blue-hoy|bolivian-blue|dolar-paralelo-bolivia-en-vivo|cuanto-esta-dolar-bolivia|cotiza-dolar-paralelo|euro-a-boliviano|real-a-boliviano|peso-a-boliviano|sol-a-boliviano|peso-argentino-a-boliviano|peso-chileno-a-boliviano|dolar-blue-santa-cruz|dolar-blue-la-paz|dolar-blue-cochabamba|prensa|guia-dinero-bolivia|bolivia-money-guide|comprar-dolares|fuente-de-datos|datos-historicos|api-docs|calculadora|plataformas)/',
-    '/:page(dolar-blue-hoy|bolivian-blue|dolar-paralelo-bolivia-en-vivo|cuanto-esta-dolar-bolivia|cotiza-dolar-paralelo|euro-a-boliviano|real-a-boliviano|peso-a-boliviano|sol-a-boliviano|peso-argentino-a-boliviano|peso-chileno-a-boliviano|dolar-blue-santa-cruz|dolar-blue-la-paz|dolar-blue-cochabamba|prensa|guia-dinero-bolivia|bolivia-money-guide|comprar-dolares|fuente-de-datos|datos-historicos|api-docs|calculadora|plataformas)/index.html',
+    '/:page(dolar-blue-hoy|bolivian-blue|dolar-paralelo-bolivia-en-vivo|cuanto-esta-dolar-bolivia|cotiza-dolar-paralelo|euro-a-boliviano|real-a-boliviano|peso-a-boliviano|sol-a-boliviano|peso-argentino-a-boliviano|peso-chileno-a-boliviano|dolar-blue-santa-cruz|dolar-blue-la-paz|dolar-blue-cochabamba|prensa|guia-dinero-bolivia|bolivia-money-guide|comprar-dolares|fuente-de-datos|datos-historicos|api-docs|calculadora|acerca-de|plataformas)',
+    '/:page(dolar-blue-hoy|bolivian-blue|dolar-paralelo-bolivia-en-vivo|cuanto-esta-dolar-bolivia|cotiza-dolar-paralelo|euro-a-boliviano|real-a-boliviano|peso-a-boliviano|sol-a-boliviano|peso-argentino-a-boliviano|peso-chileno-a-boliviano|dolar-blue-santa-cruz|dolar-blue-la-paz|dolar-blue-cochabamba|prensa|guia-dinero-bolivia|bolivia-money-guide|comprar-dolares|fuente-de-datos|datos-historicos|api-docs|calculadora|acerca-de|plataformas)/',
+    '/:page(dolar-blue-hoy|bolivian-blue|dolar-paralelo-bolivia-en-vivo|cuanto-esta-dolar-bolivia|cotiza-dolar-paralelo|euro-a-boliviano|real-a-boliviano|peso-a-boliviano|sol-a-boliviano|peso-argentino-a-boliviano|peso-chileno-a-boliviano|dolar-blue-santa-cruz|dolar-blue-la-paz|dolar-blue-cochabamba|prensa|guia-dinero-bolivia|bolivia-money-guide|comprar-dolares|fuente-de-datos|datos-historicos|api-docs|calculadora|acerca-de|plataformas)/index.html',
   ],
 };
 
@@ -707,6 +708,26 @@ export default async function middleware(request) {
     } catch {
       const es = dataDocumentationPageForSearch(path, url.search).language === 'es';
       const title = es ? 'Documentación temporalmente no disponible' : 'Documentation temporarily unavailable';
+      return new Response(request.method === 'HEAD' ? null : `<!doctype html><html lang="${es ? 'es' : 'en'}"><head><meta name="robots" content="noindex, follow"><title>${title} | Bolivia Blue</title></head><body><h1>${title}</h1></body></html>`, { status: 503, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex, follow', 'retry-after': '60' } });
+    }
+  }
+  // About editorial copy is the same for browsers and crawlers, in the requested locale.
+  if (path === '/acerca-de') {
+    try {
+      const shell = await fetch(new URL('/acerca-de/index.html', url.origin), {
+        headers: { [SKIP_HEADER]: '1', Accept: 'text/html' },
+        signal: withTimeout(HTML_TIMEOUT_MS),
+      });
+      if (!shell.ok) throw new Error('About shell unavailable');
+      const rendered = renderAboutHtml(await shell.text(), url.search);
+      const headers = new Headers(shell.headers);
+      headers.set('content-type', 'text/html; charset=utf-8');
+      headers.set('cache-control', 'public, s-maxage=300, stale-while-revalidate=900');
+      headers.delete('content-length');
+      return new Response(request.method === 'HEAD' ? null : rendered, { status: 200, headers });
+    } catch {
+      const es = aboutPageForSearch(url.search).language === 'es';
+      const title = es ? 'Página temporalmente no disponible' : 'Page temporarily unavailable';
       return new Response(request.method === 'HEAD' ? null : `<!doctype html><html lang="${es ? 'es' : 'en'}"><head><meta name="robots" content="noindex, follow"><title>${title} | Bolivia Blue</title></head><body><h1>${title}</h1></body></html>`, { status: 503, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex, follow', 'retry-after': '60' } });
     }
   }

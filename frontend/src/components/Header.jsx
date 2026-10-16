@@ -9,7 +9,7 @@ import MobileMenu from './MobileMenu';
 import { BINANCE_REFERRAL_LINK, AIRTM_REFERRAL_LINK } from '../config/referrals';
 import { trackReferralClicked } from '../utils/analyticsEvents';
 
-function Header() {
+function Header({ subtitle } = {}) {
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
@@ -55,7 +55,7 @@ function Header() {
                 <span className="hidden sm:inline">{t('title')}</span>
               </div>
               <p className="hidden md:block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mt-0.5">
-                {t('subtitle')}
+                {subtitle ?? t('subtitle')}
               </p>
             </div>
           </Link>

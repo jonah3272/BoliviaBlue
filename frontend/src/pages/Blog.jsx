@@ -14,6 +14,7 @@ import { selectRelatedArticles } from '../utils/relatedArticles';
 import { articlesEs, articlesEn } from '../data/blogArticles'; // Fallback
 import DailyEvidenceArchive from '../components/DailyEvidenceArchive';
 import { legacyDailyNotice } from '../data/legacyDailyNotice';
+import { reviewedRetrospective, retrospectiveRevisionLabel, retrospectiveLocalePaths } from '../data/reviewedRetrospectives';
 import { blogLocalePaths } from '../utils/blogLocale';
 import { useAdsenseReadyWhen } from '../hooks/useAdsenseReady';
 
@@ -37,7 +38,6 @@ function Blog() {
   const [articles, setArticles] = useState([]);
   const [relatedCollection, setRelatedCollection] = useState({ language: null, items: [] });
   const isArticleView = Boolean(slug);
-  const legacyNotice = legacyDailyNotice(slug, language);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   
@@ -66,6 +66,7 @@ function Blog() {
           if (supabaseArticles && supabaseArticles.length > 0) {
             // Transform Supabase format to match expected format
             const transformedArticles = supabaseArticles.map(article => ({
+              ...article,
               id: article.id,
               slug: article.slug,
               title: article.title,
@@ -169,6 +170,12 @@ function Blog() {
 
   const selectedArticleData = selectedArticle?.slug === slug && selectedArticle?.language === language
     ? selectedArticle : null;
+  const retrospective = reviewedRetrospective(selectedArticleData);
+  const legacyNotice = legacyDailyNotice(slug, language, selectedArticleData);
+  const articleDate = (article) => {
+    const review = reviewedRetrospective(article);
+    return review ? retrospectiveRevisionLabel(review, language) : formatDate(article.date);
+  };
 
   // Blog collection schema for SEO
   const blogSchema = {
@@ -187,7 +194,7 @@ function Blog() {
         "item": {
           "@type": "BlogPosting",
           "headline": article.title,
-          "datePublished": article.date,
+          ...(reviewedRetrospective(article) ? { dateModified: reviewedRetrospective(article).revisedAt } : { datePublished: article.date }),
           "author": {
             "@type": "Organization",
             "name": article.author
@@ -199,7 +206,7 @@ function Blog() {
 
   if (selectedArticleData) {
     // Article detail view
-    const localePaths = blogLocalePaths(selectedArticleData.slug);
+    const localePaths = retrospectiveLocalePaths(retrospective) || blogLocalePaths(selectedArticleData.slug);
     const relatedArticles = selectRelatedArticles(
       relatedCollection.language === language ? relatedCollection.items : [], selectedArticleData, 2, RELATED_ARTICLE_REVIEW_HOLD
     );
@@ -207,7 +214,7 @@ function Blog() {
       "@context": "https://schema.org",
       "@type": "BlogPosting",
       "headline": selectedArticleData.title,
-      "datePublished": selectedArticleData.date,
+      ...(retrospective ? { dateModified: retrospective.revisedAt } : { datePublished: selectedArticleData.date }),
       "author": {
         "@type": "Organization",
         "name": selectedArticleData.author
@@ -285,7 +292,7 @@ function Blog() {
                   </span>
                 )}
                 <span className="text-sm text-gray-500 dark:text-gray-400">
-                  {formatDate(selectedArticleData.date)}
+                  {articleDate(selectedArticleData)}
                 </span>
               </div>
               <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
@@ -301,7 +308,7 @@ function Blog() {
               {/* Social Share */}
               <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
                 <SocialShare
-                  url={`https://boliviablue.com/blog/${selectedArticleData.slug}`}
+                  url={retrospective ? `https://www.boliviablue.com/blog/${selectedArticleData.slug}${language === 'en' ? '?lang=en' : ''}` : `https://boliviablue.com/blog/${selectedArticleData.slug}`}
                   title={selectedArticleData.title}
                   description={selectedArticleData.excerpt}
                 />
@@ -482,7 +489,7 @@ function Blog() {
               {featuredArticles.map((article) => (
                 <Link
                   key={article.id}
-                  to={`/blog/${article.slug || article.id}`}
+                  to={`/blog/${article.slug || article.id}${reviewedRetrospective(article) && language === 'en' ? '?lang=en' : ''}`}
                   className="block bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700 rounded-xl shadow-lg hover:shadow-2xl transition-all p-6 cursor-pointer group border-2 border-blue-200 dark:border-blue-800"
                 >
                   <div className="flex flex-wrap items-center gap-2 mb-3">
@@ -498,7 +505,7 @@ function Blog() {
                       </span>
                     )}
                     <span className="text-xs text-gray-600 dark:text-gray-300">
-                      {formatDate(article.date)}
+                      {articleDate(article)}
                     </span>
                   </div>
                   <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
@@ -534,7 +541,7 @@ function Blog() {
               {regularArticles.map((article) => (
                 <Link
                   key={article.id}
-                  to={`/blog/${article.slug || article.id}`}
+                  to={`/blog/${article.slug || article.id}${reviewedRetrospective(article) && language === 'en' ? '?lang=en' : ''}`}
                   className="block bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-shadow p-6 cursor-pointer group"
                 >
                   <div className="flex flex-wrap items-center gap-2 mb-3">
@@ -545,7 +552,7 @@ function Blog() {
                       <span className="text-xs text-gray-500 dark:text-gray-400">{article.readTime}</span>
                     )}
                     <span className="text-xs text-gray-500 dark:text-gray-400">
-                      {formatDate(article.date)}
+                      {articleDate(article)}
                     </span>
                   </div>
                   <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">

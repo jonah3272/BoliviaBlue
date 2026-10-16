@@ -6,7 +6,7 @@ import { articleRequest, loadArticle, renderArticleHtml } from './seo/articleSeo
 import { buyGuidePageForSearch, renderBuyGuideHtml } from './seo/buyGuideSeo.js';
 import { platformComparisonPageForSearch, renderPlatformComparisonHtml } from './seo/platformComparisonSeo.js';
 import { calculatorPageForSearch, renderCalculatorHtml } from './seo/calculatorSeo.js';
-import { renderArchiveHtml, DAILY_EVIDENCE_SEEDS } from './frontend/src/data/dailyEvidenceArchive.js';
+import { renderArchiveHtml, DAILY_EVIDENCE_SEEDS, normalizeArchiveBefore, archiveLocalePaths } from './frontend/src/data/dailyEvidenceArchive.js';
 import { realPageForSearch, renderRealConversionHtml } from './seo/realConversionSeo.js';
 
 /**
@@ -529,6 +529,26 @@ export function applyEnglishAnnotations(html, path, pair) {
   return DOLLAR_SEARCH_PAGES[path] ? renderDollarRateHtml(out, path, pair, 'en') : out;
 }
 
+/** Keep each date-paginated archive self-canonical in both language versions. */
+export function applyArchivePaginationMetadata(html, before, language = 'es') {
+  if (!normalizeArchiveBefore(before)) return html;
+  const paths = archiveLocalePaths(before);
+  const base = 'https://www.boliviablue.com';
+  const urls = { es: base + paths.es, en: base + paths.en, 'x-default': base + paths.es };
+  const canonical = urls[language === 'en' ? 'en' : 'es'];
+  return html.replace(/<head\b[^>]*>[\s\S]*?<\/head>/i, head => head
+    .replace(/<link\b[^>]*>/gi, tag => {
+      const rel = tag.match(/\brel=["']([^"']+)["']/i)?.[1];
+      const locale = tag.match(/\bhreflang=["']([^"']+)["']/i)?.[1];
+      const href = rel === 'canonical' ? canonical : rel === 'alternate' ? urls[locale] : null;
+      return href ? tag.replace(/\bhref=["'][^"']*["']/i, `href="${escapeAttr(href)}"`) : tag;
+    })
+    .replace(/<meta\b[^>]*>/gi, tag => /\b(?:property=["']og:url["']|name=["']twitter:url["'])/i.test(tag)
+      ? tag.replace(/\bcontent=["'][^"']*["']/i, `content="${escapeAttr(canonical)}"`) : tag)
+    .replace(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>/gi, script =>
+      script.replace(/"https:\/\/www\.boliviablue\.com\/prensa(?:\?lang=en)?"/g, JSON.stringify(canonical))));
+}
+
 export function applyLiveSeo(html, path, rates) {
   if (DOLLAR_SEARCH_PAGES[path]) return { html: renderDollarRateHtml(html, path, rates), live: Boolean(rates?.buy && rates?.sell), rates };
   if (!rates) return null;
@@ -604,18 +624,21 @@ export default async function middleware(request) {
   const path = normalizePath(url.pathname);
   // Press archive is server-visible for every visitor, including without JavaScript.
   if (path === '/prensa') {
+    const before = normalizeArchiveBefore(url.searchParams.get('before'));
+    const language = url.searchParams.get('lang') === 'en' ? 'en' : 'es';
     try {
       const shell = await fetch(new URL('/prensa/index.html', url.origin), { headers: { [SKIP_HEADER]: '1', Accept: 'text/html' }, signal: withTimeout(HTML_TIMEOUT_MS) });
       if (!shell.ok) throw new Error('Press shell unavailable');
-      let reports = DAILY_EVIDENCE_SEEDS, unavailable = true, nextBefore = null;
+      let reports = DAILY_EVIDENCE_SEEDS.filter(report => !before || report.date < before), unavailable = true, nextBefore = null;
       try {
-        const response = await fetch(new URL('/api/daily-report?view=archive' + (url.searchParams.has('before') ? '&before=' + encodeURIComponent(url.searchParams.get('before')) : ''), url.origin), { signal: withTimeout(RATE_TIMEOUT_MS) });
+        const response = await fetch(new URL('/api/daily-report?view=archive' + (before ? '&before=' + before : ''), url.origin), { signal: withTimeout(RATE_TIMEOUT_MS) });
         if (response.ok) { const archive = await response.json(); if (Array.isArray(archive.reports)) { reports = archive.reports; unavailable = Boolean(archive.unavailable); nextBefore = archive.next_before; } }
       } catch { /* Keep the verified launch editions and label archive freshness. */ }
       let html = await shell.text();
-      if (url.searchParams.get('lang') === 'en') html = applyEnglishAnnotations(html, '/prensa', null);
+      if (language === 'en') html = applyEnglishAnnotations(html, '/prensa', null);
+      html = applyArchivePaginationMetadata(html, before, language);
       html = html.replace(/<section\b[^>]*data-daily-evidence-archive[^>]*>[\s\S]*?<\/section>/g, '');
-      html = html.replace('</main>', renderArchiveHtml(reports, url.searchParams.get('lang') === 'en' ? 'en' : 'es', { unavailable, nextBefore, olderPage: url.searchParams.has('before') }) + '</main>');
+      html = html.replace('</main>', renderArchiveHtml(reports, language, { unavailable, nextBefore, olderPage: Boolean(before) }) + '</main>');
       const headers = new Headers(shell.headers); headers.set('content-type', 'text/html; charset=utf-8'); headers.set('cache-control', unavailable ? 'no-store' : 'public, s-maxage=300, stale-while-revalidate=600'); headers.delete('content-length');
       return new Response(request.method === 'HEAD' ? null : html, { status: 200, headers });
     } catch { return; }

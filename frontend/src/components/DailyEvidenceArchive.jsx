@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { DAILY_EVIDENCE_SEEDS, cleanArchive, archiveCopy, latestCompletedDate } from '../data/dailyEvidenceArchive';
-export default function DailyEvidenceArchive({ language = 'es' }) {
-  const initialBefore = new URLSearchParams(window.location.search).get('before');
+import { DAILY_EVIDENCE_SEEDS, cleanArchive, archiveCopy, latestCompletedDate, normalizeArchiveBefore } from '../data/dailyEvidenceArchive';
+export default function DailyEvidenceArchive({ language = 'es', before: requestedBefore = new URLSearchParams(window.location.search).get('before') }) {
+  const initialBefore = normalizeArchiveBefore(requestedBefore);
   const initialSeeds = DAILY_EVIDENCE_SEEDS.filter(r=>!initialBefore||r.date<initialBefore);
   const [reports,setReports]=useState(()=>cleanArchive(initialSeeds));
   const [unavailable,setUnavailable]=useState(false),[loading,setLoading]=useState(true),[before,setBefore]=useState(null);

@@ -1,5 +1,8 @@
+import { reviewedRetrospective, retrospectiveNotice } from './reviewedRetrospectives.js';
 import { DAILY_EVIDENCE_SEEDS } from './dailyEvidenceSeeds.js';
-export function legacyDailyNotice(slug, language='es') {
+export function legacyDailyNotice(slug, language='es', article=null) {
+  const reviewed = reviewedRetrospective(article);
+  if (reviewed && reviewed.slug === slug && reviewed.language === language) return retrospectiveNotice(reviewed, language);
   const match=String(slug||'').match(/^analisis-diario-(\d{4}-\d{2}-\d{2})$/);
   if(!match||match[1]>'2026-10-14')return null;
   const report=DAILY_EVIDENCE_SEEDS.find(r=>r.date===match[1]);
@@ -8,6 +11,6 @@ export function legacyDailyNotice(slug, language='es') {
     path:report?report.path+(language==='en'?'?lang=en':''):'/prensa'+(language==='en'?'?lang=en':'')+'#informes-diarios',
     label:report?(language==='en'?'Read the evidence report for this date':'Leer el informe con evidencia de esta fecha'):(language==='en'?'Browse the new evidence reports':'Ver los nuevos informes con evidencia') };
 }
-export function renderLegacyDailyNotice(slug,language='es') {
-  const notice=legacyDailyNotice(slug,language);return notice?`<aside data-legacy-daily-correction role="note"><h2>${notice.title}</h2><p>${notice.body}</p><a href="${notice.path}">${notice.label}</a></aside>`:'';
+export function renderLegacyDailyNotice(slug,language='es', article=null) {
+  const notice=legacyDailyNotice(slug,language,article);return notice?`<aside data-legacy-daily-correction role="note"><h2>${notice.title}</h2><p>${notice.body}</p>${notice.revision ? `<p>${notice.revision}</p>` : ''}<a href="${notice.path}">${notice.label}</a></aside>`:'';
 }

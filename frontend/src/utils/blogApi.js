@@ -1,4 +1,22 @@
 import { supabase } from './supabase';
+import { reviewedRetrospective, reviewedRetrospectiveIds, isDiscoverableBlogArticle } from '../data/reviewedRetrospectives';
+
+// Keep the broad legacy exclusion. Fetch only reviewed candidates separately,
+// then verify each complete row before allowing discovery. Fail closed on errors.
+async function fetchReviewedRetrospectives(language) {
+  const ids = reviewedRetrospectiveIds(language);
+  if (!ids.length) return [];
+  try {
+    const { data, error } = await supabase.from('blog_articles').select('*')
+      .eq('language', language).in('id', ids).neq('category', 'daily-evidence');
+    return error ? [] : (data || []).filter((article) => reviewedRetrospective(article));
+  } catch { return []; }
+}
+
+function byEditorialDate(a, b) {
+  const date = (row) => reviewedRetrospective(row)?.revisedAt || row.published_at || row.created_at;
+  return Date.parse(date(b)) - Date.parse(date(a));
+}
 
 /**
  * Fetch all blog articles from Supabase
@@ -20,7 +38,7 @@ export async function fetchBlogArticles(language = 'es') {
       throw error;
     }
 
-    return data || [];
+    return [...(data || []).filter(isDiscoverableBlogArticle), ...await fetchReviewedRetrospectives(language)].sort(byEditorialDate);
   } catch (error) {
     console.error('Error in fetchBlogArticles:', error);
     // Fallback to empty array if Supabase is not configured
@@ -79,7 +97,8 @@ export async function fetchFeaturedBlogArticles(language = 'es', limit = 5) {
       throw error;
     }
 
-    return data || [];
+    return [...(data || []).filter(isDiscoverableBlogArticle), ...(await fetchReviewedRetrospectives(language)).filter((article) => article.featured)]
+      .sort(byEditorialDate).slice(0, limit);
   } catch (error) {
     console.error('Error in fetchFeaturedBlogArticles:', error);
     return [];

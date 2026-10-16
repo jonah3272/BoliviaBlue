@@ -1,3 +1,5 @@
+import { reviewedRetrospective, retrospectiveLocalePaths } from '../frontend/src/data/reviewedRetrospectives.js';
+import { RETROSPECTIVE_RELEASES } from '../frontend/src/data/retrospectiveReleases.js';
 import { renderLegacyDailyNotice } from '../frontend/src/data/legacyDailyNotice.js';
 import { articlesEs, articlesEn } from '../frontend/src/data/blogArticles.js';
 import { newsArticlePath, newsIdFromSlugParam } from '../frontend/src/utils/newsSlug.js';
@@ -32,7 +34,7 @@ export async function loadArticle(request, { fetcher = fetch, env = process.env 
   if (!unavailable) {
     try {
       const endpoint = new URL(`/rest/v1/${kind === 'blog' ? 'blog_articles' : 'news'}`, url);
-      endpoint.searchParams.set('select', kind === 'blog' ? 'slug,title,excerpt,published_at,created_at,author,language' : 'id,title,summary,published_at,source,url');
+      endpoint.searchParams.set('select', kind === 'blog' ? (RETROSPECTIVE_RELEASES.some((item) => item.slug === slug && item.language === language) ? 'id,slug,title,excerpt,content,content_format,published_at,created_at,updated_at,author,language,category,featured,read_time' : 'slug,title,excerpt,published_at,created_at,author,language') : 'id,title,summary,published_at,source,url');
       endpoint.searchParams.set(kind === 'blog' ? 'slug' : 'id', `eq.${kind === 'blog' ? slug : id}`);
       endpoint.searchParams.set(kind === 'blog' ? 'language' : 'type', `eq.${kind === 'blog' ? language : 'article'}`);
       if (kind === 'blog') endpoint.searchParams.set('category', 'neq.daily-evidence');
@@ -46,9 +48,11 @@ export async function loadArticle(request, { fetcher = fetch, env = process.env 
   }
   article ||= fallback;
   if (!article) return { status: unavailable ? 503 : 404, language };
+  const retrospective = kind === 'blog' ? reviewedRetrospective(article) : null;
   const path = kind === 'blog' ? `/blog/${article.slug}` : newsArticlePath(article);
   return {
     status: 200, language, kind, path,
+    retrospective, sourceArticle: retrospective ? article : null,
     canonical: BASE + path + (kind === 'blog' && language === 'en' ? '?lang=en' : ''),
     title: plain(article.title), description: plain(article.excerpt || article.summary || article.title),
     published: article.published_at || article.created_at || article.date,
@@ -77,16 +81,16 @@ export function renderArticleHtml(html, article, request) {
     ...[['og:type', found ? 'article' : 'website'], ['og:url', canonical], ['og:title', displayTitle], ['og:description', description], ['og:locale', es ? 'es_BO' : 'en_US'], ['og:site_name', 'Bolivia Blue'], ['og:image', BASE + '/header-og-image.jpg']].map(([name, value]) => `<meta property="${name}" content="${esc(value)}" data-rh="true" />`),
   ];
   if (found) {
-    const localePaths = request.kind === 'blog' && blogLocalePaths(request.slug);
+    const localePaths = request.kind === 'blog' && (retrospectiveLocalePaths(article.retrospective) || blogLocalePaths(request.slug));
     if (localePaths) {
       for (const [language, path] of Object.entries({ ...localePaths, 'x-default': localePaths.es })) {
         tags.push(`<link rel="alternate" hreflang="${language}" href="${esc(BASE + path)}" data-rh="true" />`);
       }
     }
-    const schema = { '@context': 'https://schema.org', '@type': request.kind === 'blog' ? 'BlogPosting' : 'NewsArticle', headline: title, description, url: canonical, mainEntityOfPage: canonical, inLanguage: es ? 'es-BO' : 'en-US', datePublished: article.published, author: { '@type': 'Organization', name: article.author }, publisher: { '@type': 'Organization', name: 'Bolivia Blue', url: BASE } };
+    const schema = { '@context': 'https://schema.org', '@type': request.kind === 'blog' ? 'BlogPosting' : 'NewsArticle', headline: title, description, url: canonical, mainEntityOfPage: canonical, inLanguage: es ? 'es-BO' : 'en-US', ...(article.retrospective ? { dateModified: article.retrospective.revisedAt } : { datePublished: article.published }), author: { '@type': 'Organization', name: article.author }, publisher: { '@type': 'Organization', name: 'Bolivia Blue', url: BASE } };
     tags.push(`<script type="application/ld+json" data-rh="true">${JSON.stringify(schema).replace(/</g, '\\u003c')}</script>`);
   }
   out = out.replace('</head>', () => tags.join('\n') + '\n</head>');
-  const shell = `<main data-seo-shell="article" class="max-w-3xl mx-auto px-4 py-8"><h1>${esc(title)}</h1>${request.kind === 'blog' ? renderLegacyDailyNotice(request.slug, article.language) : ''}<p>${esc(description)}</p><a href="/${request.kind}">${es ? 'Volver' : 'Back'}</a></main>`;
+  const shell = `<main data-seo-shell="article" class="max-w-3xl mx-auto px-4 py-8"><h1>${esc(title)}</h1>${request.kind === 'blog' ? renderLegacyDailyNotice(request.slug, article.language, article.sourceArticle) : ''}<p>${esc(description)}</p>${article.retrospective ? `<article data-reviewed-retrospective>${article.sourceArticle.content}</article>` : ''}<a href="/${request.kind}">${es ? 'Volver' : 'Back'}</a></main>`;
   return out.replace(/(<div id="root">)[\s\S]*?(<\/div>\s*(?:<script|<\/body>))/, (_match, open, close) => open + shell + close);
 }

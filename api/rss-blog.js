@@ -34,16 +34,30 @@ module.exports = async function handler(req, res) {
 
     if (error) throw error;
 
-    const items = (data || [])
+    const { reviewedRetrospective, reviewedRetrospectiveIds, retrospectiveRevisionLabel, isDiscoverableBlogArticle } = await import('../frontend/src/data/reviewedRetrospectives.js');
+    const ids = reviewedRetrospectiveIds('es');
+    let reviewed = [];
+    if (ids.length) {
+      try {
+      const result = await supabase.from('blog_articles').select('*')
+        .eq('language', 'es').in('id', ids).neq('category', 'daily-evidence');
+      if (!result.error) reviewed = (result.data || []).filter((row) => reviewedRetrospective(row));
+      } catch { /* An unavailable reviewed row must not hide the ordinary feed. */ }
+    }
+    const editorialDate = (row) => reviewedRetrospective(row)?.revisedAt || row.published_at;
+    const items = [...(data || []).filter(isDiscoverableBlogArticle), ...reviewed]
+      .sort((a, b) => Date.parse(editorialDate(b)) - Date.parse(editorialDate(a)))
+      .slice(0, 30)
       .map((a) => {
-        const link = `https://boliviablue.com/blog/${a.slug}`;
-        const date = a.published_at ? new Date(a.published_at).toUTCString() : new Date().toUTCString();
+        const review = reviewedRetrospective(a);
+        const link = `${review ? 'https://www.boliviablue.com' : 'https://boliviablue.com'}/blog/${a.slug}`;
+        const date = editorialDate(a) ? new Date(editorialDate(a)).toUTCString() : new Date().toUTCString();
         return `    <item>
       <title>${esc(a.title)}</title>
       <link>${link}</link>
       <guid isPermaLink="true">${link}</guid>
       <pubDate>${date}</pubDate>
-      <description>${esc(a.excerpt || a.title)}</description>
+      <description>${esc((a.excerpt || a.title) + (review ? ' ' + retrospectiveRevisionLabel(review, 'es') : ''))}</description>
     </item>`;
       })
       .join('\n');

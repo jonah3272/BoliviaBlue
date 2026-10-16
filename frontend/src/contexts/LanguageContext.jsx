@@ -1,3 +1,4 @@
+import { ABOUT_COPY } from '../data/aboutPage.js';
 import React, { createContext, useContext, useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { trackLanguageSwitched } from '../utils/analyticsEvents';
 import { useLocation, useNavigate, useNavigationType } from 'react-router-dom';
@@ -7,6 +8,7 @@ const LanguageContext = createContext();
 
 export const translations = {
   es: {
+    ...ABOUT_COPY.es,
     // Header
     title: 'Bolivia Blue',
     titleShort: 'Bolivia Blue',
@@ -77,17 +79,6 @@ export const translations = {
     
     // About
     aboutTitle: 'Acerca de Bolivia Blue',
-    aboutMethodology: 'Metodología',
-    aboutMethodologyDesc: 'Este sitio rastrea dos tipos de cambio en Bolivia:',
-    aboutBlueMarket: 'Mercado Paralelo (Dólar Blue):',
-    aboutBlueMarketDesc: 'Datos de ofertas públicas de Binance P2P para el par USDT/BOB. Calculamos la mediana de las ofertas de compra y venta para obtener una estimación representativa del mercado informal.',
-    aboutOfficialRate: 'Tipo de Cambio Oficial:',
-    aboutOfficialRateDesc: 'Tasa controlada por el Banco Central de Bolivia (BCB), utilizada por bancos y casas de cambio autorizadas. Esta tasa es típicamente fija o se ajusta con muy poca frecuencia.',
-    aboutDataSources: 'Fuentes de datos',
-    aboutDataSource1: 'Dólar Blue: Binance P2P API (USDT/BOB)',
-    aboutDataSource2: 'Tipo de Cambio Oficial: Banco Central de Bolivia / APIs de mercado',
-    aboutDataSource3: 'Noticias: Medios bolivianos verificados (El Deber, Página Siete, La Razón, etc.)',
-    aboutDataSource4: 'Frecuencia de actualización: cada 15 minutos',
     aboutNewsSources: 'Fuentes de Noticias',
     aboutNewsSourcesDesc: 'Nuestro sistema recopila artículos de múltiples fuentes verificadas para garantizar cobertura completa y actualizada:',
     aboutNewsSourceRSS: 'RSS Feeds:',
@@ -109,36 +100,10 @@ export const translations = {
     aboutSentimentUpdate: 'Actualización Continua:',
     aboutSentimentUpdateDesc: 'El análisis de sentimiento se realiza automáticamente cuando se agregan nuevos artículos. Los artículos se actualizan cada 15 minutos desde todas las fuentes.',
     aboutCaveats: 'Advertencias importantes',
-    aboutCaveatsTitle: 'El dólar blue refleja el mercado informal.',
-    aboutCaveatsDesc: 'Los tipos de cambio del mercado paralelo pueden variar significativamente del tipo de cambio oficial del Banco Central de Bolivia. La diferencia (spread) entre ambos indica la presión del mercado y puede reflejar escasez de divisas, expectativas de devaluación, o restricciones cambiarias. Use esta información únicamente como referencia. No nos hacemos responsables de decisiones financieras tomadas con base en estos datos.',
-    aboutTransparency: 'Transparencia',
-    aboutTransparencyDesc: 'Este es un proyecto de código abierto creado para proporcionar visibilidad sobre el mercado cambiario boliviano. El código fuente está disponible públicamente para revisión y auditoría.',
     aboutLastUpdate: 'Última actualización del sistema: Agosto 2026',
     
     // About Page (Full)
     aboutPageTitle: 'Sobre Bolivia Blue | Acerca de la plataforma',
-    aboutMissionTitle: 'Nuestra Misión',
-    aboutMissionDesc: 'Bolivia Blue es una plataforma independiente de seguimiento en tiempo real del tipo de cambio del dólar blue en Bolivia. Nuestro objetivo es proporcionar transparencia y visibilidad sobre el mercado cambiario informal.',
-    aboutMissionDesc2: 'Creemos que el acceso a información precisa y actualizada sobre los tipos de cambio es fundamental para que los bolivianos tomen decisiones financieras informadas.',
-    aboutUpdateFrequency: 'Frecuencia de Actualización',
-    aboutUpdateFrequency1: 'Tasas de cambio: cada 15 minutos desde Binance P2P',
-    aboutUpdateFrequency2: 'Noticias financieras: cada 5 minutos desde múltiples fuentes',
-    aboutUpdateFrequency3: 'Análisis de sentimiento: en tiempo real con IA',
-    aboutDataSource1Title: 'Binance P2P:',
-    aboutDataSource2Title: 'Banco Central de Bolivia:',
-    aboutDataSource3Title: 'Medios de comunicación:',
-    aboutDataSource4Title: 'Redes sociales:',
-    aboutAITitle: 'Análisis de Sentimiento con Inteligencia Artificial',
-    aboutAIDesc: 'Utilizamos OpenAI GPT-4o-mini para analizar el sentimiento de noticias y tweets relacionados con la economía boliviana y el tipo de cambio.',
-    aboutAIDetails: 'El sistema identifica si una noticia o tweet sugiere que el dólar subirá (alcista), bajará (bajista), o no tendrá efecto significativo (neutral). Esto ayuda a los usuarios a entender el contexto detrás de los movimientos del tipo de cambio.',
-    aboutTransparency1: 'Código fuente disponible públicamente',
-    aboutTransparency2: 'Metodología transparente y documentada',
-    aboutTransparency3: 'Sin manipulación de datos',
-    aboutTransparency4: 'Actualizaciones automáticas sin intervención manual',
-    aboutCaveats1: 'Los precios del mercado paralelo pueden variar según la ubicación y el método de pago',
-    aboutCaveats2: 'No somos responsables de decisiones financieras tomadas con base en estos datos',
-    aboutCaveats3: 'Siempre verifique las tasas antes de realizar transacciones',
-    aboutCaveats4: 'El dólar blue es un mercado informal y puede estar sujeto a regulaciones locales',
     aboutContactTitle: 'Contacto y Feedback',
     aboutContactDesc: '¿Tienes preguntas, sugerencias o encontraste un error? Estamos abiertos a feedback de la comunidad. Puedes contactarnos a través de nuestra página de contacto.',
     aboutFooter: 'Bolivia Blue - Transparencia en el mercado cambiario boliviano',
@@ -328,6 +293,7 @@ export const translations = {
   },
   
   en: {
+    ...ABOUT_COPY.en,
     // Header
     title: 'Bolivia Blue',
     titleShort: 'Bolivia Blue',
@@ -396,17 +362,6 @@ export const translations = {
     
     // About
     aboutTitle: 'About Bolivia Blue',
-    aboutMethodology: 'Methodology',
-    aboutMethodologyDesc: 'This site tracks two types of exchange rates in Bolivia:',
-    aboutBlueMarket: 'Parallel Market (Blue Dollar):',
-    aboutBlueMarketDesc: 'Data from public Binance P2P offers for the USDT/BOB pair. We calculate the median of buy and sell offers to obtain a representative estimate of the informal market.',
-    aboutOfficialRate: 'Official Exchange Rate:',
-    aboutOfficialRateDesc: 'Rate controlled by the Central Bank of Bolivia (BCB), used by banks and authorized exchange houses. This rate is typically fixed or adjusted very infrequently.',
-    aboutDataSources: 'Data sources',
-    aboutDataSource1: 'Blue Dollar: Binance P2P API (USDT/BOB)',
-    aboutDataSource2: 'Official Exchange Rate: Central Bank of Bolivia / market APIs',
-    aboutDataSource3: 'News: Verified Bolivian media (El Deber, Página Siete, La Razón, etc.)',
-    aboutDataSource4: 'Update frequency: every 15 minutes',
     aboutNewsSources: 'News Sources',
     aboutNewsSourcesDesc: 'Our system collects articles from multiple verified sources to ensure comprehensive and up-to-date coverage:',
     aboutNewsSourceRSS: 'RSS Feeds:',
@@ -428,36 +383,10 @@ export const translations = {
     aboutSentimentUpdate: 'Continuous Updates:',
     aboutSentimentUpdateDesc: 'Sentiment analysis is performed automatically when new articles are added. Articles are updated every 15 minutes from all sources.',
     aboutCaveats: 'Important warnings',
-    aboutCaveatsTitle: 'The blue dollar reflects the informal market.',
-    aboutCaveatsDesc: 'Parallel market exchange rates may vary significantly from the official exchange rate of the Central Bank of Bolivia. The difference (spread) between both indicates market pressure and may reflect foreign currency shortages, devaluation expectations, or exchange restrictions. Use this information only as a reference. We are not responsible for financial decisions made based on this data.',
-    aboutTransparency: 'Transparency',
-    aboutTransparencyDesc: 'This is an open source project created to provide visibility into the Bolivian exchange market.',
     aboutLastUpdate: 'Last system update: August 2026',
     
     // About Page (Full)
     aboutPageTitle: 'About Bolivia Blue | How the platform works',
-    aboutMissionTitle: 'Our Mission',
-    aboutMissionDesc: 'Bolivia Blue is an independent platform for real-time tracking of the blue dollar exchange rate in Bolivia. Our goal is to provide transparency and visibility into the informal exchange market.',
-    aboutMissionDesc2: 'We believe that access to accurate and up-to-date information about exchange rates is essential for Bolivians to make informed financial decisions.',
-    aboutUpdateFrequency: 'Update Frequency',
-    aboutUpdateFrequency1: 'Exchange rates: every 15 minutes from Binance P2P',
-    aboutUpdateFrequency2: 'Financial news: every 5 minutes from multiple sources',
-    aboutUpdateFrequency3: 'Sentiment analysis: in real-time with AI',
-    aboutDataSource1Title: 'Binance P2P:',
-    aboutDataSource2Title: 'Central Bank of Bolivia:',
-    aboutDataSource3Title: 'Media:',
-    aboutDataSource4Title: 'Social media:',
-    aboutAITitle: 'Sentiment Analysis with Artificial Intelligence',
-    aboutAIDesc: 'We use OpenAI GPT-4o-mini to analyze the sentiment of news and tweets related to the Bolivian economy and exchange rate.',
-    aboutAIDetails: 'The system identifies whether a news article or tweet suggests the dollar will rise (bullish), fall (bearish), or have no significant effect (neutral). This helps users understand the context behind exchange rate movements.',
-    aboutTransparency1: 'Publicly available source code',
-    aboutTransparency2: 'Transparent and documented methodology',
-    aboutTransparency3: 'No data manipulation',
-    aboutTransparency4: 'Automatic updates without manual intervention',
-    aboutCaveats1: 'Parallel market prices may vary by location and payment method',
-    aboutCaveats2: 'We are not responsible for financial decisions made based on this data',
-    aboutCaveats3: 'Always verify rates before making transactions',
-    aboutCaveats4: 'The blue dollar is an informal market and may be subject to local regulations',
     aboutContactTitle: 'Contact and Feedback',
     aboutContactDesc: 'Do you have questions, suggestions, or found an error? We are open to community feedback. You can contact us through our contact page.',
     aboutFooter: 'Bolivia Blue - Transparency in the Bolivian exchange market',

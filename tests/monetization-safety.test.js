@@ -2,6 +2,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
+import { ABOUT_COPY } from '../frontend/src/data/aboutPage.js';
 import { BINANCE_REFERRAL_LINK, getPartnerAds } from '../frontend/src/config/referrals.js';
 import { historicalTableData, checkExtendedExportService } from '../frontend/src/utils/historicalTable.js';
 const source = (name) => readFileSync(new URL(`../frontend/src/${name}`, import.meta.url), 'utf8');
@@ -11,7 +12,7 @@ describe('buying instructions and referral intent', () => {
     const file = source('contexts/LanguageContext.jsx');
     const start = file.indexOf('export const translations');
     const end = file.indexOf('export function LanguageProvider');
-    const translations = vm.runInNewContext(file.slice(start, end).replace('export const translations', 'const translations') + '\ntranslations;');
+    const translations = vm.runInNewContext(file.slice(start, end).replace('export const translations', 'const translations') + '\ntranslations;', { ABOUT_COPY });
     assert.match(translations.es.buyDollarsStep3Desc, /"Comprar" USDT/);
     assert.match(translations.en.buyDollarsStep3Desc, /"Buy" USDT/);
     assert.match(translations.es.buyDollarsStep5Desc, /BOB al vendedor/);

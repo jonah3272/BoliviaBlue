@@ -25,14 +25,14 @@ async function refreshBlueRate() {
     const [blueRateData, officialRateData] = await Promise.all([
       getCurrentBlueRate(),
       getOfficialRate().catch(err => {
-        console.warn('Official rate fetch failed, using static:', err.message);
+        console.warn('Official rate unavailable:', err.message);
         return getStaticOfficialRate();
       })
     ]);
     
     // Calculate mid prices
     const blueMid = median([blueRateData.buy_bob_per_usd, blueRateData.sell_bob_per_usd]);
-    const officialMid = median([officialRateData.official_buy, officialRateData.official_sell]);
+    const officialMid = officialRateData.official_mid;
     
     // Store in database
     insertRate.run(
@@ -63,7 +63,8 @@ async function refreshBlueRate() {
       ...blueRateData,
       official_buy: officialRateData.official_buy,
       official_sell: officialRateData.official_sell,
-      official_source: officialRateData.source,
+      official_mid: officialRateData.official_mid,
+      official_observation: officialRateData.official_observation,
       buy_change_24h: buyChange,
       sell_change_24h: sellChange
     };

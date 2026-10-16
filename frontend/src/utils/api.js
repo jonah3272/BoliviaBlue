@@ -1,6 +1,7 @@
 import { supabase } from './supabase';
 import logger from './logger';
 import { sourceObservationModel } from './sourceObservation';
+import { officialPayload } from './officialRate';
 
 /**
  * Retry wrapper for API calls
@@ -111,43 +112,6 @@ function stripInterpolatedGapRates(points) {
   return points.filter((p) => !isInterpolatedGapPoint(p));
 }
 
-function isOfficialRate(value) {
-  const n = Number(value);
-  return Number.isFinite(n) && n >= 1 && n <= 100;
-}
-
-function packOfficial(buy, sell, mid) {
-  if (!isOfficialRate(buy) || !isOfficialRate(sell)) return null;
-  return {
-    official_buy: Number(buy),
-    official_sell: Number(sell),
-    official_mid: isOfficialRate(mid) ? Number(mid) : (Number(buy) + Number(sell)) / 2,
-  };
-}
-
-/** If the latest row has no BCB fields, copy the last stored official from Supabase. */
-async function fillMissingOfficial(data) {
-  const have = packOfficial(data?.official_buy, data?.official_sell, data?.official_mid);
-  if (have) return { ...data, ...have };
-
-  try {
-    const { data: lastOff } = await supabase
-      .from('rates')
-      .select('official_buy, official_sell, official_mid')
-      .not('official_buy', 'is', null)
-      .not('official_sell', 'is', null)
-      .order('t', { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    const packed = packOfficial(lastOff?.official_buy, lastOff?.official_sell, lastOff?.official_mid);
-    if (packed) return { ...data, ...packed };
-  } catch (err) {
-    logger.warn('Last-valid official lookup failed:', err?.message || err);
-  }
-
-  return data;
-}
-
 /**
  * Fetch current blue market rate directly from Supabase with retry logic.
  * Uses a short in-memory cache (90s) to avoid duplicate calls on load (Home + BlueRateCards) and to ease free-tier latency.
@@ -157,7 +121,7 @@ export async function fetchBlueRate(currency = 'USD') {
   const now = Date.now();
   const cached = rateCache.get(currency);
   if (cached && cached.expiresAt > now) {
-    return cached.data;
+    return { ...cached.data, ...officialPayload(cached.data) };
   }
   try {
   const result = await withTimeout(
@@ -196,8 +160,7 @@ export async function fetchBlueRate(currency = 'USD') {
               buy,
               sell,
               mid: (buy + sell) / 2,
-              official_buy: fresh.official_buy ?? data.official_buy,
-              official_sell: fresh.official_sell ?? data.official_sell,
+              ...officialPayload(fresh),
               buy_bob_per_brl: fresh.buy_bob_per_brl ?? null,
               sell_bob_per_brl: fresh.sell_bob_per_brl ?? null,
               mid_bob_per_brl:
@@ -263,7 +226,8 @@ export async function fetchBlueRate(currency = 'USD') {
     
     data = await attachLastValidFiats(data);
 
-    data = await fillMissingOfficial(data);
+    // Never fill an unavailable official observation from an arbitrary stored row.
+    data = { ...data, ...officialPayload(data) };
 
     const ageAfterHealMs = Date.now() - new Date(data.t).getTime();
 
@@ -380,9 +344,6 @@ export async function fetchBlueRate(currency = 'USD') {
       response.buy_bob_per_usd = buyRate;
       response.sell_bob_per_usd = sellRate;
       response.mid_bob_per_usd = midRate;
-      response.official_buy = data.official_buy;
-      response.official_sell = data.official_sell;
-      response.official_mid = data.official_mid;
       response.buy_bob_per_eur = data.buy_bob_per_eur ?? null;
       response.sell_bob_per_eur = data.sell_bob_per_eur ?? null;
       response.buy_bob_per_brl = data.buy_bob_per_brl ?? null;
@@ -421,18 +382,6 @@ export async function fetchBlueRate(currency = 'USD') {
       response.mid_bob_per_cop = midRate;
       response.cop_derivation = data.cop_derivation || 'p2p-usdt';
       response.cop_updated_at_iso = data.cop_updated_at_iso || data.t;
-      const usdBuy = Number(data.buy);
-      const usdSell = Number(data.sell);
-      const offBuy = Number(data.official_buy);
-      const offSell = Number(data.official_sell);
-      if (usdBuy > 0 && Number.isFinite(buyRate) && Number.isFinite(offBuy) && offBuy >= 1) {
-        response.official_buy = offBuy * (buyRate / usdBuy);
-        response.official_sell =
-          usdSell > 0 && Number.isFinite(sellRate) && Number.isFinite(offSell) && offSell >= 1
-            ? offSell * (sellRate / usdSell)
-            : response.official_buy;
-        response.official_mid = (response.official_buy + response.official_sell) / 2;
-      }
     } else if (currency === 'PEN' || currency === 'ARS' || currency === 'CLP') {
       const key = currency.toLowerCase();
       response[`buy_bob_per_${key}`] = buyRate;
@@ -440,27 +389,11 @@ export async function fetchBlueRate(currency = 'USD') {
       response[`mid_bob_per_${key}`] = midRate;
       response[`${key}_derivation`] = data[`${key}_derivation`] || 'p2p-usdt';
       response[`${key}_updated_at_iso`] = data[`${key}_updated_at_iso`] || data.t;
-      const usdBuy = Number(data.buy);
-      const usdSell = Number(data.sell);
-      const offBuy = Number(data.official_buy);
-      const offSell = Number(data.official_sell);
-      if (usdBuy > 0 && Number.isFinite(buyRate) && Number.isFinite(offBuy) && offBuy >= 1) {
-        response.official_buy = offBuy * (buyRate / usdBuy);
-        response.official_sell =
-          usdSell > 0 && Number.isFinite(sellRate) && Number.isFinite(offSell) && offSell >= 1
-            ? offSell * (sellRate / usdSell)
-            : response.official_buy;
-        response.official_mid = (response.official_buy + response.official_sell) / 2;
-      }
     }
 
-    // BCB is always USD/BOB — keep it on EUR/BRL views too.
-    if (response.official_buy == null) {
-      response.official_buy = data.official_buy;
-      response.official_sell = data.official_sell;
-      response.official_mid = data.official_mid;
-    }
-    
+    // BCB values are always USD/BOB. Never relabel a derived fiat cross as BCB.
+    Object.assign(response, officialPayload(data));
+
     // Add generic fields for component compatibility
     response.buy = buyRate;
     response.sell = sellRate;
@@ -475,7 +408,7 @@ export async function fetchBlueRate(currency = 'USD') {
   } catch (err) {
     if (cached?.data) {
       logger.warn('Rate fetch failed; returning last valid reading:', err?.message || err);
-      return { ...cached.data, is_stale: true };
+      return { ...cached.data, ...officialPayload(cached.data), is_stale: true };
     }
     throw err;
   }
@@ -520,7 +453,7 @@ export async function fetchBlueHistory(range = '1W', currency = 'USD') {
   }
   
   // Determine which fields to select based on currency
-  let selectFields = 't, buy, sell, mid, official_buy, official_sell, official_mid';
+  let selectFields = 't, buy, sell, mid, official_buy, official_sell, official_mid, official_observation';
   if (currency === 'BRL') {
     selectFields = 't, buy_bob_per_brl, sell_bob_per_brl, mid_bob_per_brl';
   } else if (currency === 'EUR') {
@@ -714,9 +647,7 @@ export async function fetchBlueHistory(range = '1W', currency = 'USD') {
         buy: point.buy,
         sell: point.sell,
         mid: point.mid,
-        official_buy: point.official_buy,
-        official_sell: point.official_sell,
-        official_mid: point.official_mid
+        ...officialPayload(point)
       };
     } else if (currency === 'BRL') {
       return {

@@ -10,7 +10,7 @@ describe('rate provenance', () => {
     const provenance = require('../shared/rateProvenance.cjs');
     const context = {
       module: { exports: {} }, console, Date,
-      require: (name) => name.includes('rateProvenance') ? provenance : ({ STALE_MS: 1200000, isRateStale: () => false }),
+      require: (name) => name.includes('officialProvenance') ? require('../shared/officialProvenance.cjs') : name.includes('rateProvenance') ? provenance : ({ STALE_MS: 1200000, isRateStale: () => false }),
     };
     vm.runInNewContext(fs.readFileSync(path.join(root, 'api/blue-rate.js'), 'utf8') + '\nmodule.exports.test = { toPayload };', context);
     const { toPayload } = context.module.exports.test;

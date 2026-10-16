@@ -53,7 +53,7 @@ test('backend insertRate persists exact snapshot and legacy callers remain unkno
   let source=fs.readFileSync(path.join(root,'backend/db-supabase.js'),'utf8');
   source=source.slice(source.indexOf('export async function insertRate'),source.indexOf('/**\n * Get the most recent rate')).replace('export async function','async function');
   const writes=[];
-  const context={module:{exports:{}},console,LOCAL_MODE:false,readSourceObservation:p.readSourceObservation,supabase:{from(){return{insert(value){writes.push(value);return{select(){return{single:async()=>({data:value,error:null})}}}}}}}};
+  const context={module:{exports:{}},console,LOCAL_MODE:false,readSourceObservation:p.readSourceObservation,officialPayload:require('../shared/officialProvenance.cjs').officialPayload,supabase:{from(){return{insert(value){writes.push(value);return{select(){return{single:async()=>({data:value,error:null})}}}}}}}};
   vm.runInNewContext(source+'\nmodule.exports=insertRate;',context);
   const args=[t,12,14,13,6.86,6.96,6.91,...Array(9).fill(null)];
   await context.module.exports(...args,{source_observation:row().source_observation});

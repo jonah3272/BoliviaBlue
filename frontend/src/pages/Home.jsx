@@ -229,6 +229,8 @@ function Home() {
                 sell={currentRate?.sell ?? currentRate?.sell_bob_per_usd}
                 officialBuy={currentRate?.official_buy ?? currentRate?.officialBuy}
                 officialSell={currentRate?.official_sell ?? currentRate?.officialSell}
+                officialMid={currentRate?.official_mid}
+                officialObservation={currentRate?.official_observation}
                 language={language}
                 updatedAt={currentRate?.updated_at_iso}
               />

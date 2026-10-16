@@ -1,3 +1,4 @@
+const { officialMetadata } = require('../../shared/officialProvenance.cjs');
 const { sourcePayload } = require('../../shared/rateProvenance.cjs');
 const MAX_ROWS = 4000;
 const PAGE_SIZE = 1000;
@@ -34,7 +35,7 @@ async function fetchHistoricalExport(supabase, options) {
   const collected = [];
   let offset = 0;
   while (collected.length <= options.limit) {
-    let query = supabase.from('rates').select(`${COLUMNS},source_observation`)
+    let query = supabase.from('rates').select(`${COLUMNS},source_observation,official_observation`)
       .lte('t', options.requested_end).order('t', { ascending: false })
       .order('id', { ascending: false })
       .range(offset, offset + PAGE_SIZE - 1);
@@ -47,7 +48,7 @@ async function fetchHistoricalExport(supabase, options) {
     offset += page.length;
   }
   const truncated = collected.length > options.limit;
-  const points = collected.slice(0, options.limit).reverse().map(row => ({ ...row, ...sourcePayload(row) }));
+  const points = collected.slice(0, options.limit).reverse().map(row => ({ ...row, ...sourcePayload(row), ...officialMetadata(row) }));
   const recorded = points.filter(row => row.source_observation).length;
   return {
     range: options.range, count: points.length, points,
@@ -62,6 +63,7 @@ async function fetchHistoricalExport(supabase, options) {
       provenance_rows_recorded: recorded,
       provenance_rows_unavailable: points.length - recorded,
       csv_provenance: 'not_included_use_json',
+      official_provenance: 'per_row_in_json; legacy_values_unverified',
       excluded_interpolated_gap: true,
       attribution: 'https://www.boliviablue.com/fuente-de-datos',
       generated_at: options.requested_end,

@@ -4,6 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const provenance = require('../shared/rateProvenance.cjs');
+const officialProvenance = require('../shared/officialProvenance.cjs');
 
 const root = path.resolve(__dirname, '..');
 const read = file => fs.readFileSync(path.join(root, file), 'utf8');
@@ -18,7 +19,7 @@ const cross = {
     { id: 'eldorado', buy: 13, sell: 15 },
   ],
 };
-const official = { official_buy: 6.86, official_sell: 6.96, official_mid: 6.91 };
+const official = officialProvenance.observationPayload(officialProvenance.createOfficialObservation({ buy: 6.86, sell: 6.96, source_date: '2026-10-11' }, now));
 const validBrl = { BUY: ['4'], SELL: ['5'] };
 const noBrl = { BUY: [], SELL: [] };
 
@@ -79,6 +80,7 @@ function backendWriter(fixture) {
   const writer = {
     module: { exports: {} }, console: quiet, LOCAL_MODE: false,
     readSourceObservation: provenance.readSourceObservation,
+    officialPayload: officialProvenance.officialPayload,
     supabase: {
       from(table) {
         assert.equal(table, 'rates');
@@ -101,7 +103,7 @@ function backendWriter(fixture) {
 
   const cache = {};
   const scheduler = {
-    module: { exports: {} }, console: quiet, Date: FixedDate, cache,
+    module: { exports: {} }, console: quiet, Date: FixedDate, cache, supabase: writer.supabase,
     getAllCurrentBlueRates: collector.module.exports,
     getOfficialRate: async () => official,
     insertRate: writer.module.exports,
@@ -141,6 +143,7 @@ function vercelWriter(fixture) {
     module: { exports: {} }, console: quiet, Date: FixedDate, process: { env: {} },
     fetch: quotes.fetch,
     require(name) {
+      if (name.includes('officialProvenance')) return officialProvenance;
       if (name.includes('rateProvenance')) return provenance;
       if (name === '@supabase/supabase-js') return {};
       if (name === './p2pCrossSource') return {
@@ -247,6 +250,7 @@ test('public API JSON preserves explicit BRL nulls from either writer', async ()
   const context = {
     module: { exports: {} }, console: quiet, Date: FixedDate,
     require(name) {
+      if (name.includes('officialProvenance')) return officialProvenance;
       if (name.includes('rateProvenance')) return provenance;
       if (name === './_lib/binanceRefresh') return { STALE_MS: 1200000, isRateStale: () => false };
       if (name === './_lib/officialRate' || name === './_lib/cardRate') return {};
@@ -291,7 +295,7 @@ async function frontendReader(brlFields) {
     },
   });
   const context = {
-    supabase: { from: () => query }, sourceObservationModel,
+    supabase: { from: () => query }, sourceObservationModel, officialPayload: require('../shared/officialProvenance.cjs').officialPayload,
     logger: quiet, console: quiet, Date: FixedDate, setTimeout: testTimeout,
     fetch: async url => {
       assert.equal(url, '/api/blue-rate');

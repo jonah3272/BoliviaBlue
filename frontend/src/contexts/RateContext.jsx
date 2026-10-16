@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, useCallback, useRef } f
 import { fetchBlueRate } from '../utils/api';
 import { isStale } from '../utils/formatters';
 import logger from '../utils/logger';
+import { officialPayload } from '../utils/officialRate';
 
 const RateContext = createContext(null);
 
@@ -29,27 +30,18 @@ export function RateProvider({ children }) {
       setError(null);
       const data = await fetchBlueRate();
 
+      const official = officialPayload(data);
       const standardized = {
         buy: data.buy_bob_per_usd,
         sell: data.sell_bob_per_usd,
         mid: data.mid_bob_per_usd,
-        officialBuy: data.official_buy,
-        officialSell: data.official_sell,
-        officialMid:
-          data.official_mid ??
-          (Number.isFinite(data.official_buy) && Number.isFinite(data.official_sell)
-            ? (data.official_buy + data.official_sell) / 2
-            : data.official_buy),
+        officialBuy: official.official_buy,
+        officialSell: official.official_sell,
+        officialMid: official.official_mid,
+        ...official,
         buy_bob_per_usd: data.buy_bob_per_usd,
         sell_bob_per_usd: data.sell_bob_per_usd,
         mid_bob_per_usd: data.mid_bob_per_usd,
-        official_buy: data.official_buy,
-        official_sell: data.official_sell,
-        official_mid:
-          data.official_mid ??
-          (Number.isFinite(data.official_buy) && Number.isFinite(data.official_sell)
-            ? (data.official_buy + data.official_sell) / 2
-            : data.official_buy),
         buy_bob_per_brl: data.buy_bob_per_brl,
         sell_bob_per_brl: data.sell_bob_per_brl,
         buy_bob_per_eur: data.buy_bob_per_eur,

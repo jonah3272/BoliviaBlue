@@ -3,6 +3,8 @@ import PageHead from './PageHead';
 import { fetchBlueRate } from '../utils/api';
 import { formatRate, formatDateTime, isStale } from '../utils/formatters';
 import { useLanguage } from '../contexts/LanguageContext';
+import { officialRateModel } from '../utils/officialRate';
+import OfficialRateNote from './OfficialRateNote';
 
 function RateCard({ type, rate, timestamp, isStaleData, isLoading, error, dailyChange, isOfficial }) {
   const languageContext = useLanguage();
@@ -107,6 +109,9 @@ function RateCards() {
   const isDataStale = data?.updated_at_iso ? 
     (isStale(data.updated_at_iso) || data.is_stale) : false;
 
+  const language = languageContext?.language || 'es';
+  const official = officialRateModel(data, language);
+
   // Use daily change from API
   const buyChange = data?.buy_change_24h;
   const sellChange = data?.sell_change_24h;
@@ -164,26 +169,27 @@ function RateCards() {
         </div>
       </div>
 
-      {/* Official Rates */}
+      {/* Only provenance-verified BCB values are official rates. */}
       <div>
         <h3 className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-3 text-center">
-          {t('officialRateTitle')}
+          {official.label}
         </h3>
+        <p className="text-xs text-center text-gray-600 dark:text-gray-400 mb-3"><OfficialRateNote rate={official} language={language} /></p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
           <RateCard
             type="buy"
-            rate={data?.official_buy}
-            timestamp={data?.updated_at_iso}
-            isStaleData={false}
+            rate={official.official_buy}
+            timestamp={null}
+            isStaleData={official.stale}
             isLoading={isLoading}
             error={error}
             isOfficial={true}
           />
           <RateCard
             type="sell"
-            rate={data?.official_sell}
-            timestamp={data?.updated_at_iso}
-            isStaleData={false}
+            rate={official.official_sell}
+            timestamp={null}
+            isStaleData={official.stale}
             isLoading={isLoading}
             error={error}
             isOfficial={true}

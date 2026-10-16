@@ -33,6 +33,7 @@ module.exports = async function handler(req, res) {
       'X-Data-Start': metadata.returned_start || '',
       'X-Data-End': metadata.returned_end || '',
       'X-Data-Provenance': metadata.source_provenance,
+      'X-Official-Provenance': 'legacy-values-unverified; per-row-status-in-json',
     };
     for (const [key, value] of Object.entries(coverageHeaders)) res.setHeader(key, value);
     res.setHeader('Access-Control-Expose-Headers', Object.keys(coverageHeaders).join(', '));

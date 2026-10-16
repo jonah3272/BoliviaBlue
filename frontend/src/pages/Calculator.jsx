@@ -217,6 +217,8 @@ function Calculator() {
             sell={currentRate.sell}
             officialBuy={currentRate.official_buy}
             officialSell={currentRate.official_sell}
+            officialMid={currentRate.official_mid}
+            officialObservation={currentRate.official_observation}
             language={language}
             updatedAt={currentRate.updated_at_iso}
           />

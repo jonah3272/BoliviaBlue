@@ -2,12 +2,14 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import { readFileSync } from 'node:fs';
+import officialProvenance from '../shared/officialProvenance.cjs';
+const { officialPayload } = officialProvenance;
 import { sourceObservationModel } from '../frontend/src/utils/sourceObservation.js';
 const base = {buy:10.1,sell:10.3,mid:10.2,official_buy:6.86,official_sell:6.96};
 const observation = t => ({version:1,observed_at:t,method:'median_of_platform_quotes',quote_asset:'USDT',fiat:'BOB',platforms:[{id:'binance',buy:10.1,sell:10.3}]});
 async function run(row, healed) {
   const query = new Proxy({}, {get(_,key) {if(key==='single') return async()=>({data:row});if(key==='maybeSingle')return async()=>({data:null});if(key==='then')return (resolve)=>resolve({data:null});return ()=>query;}});
-  const context={supabase:{from:()=>query},sourceObservationModel,logger:{warn(){},error(){}},console,Date,Map,Number,Promise,setTimeout:()=>0,fetch:async()=>({ok:true,json:async()=>healed})};
+  const context={supabase:{from:()=>query},sourceObservationModel,officialPayload,logger:{warn(){},error(){}},console,Date,Map,Number,Promise,setTimeout:()=>0,fetch:async()=>({ok:true,json:async()=>healed})};
   vm.createContext(context);
   const source=readFileSync(new URL('../frontend/src/utils/api.js',import.meta.url),'utf8').replace(/^import .*;\n/gm,'').replace(/^export /gm,'');
   vm.runInContext(source+'\nthis.fetchRate = fetchBlueRate;',context);

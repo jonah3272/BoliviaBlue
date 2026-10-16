@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchCardRates } from '../utils/api';
 import { formatRate } from '../utils/formatters';
+import { officialRateModel } from '../utils/officialRate';
+import OfficialRateNote from './OfficialRateNote';
 
 function cardBobPerUsd(row) {
   if (!row) return null;
@@ -21,6 +23,8 @@ export default function RateTrioStrip({
   sell,
   officialBuy,
   officialSell,
+  officialMid,
+  officialObservation,
   language = 'es',
   updatedAt = null,
   cardRate: cardRateProp = null,
@@ -45,14 +49,11 @@ export default function RateTrioStrip({
 
   const blueMid =
     Number.isFinite(buy) && Number.isFinite(sell) ? (buy + sell) / 2 : Number.isFinite(buy) ? buy : null;
-  const officialBuyN = Number(officialBuy);
-  const officialSellN = Number(officialSell);
-  const bcbMid =
-    Number.isFinite(officialBuyN) && Number.isFinite(officialSellN)
-      ? (officialBuyN + officialSellN) / 2
-      : Number.isFinite(officialBuyN)
-        ? officialBuyN
-        : null;
+  const official = officialRateModel({
+    official_buy: officialBuy, official_sell: officialSell, official_mid: officialMid,
+    official_observation: officialObservation,
+  }, language);
+  const bcbMid = official.official_mid;
   const cardRate =
     Number.isFinite(cardRateProp) && cardRateProp > 0
       ? cardRateProp
@@ -122,9 +123,9 @@ export default function RateTrioStrip({
     },
     {
       key: 'bcb',
-      label: es ? 'BCB (oficial)' : 'BCB (official)',
+      label: official.label,
       value: bcbMid,
-      sub: es ? 'Referencia Banco Central' : 'Central Bank reference',
+      sub: <OfficialRateNote rate={official} language={language} />,
       accent: 'border-gray-400 bg-gray-50 dark:bg-gray-800/60',
       valueClass: 'text-gray-800 dark:text-gray-100',
     },

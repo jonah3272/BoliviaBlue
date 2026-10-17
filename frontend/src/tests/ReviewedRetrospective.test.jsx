@@ -23,7 +23,9 @@ vi.mock('../components/DailyEvidenceArchive', () => ({ default: () => null }));
 
 const initialStates = RETROSPECTIVE_RELEASES.map((release) => release.state);
 const revision = new Date(Date.now() - 60_000).toISOString();
-const rows = Object.fromEntries(RETROSPECTIVE_RELEASES.map((release) => [release.language, { ...release.fields, updated_at: revision }]));
+for (const observationDate of ['2026-04-28', '2025-12-17']) describe(observationDate, () => {
+const releases = RETROSPECTIVE_RELEASES.filter((release) => release.observationDate === observationDate);
+const rows = Object.fromEntries(releases.map((release) => [release.language, { ...release.fields, updated_at: revision }]));
 function mount(path) {
   const router = { state: {} };
   function Probe() {
@@ -44,7 +46,7 @@ async function check(language) {
   expect(schema.dateModified).toBe(revision);
   expect(schema.datePublished).toBeUndefined();
   expect(schema.inLanguage).toBe(language === 'en' ? 'en-US' : 'es-BO');
-  expect(screen.getByRole('note')).toHaveTextContent(RETROSPECTIVE_RELEASES.find((item) => item.language === language).notice.title);
+  expect(screen.getByRole('note')).toHaveTextContent(releases.find((item) => item.language === language).notice.title);
   expect(screen.getByText(retrospectiveRevisionLabel(reviewedRetrospective(row), language))).toBeVisible();
   expect(document.querySelector('.blog-content').innerHTML).toBe(row.content);
   expect(document.querySelectorAll('h1')).toHaveLength(1);
@@ -69,7 +71,7 @@ for (const language of ['es', 'en']) {
     mount(`/blog/${rows[language].slug}${language === 'en' ? '?lang=en' : ''}`);
     await check(language);
     const evidence = screen.getByRole('link', { name: language === 'en' ? 'Download the dated observations and calculations' : 'Descargar las observaciones y los cálculos de estas fechas' });
-    expect(evidence).toHaveAttribute('href', RETROSPECTIVE_RELEASES[0].evidencePath);
+    expect(evidence).toHaveAttribute('href', releases[0].evidencePath);
   });
   it(`${language}: collection retains review payload, uses revision metadata and preserves locale in its link`, async () => {
     mount(`/blog${language === 'en' ? '?lang=en' : ''}`);
@@ -131,4 +133,6 @@ it('a missing remote row never falls back to prepared article text', async () =>
   await screen.findByRole('heading', { level: 1, name: 'Article not found' });
   expect(document.querySelector('.blog-content')).toBeNull();
   expect(document.body).not.toHaveTextContent(rows.en.title);
+});
+
 });

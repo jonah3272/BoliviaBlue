@@ -20,19 +20,19 @@ async function withReviewed(callback) {
 const schema = (html) => JSON.parse(html.match(/<script type="application\/ld\+json"[^>]*>(.*?)<\/script>/s)[1]);
 
 for (const release of RETROSPECTIVE_RELEASES) {
-  test(`${release.language}: pending candidate cannot publish itself or whitelist the old slug`, () => {
+  test(`${release.observationDate} ${release.language}: pending candidate cannot publish itself or whitelist the old slug`, () => {
     assert.equal(reviewedRetrospective(rowFor(release), { releases: pending }), null);
     assert.deepEqual(reviewedRetrospectiveIds(release.language, pending), []);
   });
-  test(`${release.language}: exact reviewed live row carries actual revision and no draft/duplicate h1`, () => {
+  test(`${release.observationDate} ${release.language}: exact reviewed live row carries actual revision and no draft/duplicate h1`, () => {
     const result = reviewedRetrospective(rowFor(release), { releases: reviewed, now });
     assert.equal(result.revisedAt, revision);
-    assert.equal(result.fields.published_at, '2026-04-28 04:00:00+00');
+    assert.equal(result.fields.published_at, `${release.observationDate} 04:00:00+00`);
     assert.match(retrospectiveRevisionLabel(result, release.language), /Bolivia, UTC−4/);
     assert.doesNotMatch(result.fields.content, /<h1>|Borrador pendiente|Publication is pending/);
     assert.match(result.fields.content, /source|procedencia/i);
   });
-  test(`${release.language}: every payload/identity field and release timestamp is guarded`, () => {
+  test(`${release.observationDate} ${release.language}: every payload/identity field and release timestamp is guarded`, () => {
     for (const key of Object.keys(release.fields)) {
       const row = rowFor(release);
       row[key] = typeof row[key] === 'boolean' ? !row[key] : `${row[key]}changed`;
@@ -49,7 +49,7 @@ for (const release of RETROSPECTIVE_RELEASES) {
     const formatted = { ...rowFor(release), created_at: release.fields.created_at.replace(' ', 'T').replace('+00', 'Z'), published_at: release.fields.published_at.replace(' ', 'T').replace('+00', 'Z') };
     assert.ok(reviewedRetrospective(formatted, { releases: reviewed, now }), 'PostgREST timestamp serialization stays equivalent');
   });
-  test(`${release.language}: initial HTML and client notice use corrected body, dated download and actual dateModified only`, async () => withReviewed(async () => {
+  test(`${release.observationDate} ${release.language}: initial HTML and client notice use corrected body, dated download and actual dateModified only`, async () => withReviewed(async () => {
     const row = rowFor(release);
     const request = { kind: 'blog', slug: release.slug, language: release.language };
     const article = await loadArticle(request, { env: { SUPABASE_URL: 'https://example.test', SUPABASE_ANON_KEY: 'test-only' }, fetcher: async (url) => {
@@ -75,7 +75,7 @@ for (const release of RETROSPECTIVE_RELEASES) {
     assert.equal(legacyDailyNotice(release.slug, release.language, row).title, release.notice.title);
     assert.match(html, /src="\/app.js"/);
   }));
-  test(`${release.language}: deploying reviewed code before the DB leaves original report behavior and discovery excluded`, async () => withReviewed(async () => {
+  test(`${release.observationDate} ${release.language}: deploying reviewed code before the DB leaves original report behavior and discovery excluded`, async () => withReviewed(async () => {
     const original = { ...rowFor(release), title: 'Original report', content: '<p>Original body</p>', updated_at: release.fields.created_at };
     assert.equal(isDiscoverableBlogArticle(original), false);
     const request = { kind: 'blog', slug: release.slug, language: release.language };
@@ -86,7 +86,7 @@ for (const release of RETROSPECTIVE_RELEASES) {
     assert.doesNotMatch(html, /data-reviewed-retrospective|observations-and-calculations.zip/);
     assert.match(html, release.language === 'en' ? /original article remains/ : /Conservamos el artículo original/);
   }));
-  test(`${release.language}: missing DB row and outage never fall back to an unpublished prepared retrospective`, async () => {
+  test(`${release.observationDate} ${release.language}: missing DB row and outage never fall back to an unpublished prepared retrospective`, async () => {
     const request = { kind: 'blog', slug: release.slug, language: release.language };
     for (const [status, fetcher] of [[404, async () => ({ ok: true, json: async () => [] })], [503, async () => { throw new Error('offline'); }]]) {
       const result = await loadArticle(request, { env: { SUPABASE_URL: 'https://example.test', SUPABASE_ANON_KEY: 'test' }, fetcher });
@@ -119,5 +119,23 @@ test('reviewed reader support keeps the generic SQL exclusions and does not alte
   }
   for (const path of ['api/_lib/sitemapXml.js', 'api/_lib/dailyEvidenceStore.js', 'frontend/src/data/blogArticles.js']) {
     assert.doesNotMatch(readFileSync(new URL('../' + path, import.meta.url), 'utf8'), /analisis-diario-2026-04-28/);
+  }
+});
+
+// Both date pairs are approved, but complete exact live payloads are still required.
+test('the registry contains only two approved date pairs and still rejects unchanged bodies', () => {
+  assert.equal(RETROSPECTIVE_RELEASES.length, 4);
+  assert.deepEqual([...new Set(RETROSPECTIVE_RELEASES.map((item) => item.observationDate))], ['2026-04-28', '2025-12-17']);
+  for (const language of ['es', 'en']) {
+    const april = RETROSPECTIVE_RELEASES.find((item) => item.observationDate === '2026-04-28' && item.language === language);
+    const december = RETROSPECTIVE_RELEASES.find((item) => item.observationDate === '2025-12-17' && item.language === language);
+    assert.equal(april.state, 'reviewed');
+    assert.equal(december.state, 'reviewed');
+    assert.deepEqual(reviewedRetrospectiveIds(language), [april.id, december.id]);
+    assert.ok(reviewedRetrospective(rowFor(april)));
+    assert.ok(reviewedRetrospective(rowFor(december)));
+    const original = { ...rowFor(december), content: 'Original body', updated_at: december.fields.created_at };
+    assert.equal(isDiscoverableBlogArticle(original), false);
+    assert.match(legacyDailyNotice(december.slug, language, original).body, language === 'en' ? /original article remains/ : /Conservamos el artículo original/);
   }
 });

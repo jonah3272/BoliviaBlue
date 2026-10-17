@@ -33,7 +33,7 @@ for (const language of ['es', 'en']) it(`${language}: queries only reviewed exac
   const result = await fetchBlogArticles(language);
   expect(result.map((item) => item.id)).toEqual([exact.id, 'guide']);
   expect(result[0].content).toBe(exact.content);
-  expect(state.requests[1].ops).toContainEqual(['in', 'id', [exact.id]]);
+  expect(state.requests[1].ops).toContainEqual(['in', 'id', RETROSPECTIVE_RELEASES.filter((item) => item.language === language).map((item) => item.id)]);
   expect(state.requests[1].ops).toContainEqual(['eq', 'language', language]);
   expect(state.requests[1].ops).toContainEqual(['neq', 'category', 'daily-evidence']);
 });
@@ -47,3 +47,24 @@ it('the preserved featured=false field cannot be overridden to newly feature thi
   state.rows = [row(), { ...row(), featured: true }];
   expect(await fetchFeaturedBlogArticles('es')).toEqual(state.ordinary);
 });
+
+for (const language of ['es', 'en']) {
+  it(`${language}: pending December cannot be fetched or listed beside published April`, async () => {
+    RETROSPECTIVE_RELEASES.filter((item) => item.observationDate === '2025-12-17').forEach((item) => { item.state = 'pending-approval'; });
+    state.rows = RETROSPECTIVE_RELEASES.filter((item) => item.language === language).map((item) => ({ ...item.fields, updated_at: revision }));
+    const april = state.rows.find((item) => item.slug === 'analisis-diario-2026-04-28');
+    expect((await fetchBlogArticles(language)).map((item) => item.id)).toEqual([april.id, 'guide']);
+    expect(state.requests[1].ops).toContainEqual(['in', 'id', [april.id]]);
+  });
+  it(`${language}: two approved exact dates appear independently, ordered by actual revision`, async () => {
+    RETROSPECTIVE_RELEASES.forEach((item) => { item.state = 'reviewed'; });
+    const releases = RETROSPECTIVE_RELEASES.filter((item) => item.language === language);
+    const april = { ...releases[0].fields, updated_at: new Date(Date.parse(revision) - 60_000).toISOString() };
+    const december = { ...releases[1].fields, updated_at: revision };
+    state.rows = [april, december, { ...december, id: 'unapproved-legacy' }, { ...december, content: 'unreviewed' }];
+    expect((await fetchBlogArticles(language)).map((item) => item.id)).toEqual([december.id, april.id, 'guide']);
+    expect(state.requests[1].ops).toContainEqual(['in', 'id', [april.id, december.id]]);
+    state.rows[1] = { ...december, updated_at: december.created_at };
+    expect((await fetchBlogArticles(language)).map((item) => item.id)).toEqual([april.id, 'guide']);
+  });
+}

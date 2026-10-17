@@ -207,13 +207,6 @@ function applyLiveRatesToRoutes(buy, sell, updatedAt, extra = {}) {
     vivo.shell = fillLiveRateSlots(vivo.shell, b, s, updatedAt);
   }
 
-  const blue = ROUTES['/bolivian-blue'];
-  if (blue) {
-    blue.title = `Bolivian Blue Today: Buy ${b} · Sell ${s}`;
-    blue.description = `Bolivian Blue in Bolivia: buy Bs ${b}, sell Bs ${s}${when ? ` (${when})` : ''}. Verified multi-platform P2P median.`;
-    blue.shell = fillLiveRateSlots(blue.shell, b, s, updatedAt);
-  }
-
   const cuanto = ROUTES['/cuanto-esta-dolar-bolivia'];
   if (cuanto) {
     cuanto.title = `¿Cuánto está el dólar en Bolivia? Compra ${b} · Venta ${s}`;
@@ -322,7 +315,8 @@ const SHELL_HOME = `
       El dólar paralelo (blue) en Bolivia cotiza hoy en Bs <span data-live-buy>—</span> para la compra y Bs <span data-live-sell>—</span> para la venta, con lectura verificada el <time data-live-when datetime="">—</time>, desde Bolivia Blue.
     </p>
     <p data-home-conversion class="font-semibold text-gray-800">
-      100 USD ≈ <span data-live-usd100>—</span> Bs (compra P2P).
+      Comprar 100 USDT: pagarías ≈ <span data-live-usd100>—</span> Bs.
+      <span class="block text-xs">Referencia P2P USDT/BOB, antes de comisiones; no es una cotización de dólares en efectivo.</span>
       <a href="/calculadora" class="text-blue-600 font-medium">Calculadora</a>
     </p>
     <nav class="flex flex-wrap justify-center gap-3 mt-4" aria-label="Enlaces principales">
@@ -420,14 +414,14 @@ const ROUTES = {
     getJsonLd: () => buildStaticJsonLd('/cuanto-esta-dolar-bolivia', '¿Cuánto Está el Dólar?', '¿Cuánto Está el Dólar en Bolivia?', 'Respuesta directa: el precio actual del dólar blue está abajo; usa la calculadora para cualquier monto.', [])
   },
   '/bolivian-blue': {
-    title: 'Bolivian Blue | Bolivia Blue Dollar Exchange Rate',
-    description: 'Bolivian Blue: real-time Bolivia blue dollar exchange rate. Updated every 15 min. Charts, calculator and news. Bolivian parallel market.',
+    title: 'Bolivian Blue Bolivia – Dólar Paralelo | Bolivia Blue',
+    description: 'Referencia del dólar blue en Bolivia a partir de USDT/BOB P2P. Lectura P2P no disponible. No es cotización de efectivo.',
     canonical: BASE_URL + '/bolivian-blue',
     shell: `
 <main class="max-w-7xl mx-auto px-4 py-8" data-seo-shell="bolivian-blue">
   <div class="text-center space-y-4 mb-8">
     <h1 class="text-3xl sm:text-5xl font-bold text-gray-900">Bolivian Blue – Tipo de Cambio Dólar Blue Bolivia</h1>
-    <p class="text-base text-gray-600 max-w-2xl mx-auto">Bolivian Blue hoy: compra <span data-live-buy>—</span> · venta <span data-live-sell>—</span> Bs por USD. Lectura: <time data-live-when datetime="">—</time> (hora de Bolivia). Referencia P2P, actualizada cada 15 minutos.</p>
+    <p class="text-base text-gray-600 max-w-2xl mx-auto">Bolivian Blue hoy: compra <span data-live-buy>—</span> · venta <span data-live-sell>—</span> Bs por USD. Lectura: <time data-live-when datetime="">—</time> (hora de Bolivia). Referencia P2P, no cotización de efectivo. Se intentan actualizaciones periódicas y puede haber demoras.</p>
     <nav class="flex flex-wrap justify-center gap-3 mt-4" aria-label="Related links">
       <a href="/" class="text-blue-600 font-medium">Inicio</a>
       <a href="/dolar-blue-hoy" class="text-blue-600 font-medium">Dólar blue hoy</a>
@@ -436,7 +430,7 @@ const ROUTES = {
     </nav>
   </div>
 </main>`.replace(/\n/g, '').trim(),
-    getJsonLd: () => buildStaticJsonLd('/bolivian-blue', 'Bolivian Blue', 'Bolivian Blue – Tipo de Cambio Dólar Blue Bolivia', 'Bolivian Blue: cotización de referencia del dólar paralelo en Bolivia, actualizada cada 15 minutos.', [])
+    getJsonLd: () => buildStaticJsonLd('/bolivian-blue', 'Bolivian Blue', 'Bolivian Blue – Tipo de Cambio Dólar Blue Bolivia', 'Bolivian Blue: referencia P2P USDT/BOB del dólar paralelo en Bolivia, no cotización de efectivo.', [])
   },
   '/que-es-dolar-blue': {
     title: '¿Qué es el Dólar Blue? Guía 2025 – Bolivia y Latinoamérica',
@@ -1074,7 +1068,7 @@ async function main() {
   fs.writeFileSync(path.join(DIST, '404.html'), notFoundHtml, 'utf8');
   console.log('[inject-seo-shell] Wrote dist/404.html');
   const { renderDollarRateHtml } = await import('../../seo/dollarRateSeo.js');
-  for (const route of ['/', '/dolar-blue-hoy', '/cuanto-esta-dolar-bolivia']) {
+  for (const route of ['/', '/dolar-blue-hoy', '/cuanto-esta-dolar-bolivia', '/bolivian-blue']) {
     const file = path.join(DIST, route === '/' ? 'index.html' : `${route.slice(1)}/index.html`);
     fs.writeFileSync(file, renderDollarRateHtml(fs.readFileSync(file, 'utf8'), route, dollarSnapshot), 'utf8');
   }

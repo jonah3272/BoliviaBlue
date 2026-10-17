@@ -29,9 +29,9 @@ function assertParity(html, model) {
 }
 
 describe('primary dollar search copy', () => {
-  it('shares head and visible answer across all three pages, both languages, and data states', () => {
+  it('shares head and visible answer across all registered dollar pages, both languages, and data states', () => {
     for (const [path, page] of Object.entries(DOLLAR_SEARCH_PAGES)) for (const language of ['es', 'en']) {
-      for (const data of [payload, { ...payload, is_stale: true }, { ...payload, updated_at_iso: null }, { ...payload, updated_at_iso: 'invalid' }, { ...payload, buy_bob_per_usd: 0 }, { ...payload, buy_bob_per_usd: true }, { ...payload, updated_at_iso: undefined, t: payload.updated_at_iso }, { ...payload, buy: 10.11, sell: 10.22 }, null]) {
+      for (const data of [payload, { ...payload, is_stale: true }, { ...payload, updated_at_iso: null }, { ...payload, updated_at_iso: 'invalid' }, { ...payload, updated_at_iso: null, is_stale: true }, { ...payload, updated_at_iso: 'invalid', is_stale: true }, { ...payload, buy_bob_per_usd: 0 }, { ...payload, buy_bob_per_usd: true }, { ...payload, updated_at_iso: undefined, t: payload.updated_at_iso }, { ...payload, buy: 10.11, sell: 10.22 }, null]) {
         const client = buildLiveRateSeoMeta({ ...normalizeDollarRatePayload(data), page, language });
         const pair = normalizeRates(data, path);
         let html = applyLiveSeo(sourceHtml(path), path, pair).html;
@@ -70,7 +70,8 @@ describe('primary dollar search copy', () => {
     assert.doesNotMatch(after.observation, /5:46/);
     const missing = buildDollarRateSearchCopy({ ...input, updatedAt: null, isStale: true, now: Date.parse('2026-10-04T21:46:00Z') });
     assert.equal(missing.observedAt, null);
-    assert.equal(missing.observation, 'Observation time unavailable.');
+    assert.equal(missing.isStale, true);
+    assert.equal(missing.observation, 'Stale reading. Observation time unavailable.');
   });
   it('formats the actual observation in Bolivia time regardless of host timezone', () => {
     const module = new URL('../frontend/src/utils/dollarRateSearchCopy.js', import.meta.url).href;
@@ -124,8 +125,31 @@ describe('primary dollar search copy', () => {
       }
     } finally { globalThis.fetch = original; }
   });
+  it('serves the same brand-route response to browsers and Googlebot in default, explicit Spanish and English locales', async () => {
+    const original = globalThis.fetch;
+    try {
+      globalThis.fetch = async (input) => String(input).includes('/api/blue-rate')
+        ? new Response(JSON.stringify(payload), { headers: { 'content-type': 'application/json' } })
+        : new Response(sourceHtml('/bolivian-blue'), { headers: { 'content-type': 'text/html' } });
+      for (const query of ['', '?lang=es', '?lang=en']) {
+        const results = [];
+        for (const userAgent of ['Mozilla/5.0', 'Googlebot/2.1 (+http://www.google.com/bot.html)']) {
+          const response = await middleware(new Request(`https://www.boliviablue.com/bolivian-blue${query}`, { headers: { Accept: 'text/html', 'User-Agent': userAgent } }));
+          assert.equal(response.status, 200);
+          const html = await response.text();
+          const language = query === '?lang=en' ? 'en' : 'es';
+          assertParity(html, buildLiveRateSeoMeta({ ...normalizeDollarRatePayload(payload), page: 'bolivian-blue', language }));
+          assert.match(html, /Bolivian Blue/);
+          assert.match(html, language === 'es' ? /Cómo interpretar el tipo de cambio Bolivian Blue/ : /Understanding the Bolivian Blue exchange rate/);
+          assert.doesNotMatch(html, /every 15|cada 15|millions|millones|1,060/);
+          results.push(html);
+        }
+        assert.equal(results[0], results[1]);
+      }
+    } finally { globalThis.fetch = original; }
+  });
   it('does not change hero, conversion math or other consumers of the citation component', () => {
-    for (const name of ['DolarBlueHoy', 'CuantoEstaDolarBolivia']) {
+    for (const name of ['DolarBlueHoy', 'CuantoEstaDolarBolivia', 'BolivianBlue']) {
       const source = readFileSync(new URL(`../frontend/src/pages/${name}.jsx`, import.meta.url), 'utf8');
       assert.doesNotMatch(source, /lastUpdated|setLastUpdated/);
       assert.match(source, /liveSeo\.observation/);

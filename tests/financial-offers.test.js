@@ -92,3 +92,21 @@ describe('financial offer intent and destinations', () => {
     assert.doesNotMatch(hook, /document\.cookie|localStorage|sessionStorage|setInterval|Math\.random/);
   });
 });
+
+it('explains the Takenos app handoff before account creation in both locales', () => {
+  for (const language of ['es', 'en']) {
+    const offer = getFinancialOffer(language, RECEIVE_PAYMENTS_INTENT);
+    assert.equal(offer.href, expected.takenos);
+    assert.equal(offer.id, 'takenos_client_payments');
+    assert.equal(offer.variant, 'benefit_v1');
+    assert.equal(offer.cta, language === 'es' ? 'Abrir o descargar Takenos' : 'Open or download Takenos');
+    assert.match(offer.handoff, language === 'es' ? /abre la app o su descarga.*Después, creá tu cuenta/ : /opens the app or its download page.*Then create your account/);
+    assert.match(offer.steps[0][1], language === 'es' ? /Abrí o descargá la app.*Después, creá tu cuenta/ : /Open or download the app.*Then create your account/);
+    assert.match(offer.qualification, language === 'es' ? /verificación de identidad/ : /Identity verification/);
+    assert.match(offer.disclosure, language === 'es' ? /recompensa.*no es un banco.*costos/ : /reward.*not a bank.*costs/);
+    assert.equal(getBuyGuidePage(language, RECEIVE_PAYMENTS_INTENT).offer.handoff, offer.handoff);
+    assert.match(source('components/FinancialOfferCard.jsx'), /offer\.handoff && <p/);
+    assert.ok(source('components/PlatformRatesBoard.jsx').includes(offer.cta));
+    assert.match(source('components/PlatformRatesBoard.jsx'), /`platform_board_primary_\$\{p\.id\}`/);
+  }
+});

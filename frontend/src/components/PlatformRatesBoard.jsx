@@ -29,7 +29,7 @@ const META = {
     accent: 'from-violet-500/20 via-transparent to-transparent border-violet-400/40',
     btn: 'bg-violet-600 text-white hover:bg-violet-500',
     btnSecondary: 'border-violet-400/50 text-violet-200 hover:bg-violet-500/10',
-    cta: { es: 'Crear mi cuenta Takenos', en: 'Create my Takenos account' },
+    cta: { es: 'Abrir o descargar Takenos', en: 'Open or download Takenos' },
     cta2: { es: 'Cobrar del exterior', en: 'Get paid from abroad' },
   },
   meru: {

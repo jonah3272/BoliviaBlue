@@ -1,8 +1,10 @@
+import { homeConversionCopy } from '../utils/homeConversionCopy';
 import { formatDateTime } from '../utils/formatters';
 
 /** Keep the homepage quote rows present while RateContext settles at every width. */
 export default function MobileHeroRates({ live, rate, loading, error, language }) {
   const es = language === 'es';
+  const conversionCopy = homeConversionCopy(language);
   const observed = formatDateTime(rate?.updated_at_iso, es ? 'es-BO' : 'en-US');
   const hasQuote = Boolean(live.buyStr && live.sellStr);
   const pending = !hasQuote && loading && !error;
@@ -16,7 +18,8 @@ export default function MobileHeroRates({ live, rate, loading, error, language }
         <span>· {es ? 'Venta' : 'Sell'} {live.sellStr || '—'}</span>
       </p>
       <p data-home-conversion className="mt-2 min-h-5 text-sm font-semibold leading-5 md:min-h-7 md:text-lg md:leading-7 text-gray-800 dark:text-gray-200">
-        100 USD ≈ {conversion || '—'} Bs ({es ? 'compra P2P' : 'P2P buy'})
+        {conversionCopy.prefix} {conversion || '—'} Bs
+        <span className="mt-1 block text-xs font-normal leading-4 text-gray-500 dark:text-gray-400">{conversionCopy.note}</span>
       </p>
       <p data-home-observation className={`mt-1 min-h-8 text-xs leading-4 ${error && !rate ? 'text-amber-700 dark:text-amber-300' : 'text-gray-500 dark:text-gray-400'}`}>
         {observed ? (

@@ -152,11 +152,6 @@ export function metaForPath(path, buy, sell, updatedAt = null, isStale = false) 
         title: `Dólar Blue Hoy Bolivia: Compra ${buy} · Venta ${sell}`,
         description: `Dólar blue hoy en Bolivia: compra Bs ${buy} y venta Bs ${sell}. Mercado paralelo actualizado cada 15 min.`,
       };
-    case '/bolivian-blue':
-      return {
-        title: `Bolivian Blue Today: Buy ${buy} · Sell ${sell}`,
-        description: `Bolivian Blue in Bolivia: buy Bs ${buy}, sell Bs ${sell}. P2P reference quote.`,
-      };
     case '/dolar-paralelo-bolivia-en-vivo':
       return {
         title: `Dólar Paralelo Bolivia EN VIVO: ${buy} / ${sell}`,
@@ -385,11 +380,6 @@ export function metaForPathEn(path, buy, sell, updatedAt = null, isStale = false
       return { title: `Dollar in Bolivia Today: Buy ${buy} · Sell ${sell}`, description: `Current Bolivia parallel dollar reference: buy Bs ${buy}, sell Bs ${sell}.` };
     case '/cotiza-dolar-paralelo':
       return { title: `Bolivia Parallel Dollar Quote: ${buy} / ${sell}`, description: `Parallel dollar quote in Bolivia: buy Bs ${buy}, sell Bs ${sell}.` };
-    case '/bolivian-blue':
-      return {
-        title: `Bolivian Blue Today: Buy ${buy} · Sell ${sell}`,
-        description: `Bolivian Blue in Bolivia: buy Bs ${buy}, sell Bs ${sell}. P2P reference quote.`,
-      };
     case '/euro-a-boliviano':
       return {
         title: `Euro Blue Bolivia Today: Buy ${buy} · Sell ${sell}`,

@@ -2,13 +2,15 @@ import { validObservationTime } from './observationTime.js';
 import { sourceObservationModel, formatObservationRate } from './sourceObservation.js';
 export { validObservationTime } from './observationTime.js';
 
-/** Shared search and visible-answer copy for the three primary dollar routes. */
+/** Shared search and visible-answer copy for the primary dollar routes. */
 export const DOLLAR_SEARCH_PAGES = {
   '/': 'home',
   '/dolar-blue-hoy': 'dolar-blue-hoy',
   '/cuanto-esta-dolar-bolivia': 'cuanto',
+  '/bolivian-blue': 'bolivian-blue',
 };
 const TITLES = {
+  'bolivian-blue': { es: 'Bolivian Blue Bolivia – Dólar Paralelo', en: 'Bolivian Blue Bolivia – Parallel Dollar' },
   home: { es: 'Dólar Blue Bolivia', en: 'Bolivia Blue Dollar' },
   'dolar-blue-hoy': { es: 'Dólar Blue Hoy Bolivia', en: 'Blue Dollar Today Bolivia' },
   cuanto: { es: '¿Cuánto está el dólar en Bolivia?', en: 'How Much Is the Dollar in Bolivia?' },
@@ -51,7 +53,7 @@ export function buildDollarRateSearchCopy({ page = 'home', buy, sell, updatedAt,
   const observedAt = hasRates ? validObservationTime(updatedAt) : null;
   // Match the existing client context's age rule. The caller supplies the clock only
   // for age comparison; it is never substituted for an observation timestamp.
-  const stale = Boolean(observedAt && (isStale || (Number.isFinite(now) && Math.floor((now - new Date(observedAt).getTime()) / 60000) > 45)));
+  const stale = Boolean(isStale || (observedAt && Number.isFinite(now) && Math.floor((now - new Date(observedAt).getTime()) / 60000) > 45));
   const when = observedAt ? new Intl.DateTimeFormat(es ? 'es-BO' : 'en-US', {
     timeZone: 'America/La_Paz', year: '2-digit', month: 'numeric', day: 'numeric', hour: 'numeric', minute: '2-digit',
   }).format(new Date(observedAt)) : null;

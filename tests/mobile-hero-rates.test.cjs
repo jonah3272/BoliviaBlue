@@ -37,19 +37,19 @@ describe('homepage hero reserved quote rows', () => {
     for (const language of ['es', 'en']) for (const loading of [true, false]) {
       const html = render(null, { language, loading });
       assert.doesNotMatch(html, /<time|12\.34|12\.56|0\.00/);
-      assert.match(text(html), /100 USD ≈ — Bs/);
+      assert.match(text(html), /100 USDT: (?:pagarías|you would pay) ≈ — Bs/);
       assert.equal((text(html).match(/—/g) || []).length, 3);
       assert.ok(html.includes(`data-state="${loading ? 'loading' : 'unavailable'}"`));
       assert.ok(text(html).includes(loading ? (language === 'es' ? 'Cargando lectura P2P…' : 'Loading P2P reading…') : (language === 'es' ? 'Lectura P2P no disponible.' : 'P2P reading unavailable.')));
     }
   });
-  it('preserves buy/sell formatting, buy-side 100 USD arithmetic, timestamp and stale status', () => {
+  it('preserves buy/sell formatting, buy-side 100 USDT arithmetic, timestamp and stale status', () => {
     for (const language of ['es', 'en']) {
       const rate = { ...fixture, is_stale: true };
       const html = render(rate, { language, error: 'refresh unavailable' });
       const live = liveBobParts(rate);
       assert.ok(text(html).includes(live.buyStr) && text(html).includes(live.sellStr));
-      assert.ok(text(html).includes(`100 USD ≈ ${live.times(100)} Bs`));
+      assert.ok(text(html).includes(`${language === 'es' ? 'Comprar 100 USDT: pagarías' : 'Buy 100 USDT: you would pay'} ≈ ${live.times(100)} Bs`));
       assert.ok(text(html).includes(formatDateTime(rate.updated_at_iso, language === 'es' ? 'es-BO' : 'en-US')));
       assert.ok(html.includes(`dateTime="${rate.updated_at_iso}"`));
       assert.ok(text(html).includes(`${formatDateTime(rate.updated_at_iso, language === 'es' ? 'es-BO' : 'en-US')} ${language === 'es' ? '(hora de Bolivia)' : '(Bolivia time)'}`));
@@ -84,4 +84,23 @@ describe('homepage hero reserved quote rows', () => {
     const source = readFileSync(join(__dirname, '../frontend/src/components/MobileHeroRates.jsx'), 'utf8');
     assert.doesNotMatch(source, /fetch\(|useRate\(|localStorage|trackEvent/);
   });
+});
+
+it('matches initial HTML and mounted home buy-cost copy, including missing rates, in both locales', async () => {
+  const { renderDollarRateHtml } = await import('../seo/dollarRateSeo.js');
+  const template = '<html><head><title>Home</title></head><body><main data-seo-shell="home"></main></body></html>';
+  for (const language of ['es', 'en']) for (const rate of [fixture, null]) {
+    const html = renderDollarRateHtml(template, '/', rate && { buy: rate.buy, sell: rate.sell, updatedAt: rate.updated_at_iso }, language);
+    const initial = text(html.match(/<p data-home-conversion[^>]*>(.*?)<\/p>/)[1]);
+    const mounted = text(render(rate, { language }).match(/<p data-home-conversion[^>]*>(.*?)<\/p>/)[1]);
+    // Preserve the existing shell integer / mounted decimal formatting.
+    assert.equal(initial.replace(/≈ [\d.]+ Bs/, '≈ AMOUNT Bs'), mounted.replace(/≈ [\d.]+ Bs/, '≈ AMOUNT Bs'));
+    if (rate) {
+      assert.ok(initial.includes(`≈ ${Math.round(rate.buy * 100)} Bs`));
+      assert.ok(mounted.includes(`≈ ${liveBobParts(rate).times(100)} Bs`));
+    }
+    assert.match(initial, language === 'es' ? /Comprar 100 USDT: pagarías ≈/ : /Buy 100 USDT: you would pay ≈/);
+    assert.match(initial, language === 'es' ? /antes de comisiones.*no es una cotización de dólares en efectivo/ : /before fees.*not a quote for cash dollars/);
+    assert.doesNotMatch(initial, /100 USD ≈/);
+  }
 });

@@ -40,15 +40,15 @@ function CurrencyCalculator({ presetRequest }) {
   const [searchParams] = useSearchParams();
 
   const currencies = {
-    USD: { symbol: '$', name: 'US Dollar', flag: '🇺🇸' },
+    USD: { symbol: '$', name: language === 'es' ? 'Dólar estadounidense' : 'US Dollar', flag: '🇺🇸' },
     USDT: { symbol: '₮', name: 'Tether', flag: '💲' },
     USDC: { symbol: 'Ⓢ', name: 'USD Coin', flag: '💵' },
     EUR: { symbol: '€', name: 'Euro', flag: '🇪🇺' },
-    BRL: { symbol: 'R$', name: 'Brazilian Real', flag: '🇧🇷' },
-    COP: { symbol: '$', name: 'Colombian Peso', flag: '🇨🇴' },
-    PEN: { symbol: 'S/', name: 'Peruvian Sol', flag: '🇵🇪' },
-    ARS: { symbol: '$', name: 'Argentine Peso', flag: '🇦🇷' },
-    CLP: { symbol: '$', name: 'Chilean Peso', flag: '🇨🇱' }
+    BRL: { symbol: 'R$', name: language === 'es' ? 'Real brasileño' : 'Brazilian Real', flag: '🇧🇷' },
+    COP: { symbol: '$', name: language === 'es' ? 'Peso colombiano' : 'Colombian Peso', flag: '🇨🇴' },
+    PEN: { symbol: 'S/', name: language === 'es' ? 'Sol peruano' : 'Peruvian Sol', flag: '🇵🇪' },
+    ARS: { symbol: '$', name: language === 'es' ? 'Peso argentino' : 'Argentine Peso', flag: '🇦🇷' },
+    CLP: { symbol: '$', name: language === 'es' ? 'Peso chileno' : 'Chilean Peso', flag: '🇨🇱' }
   };
 
   // 1 USD = X of this currency. Live BOB crosses fill EUR/BRL/COP/PEN/ARS/CLP. Never invent ARS=1000.
@@ -394,7 +394,7 @@ function CurrencyCalculator({ presetRequest }) {
               <div className="space-y-3">
                 <div>
                   <label htmlFor="calculator-bob" className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
-                    {t('bolivianos')} (BOB)
+                    Bolivianos (BOB) · {convertFromBOB ? (es ? 'Entregás' : 'You give') : (es ? 'Recibirías (estimado)' : 'You would receive (estimate)')}
                   </label>
                   <div className="relative">
                     <input
@@ -427,7 +427,7 @@ function CurrencyCalculator({ presetRequest }) {
 
                 <div>
                   <label htmlFor="calculator-foreign" className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 uppercase tracking-wide">
-                    {currencies[selectedCurrency].name} ({selectedCurrency})
+                    {currencies[selectedCurrency].name} ({selectedCurrency}) · {convertFromBOB ? (es ? 'Recibirías (estimado)' : 'You would receive (estimate)') : (es ? 'Entregás' : 'You give')}
                   </label>
                   <div className="relative">
                     <input
@@ -492,7 +492,11 @@ function CurrencyCalculator({ presetRequest }) {
                 {useOfficial && <p className="mt-2 text-center text-[11px] text-gray-500 dark:text-gray-400"><OfficialRateNote rate={rateData} language={language} />{selectedCurrency !== 'USD' && <span className="block">{es ? 'La conversión de esta moneda es una estimación derivada; el BCB verificado corresponde a USD/BOB.' : 'This currency conversion is a derived estimate; the verified BCB observation is USD/BOB.'}</span>}</p>}
                 {p2pReference && (
                   <p className="mt-2 text-center text-[11px] text-gray-500 dark:text-gray-400">
-                    {es ? 'Referencia P2P USDT, antes de comisiones. BOB → USDT: comprás; USDT → BOB: vendés.' : 'USDT P2P reference, before fees. BOB → USDT: you buy; USDT → BOB: you sell.'}
+                    {es ? 'Referencia P2P USDT/BOB, antes de comisiones. ' : 'USDT/BOB P2P reference, before fees. '}
+                    {convertFromBOB
+                      ? (es ? 'Pagás BOB para comprar USDT: se aplica la referencia de compra.' : 'You pay BOB to buy USDT: the buy reference applies.')
+                      : (es ? 'Vendés USDT para recibir BOB: se aplica la referencia de venta.' : 'You sell USDT to receive BOB: the sell reference applies.')}
+                    {selectedCurrency === 'USDT' && (es ? ' No es una cotización de dólares en efectivo ni una oferta garantizada.' : ' This is not a cash-dollar quote or a guaranteed offer.')}
                     {selectedCurrency !== 'USDT' && (es ? ` ${selectedCurrency} es una estimación a paridad 1:1 con USDT, sin garantía de paridad o liquidez; no es una cotización de efectivo.` : ` ${selectedCurrency} is an estimate at 1:1 with USDT, with no guarantee of parity or liquidity; it is not a cash quote.`)}
                   </p>
                 )}

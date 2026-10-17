@@ -385,3 +385,38 @@ describe('current BRL availability', () => {
     change(foreign(), '100'); await result('240.00', '100');
   });
 });
+
+describe('calculator conversion copy', () => {
+  for (const locale of ['es', 'en']) it(`${locale}: identifies the amount given and estimated receipt across direction changes`, async () => {
+    language = locale; mount(); await result('1197.00', '100');
+    const bobLabel = () => document.querySelector('label[for="calculator-bob"]').textContent;
+    const foreignLabel = () => document.querySelector('label[for="calculator-foreign"]').textContent;
+    const give = locale === 'es' ? /Entregás/ : /You give/;
+    const receive = locale === 'es' ? /Recibirías \(estimado\)/ : /You would receive \(estimate\)/;
+    assert.match(foreignLabel(), locale === 'es' ? /Dólar estadounidense \(USD\)/ : /US Dollar \(USD\)/);
+    assert.equal((bobLabel().match(/\(BOB\)/g) || []).length, 1);
+    assert.match(bobLabel(), receive); assert.match(foreignLabel(), give);
+    assert.match(document.body.textContent, locale === 'es' ? /Vendés USDT para recibir BOB: se aplica la referencia de venta/ : /You sell USDT to receive BOB: the sell reference applies/);
+    assert.match(document.body.textContent, locale === 'es' ? /USD es una estimación a paridad 1:1 con USDT/ : /USD is an estimate at 1:1 with USDT/);
+    change(bob(), '1201'); await result('1201', '100.0000');
+    assert.match(bobLabel(), give); assert.match(foreignLabel(), receive);
+    assert.match(document.body.textContent, locale === 'es' ? /Pagás BOB para comprar USDT: se aplica la referencia de compra/ : /You pay BOB to buy USDT: the buy reference applies/);
+    click(locale === 'es' ? 'Intercambiar monedas' : 'Swap currencies');
+    await result('1197.00', '100.0000');
+    assert.match(bobLabel(), receive); assert.match(foreignLabel(), give);
+    click('USDT');
+    assert.match(document.body.textContent, locale === 'es' ? /no es una cotización de dólares en efectivo ni una oferta garantizada/i : /not a cash-dollar quote or a guaranteed offer/);
+    click(locale === 'es' ? 'Oficial' : 'Official'); await result('686.00', '100.0000');
+    assert.doesNotMatch(document.body.textContent, /se aplica la referencia de venta|the sell reference applies/);
+    click('EUR');
+    assert.match(foreignLabel(), /Euro \(EUR\)/);
+    assert.match(bobLabel(), receive); assert.match(foreignLabel(), give);
+  });
+  it('localizes every fiat currency name without changing currency codes', async () => {
+    mount(); await result('1197.00', '100');
+    for (const [code, name] of [['USD', 'Dólar estadounidense'], ['EUR', 'Euro'], ['BRL', 'Real brasileño'], ['COP', 'Peso colombiano'], ['PEN', 'Sol peruano'], ['ARS', 'Peso argentino'], ['CLP', 'Peso chileno']]) {
+      click(code);
+      assert.ok(document.querySelector('label[for="calculator-foreign"]').textContent.startsWith(`${name} (${code})`));
+    }
+  });
+});

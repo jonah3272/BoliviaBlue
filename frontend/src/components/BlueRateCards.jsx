@@ -148,7 +148,7 @@ const RateCard = memo(function RateCard({ type, rate, timestamp, isStaleData, is
   );
 });
 
-function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInCards = true, showCrossSourceBadge = true }) {
+function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInCards = true, showCrossSourceBadge = true, includeExchangeSchema = true }) {
   const languageContext = useLanguage();
   const t = languageContext?.t || ((key) => key || '');
   const language = languageContext?.language || 'es';
@@ -372,7 +372,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
 
   return (
     <div className="space-y-6">
-      {exchangeRateSchema && (
+      {includeExchangeSchema && exchangeRateSchema && (
         <PageHead>
           <script type="application/ld+json">
             {JSON.stringify(exchangeRateSchema)}

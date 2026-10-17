@@ -67,24 +67,6 @@ const PAGE_COPY = {
         'Blue dollar today in Bolivia: verified parallel reading. Multi-platform P2P median, updated every few minutes.',
     },
   },
-  'bolivian-blue': {
-    es: {
-      titleWith: (b, s) => `Bolivian Blue Hoy: Compra ${b} · Venta ${s} | Bolivia`,
-      titleFallback: 'Bolivian Blue Bolivia | Dólar Paralelo Hoy',
-      descWith: (b, s, when) =>
-        `Bolivian Blue en Bolivia: compra Bs ${b}, venta Bs ${s}${when ? ` (${when})` : ''}. Lectura verificada · mediana P2P multi-plataforma.`,
-      descFallback:
-        'Bolivian Blue Bolivia: cotización del dólar paralelo hoy. Lectura verificada desde varias plataformas P2P.',
-    },
-    en: {
-      titleWith: (b, s) => `Bolivian Blue Today: Buy ${b} · Sell ${s} | Bolivia`,
-      titleFallback: 'Bolivian Blue Bolivia | Parallel Dollar Today',
-      descWith: (b, s, when) =>
-        `Bolivian Blue in Bolivia: buy Bs ${b}, sell Bs ${s}${when ? ` (${when})` : ''}. Verified multi-platform P2P median.`,
-      descFallback:
-        'Bolivian Blue Bolivia: today’s parallel dollar rate. Verified reading from multiple P2P platforms.',
-    },
-  },
   'dolar-paralelo': {
     es: {
       titleWith: (b, s) => `Dólar Paralelo Bolivia EN VIVO: ${b} / ${s} | Blue`,
@@ -405,6 +387,7 @@ export function analyticsTitleForPath(pathname, language = 'es') {
   const path = String(pathname || '/').split('?')[0] || '/';
   const lang = language === 'en' ? 'en' : 'es';
   const page = PATH_TO_PAGE[path];
+  if (page === 'bolivian-blue') return buildDollarRateSearchCopy({ page, language: lang }).analyticsTitle;
   if (page && PAGE_COPY[page]) return PAGE_COPY[page][lang].titleFallback;
   const stable = STABLE_TITLES[path];
   if (stable) return stable[lang];

@@ -58,7 +58,7 @@ describe('how-much conversion guidance', () => {
         const initial = injectRootShell(replaceMeta(template, other), ROUTES[other].shell);
         const result = renderDollarRateHtml(initial, other, rates, language, now);
         assert.doesNotMatch(result, /data-cuanto-conversion-guide|data-cuanto-reference-cards/);
-        if (other === '/' && language === 'es') assert.match(result, /data-live-usd100>1235<\/span> Bs \(compra P2P\)/);
+        if (other === '/' && language === 'es') assert.match(result, /Comprar 100 USDT: pagarías ≈ <span data-live-usd100>1235<\/span> Bs/);
         if (other === '/euro-a-boliviano') assert.equal(result, initial);
       }
     }

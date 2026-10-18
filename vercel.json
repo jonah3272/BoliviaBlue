@@ -151,6 +151,7 @@
   "installCommand": "npm install && cd frontend && npm install",
   "rewrites": [
     {"source": "/api/daily-report", "destination": "/api/historical-data?feature=daily-evidence"},
+    {"source": "/prensa/informes/rss.xml", "destination": "/api/historical-data?feature=daily-evidence&view=feed"},
     {"source": "/prensa/informes/:date/v:revision/datos.json", "destination": "/api/historical-data?feature=daily-evidence&date=:date&revision=:revision&format=json"},
     {"source": "/prensa/informes/:date/v:revision/fuentes.csv", "destination": "/api/historical-data?feature=daily-evidence&date=:date&revision=:revision&format=csv"},
     {"source": "/prensa/informes/:date/v:revision/grafico.svg", "destination": "/api/historical-data?feature=daily-evidence&date=:date&revision=:revision&format=svg"},

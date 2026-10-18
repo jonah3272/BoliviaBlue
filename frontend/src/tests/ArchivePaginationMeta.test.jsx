@@ -26,6 +26,8 @@ function checkHead(before = null) {
   const en = es + (before ? '&' : '?') + 'lang=en';
   const canonical = BASE + (state.language === 'en' ? en : es);
   expect(document.head.querySelectorAll('link[rel="canonical"]')).toHaveLength(1);
+  expect(document.head.querySelectorAll('link[rel="alternate"][type="application/rss+xml"]')).toHaveLength(1);
+  expect(document.head.querySelector('link[type="application/rss+xml"]').href).toBe(BASE + '/prensa/informes/rss.xml');
   expect(document.head.querySelector('link[rel="canonical"]').href).toBe(canonical);
   for (const [locale, path] of [['es', es], ['en', en], ['x-default', es]]) {
     expect(document.head.querySelector(`link[hreflang="${locale}"]`).href).toBe(BASE + path);
@@ -39,7 +41,7 @@ function checkHead(before = null) {
 async function checkArchive(before = null) {
   const endpoint = '/api/daily-report?view=archive' + (before ? `&before=${before}` : '');
   await waitFor(() => expect(fetch).toHaveBeenLastCalledWith(endpoint, expect.anything()));
-  const paths = [...document.querySelectorAll('#informes-diarios a')].map(link => link.getAttribute('href'));
+  const paths = [...document.querySelectorAll('#informes-diarios a:not([type="application/rss+xml"])')].map(link => link.getAttribute('href'));
   expect(paths).toHaveLength(before === '2026-10-10' ? 1 : before === '2026-10-13' ? 4 : 5);
   if (before) expect(paths.every(path => path.match(/\/informes\/(\d{4}-\d{2}-\d{2})\//)?.[1] < before)).toBe(true);
 }

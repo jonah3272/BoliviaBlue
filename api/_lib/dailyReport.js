@@ -13,6 +13,17 @@ function createHandler(getClient = client) {
     const format = String(req.query.format || 'json'), lang = req.query.lang === 'en' ? 'en' : 'es';
     const send = (status, type, body) => { res.setHeader('Content-Type', type); return req.method === 'HEAD' ? res.status(status).end() : res.status(status).send(body); };
     try {
+      if (req.query.view === 'feed') {
+        const { feedBefore, renderFeed } = require('./dailyReportFeed');
+        const now = new Date();
+        // Bound the query before selecting 30 dates: unfinished days must not
+        // displace eligible dates. Ignore archive cursors on the canonical feed.
+        const archive = await listReports(getClient(), feedBefore(now));
+        if (archive.unavailable) throw new Error('Report storage unavailable');
+        res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=300, must-revalidate');
+        res.setHeader('X-Content-Type-Options', 'nosniff');
+        return send(200, 'application/rss+xml; charset=utf-8', renderFeed(archive.reports, now));
+      }
       if (req.query.view === 'archive') {
         const archive = await listReports(getClient(), req.query.before || null);
         archive.reports = archive.reports.filter(r => r.date <= completedDate());

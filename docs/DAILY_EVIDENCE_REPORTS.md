@@ -11,6 +11,20 @@ This replaces the narrative daily generator. The previous generator's daily perc
 - Five source-backed launch editions cover October 9–13, 2026. October 8 has incomplete provenance; earlier aggregate history cannot establish a fixed source basket. No seven-day/month source-backed history is claimed.
 - The edition creation timestamp and source retrieval timestamp are distinct from the observation date. Launch payloads are generated on October 14, not backdated to the observed day.
 
+## Recent-report RSS discovery
+
+`/prensa/informes/rss.xml` is a Spanish RSS 2.0 feed through the existing historical-data function (`feature=daily-evidence&view=feed`). It reads the existing archive storage on request; newly stored eligible reports require no feed rebuild or deployment. Successful responses may be cached by the CDN for up to 300 seconds, with mandatory revalidation and no stale-while-revalidate window. Storage failures return `503` and `Cache-Control: no-store`, never a seed-only success feed.
+
+The window is the latest 30 **observed dates** available for completed Bolivia days, including every distinct revision of those dates. It is not 30 calendar days, publication-date ordering, or a comprehensive correction-alert log: a correction to an older observed date outside the window will not appear. The archive remains the route to older dates. Feed query parameters do not paginate or translate this canonical feed.
+
+Each item is only a discovery pointer: observed date, revision, absolute canonical versioned report URL/GUID, and fixed P2P scope/caveats. It carries no rate values, comparisons or new narrative article. A revision has a distinct GUID; earlier revisions keep theirs. `pubDate` is included only for a valid, non-future stored `published_at` with an explicit timezone. Invalid/unknown timestamps are omitted. Repository-backed seed editions omit `pubDate`: their `generated_at` is not proven publication time, and their stored duplicates cannot override the seed metadata.
+
+The press archive exposes a visible RSS link and an RSS `rel=alternate` discovery link in both its static shell and React view, without changing language alternates. English UI explicitly says the feed is Spanish. The shared React archive also makes the visible feed link available where that component is reused. Existing dated report HTML and all report downloads are deliberately unchanged: adding a discovery tag there would change the published serialization. Existing blog/news feeds remain separate and unchanged.
+
+No serverless entrypoint, schedule, service, account, storage write, report revision or report payload is added by feed reads. This is a bounded metadata index; each linked report endpoint still validates its evidence before serving it, and the archive reader verifies its newest stored edition. It is not independent verification of every indexed payload.
+
+Validation: `node --test tests/daily-report-feed.test.cjs tests/daily-evidence.test.cjs tests/daily-evidence-routes.test.cjs tests/archive-pagination-meta.test.cjs` and `cd frontend && npm test -- --run src/tests/DailyEvidenceArchive.test.jsx src/tests/ArchivePaginationMeta.test.jsx`.
+
 ## Calculation and eligibility
 
 `shared/dailyEvidence.cjs` is the deterministic calculator. Date boundaries are 00:00–24:00 America/La_Paz, equivalent to 04:00Z boundaries. Only completed days qualify. Each source snapshot is checked with the shared provenance validator, including timestamp and aggregate consistency. Duplicate timestamps, interpolated rows, missing/invalid provenance and missing required sources are excluded with reasons.

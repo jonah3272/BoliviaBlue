@@ -96,7 +96,7 @@ test('archive refresh failure retains only seed links before the canonical curso
     const { html } = await requestArchive(`?before=2026-10-13&lang=${language}`, 'Mozilla/5.0', true);
     const document = assertHead(html, language, paths);
     assert.ok(document.querySelector('[role="status"]'));
-    const links = [...document.querySelectorAll('#informes-diarios a')].map(link => link.getAttribute('href'));
+    const links = [...document.querySelectorAll('#informes-diarios a:not([type="application/rss+xml"])')].map(link => link.getAttribute('href'));
     assert.equal(links.length, 4);
     assert.ok(links.every(href => href.match(/\/informes\/(\d{4}-\d{2}-\d{2})\//)?.[1] < '2026-10-13'));
   }

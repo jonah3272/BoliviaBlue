@@ -1,3 +1,4 @@
+import { TRAVELER_GUIDE_PATHS, renderTravelerGuideHtml } from './seo/travelerGuideSeo.js';
 import { aboutPageForSearch, renderAboutHtml } from './seo/aboutSeo.js';
 import { buildDollarRateSearchCopy, DOLLAR_SEARCH_PAGES, normalizeDollarRatePayload } from './frontend/src/utils/dollarRateSearchCopy.js';
 import { renderDollarRateHtml } from './seo/dollarRateSeo.js';
@@ -79,7 +80,7 @@ export function escapeHtml(s) {
 
 /** Normalize /api/blue-rate JSON into validated display strings. */
 export function normalizeRates(rate, path = null) {
-  if (DOLLAR_SEARCH_PAGES[path]) return normalizeDollarRatePayload(rate);
+  if (DOLLAR_SEARCH_PAGES[path] || TRAVELER_GUIDE_PATHS.has(path)) return normalizeDollarRatePayload(rate);
   if (!rate || typeof rate !== 'object') return null;
   const buy = fmt(rate.buy_bob_per_usd ?? rate.buy);
   const sell = fmt(rate.sell_bob_per_usd ?? rate.sell);
@@ -348,7 +349,7 @@ const ALWAYS_LIVE_PATHS = new Set([
 ]);
 
 export function shouldTransformPath(path, userAgent) {
-  if (ALWAYS_LIVE_PATHS.has(path)) return true;
+  if (ALWAYS_LIVE_PATHS.has(path) || TRAVELER_GUIDE_PATHS.has(path)) return true;
   return BOT_RE.test(userAgent || '');
 }
 
@@ -541,6 +542,7 @@ export function applyArchivePaginationMetadata(html, before, language = 'es') {
 }
 
 export function applyLiveSeo(html, path, rates) {
+  if (TRAVELER_GUIDE_PATHS.has(path)) return renderTravelerGuideHtml(html, path, rates);
   if (DOLLAR_SEARCH_PAGES[path]) return { html: renderDollarRateHtml(html, path, rates), live: Boolean(rates?.buy && rates?.sell), rates };
   if (!rates) return null;
 
@@ -841,7 +843,9 @@ export default async function middleware(request) {
 
     const headers = new Headers(htmlRes.headers);
     headers.set('content-type', 'text/html; charset=utf-8');
-    headers.set('cache-control', 'public, s-maxage=300, stale-while-revalidate=900');
+    headers.set('cache-control', TRAVELER_GUIDE_PATHS.has(path)
+      ? (applied.live ? 'public, s-maxage=300, must-revalidate' : 'no-store')
+      : 'public, s-maxage=300, stale-while-revalidate=900');
     headers.set('x-bb-live-seo', applied.live ? '1' : '0');
     headers.delete('content-length');
 

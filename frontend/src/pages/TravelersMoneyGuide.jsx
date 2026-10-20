@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -7,8 +7,7 @@ import Navigation from '../components/Navigation';
 import Breadcrumbs from '../components/Breadcrumbs';
 import BlueRateCards from '../components/BlueRateCards';
 import { BinanceButton } from '../components/BrandButton';
-import { fetchBlueRate } from '../utils/api';
-import { liveBobParts } from '../utils/seoRateMeta';
+import { travelerGuideMeta } from '../utils/travelerGuideMeta';
 import { TRAVEL_GUIDE_EN, TRAVEL_GUIDE_ES } from '../config/travelGuide';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import SantaCruzPartnerLinks from '../components/SantaCruzPartnerLinks';
@@ -28,38 +27,7 @@ export default function TravelersMoneyGuide() {
   const discovery = getContextualDiscovery(language);
   const canonical = pathname.startsWith(TRAVEL_GUIDE_EN) ? TRAVEL_GUIDE_EN : TRAVEL_GUIDE_ES;
 
-  const [rate, setRate] = useState(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    fetchBlueRate()
-      .then((blue) => {
-        if (cancelled) return;
-        setRate(blue);
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const live = liveBobParts(rate);
-
-  const title = es
-    ? live.buy && live.sell
-      ? `Guía de dinero Bolivia 2026 | Blue compra ${live.buy} · venta ${live.sell}`
-      : 'Guía de dinero para viajeros en Bolivia 2026 | Efectivo, ATM y dólar blue'
-    : live.buy && live.sell
-      ? `Bolivia Money Guide 2026 | Blue buy ${live.buy} · sell ${live.sell}`
-      : 'Bolivia Money Guide for Travelers 2026 | Cash, ATMs & Blue Dollar';
-
-  const description = es
-    ? live.buy && live.sell
-      ? `Cómo manejar dinero en Bolivia en 2026: efectivo USD, tarjetas, cajeros y dólar blue (compra ${live.buy} · venta ${live.sell}). Tasas en vivo, no consejos de 2024.`
-      : 'Guía 2026 para turistas en Bolivia: efectivo, tarjetas, cajeros y el dólar blue. Tasas en vivo desde P2P.'
-    : live.buy && live.sell
-      ? `How to handle money in Bolivia in 2026: USD cash, cards, ATMs, and the blue dollar (buy ${live.buy} · sell ${live.sell}). Live rates — not leftover 2024 advice.`
-      : '2026 traveler money guide for Bolivia: cash, cards, ATMs, and the blue dollar. Live P2P rates.';
+  const { title, description } = travelerGuideMeta(language);
 
   const articleSchema = {
     '@context': 'https://schema.org',
@@ -184,7 +152,7 @@ export default function TravelersMoneyGuide() {
 
   const toc = es
     ? [
-        { id: 'tasas', label: 'Tasas en vivo' },
+        { id: 'tasas', label: 'Referencias y hora de lectura' },
         { id: 'payment-cost-comparison', label: '¿BOB o USD al pagar?' },
         { id: '2026', label: 'Qué cambió en 2026' },
         { id: 'efectivo', label: 'Efectivo USD' },
@@ -195,7 +163,7 @@ export default function TravelersMoneyGuide() {
         { id: 'faq', label: 'Preguntas' },
       ]
     : [
-        { id: 'tasas', label: 'Live rates' },
+        { id: 'tasas', label: 'References and observation time' },
         { id: 'payment-cost-comparison', label: 'Pay in BOB or USD?' },
         { id: '2026', label: 'What changed in 2026' },
         { id: 'efectivo', label: 'USD cash' },
@@ -246,8 +214,8 @@ export default function TravelersMoneyGuide() {
         </h1>
         <p className="mt-3 text-lg text-gray-600 dark:text-gray-300">
           {es
-            ? 'Uyuni, La Paz, Santa Cruz: cómo cambiar, cuándo usar tarjeta y cuándo el paralelo (blue) importa. Tasas en vivo, no un artículo congelado de 2024.'
-            : 'Uyuni, La Paz, Santa Cruz: how to exchange, when a card is fine, and when the parallel (blue) rate matters. Live quotes — not a frozen 2024 article.'}
+            ? 'Uyuni, La Paz, Santa Cruz: cómo cambiar, cuándo usar tarjeta y cuándo el paralelo (blue) importa. Referencias con hora de lectura, no cotizaciones de efectivo.'
+            : 'Uyuni, La Paz, Santa Cruz: how to exchange, when a card is fine, and when the parallel (blue) rate matters. References with observation times, not cash quotes.'}
         </p>
         <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
           {es ? 'Actualizado el 14 sep 2026 · ~8 min' : 'Updated 14 Sep 2026 · ~8 min read'}
@@ -267,7 +235,7 @@ export default function TravelersMoneyGuide() {
 
         <section id="tasas" className="mt-10 scroll-mt-24">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-            {es ? 'Tasas en vivo (no un promedio de blog)' : 'Live rates (not a blog average)'}
+            {es ? 'Referencias: consultá la hora de lectura' : 'References: check the observation time'}
           </h2>
           <p className="mt-3 text-gray-700 dark:text-gray-300">
             {es
@@ -275,8 +243,11 @@ export default function TravelersMoneyGuide() {
               : 'These cards are references: P2P uses USDT/BOB offers, the BCB publishes its reference and the card option shows an estimate from the stated source. None confirms the price for your banknotes or your final card charge. To compare a purchase, enter your two prices and your rate in the tool below.'}
           </p>
           <div className="mt-4">
-            <BlueRateCards showTimestampInCards={false} showCrossSourceBadge={false} />
+            <BlueRateCards showTimestampInCards={true} showCrossSourceBadge={false} includeExchangeSchema={false} />
           </div>
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+            {es ? 'Las tarjetas consultan datos por separado. Sin una hora de observación válida, no se puede confirmar la vigencia de la lectura.' : 'Cards fetch data separately. Without a valid observation time, the freshness of a reading cannot be confirmed.'}
+          </p>
           <PaymentCostChecker language={language} />
           <Link to="/calculadora" className="mt-3 inline-block text-sm font-medium text-blue-700 dark:text-blue-300">
             {es ? 'Calculadora completa →' : 'Full calculator →'}

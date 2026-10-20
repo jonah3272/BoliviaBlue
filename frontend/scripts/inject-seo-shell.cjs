@@ -739,7 +739,7 @@ const ROUTES = {
     <a href="/bolivia-money-guide" class="text-blue-600 font-medium">English</a>
   </nav>
 </main>`.replace(/\n/g, '').trim(),
-    getJsonLd: () => buildStaticJsonLd('/guia-dinero-bolivia', 'Guía de dinero', 'Guía de dinero para viajeros en Bolivia (2026)', 'Efectivo, tarjetas, cajeros y dólar blue con tasas en vivo.', [])
+    getJsonLd: () => buildStaticJsonLd('/guia-dinero-bolivia', 'Guía de dinero', 'Guía de dinero para viajeros en Bolivia (2026)', 'Efectivo, tarjetas, cajeros y referencia P2P USDT/BOB; consultar la hora de lectura.', [])
   },
   '/bolivia-money-guide': {
     title: 'Bolivia Money Guide for Travelers 2026 | Cash, ATMs & Blue Dollar',
@@ -758,7 +758,7 @@ const ROUTES = {
     <a href="/guia-dinero-bolivia" class="text-blue-600 font-medium">Español</a>
   </nav>
 </main>`.replace(/\n/g, '').trim(),
-    getJsonLd: () => buildStaticJsonLd('/bolivia-money-guide', 'Money guide', 'The Bolivia money guide for travelers (2026)', 'Cash, cards, ATMs, and the blue dollar with live rates.', [])
+    getJsonLd: () => buildStaticJsonLd('/bolivia-money-guide', 'Money guide', 'The Bolivia money guide for travelers (2026)', 'Cash, cards, ATMs, and the P2P USDT/BOB reference; check the observation time.', [])
   },
   '/api-docs': {
     title: 'API del Dólar Blue Bolivia | Documentación Completa',
@@ -1068,6 +1068,12 @@ async function main() {
   notFoundHtml = injectRootShell(notFoundHtml, notFoundShell);
   fs.writeFileSync(path.join(DIST, '404.html'), notFoundHtml, 'utf8');
   console.log('[inject-seo-shell] Wrote dist/404.html');
+  // A static fallback must never advertise a deploy-time quote as today's reading.
+  const { TRAVELER_GUIDE_PATHS, renderTravelerGuideHtml } = await import('../../seo/travelerGuideSeo.js');
+  for (const route of TRAVELER_GUIDE_PATHS) {
+    const file = path.join(DIST, `${route.slice(1)}/index.html`);
+    fs.writeFileSync(file, renderTravelerGuideHtml(fs.readFileSync(file, 'utf8'), route, null).html, 'utf8');
+  }
   const { renderDollarRateHtml } = await import('../../seo/dollarRateSeo.js');
   for (const route of ['/', '/dolar-blue-hoy', '/cuanto-esta-dolar-bolivia', '/bolivian-blue']) {
     const file = path.join(DIST, route === '/' ? 'index.html' : `${route.slice(1)}/index.html`);

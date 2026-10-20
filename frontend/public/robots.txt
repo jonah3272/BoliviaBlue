@@ -14,6 +14,7 @@ Allow: /
 
 # Sitemap location
 Sitemap: https://www.boliviablue.com/sitemap.xml
+Sitemap: https://www.boliviablue.com/prensa/informes/rss.xml
 
 # Content feeds (aggregators / backlink discovery)
 # Blog: https://boliviablue.com/blog/rss.xml

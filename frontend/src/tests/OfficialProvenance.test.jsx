@@ -45,7 +45,8 @@ for (const language of ['es', 'en']) describe(`Official source-aware displays ($
       expect(document.querySelector(`time[datetime="${originalTime}"]`)).toBeInTheDocument();
       expect(document.querySelector(`time[datetime="${blueTime}"]`)).not.toBeInTheDocument();
       const label = name === 'stale' ? (language === 'es' ? 'Último BCB verificado' : 'Last verified BCB') : (language === 'es' ? 'BCB (oficial)' : 'BCB (official)');
-      expect(screen.getAllByText(label)).toHaveLength(2);
+      // The simpler card heading is static; source status remains in the provenance note.
+      expect(screen.getAllByText(label)).toHaveLength(1);
     } else {
       expect(screen.queryByText('11.68')).not.toBeInTheDocument();
       expect(screen.getByText(name === 'null' ? (language === 'es' ? 'Referencia oficial no disponible.' : 'Official reference unavailable.') : (language === 'es' ? 'Fuente no verificada; valor no disponible.' : 'Source unverified; value unavailable.'))).toBeInTheDocument();

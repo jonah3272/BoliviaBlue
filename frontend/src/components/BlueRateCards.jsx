@@ -1,5 +1,6 @@
 import React, { useState, useEffect, memo, useCallback, useMemo } from 'react';
 import PageHead from './PageHead';
+import useCardFee from '../hooks/useCardFee';
 import { fetchBlueRate, fetchCardRates } from '../utils/api';
 import { formatRate, formatCopThousand, formatDateTime, isStale } from '../utils/formatters';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -159,7 +160,7 @@ function BlueRateCards({ showOfficial = false, setShowOfficial, showTimestampInC
   const [isCardLoading, setIsCardLoading] = useState(true);
   const [requestLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [issuerId, setIssuerId] = useState('0');
+  const [issuerId, setIssuerId] = useCardFee();
   
   const [internalShowOfficial, setInternalShowOfficial] = useState(false);
   const effectiveShowOfficial = setShowOfficial !== undefined ? showOfficial : internalShowOfficial;

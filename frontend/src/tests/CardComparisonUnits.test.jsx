@@ -1,6 +1,8 @@
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import BlueRateCards from '../components/BlueRateCards';
+import RateTrioStrip from '../components/RateTrioStrip';
+import { MemoryRouter } from 'react-router-dom';
 
 const m = vi.hoisted(() => ({ currency: 'USD', language: 'en', t: key => key, blue: vi.fn(), card: vi.fn() }));
 vi.mock('../utils/api', () => ({ fetchBlueRate: m.blue, fetchCardRates: m.card }));
@@ -82,4 +84,16 @@ it('waits for the independent card result before showing a USD comparison', asyn
   await act(async () => resolveCard(cards));
   expect(comparison()).toBeInTheDocument();
   expect(screen.getByText(/-1.09%/)).toBeInTheDocument();
+});
+
+
+it('synchronizes fees bidirectionally between top rate controls and daily comparison', async () => {
+  render(<MemoryRouter><BlueRateCards /><RateTrioStrip buy={11.8} sell={12} updatedAt={cards.t} cardUpdatedAt={cards.t} cardRate={11.77} language="en" /></MemoryRouter>);
+  await start(); openCard();
+  fireEvent.click(screen.getByRole('option', { name: '3% FX' }));
+  expect(screen.getByRole('combobox')).toHaveValue('3');
+  expect(document.querySelector('[data-daily-payment-result]')).toHaveTextContent('4.0%');
+  fireEvent.change(screen.getByRole('combobox'), { target: { value: '0' } });
+  expect(screen.getByRole('option', { name: '0% FX' })).toHaveAttribute('aria-selected', 'true');
+  expect(document.querySelector('[data-daily-payment-result]')).toHaveTextContent('1.1%');
 });

@@ -2,63 +2,23 @@ import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import RateTrioStrip from '../components/RateTrioStrip';
-
+import { paymentComparison } from '../utils/paymentComparison';
 const card = vi.hoisted(() => vi.fn());
 vi.mock('../utils/api', () => ({ fetchCardRates: card }));
-const props = { buy: 11.92, sell: 11.88, updatedAt: '2026-10-21T15:01:05Z' };
-const mount = (language, extra = {}) => render(<MemoryRouter><RateTrioStrip {...props} language={language} cardRate={11.76} {...extra} /></MemoryRouter>);
+const now = Date.now(), fresh = new Date(now).toISOString();
+const mount = (language, extra = {}) => render(<MemoryRouter><RateTrioStrip buy={12} sell={12} updatedAt={fresh} cardUpdatedAt={fresh} language={language} cardRate={10} {...extra} /></MemoryRouter>);
+const result = () => document.querySelector('[data-daily-payment-result]');
 beforeEach(() => { card.mockReset(); card.mockResolvedValue(null); });
-afterEach(cleanup);
-
-for (const language of ['en', 'es']) describe(`payment decision copy (${language})`, () => {
-  const es = language === 'es';
-  it('leads with cash/card guidance, keeps caveats visible, and makes technical comparisons secondary', () => {
-    const { container } = mount(language);
-    expect(screen.getByRole('heading', { name: es ? '¿Efectivo o tarjeta: qué sale más barato?' : 'Cash or card: which costs less?' })).toBeInTheDocument();
-    expect(screen.getByText(es ? /Para el mismo precio en bolivianos/ : /For the same price in bolivianos/)).toBeVisible();
-    expect(screen.getByText(es ? /Conviene si tu casa de cambio/ : /Costs less if your exchange shop/)).toBeVisible();
-    expect(screen.getByText(es ? /Lo que te ofrecen por efectivo puede ser distinto/ : /Your cash exchange offer may differ/)).toBeVisible();
-    expect(screen.getByText(es ? /no garantiza la tasa de tu tarjeta/ : /not a guaranteed card rate/)).toBeVisible();
-    expect(screen.getByText(es ? /Tu banco puede aplicar otra tasa y comisiones/ : /Your bank’s final rate and fees may differ/)).toBeVisible();
-    expect(screen.getByText('Bs/USDT')).toBeInTheDocument();
-    expect(screen.getAllByText('Bs/USD')).toHaveLength(2);
-    const details = container.querySelector('details');
-    expect(details.open).toBe(false);
-    expect(details.textContent).toContain('-1.2%');
-    expect(details.textContent).toContain(es ? 'no determinan' : 'do not determine');
-    expect(container.querySelector('ul').compareDocumentPosition(details) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(card).not.toHaveBeenCalled();
-  });
-
-  it.each([12.10, 11.90, 11.76])('does not declare a cash winner from P2P comparison when card rate is %s', (cardRate) => {
-    mount(language, { cardRate });
-    expect(screen.getByText(es ? /Conviene si su tasa supera/ : /Costs less if its rate beats/)).toBeInTheDocument();
-    expect(document.body.textContent).not.toMatch(/Cash is cheaper|Card is cheaper|El efectivo es más barato|La tarjeta es más barata/);
-  });
-
-  it('preserves card-fee handoff on repeated clicks without mislabelling it as a cash quote calculator', () => {
-    const tabs = document.createElement('div');
-    tabs.dataset.rateModeTabs = '';
-    tabs.scrollIntoView = vi.fn();
-    document.body.append(tabs);
-    const listener = vi.fn();
-    window.addEventListener('bolivia-blue:set-rate-mode', listener);
-    mount(language);
-    const link = screen.getByRole('link', { name: es ? 'Revisar mi comisión de tarjeta →' : 'Check my card fee →' });
-    fireEvent.click(link); fireEvent.click(link);
-    expect(listener).toHaveBeenCalledTimes(2);
-    expect(listener.mock.calls[0][0].detail).toBe('card');
-    expect(tabs.scrollIntoView).toHaveBeenCalledTimes(2);
-    expect(screen.getByRole('link', { name: es ? 'Guía de dinero para viajeros' : 'Traveler money guide' })).toHaveAttribute('href', es ? '/guia-dinero-bolivia' : '/bolivia-money-guide');
-    window.removeEventListener('bolivia-blue:set-rate-mode', listener); tabs.remove();
-  });
-
-  it('keeps guidance honest when estimates fail to load', async () => {
-    card.mockRejectedValue(new Error('Unavailable'));
-    await act(async () => mount(language, { buy: null, sell: null, cardRate: null }));
-    expect(screen.getAllByText('—')).toHaveLength(3);
-    expect(document.body.textContent).not.toContain('NaN');
-    expect(document.body.textContent).not.toContain('Infinity');
-    expect(document.body.textContent).not.toContain('-1.2%');
-  });
+afterEach(() => { const select = screen.queryAllByRole('combobox')[0]; if (select) fireEvent.change(select, { target: { value: '0' } }); cleanup(); });
+for (const language of ['en', 'es']) describe(`daily decision (${language})`, () => {
+ const es = language === 'es';
+ it('leads with conditional savings, not rate premium', () => { mount(language); expect(result()).toHaveTextContent('16.7%'); expect(result()).toHaveTextContent(es ? 'Hoy, efectivo al blue' : 'Today, cash at the blue rate'); expect(result()).toHaveTextContent(es ? 'no una oferta de billetes' : 'not a banknote offer'); expect(result().closest('details')).toBeNull(); });
+ it('reverses outcome after fee change', () => { mount(language,{cardRate:12.2}); expect(result()).toHaveTextContent(es ? 'Hoy, tarjeta' : 'Today, card'); fireEvent.change(screen.getByRole('combobox'),{target:{value:'3'}}); expect(result()).toHaveTextContent(es ? 'Hoy, efectivo' : 'Today, cash'); expect(result()).toHaveTextContent('1.3%'); });
+ it('shows tie',()=>{mount(language,{cardRate:12});expect(result()).toHaveTextContent(es?'prácticamente lo mismo':'about the same');});
+ it.each([null,'invalid',new Date(now-3600000).toISOString()])('withholds result for card time %s', cardUpdatedAt=>{mount(language,{cardUpdatedAt});expect(result()).toHaveTextContent(es?'no hay recomendación':'no recommendation');expect(result()).not.toHaveTextContent('16.7%');});
+ it('withholds result for stale P2P',()=>{mount(language,{updatedAt:new Date(now-3600000).toISOString()});expect(result()).toHaveTextContent(es?'no hay recomendación':'no recommendation');});
+ it('uses fetched timestamp',async()=>{card.mockResolvedValue({visa_bob_per_usd:10,t:fresh});await act(async()=>mount(language,{cardRate:null}));expect(result()).toHaveTextContent('16.7%');});
+ it('handles missing data',async()=>{card.mockRejectedValue(new Error('offline'));await act(async()=>mount(language,{cardRate:null,buy:null,sell:null}));expect(result()).toHaveTextContent(es?'Faltan tasas':'Rates unavailable');expect(document.body.textContent).not.toMatch(/NaN|Infinity/);});
 });
+it('shares fee between comparison instances',()=>{mount('en');mount('es');fireEvent.change(screen.getAllByRole('combobox')[0],{target:{value:'2.7'}});expect(screen.getAllByRole('combobox')[1]).toHaveValue('2.7');});
+it('validates math, invalid rates, future dates, and near ties',()=>{const input={blue:12,card:10,blueAt:fresh,cardAt:fresh,now};expect(paymentComparison(input).savings).toBeCloseTo(16.6667,3);expect(paymentComparison({...input,blue:0}).status).toBe('missing');expect(paymentComparison({...input,card:Infinity}).status).toBe('missing');expect(paymentComparison({...input,cardAt:new Date(now+3600000).toISOString()}).status).toBe('stale');expect(paymentComparison({...input,card:12.001}).status).toBe('tie');});

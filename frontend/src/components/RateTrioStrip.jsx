@@ -7,6 +7,8 @@ import { fetchCardRates } from '../utils/api';
 import { formatRate } from '../utils/formatters';
 import { officialRateModel } from '../utils/officialRate';
 import OfficialRateNote from './OfficialRateNote';
+import useCardFee from '../hooks/useCardFee';
+import { paymentComparison } from '../utils/paymentComparison';
 
 function cardBobPerUsd(row) {
   if (!row) return null;
@@ -28,21 +30,28 @@ export default function RateTrioStrip({
   language = 'es',
   updatedAt = null,
   cardRate: cardRateProp = null,
+  cardUpdatedAt = null,
 }) {
   const es = language === 'es';
   const [fetchedCard, setFetchedCard] = useState(null);
+  const [feeId, setFeeId] = useCardFee();
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => { const timer = setInterval(() => setNow(Date.now()), 60000); return () => clearInterval(timer); }, []);
 
   useEffect(() => {
     if (cardRateProp != null) return undefined;
     let cancelled = false;
-    fetchCardRates()
+    const refresh = () => fetchCardRates()
       .then((row) => {
-        if (!cancelled) setFetchedCard(cardBobPerUsd(row));
+        if (!cancelled) setFetchedCard(row);
       })
       .catch(() => {
         if (!cancelled) setFetchedCard(null);
       });
+    refresh();
+    const refreshTimer = setInterval(refresh, 60000);
     return () => {
+      clearInterval(refreshTimer);
       cancelled = true;
     };
   }, [cardRateProp]);
@@ -57,12 +66,15 @@ export default function RateTrioStrip({
   const cardRate =
     Number.isFinite(cardRateProp) && cardRateProp > 0
       ? cardRateProp
-      : fetchedCard;
+      : cardBobPerUsd(fetchedCard);
+  const fee = Number(feeId) / 100;
+  const comparison = paymentComparison({ blue: blueMid, card: cardRate, fee, blueAt: updatedAt, cardAt: cardRateProp != null ? cardUpdatedAt : fetchedCard?.t, now });
+  const effectiveCard = comparison.effective;
 
   // Higher Bs per USD ⇒ foreign USD card spends fewer dollars on the same BOB price.
   const cardVsBluePct =
-    cardRate != null && blueMid != null && blueMid > 0
-      ? ((cardRate - blueMid) / blueMid) * 100
+    effectiveCard != null && blueMid != null && blueMid > 0
+      ? ((effectiveCard - blueMid) / blueMid) * 100
       : null;
   const bcbVsBluePct =
     bcbMid != null && blueMid != null && blueMid > 0
@@ -86,10 +98,10 @@ export default function RateTrioStrip({
       key: 'card',
       label: es ? 'Tarjeta: tasa estimada' : 'Estimated card rate',
       note: es ? 'Tu banco puede aplicar otra tasa y comisiones.' : 'Your bank’s final rate and fees may differ.',
-      value: cardRate,
+      value: effectiveCard,
       sub: es
-        ? 'Estimación red / Wise · sin comisión FX del emisor'
-        : 'Network / Wise estimate · before issuer FX fee',
+        ? `Estimación red / Wise · comisión FX del ${feeId}% incluida`
+        : `Network / Wise estimate · ${feeId}% FX fee included`,
       accent: 'border-emerald-500 bg-emerald-50/80 dark:bg-emerald-950/40',
       valueClass: 'text-emerald-700 dark:text-emerald-300',
     },
@@ -122,17 +134,28 @@ export default function RateTrioStrip({
   const bodyBlock = (
     <>
       <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50/80 dark:border-emerald-800 dark:bg-emerald-950/40 px-4 py-3">
-        <p className="text-sm font-bold text-gray-900 dark:text-white">
-          {es ? 'Cómo elegir' : 'How to choose'}
-        </p>
-        <ul className="mt-2 space-y-2 text-xs sm:text-sm text-gray-700 dark:text-gray-300 leading-snug">
-          <li><strong>{es ? 'Efectivo: ' : 'Cash: '}</strong>{es
-            ? 'Conviene si tu casa de cambio te da más Bs por dólar que tu tarjeta, después de comisiones.'
-            : 'Costs less if your exchange shop gives you more Bs per dollar than your card, after fees.'}</li>
-          <li><strong>{es ? 'Tarjeta: ' : 'Card: '}</strong>{es
-            ? 'Conviene si su tasa supera tu oferta de efectivo, después de comisiones.'
-            : 'Costs less if its rate beats your cash offer, after fees.'}</li>
-        </ul>
+        <div aria-live="polite" data-daily-payment-result>
+          <p className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
+            {comparison.status === 'cash' ? (es ? `Hoy, efectivo al blue costaría ${comparison.savings.toFixed(1)}% menos que tarjeta` : `Today, cash at the blue rate would cost ${comparison.savings.toFixed(1)}% less than card`)
+              : comparison.status === 'card' ? (es ? `Hoy, tarjeta costaría ${comparison.savings.toFixed(1)}% menos que efectivo al blue` : `Today, card would cost ${comparison.savings.toFixed(1)}% less than cash at the blue rate`)
+              : comparison.status === 'tie' ? (es ? 'Hoy, efectivo al blue y tarjeta cuestan prácticamente lo mismo' : 'Today, cash at the blue rate and card cost about the same')
+              : comparison.status === 'stale' ? (es ? 'Datos desactualizados: no hay recomendación para hoy' : 'Rates need updating: no recommendation for today')
+              : (es ? 'Faltan tasas para comparar hoy' : 'Rates unavailable for today’s comparison')}
+          </p>
+          <p className="mt-2 text-xs sm:text-sm text-gray-700 dark:text-gray-300">
+            {es ? 'Estimación para el mismo gasto en Bs, suponiendo que recibís la referencia blue en efectivo, neta de cargos. El blue es USDT P2P, no una oferta de billetes. Confirmá tu cambio real.' : 'Estimate for the same Bs purchase, assuming your cash exchange matches the blue reference after cash fees. Blue is USDT P2P, not a banknote offer. Check your actual cash quote.'}
+          </p>
+          {['cash', 'card', 'tie'].includes(comparison.status) && <p className="mt-2 text-sm font-mono">
+            {es ? 'Efectivo supuesto' : 'Assumed cash'}: {formatRate(blueMid)} Bs/USD · {es ? 'Tarjeta neta' : 'Card after fee'}: {formatRate(effectiveCard)} Bs/USD
+          </p>}
+        </div>
+        <label className="mt-3 flex flex-wrap items-center gap-2 text-sm font-semibold text-gray-800 dark:text-gray-200">
+          {es ? 'Tu comisión FX de tarjeta' : 'Your card’s FX fee'}
+          <select value={feeId} onChange={e => setFeeId(e.target.value)} className="rounded border border-gray-300 bg-white dark:bg-gray-800 p-2">
+            <option value="0">0%</option><option value="2.7">2.7%</option><option value="3">3%</option>
+          </select>
+        </label>
+        <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">{es ? '0% es el supuesto inicial, no la comisión verificada de tu banco. Cambialo para recalcular.' : '0% is the starting assumption, not your bank’s verified fee. Change it to recalculate.'}</p>
         <Link
           to="/"
           className="mt-3 inline-block text-xs sm:text-sm font-semibold text-emerald-700 dark:text-emerald-400 hover:underline"
@@ -170,11 +193,19 @@ export default function RateTrioStrip({
         ))}
       </div>
 
+      {official.available && !official.stale && bcbMid > 0 && blueMid > 0 && ['cash', 'card', 'tie'].includes(comparison.status) && (
+        <p className="mt-3 text-xs text-gray-600 dark:text-gray-400">
+          {es ? 'Si tu banco usa BCB: ' : 'If your bank uses BCB: '}
+          {formatRate(bcbMid / (1 + fee))} Bs/USD {es ? `tras ${feeId}% de comisión FX` : `after a ${feeId}% FX fee`}.
+          {' '}{es ? 'Es un escenario de referencia, no la tasa confirmada de tu tarjeta.' : 'This is a benchmark scenario, not your confirmed card rate.'}
+        </p>
+      )}
+
       <details className="mt-3 text-xs text-gray-600 dark:text-gray-400">
         <summary className="cursor-pointer font-semibold">{es ? 'Ver comparación de referencias' : 'View reference comparison'}</summary>
         <p className="mt-2 mb-2">{es
-          ? 'El blue mostrado es el punto medio P2P de USDT, no una cotización de billetes. Estos porcentajes no determinan si te conviene efectivo o tarjeta.'
-          : 'The blue rate shown is the USDT P2P midpoint, not a banknote quote. These percentages do not determine whether cash or card is cheaper for you.'}</p>
+          ? 'El blue mostrado es el punto medio P2P de USDT, no una cotización de billetes. Esta diferencia de tasas no es el porcentaje de ahorro en dólares mostrado arriba.'
+          : 'The blue rate shown is the USDT P2P midpoint, not a banknote quote. This rate difference is not the USD-cost savings percentage shown above.'}</p>
         {cardVsBluePct != null && (
           <div className="text-xs sm:text-sm font-mono text-gray-600 dark:text-gray-300 whitespace-nowrap">
             {es ? 'Tarjeta vs P2P' : 'Card vs P2P'}:{' '}

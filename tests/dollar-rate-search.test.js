@@ -120,7 +120,7 @@ describe('primary dollar search copy', () => {
         const response = await middleware(new Request(`https://www.boliviablue.com${path}${language === 'en' ? '?lang=en' : ''}`, { headers: { Accept: 'text/html' } }));
         assert.equal(response.status, 200);
         assert.equal(response.headers.get('x-bb-live-seo'), '0');
-        assert.equal(calls.length, 2);
+        assert.equal(calls.length, path === '/' ? 3 : 2);
         assertParity(await response.text(), buildLiveRateSeoMeta({ page: DOLLAR_SEARCH_PAGES[path], language }));
       }
     } finally { globalThis.fetch = original; }

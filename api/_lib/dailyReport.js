@@ -13,6 +13,14 @@ function createHandler(getClient = client) {
     const format = String(req.query.format || 'json'), lang = req.query.lang === 'en' ? 'en' : 'es';
     const send = (status, type, body) => { res.setHeader('Content-Type', type); return req.method === 'HEAD' ? res.status(status).end() : res.status(status).send(body); };
     try {
+      if (req.query.view === 'home-summary') {
+        const { homeReportSummary } = require('./homeReportSummary');
+        const now = new Date();
+        const report = await homeReportSummary(getClient(), now);
+        res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
+        res.setHeader('X-Content-Type-Options', 'nosniff');
+        return send(200, 'application/json; charset=utf-8', JSON.stringify({ report, latest_completed_date: completedDate(now), unavailable: false }));
+      }
       if (req.query.view === 'feed') {
         const { feedBefore, renderFeed } = require('./dailyReportFeed');
         const now = new Date();

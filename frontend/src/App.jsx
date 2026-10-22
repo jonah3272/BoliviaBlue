@@ -10,6 +10,7 @@ import { NEIGHBOR_FIATS } from './config/neighborFiats';
 // Lazy load routes for code splitting
 const Home = lazy(() => import('./pages/Home'));
 const TravelersMoneyGuide = lazy(() => import('./pages/TravelersMoneyGuide'));
+const CashOrCard = lazy(() => import('./pages/CashOrCard'));
 const Calculator = lazy(() => import('./pages/Calculator'));
 const News = lazy(() => import('./pages/News'));
 const NewsArticle = lazy(() => import('./pages/NewsArticle'));
@@ -88,6 +89,7 @@ function AppContent({ initialHome }) {
       <Suspense fallback={<LoadingFallback />}>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/efectivo-o-tarjeta-bolivia" element={<CashOrCard />} />
           <Route path="/guia-dinero-bolivia" element={<TravelersMoneyGuide />} />
           <Route path="/bolivia-money-guide" element={<TravelersMoneyGuide />} />
           <Route path="/travelers-guide" element={<Redirect to="/bolivia-money-guide" />} />

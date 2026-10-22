@@ -1,8 +1,7 @@
 /** Shared navigation items — keep MobileMenu and Navigation in sync */
 
 export const PRIMARY_NAV_ITEMS = [
-  { path: '/dolar-blue-hoy', key: 'navDolarHoy', icon: 'dashboard' },
-  { path: '/', key: 'navDashboard', shortKey: 'navDashboardShort', icon: 'dashboard' },
+  { path: '/', key: 'navDolarHoy', icon: 'dashboard' },
   { path: '/calculadora', key: 'navCalculator', icon: 'calculator' },
   { path: '/comprar-dolares', key: 'navBuyDollars', icon: 'buy' },
   { path: '/noticias', key: 'navNews', icon: 'news' },

@@ -149,7 +149,8 @@ describe('applyLiveSeo', () => {
     assert.match(html, /compra Bs 12\.34, venta Bs 12\.56/);
     assert.match(html, /Referencia P2P USDT\/BOB/);
     assert.match(html, new RegExp(`og:title" content="${meta.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`));
-    assert.match(html, /twitter:description" content="Consultá la referencia P2P USDT\/BOB/);
+    assert.match(html, /twitter:description" content="Dólar blue y paralelo en Bolivia/);
+    assert.match(html, /Compará efectivo y tarjeta con comisiones/);
   });
 
   it('marks a missing rate honestly instead of retaining a build quote', () => {
@@ -379,11 +380,11 @@ describe('single snapshot', () => {
     assert.match(out, /data-live-usd100[^>]*>1161/);
   });
 
-  it('keeps the press-kit title stable and puts rates in the description', () => {
+  it('keeps press-kit metadata editorial and independent of transient quotes', () => {
     const meta = metaForPath('/prensa', '11.61', '11.50');
     assert.equal(meta.title, 'Prensa Bolivia Blue | Kit de medios, citas y datos');
-    assert.match(meta.description, /11\.61/);
-    assert.match(meta.description, /11\.50/);
+    assert.match(meta.description, /citas con hora de observación, CSV histórico, metodología/);
+    assert.doesNotMatch(meta.description, /11\.61|11\.50/);
   });
 
   it('puts live rates in the traveler money-guide titles', () => {

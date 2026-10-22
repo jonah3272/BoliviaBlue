@@ -77,7 +77,8 @@ describe('homepage hero reserved quote rows', () => {
     assert.ok(hero.indexOf('<MobileHeroRates') < hero.indexOf('<FinancialOfferButton'));
     assert.ok(hero.indexOf('<MobileHeroRates') < hero.indexOf('<AiCitationBlock'));
     assert.ok(hero.indexOf('<AiCitationBlock') < hero.indexOf('data-home-secondary-actions'));
-    assert.match(hero, /hidden md:block text-3xl sm:text-4xl md:text-5xl/);
+    assert.equal((hero.match(/<h1\b/g) || []).length, 1);
+    assert.match(hero, /text-2xl md:text-5xl/);
     assert.match(hero, /Referencia P2P USDT\/BOB · Bs por USD/);
     assert.match(hero, /placement="home_mobile_hero"/);
     assert.doesNotMatch(hero, /live\.buyStr &&|live\.times\(100\) &&|updated_at_iso &&/);

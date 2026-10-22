@@ -29,6 +29,7 @@ function Footer() {
         { path: '/dolar-blue-hoy', label: es ? 'Dólar blue hoy' : 'Blue dollar today' },
         { path: '/dolar-paralelo-bolivia-en-vivo', label: es ? 'En vivo' : 'Live' },
         { path: '/calculadora', label: es ? 'Calculadora' : 'Calculator' },
+        { path: `/comparar-qr-tarjeta${es ? '' : '?lang=en'}`, label: es ? 'QR vs. tarjeta' : 'QR vs. card' },
         { path: `/efectivo-o-tarjeta-bolivia${es ? '' : '?lang=en'}`, label: es ? '¿Efectivo o tarjeta?' : 'Cash or card?' },
         { path: '/euro-a-boliviano', label: es ? 'Euro blue' : 'Euro blue' },
         { path: '/peso-a-boliviano', label: es ? 'Peso colombiano' : 'Colombian peso' },

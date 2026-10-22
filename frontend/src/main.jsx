@@ -14,6 +14,10 @@ import { RateProvider } from './contexts/RateContext';
 import { loadAdSense, blockAdsOnThisPage, suppressVignetteTriggers } from './utils/adsenseLoader';
 
 suppressVignetteTriggers();
+// Buffered browser observations keep this off the critical application bundle.
+const startVitals = () => import('./utils/coreWebVitals').then(m => m.startCoreWebVitals()).catch(() => {});
+if ('requestIdleCallback' in window) window.requestIdleCallback(startVitals, { timeout: 4000 });
+else setTimeout(startVitals, 0);
 
 // Global error handler for mobile debugging
 window.addEventListener('error', (event) => {

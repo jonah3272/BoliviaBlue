@@ -1,0 +1,5 @@
+import { pressStories } from '../data/pressStories';
+import { trackEvent } from '../utils/analytics';
+export default function PressStoryIdeas({ language='es' }) {
+ const es=language!=='en';return <section className="rounded-2xl border border-sky-200 dark:border-sky-800 p-6 space-y-5" data-press-stories><h2 className="text-2xl font-bold">{es?'Recursos para tu próxima nota':'Resources for your next story'}</h2>{pressStories(language).map(p=><article key={p.href} className="space-y-2"><h3 className="text-lg font-semibold">{p.title}</h3><p className="text-sm text-gray-600 dark:text-gray-300">{p.text}</p><a className="inline-flex min-h-11 items-center font-semibold text-sky-700 dark:text-sky-300 underline" href={p.href+(!es&&!p.href.includes('#')?'?lang=en':'')} onClick={()=>trackEvent('press_resource_click',{resource:p.href})}>{p.label} →</a></article>)}<p className="text-xs text-gray-600 dark:text-gray-300">{es?'Uso editorial gratuito. Agradecemos la atribución; no exigimos enlaces ni ubicaciones pagadas.':'Free editorial use. Attribution is welcome; there is no required link or paid placement.'}</p></section>;
+}

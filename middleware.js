@@ -1,3 +1,5 @@
+import { renderPressStories } from './frontend/src/data/pressStories.js';
+import { renderQrCardHtml, renderSantaCruzHtml } from './seo/paymentToolsSeo.js';
 import { TRAVELER_GUIDE_PATHS, renderTravelerGuideHtml } from './seo/travelerGuideSeo.js';
 import { aboutPageForSearch, renderAboutHtml } from './seo/aboutSeo.js';
 import { buildDollarRateSearchCopy, DOLLAR_SEARCH_PAGES, normalizeDollarRatePayload } from './frontend/src/utils/dollarRateSearchCopy.js';
@@ -26,6 +28,9 @@ export const config = {
   matcher: [
     '/',
     '/index.html',
+    '/comparar-qr-tarjeta',
+    '/comparar-qr-tarjeta/',
+    '/comparar-qr-tarjeta/index.html',
     '/efectivo-o-tarjeta-bolivia',
     '/efectivo-o-tarjeta-bolivia/',
     '/efectivo-o-tarjeta-bolivia/index.html',
@@ -619,6 +624,16 @@ export default async function middleware(request) {
 
   const url = new URL(request.url);
   const path = normalizePath(url.pathname);
+  // The same tool guidance and verified provider facts are served to every user agent.
+  if (path === '/comparar-qr-tarjeta' || path === '/dolar-blue-santa-cruz') {
+    try {
+      const shell = await fetch(new URL(`${path}/index.html`, url.origin), { headers: { [SKIP_HEADER]: '1', Accept: 'text/html' }, signal: withTimeout(HTML_TIMEOUT_MS) });
+      if (!shell.ok) throw new Error('Tool shell unavailable');
+      const render = path === '/comparar-qr-tarjeta' ? renderQrCardHtml : renderSantaCruzHtml;
+      const headers = new Headers(shell.headers); headers.set('content-type', 'text/html; charset=utf-8'); headers.set('cache-control', 'public, s-maxage=300, stale-while-revalidate=600'); headers.delete('content-length');
+      return new Response(request.method === 'HEAD' ? null : render(await shell.text(), url.search), { status: 200, headers });
+    } catch { return; }
+  }
   // Useful initial content and the same daily comparison for crawlers and people.
   if (path === '/efectivo-o-tarjeta-bolivia') {
     const readJson = async (route) => {
@@ -661,6 +676,8 @@ export default async function middleware(request) {
       if (language === 'en') html = applyEnglishAnnotations(html, '/prensa', null);
       html = applyArchivePaginationMetadata(html, before, language);
       html = html.replace(/<section\b[^>]*data-daily-evidence-archive[^>]*>[\s\S]*?<\/section>/g, '');
+      html = html.replace(/<section\b[^>]*data-press-stories[^>]*>[\s\S]*?<\/section>/g, '');
+      html = html.replace('</main>', renderPressStories(language) + '</main>');
       html = html.replace('</main>', renderArchiveHtml(reports, language, { unavailable, nextBefore, olderPage: Boolean(before) }) + '</main>');
       const headers = new Headers(shell.headers); headers.set('content-type', 'text/html; charset=utf-8'); headers.set('cache-control', unavailable ? 'no-store' : 'public, s-maxage=300, stale-while-revalidate=600'); headers.delete('content-length');
       return new Response(request.method === 'HEAD' ? null : html, { status: 200, headers });

@@ -30,7 +30,7 @@ export default defineConfig({
           // Split vendor bundles more aggressively to reduce unused JS
           if (id.includes('node_modules')) {
             // Core React libs - small, stable
-            if (id.includes('react') || id.includes('react-dom') || id.includes('scheduler')) {
+            if (/\/node_modules\/(react|react-dom|scheduler)\//.test(id)) {
               return 'react-vendor';
             }
             // Router - separate for better caching
@@ -61,6 +61,7 @@ export default defineConfig({
             if (id.includes('swr')) {
               return 'swr-vendor';
             }
+            if (id.includes('/web-vitals/')) return 'web-vitals';
             // Everything else
             return 'vendor';
           }

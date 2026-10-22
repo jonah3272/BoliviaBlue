@@ -150,6 +150,7 @@
   "outputDirectory": "frontend/dist",
   "installCommand": "npm install && cd frontend && npm install",
   "rewrites": [
+    { "source": "/comparar-qr-tarjeta", "destination": "/comparar-qr-tarjeta/index.html" },
     {"source": "/efectivo-o-tarjeta-bolivia", "destination": "/efectivo-o-tarjeta-bolivia/index.html"},
     {"source": "/api/daily-report", "destination": "/api/historical-data?feature=daily-evidence"},
     {"source": "/prensa/informes/rss.xml", "destination": "/api/historical-data?feature=daily-evidence&view=feed"},

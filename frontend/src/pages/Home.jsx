@@ -1,3 +1,4 @@
+import HomeMarketSummary from '../components/HomeMarketSummary';
 import { normalizeDollarRatePayload } from '../utils/dollarRateSearchCopy.js';
 import Header from '../components/Header';
 import SourceObservationPanel from '../components/SourceObservationPanel';
@@ -209,6 +210,7 @@ function Home() {
             </div>
           </div>
         </section>
+        <HomeMarketSummary language={language} />
 
         {/* Rates + buy CTA — first composition */}
         <div className="relative rounded-2xl px-1 py-4 sm:px-4 sm:py-6 -mx-1 sm:mx-0 bg-gradient-to-b from-sky-50/90 via-transparent to-transparent dark:from-sky-950/40 dark:via-transparent">

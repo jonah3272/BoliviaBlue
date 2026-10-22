@@ -609,6 +609,29 @@ export function applyLiveSeo(html, path, rates) {
   return { html: out, live: true, rates: pair };
 }
 
+// Optional evidence lookup runs alongside the existing shell/rate work. Its wall-clock
+// budget remains bounded even if an upstream implementation ignores AbortSignal.
+export async function loadHomeSummary(origin, timeoutMs = 500) {
+  const controller = new AbortController();
+  let timer;
+  const timeout = new Promise(resolve => {
+    timer = setTimeout(() => { controller.abort(); resolve(null); }, timeoutMs);
+  });
+  const lookup = (async () => {
+    try {
+      const response = await fetch(new URL('/api/daily-report?view=home-summary', origin), {
+        headers: { [SKIP_HEADER]: '1', Accept: 'application/json' },
+        signal: controller.signal,
+      });
+      if (!response.ok) return null;
+      const payload = await response.json();
+      return payload.unavailable ? null : payload.report || null;
+    } catch { return null; }
+  })();
+  try { return await Promise.race([lookup, timeout]); }
+  finally { clearTimeout(timer); }
+}
+
 export default async function middleware(request) {
   if (request.headers.get(SKIP_HEADER) === '1') {
     return;
@@ -859,6 +882,7 @@ export default async function middleware(request) {
   }
 
   try {
+    const homeSummaryPromise = path === '/' ? loadHomeSummary(url.origin) : Promise.resolve(null);
     const assetPath = path === '/' ? '/index.html' : `${path}/index.html`;
     const htmlUrl = new URL(assetPath, url.origin);
     const htmlRes = await fetch(htmlUrl, {
@@ -886,6 +910,10 @@ export default async function middleware(request) {
         ...applied,
         html: applyEnglishAnnotations(applied.html, path, applied.rates),
       };
+    }
+
+    if (path === '/') {
+      applied.html = renderDollarRateHtml(applied.html, path, applied.rates, lang === 'en' ? 'en' : 'es', Date.now(), await homeSummaryPromise);
     }
 
     const headers = new Headers(htmlRes.headers);

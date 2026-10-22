@@ -1,3 +1,4 @@
+import { homeMarketSummary } from '../frontend/src/utils/homeMarketSummary.js';
 import { formatDateTime } from '../frontend/src/utils/formatters.js';
 import { bolivianBlueGuide } from '../frontend/src/data/bolivianBlueGuide.js';
 import { rateReadingGuide } from '../frontend/src/data/rateReadingGuide.js';
@@ -14,10 +15,12 @@ const HEADINGS = {
 };
 
 /** Replace only the initial crawl shell and its page identity; keep canonical ownership. */
-export function renderDollarRateHtml(html, path, rates = null, language = 'es', now = Date.now()) {
+export function renderDollarRateHtml(html, path, rates = null, language = 'es', now = Date.now(), homeSummary = null) {
   if (!DOLLAR_SEARCH_PAGES[path]) return html;
   const model = buildDollarRateSearchCopy({ ...rates, page: DOLLAR_SEARCH_PAGES[path], language, now });
   const es = model.language === 'es';
+  const summary = path === '/' ? homeMarketSummary(homeSummary, language, now) : null;
+  const summaryHtml = summary ? `<section data-home-market-summary class="max-w-3xl mx-auto rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-700 space-y-2"><h2 class="font-semibold text-gray-900">${escape(summary.heading)}</h2><p>${escape(summary.summary)} ${escape(summary.change)}</p><p class="text-xs text-gray-600">${escape(summary.caveat)}</p><a class="text-emerald-700 underline" href="${escape(summary.href)}">${escape(summary.link)}</a></section>` : '';
   let out = html.replace(/<title>[\s\S]*?<\/title>/i, () => `<title>${escape(model.title)}</title>`);
   for (const [attribute, name, value] of [
     ['name', 'title', model.title], ['name', 'description', model.description],
@@ -55,9 +58,11 @@ export function renderDollarRateHtml(html, path, rates = null, language = 'es', 
   // The retained shell cannot open the React-only alert form while its module is unavailable.
   const homeHero = `<section data-home-rate-hero class="relative text-center md:overflow-hidden md:rounded-3xl md:border md:border-sky-200/60 md:px-6 md:py-6"><h1 ${headingAttributes}>${HEADINGS['/'][model.language]}</h1><p class="hidden md:block mt-3 text-sm text-gray-600">${es ? 'Referencia P2P USDT/BOB · Bs por USD' : 'P2P USDT/BOB reference · Bs per USD'}</p>${pair}${homeConversion}${homeObservation}${homeAnswer}<div class="hidden md:flex flex-wrap items-center justify-center gap-3 mt-4" data-home-secondary-actions><a href="${homeHref('/efectivo-o-tarjeta-bolivia')}" class="inline-flex h-11 items-center justify-center rounded-xl bg-sky-500 px-5 text-sm font-bold text-white">${es ? 'Efectivo vs. tarjeta hoy' : 'Cash vs. card today'}</a><a href="${homeHref('/comprar-dolares')}" class="inline-flex h-11 items-center justify-center rounded-xl border border-gray-300 px-5 text-sm font-semibold text-gray-800">${es ? 'Cómo comprar dólares' : 'How to buy dollars'}</a></div></section>`;
   const shell = path === '/'
-    ? `<main class="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-5 sm:py-8 md:py-6 space-y-6 sm:space-y-8 md:space-y-10" data-seo-shell="${es ? 'home' : 'english'}">${homeHero}${cashCardLink}<aside class="max-w-3xl mx-auto rounded-xl border border-sky-200 p-4"><h2 class="font-semibold">${es?'¿Pagar con QR o tarjeta?':'Pay by QR or card?'}</h2><p>${es?'Compará la cotización de tu app y todas las comisiones para la misma compra.':'Compare your app quote and all fees for the same purchase.'}</p><a href="${homeHref('/comparar-qr-tarjeta')}" class="text-sky-700 underline">${es?'Comparar QR y tarjeta':'Compare QR and card'} →</a></aside>${nav}${readingGuide}</main>`
+    ? `<main class="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-5 sm:py-8 md:py-6 space-y-6 sm:space-y-8 md:space-y-10" data-seo-shell="${es ? 'home' : 'english'}">${homeHero}${summaryHtml}${cashCardLink}<aside class="max-w-3xl mx-auto rounded-xl border border-sky-200 p-4"><h2 class="font-semibold">${es?'¿Pagar con QR o tarjeta?':'Pay by QR or card?'}</h2><p>${es?'Compará la cotización de tu app y todas las comisiones para la misma compra.':'Compare your app quote and all fees for the same purchase.'}</p><a href="${homeHref('/comparar-qr-tarjeta')}" class="text-sky-700 underline">${es?'Comparar QR y tarjeta':'Compare QR and card'} →</a></aside>${nav}${readingGuide}</main>`
     : `<main class="max-w-7xl mx-auto px-4 py-8" data-seo-shell="${es ? DOLLAR_SEARCH_PAGES[path] : 'english'}"><div class="text-center space-y-4 mb-8"><h1 ${headingAttributes}>${path === '/bolivian-blue' ? HEADINGS[path][model.language] : es ? HEADINGS[path].es : escape(model.title)}</h1><p class="text-base text-gray-600 max-w-3xl mx-auto" data-dollar-rate-answer>${escape(model.answer)}</p>${conversion}${nav}</div>${readingGuide}</main>`;
   out = out.replace(mainPattern, () => shell);
+  out = out.replace(/<script\b[^>]*id=["']home-market-summary-data["'][^>]*>[\s\S]*?<\/script>/gi, '');
+  if (summary) out = out.replace('</head>', () => `<script type="application/json" id="home-market-summary-data">${JSON.stringify(homeSummary).replaceAll('<', '\\u003c')}</script></head>`);
   // Initial shells contain only WebPage/Breadcrumb. Update that existing WebPage, not new hidden facts.
   out = out.replace(/(<script\b[^>]*type=["']application\/ld\+json["'][^>]*>)([\s\S]*?)(<\/script>)/gi, (all, start, json, end) => {
     try {

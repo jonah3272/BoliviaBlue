@@ -9,6 +9,7 @@ const BASE = 'https://www.boliviablue.com';
 // The methodology gained a reproducible source-composition example on 2026-10-10.
 const PAGES = [
   { path: '/', lastmod: '2026-10-22', changefreq: 'hourly', priority: '1.0' },
+  { path: '/comparar-qr-tarjeta', lastmod: '2026-10-22', changefreq: 'monthly', priority: '0.9' },
   { path: '/efectivo-o-tarjeta-bolivia', lastmod: '2026-10-22', changefreq: 'daily', priority: '0.9' },
   { path: '/dolar-blue-hoy', changefreq: 'hourly', priority: '1.0' },
   { path: '/bolivian-blue', changefreq: 'hourly', priority: '0.95' },
@@ -17,7 +18,7 @@ const PAGES = [
   { path: '/cotiza-dolar-paralelo', changefreq: 'hourly', priority: '0.85' },
   { path: '/que-es-dolar-blue', changefreq: 'weekly', priority: '0.85' },
   { path: '/dolar-blue-la-paz', changefreq: 'hourly', priority: '0.85' },
-  { path: '/dolar-blue-santa-cruz', changefreq: 'hourly', priority: '0.85' },
+  { path: '/dolar-blue-santa-cruz', lastmod: '2026-10-22', changefreq: 'hourly', priority: '0.85' },
   { path: '/dolar-blue-cochabamba', changefreq: 'hourly', priority: '0.85' },
   { path: '/noticias', changefreq: 'hourly', priority: '0.85' },
   { path: '/blog', changefreq: 'weekly', priority: '0.8' },
@@ -38,7 +39,7 @@ const PAGES = [
   { path: '/fuente-de-datos', lastmod: '2026-10-10', changefreq: 'monthly', priority: '0.75' },
   { path: '/api-docs', changefreq: 'monthly', priority: '0.75' },
   { path: '/widget', changefreq: 'monthly', priority: '0.9' },
-  { path: '/prensa', lastmod: '2026-10-08', changefreq: 'monthly', priority: '0.9' },
+  { path: '/prensa', lastmod: '2026-10-22', changefreq: 'monthly', priority: '0.9' },
   { path: '/guia-dinero-bolivia', changefreq: 'weekly', priority: '0.9' },
   { path: '/bolivia-money-guide', changefreq: 'weekly', priority: '0.9' },
   { path: '/publicitar', changefreq: 'monthly', priority: '0.85' },

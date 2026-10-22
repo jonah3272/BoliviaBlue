@@ -1,3 +1,5 @@
+import PressStoryIdeas from '../components/PressStoryIdeas';
+import ShareRate from '../components/ShareRate';
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Header from '../components/Header';
@@ -150,9 +152,12 @@ function PressKit() {
           </p>
         </header>
 
+        <PressStoryIdeas language={language} />
+
         <DailyEvidenceArchive key={before || 'latest'} language={language} before={before} />
 
         <NewsroomSnapshot rate={rateData} language={language} loading={isLoading} error={error} />
+        <ShareRate placement="press" />
 
         <aside className="rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-2 text-sm text-gray-700 dark:text-gray-300">
           <Link to={example.path} className="font-semibold text-blue-600 dark:text-blue-400 underline">{example.pressLabel}</Link>

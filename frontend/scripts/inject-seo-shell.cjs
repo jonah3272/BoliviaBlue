@@ -978,6 +978,14 @@ async function main() {
   }
 
   // Calculator identity, presets and guidance share the same model as React.
+  const { renderPressStories } = await import('../../frontend/src/data/pressStories.js');
+  const pressPath = path.join(DIST, 'prensa', 'index.html');
+  fs.writeFileSync(pressPath, fs.readFileSync(pressPath, 'utf8').replace('</main>', renderPressStories() + '</main>'), 'utf8');
+  const { renderQrCardHtml, renderSantaCruzHtml } = await import('../../seo/paymentToolsSeo.js');
+  for (const [route, render] of [['comparar-qr-tarjeta', renderQrCardHtml], ['dolar-blue-santa-cruz', renderSantaCruzHtml]]) {
+    const dir = path.join(DIST, route); fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(path.join(dir, 'index.html'), render(originalHtml), 'utf8');
+  }
   const { renderCashCardHtml } = await import('../../seo/cashCardSeo.js');
   const cashCardDir = path.join(DIST, 'efectivo-o-tarjeta-bolivia');
   fs.mkdirSync(cashCardDir, { recursive: true });

@@ -14,10 +14,10 @@ describe('sitemap xml', () => {
     for (const now of ['2026-10-08T18:00:00Z', '2026-10-09T02:00:00Z', '2027-01-01T00:00:00Z']) {
       const xml = buildSitemapXml(new Date(now));
       for (const pagePath of ['/fuente-de-datos', '/prensa']) {
-        assert.equal(lastmodFor(xml, pagePath), pagePath === '/fuente-de-datos' ? '2026-10-10' : '2026-10-08');
+        assert.equal(lastmodFor(xml, pagePath), pagePath === '/fuente-de-datos' ? '2026-10-10' : '2026-10-22');
       }
-      assert.equal(lastmodFor(xml, '/terminos'), '2026-09-26T12:00:00+00:00');
-      assert.equal(lastmodFor(xml, '/api-docs'), '2026-09-26T12:00:00+00:00');
+      assert.equal(lastmodFor(xml, '/terminos'), undefined);
+      assert.equal(lastmodFor(xml, '/api-docs'), undefined);
     }
   });
 
@@ -28,13 +28,12 @@ describe('sitemap xml', () => {
     }
   });
 
-  it('stamps rate pages with the given day and leaves blog dates alone', () => {
-    const xml = buildSitemapXml(new Date('2026-10-01T15:00:00Z'));
-    assert.match(xml, /<loc>https:\/\/www\.boliviablue\.com\/<\/loc>\s*<lastmod>2026-10-01T12:00:00\+00:00<\/lastmod>/);
-    assert.match(xml, /<loc>https:\/\/www\.boliviablue\.com\/euro-a-boliviano<\/loc>\s*<lastmod>2026-10-01T12:00:00\+00:00<\/lastmod>/);
-    assert.match(xml, /<loc>https:\/\/www\.boliviablue\.com\/terminos<\/loc>\s*<lastmod>2026-09-26T12:00:00\+00:00<\/lastmod>/);
-    assert.match(xml, /por-que-se-llama-dolar-blue-origen<\/loc>\s*<lastmod>2025-01-26T12:00:00\+00:00<\/lastmod>/);
-    assert.equal((xml.match(/<loc>/g) || []).length, PAGES.length + BLOG.length);
-    assert.match(xml, /hreflang="en" href="https:\/\/www\.boliviablue\.com\/\?lang=en"/);
+  it('uses only verified edit dates and includes the QR tool', () => {
+    const xml = buildSitemapXml(new Date('2026-10-22T15:00:00Z'));
+    assert.equal(lastmodFor(xml, '/'), '2026-10-22');
+    assert.equal(lastmodFor(xml, '/comparar-qr-tarjeta'), '2026-10-22');
+    assert.equal(lastmodFor(xml, '/euro-a-boliviano'), undefined);
+    assert.equal((xml.match(/<loc>/g) || []).length, PAGES.length + BLOG.length + 1);
+    assert.match(xml, /hreflang="en" href="https:\/\/www\.boliviablue\.com\/comparar-qr-tarjeta\?lang=en"/);
   });
 });

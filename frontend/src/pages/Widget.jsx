@@ -65,8 +65,8 @@ function Widget() {
     name: language === 'es' ? 'Widget gratuito dólar blue Bolivia' : 'Free Bolivia blue dollar widget',
     description:
       language === 'es'
-        ? 'Embed gratuito de la cotización del dólar blue en Bolivia. Copia el código y enlaza a boliviablue.com.'
-        : 'Free embed of the Bolivia blue dollar rate. Copy the code and link back to boliviablue.com.',
+        ? 'Embed gratuito de la cotización del dólar blue en Bolivia. Copiá el código para mostrar la referencia y su hora.'
+        : 'Free embed of the Bolivia blue dollar rate. Copy the code to show the reference and its observation time.',
     url: '/widget',
     inLanguage: language === 'es' ? 'es-BO' : 'en-US'
   });

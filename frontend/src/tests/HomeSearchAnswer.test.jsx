@@ -12,7 +12,8 @@ describe('homepage rendered answer',()=>{
   const model=buildLiveRateSeoMeta({...normalizeDollarRatePayload(input),language,page:'home',now:Date.parse(time)+(state==='stale'?86400000:0)});
   const {container}=render(<MemoryRouter><AiCitationBlock language={language} citePath="/" answerOverride={model.answer} summaryLabel={model.observation}/></MemoryRouter>);
   expect(container.querySelector('#respuesta-dolar-blue-bolivia').textContent).toBe(model.answer);
-  expect(container.querySelector('#respuesta-dolar-blue-bolivia-desktop').textContent).toBe(model.answer);
+  expect(container.querySelectorAll('#respuesta-dolar-blue-bolivia')).toHaveLength(1);
+  expect(container.querySelector('#respuesta-dolar-blue-bolivia-desktop')).toBeNull();
   if(['stored','stale'].includes(state)) expect(model.answer).toContain('Binance P2P');
   else expect(model.answer).not.toContain('Binance P2P');
   if(state==='stale') expect(model.answer).toMatch(/desactualizada|stale/);

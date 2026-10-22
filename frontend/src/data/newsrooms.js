@@ -31,7 +31,7 @@ export function pitchFor(outlet, liveLine) {
   const csv = `${SITE}/api/historical-data.csv?range=30d`;
   return `Hola ${outlet.greeting},
 
-Soy de Bolivia Blue (${SITE}). Publicamos la cotización del dólar blue / paralelo en Bolivia como mediana P2P verificada (Binance, El Dorado, OKX), ~cada 15 min.
+Soy de Bolivia Blue (${SITE}). Publicamos la cotización del dólar blue / paralelo en Bolivia como referencia P2P USDT/BOB con hora de observación y desglose de fuentes cuando está guardado. Los informes diarios usan la canasta fija Binance, El Dorado y Bybit.
 
 ${liveLine}
 
@@ -56,7 +56,7 @@ export const NEWSROOMS = [
     city: 'Santa Cruz',
     why: 'Ya citan “el portal Dólar Blue Bolivia”. Pedí que el enlace apunte a boliviablue.com.',
     greeting: 'equipo de indicadores / comunicaciones de Cadecocruz',
-    hook: 'Vimos que su web y notas de prensa usan un portal del paralelo. Podemos darles la lectura verificada + CSV gratis a cambio de atribución con enlace.',
+    hook: 'Vimos que su web y notas de prensa usan un portal del paralelo. Podemos darles la lectura verificada + CSV gratis para uso editorial, con metodología pública.',
     contactUrl: 'https://www.cadecocruz.org.bo/index.php',
     email: 'info@cadecocruz.org.bo',
     priority: true,
@@ -78,7 +78,7 @@ export const NEWSROOMS = [
     city: 'Cochabamba',
     why: 'Hub de valle. Encaja con /dolar-blue-cochabamba.',
     greeting: 'redacción de Economía de Los Tiempos',
-    hook: 'Podemos mandar un cierre diario Cochabamba (misma mediana nacional P2P, explícito) + CSV.',
+    hook: 'Ofrecemos un informe nacional P2P fechado con evidencia descargable; no es una cotización local de efectivo.',
     contactUrl: 'https://www.lostiempos.com/',
     email: '',
     priority: true,
@@ -133,7 +133,7 @@ export const NEWSROOMS = [
     city: 'La Paz',
     why: 'Alcance altiplano; encaja con /dolar-blue-la-paz.',
     greeting: 'redacción de Economía de La Razón',
-    hook: 'Cierre La Paz + gráfico histórico 30 días, atribución a Bolivia Blue.',
+    hook: 'Informe nacional P2P con fecha, gráfico y evidencia; no es un precio de efectivo en La Paz.',
     contactUrl: 'https://www.la-razon.com/',
     email: '',
     priority: false,
@@ -155,7 +155,7 @@ export const NEWSROOMS = [
     city: 'Santa Cruz',
     why: 'Cámara empresarial: boletines y socios miran el paralelo.',
     greeting: 'área de estudios / comunicaciones de CAINCO',
-    hook: 'CSV + widget para su boletín a cambio de mención con enlace.',
+    hook: 'CSV y widget gratuitos para su boletín. La atribución editorial es opcional.',
     contactUrl: 'https://www.cainco.org.bo/',
     email: '',
     priority: false,
@@ -166,7 +166,7 @@ export const NEWSROOMS = [
     city: 'Santa Cruz',
     why: 'Citas académicas .edu son duras y duran años.',
     greeting: 'biblioteca / facultad de ciencias económicas',
-    hook: 'CSV histórico gratis para tesis a cambio de citar boliviablue.com/datos-historicos.',
+    hook: 'CSV histórico gratuito para investigación; metodología y límites publicados.',
     contactUrl: 'https://www.uagrm.edu.bo/',
     email: '',
     priority: false,
@@ -185,7 +185,7 @@ export const GUEST_COLUMN_ES = `Cómo leer el dólar paralelo en Bolivia (sin co
 
 Cuando alguien pregunta “¿a cuánto está el dólar?”, en Bolivia casi nunca habla del tipo oficial del Banco Central. Habla del paralelo: el precio al que se consiguen dólares (o USDT) fuera de ventanilla.
 
-Bolivia Blue publica esa lectura como mediana de ofertas P2P (Binance, El Dorado, OKX y Bybit cuando hay mercado), actualizada cada ~15 minutos. No es el precio de una casa de cambio en la calle ni el tipo del BCB. Compra es cuántos bolivianos pagás para obtener 1 USD en P2P; venta es cuántos recibís al vender.
+Bolivia Blue publica esa lectura como mediana de ofertas P2P (las plataformas disponibles, con fuentes guardadas cuando están disponibles), actualizada cada ~15 minutos. No es el precio de una casa de cambio en la calle ni el tipo del BCB. Compra es cuántos bolivianos pagás para obtener 1 USD en P2P; venta es cuántos recibís al vender.
 
 Por eso un recuadro serio muestra tres cosas juntas: paralelo (blue), oficial BCB, y la hora de la lectura. El histórico y el CSV están abiertos en ${SITE}/datos-historicos. Metodología: ${SITE}/fuente-de-datos.
 

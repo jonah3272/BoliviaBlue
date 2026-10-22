@@ -11,7 +11,7 @@ import RateTrioStrip from '../components/RateTrioStrip';
 import TravelersGuideTeaser from '../components/TravelersGuideTeaser';
 import AiCitationBlock from '../components/AiCitationBlock';
 import NewsletterSignup from '../components/NewsletterSignup';
-import SocialShare from '../components/SocialShare';
+import ShareRate from '../components/ShareRate';
 import LazyErrorBoundary from '../components/LazyErrorBoundary';
 import DeferredSection from '../components/DeferredSection';
 import { FinancialOfferButton } from '../components/FinancialOfferCard';
@@ -27,7 +27,7 @@ import PageMeta from '../components/PageMeta';
 import Navigation from '../components/Navigation';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Link } from 'react-router-dom';
-import { articlesEs, articlesEn } from '../data/blogArticles';
+import { articlesEs, articlesEn } from '../data/featuredArticleSummaries';
 import { useRate } from '../contexts/RateContext';
 import { getWebPage, getBreadcrumbList, getOrganizationSchema, getWebSiteSchema } from '../utils/seoSchema';
 import { buildLiveRateSeoMeta, liveBobParts } from '../utils/seoRateMeta';
@@ -54,7 +54,7 @@ function Home() {
   const language = languageContext?.language || 'es';
   const [showOfficial, setShowOfficial] = useState(false);
   const { rateData: contextRate, error: rateError, isLoading: rateLoading } = useRate();
-  const [currentRate, setCurrentRate] = useState(null);
+  const currentRate = contextRate;
   const [isNewsExpanded, setIsNewsExpanded] = useState(false);
   const [isArticlesExpanded, setIsArticlesExpanded] = useState(false);
   const [quickUsd, setQuickUsd] = useState('100');
@@ -82,12 +82,6 @@ function Home() {
     return null;
   }, [currentRate]);
 
-  useEffect(() => {
-    if (contextRate?.buy && contextRate?.sell) {
-      setCurrentRate(contextRate);
-    }
-  }, [contextRate]);
-  
   const liveSeo = buildLiveRateSeoMeta({
     ...normalizeDollarRatePayload(currentRate),
     language,
@@ -170,7 +164,7 @@ function Home() {
             <MobileHeroRates
               live={live}
               rate={currentRate}
-              loading={rateLoading || Boolean(contextRate?.buy && contextRate?.sell && !currentRate)}
+              loading={rateLoading}
               error={rateError}
               language={language}
             />
@@ -185,12 +179,13 @@ function Home() {
               citePath="/"
               className="mt-4 max-w-3xl mx-auto text-left"
             />
+            <div className="mt-4"><ShareRate compact placement="home_hero" /></div>
             <div className="hidden md:flex flex-wrap items-center justify-center gap-3 mt-4" data-home-secondary-actions>
               <Link
-                to="/dolar-blue-hoy"
+                to="/efectivo-o-tarjeta-bolivia"
                 className="inline-flex h-11 items-center justify-center rounded-xl bg-sky-500 px-5 text-sm font-bold text-white shadow-md shadow-sky-500/25 transition hover:bg-sky-400"
               >
-                {language === 'es' ? 'Cotización completa de hoy' : 'Full quote for today'}
+                {language === 'es' ? 'Efectivo vs. tarjeta hoy' : 'Cash vs. card today'}
               </Link>
               <Link
                 to="/comprar-dolares"
@@ -231,6 +226,7 @@ function Home() {
                 updatedAt={currentRate?.updated_at_iso}
               />
             </div>
+            <div className="mt-4 max-w-5xl mx-auto rounded-xl border border-sky-200 dark:border-sky-800 bg-white dark:bg-gray-800 p-4 flex flex-wrap items-center justify-between gap-3"><div><h2 className="font-bold text-gray-900 dark:text-white">{language === 'es' ? '¿Pagar con QR o tarjeta?' : 'Pay by QR or card?'}</h2><p className="text-sm text-gray-600 dark:text-gray-300">{language === 'es' ? 'Compará la cotización de tu app y todas las comisiones para la misma compra.' : 'Compare your app quote and all fees for the same purchase.'}</p></div><Link className="inline-flex min-h-11 items-center rounded-lg bg-sky-700 text-white px-4 py-2 font-semibold" to={`/comparar-qr-tarjeta${language === 'en' ? '?lang=en' : ''}`}>{language === 'es' ? 'Comparar QR y tarjeta →' : 'Compare QR and card →'}</Link></div>
             <div className="mt-4 max-w-3xl mx-auto">
               <RateBinanceCta placement="home_after_rates" midRate={midRate} />
             </div>
@@ -515,10 +511,7 @@ function Home() {
 
 
         {/* Social Share Section */}
-        <SocialShare
-          title={language === 'es' ? '🔴 Bolivia Blue Rate EN VIVO - Actualizado Cada 15 Min' : '🔴 Bolivia Blue Rate LIVE - Updated Every 15 Min'}
-          description={language === 'es' ? "Dólar Blue Bolivia actualizado cada 15 minutos." : "Blue Dollar Bolivia updated every 15 minutes."}
-        />
+
 
         {/* Citation and data resources */}
         <section className="mt-10 rounded-2xl border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/30 p-5 sm:p-6">

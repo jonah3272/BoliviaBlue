@@ -10,6 +10,7 @@ import { platformComparisonPageForSearch, renderPlatformComparisonHtml } from '.
 import { calculatorPageForSearch, renderCalculatorHtml } from './seo/calculatorSeo.js';
 import { renderArchiveHtml, DAILY_EVIDENCE_SEEDS, normalizeArchiveBefore, archiveLocalePaths } from './frontend/src/data/dailyEvidenceArchive.js';
 import { realPageForSearch, renderRealConversionHtml } from './seo/realConversionSeo.js';
+import { renderCashCardHtml } from './seo/cashCardSeo.js';
 
 /**
  * Vercel Edge Middleware: inject live buy/sell into homepage HTML for every visitor,
@@ -25,6 +26,9 @@ export const config = {
   matcher: [
     '/',
     '/index.html',
+    '/efectivo-o-tarjeta-bolivia',
+    '/efectivo-o-tarjeta-bolivia/',
+    '/efectivo-o-tarjeta-bolivia/index.html',
     '/blog/:slug',
     '/noticias/:slug',
     '/:page(dolar-blue-hoy|bolivian-blue|dolar-paralelo-bolivia-en-vivo|cuanto-esta-dolar-bolivia|cotiza-dolar-paralelo|euro-a-boliviano|real-a-boliviano|peso-a-boliviano|sol-a-boliviano|peso-argentino-a-boliviano|peso-chileno-a-boliviano|dolar-blue-santa-cruz|dolar-blue-la-paz|dolar-blue-cochabamba|prensa|guia-dinero-bolivia|bolivia-money-guide|comprar-dolares|fuente-de-datos|datos-historicos|api-docs|calculadora|acerca-de|plataformas)',
@@ -615,6 +619,32 @@ export default async function middleware(request) {
 
   const url = new URL(request.url);
   const path = normalizePath(url.pathname);
+  // Useful initial content and the same daily comparison for crawlers and people.
+  if (path === '/efectivo-o-tarjeta-bolivia') {
+    const readJson = async (route) => {
+      try {
+        const response = await fetch(new URL(route, url.origin), { headers: { Accept: 'application/json' }, signal: withTimeout(RATE_TIMEOUT_MS) });
+        return response.ok ? await response.json() : null;
+      } catch { return null; }
+    };
+    try {
+      const [shell, rate, card] = await Promise.all([
+        fetch(new URL('/efectivo-o-tarjeta-bolivia/index.html', url.origin), { headers: { [SKIP_HEADER]: '1', Accept: 'text/html' }, signal: withTimeout(HTML_TIMEOUT_MS) }),
+        readJson('/api/blue-rate'), readJson('/api/card-rate'),
+      ]);
+      if (!shell.ok) throw new Error('Cash/card shell unavailable');
+      const html = renderCashCardHtml(await shell.text(), url.search, rate, card);
+      const headers = new Headers(shell.headers);
+      headers.set('content-type', 'text/html; charset=utf-8');
+      // Rate APIs already cache their reads. Never cache a winning result beyond its freshness check.
+      headers.set('cache-control', 'no-store');
+      headers.delete('content-length');
+      return new Response(request.method === 'HEAD' ? null : html, { status: 200, headers });
+    } catch {
+      const title = url.searchParams.get('lang') === 'en' ? 'Comparison temporarily unavailable' : 'Comparación temporalmente no disponible';
+      return new Response(request.method === 'HEAD' ? null : `<!doctype html><html><head><meta name="robots" content="noindex, follow"><title>${title}</title></head><body><h1>${title}</h1></body></html>`, { status: 503, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex, follow', 'retry-after': '60' } });
+    }
+  }
   // Press archive is server-visible for every visitor, including without JavaScript.
   if (path === '/prensa') {
     const before = normalizeArchiveBefore(url.searchParams.get('before'));

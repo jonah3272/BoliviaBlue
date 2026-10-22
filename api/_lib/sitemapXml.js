@@ -1,15 +1,15 @@
 /**
- * Sitemap XML. Rate pages get today's lastmod on every request.
- * Editorial pages use their last significant content-edit date, not build time.
+ * Sitemap XML. Only verified significant edits get lastmod.
+ * A request or deployment is not evidence that the underlying rates changed.
  */
 
 const BASE = 'https://www.boliviablue.com';
-const STABLE_LASTMOD = '2026-09-26T12:00:00+00:00';
 
 // Set lastmod only for a verified significant edit; ordinary deploys must not bump it.
 // The methodology gained a reproducible source-composition example on 2026-10-10.
 const PAGES = [
-  { path: '/', changefreq: 'hourly', priority: '1.0' },
+  { path: '/', lastmod: '2026-10-22', changefreq: 'hourly', priority: '1.0' },
+  { path: '/efectivo-o-tarjeta-bolivia', lastmod: '2026-10-22', changefreq: 'daily', priority: '0.9' },
   { path: '/dolar-blue-hoy', changefreq: 'hourly', priority: '1.0' },
   { path: '/bolivian-blue', changefreq: 'hourly', priority: '0.95' },
   { path: '/calculadora', changefreq: 'daily', priority: '0.9' },
@@ -56,15 +56,11 @@ const BLOG = [
   { path: '/blog/por-que-se-llama-dolar-blue-origen', lastmod: '2025-01-26T12:00:00+00:00' },
 ];
 
-function liveLastmod(date) {
-  const d = date instanceof Date ? date : new Date();
-  return d.toISOString().slice(0, 10) + 'T12:00:00+00:00';
-}
-
 function urlEntry(locPath, lastmod, changefreq, priority) {
-  const isGuide = ['/guia-dinero-bolivia', '/bolivia-money-guide'].includes(locPath);
-  const esPath = isGuide ? '/guia-dinero-bolivia' : locPath;
-  const enPath = isGuide ? '/bolivia-money-guide' : `${locPath}?lang=en`;
+  const basePath = locPath.split('?')[0];
+  const isGuide = ['/guia-dinero-bolivia', '/bolivia-money-guide'].includes(basePath);
+  const esPath = isGuide ? '/guia-dinero-bolivia' : basePath;
+  const enPath = isGuide ? '/bolivia-money-guide' : `${basePath}?lang=en`;
   // Blog translations use different slugs; do not invent query-string translations.
   const alternates = locPath.startsWith('/blog/') ? '' : `
     <xhtml:link rel="alternate" hreflang="es" href="${BASE}${esPath}" />
@@ -72,7 +68,7 @@ function urlEntry(locPath, lastmod, changefreq, priority) {
     <xhtml:link rel="alternate" hreflang="x-default" href="${BASE}${esPath}" />`;
   return `  <url>
     <loc>${BASE}${locPath}</loc>
-    <lastmod>${lastmod}</lastmod>
+${lastmod ? `    <lastmod>${lastmod}</lastmod>\n` : ''}\
     <changefreq>${changefreq}</changefreq>
     <priority>${priority}</priority>
 ${alternates}
@@ -80,17 +76,15 @@ ${alternates}
 `;
 }
 
-function buildSitemapXml(date = new Date()) {
-  const today = liveLastmod(date);
+function buildSitemapXml() {
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
 
 `;
   for (const page of PAGES) {
-    const fresh = page.changefreq === 'hourly' || page.changefreq === 'daily';
-    const lastmod = page.lastmod || (fresh ? today : STABLE_LASTMOD);
-    xml += urlEntry(page.path, lastmod, page.changefreq, page.priority);
+    xml += urlEntry(page.path, page.lastmod, page.changefreq, page.priority);
+    if (page.path === '/efectivo-o-tarjeta-bolivia') xml += urlEntry(`${page.path}?lang=en`, page.lastmod, page.changefreq, page.priority);
   }
   for (const article of BLOG) {
     xml += urlEntry(article.path, article.lastmod, 'monthly', '0.7');

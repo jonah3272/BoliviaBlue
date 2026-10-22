@@ -1,4 +1,4 @@
-import { effectiveBobPerUsd } from '../data/usCardIssuers';
+import { effectiveBobPerUsd } from '../data/usCardIssuers.js';
 const valid = value => Number.isFinite(value) && value > 0;
 export function paymentComparison({ blue, card, fee = 0, blueAt, cardAt, now = Date.now() }) {
   const effective = effectiveBobPerUsd(card, fee);

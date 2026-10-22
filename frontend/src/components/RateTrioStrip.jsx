@@ -31,6 +31,7 @@ export default function RateTrioStrip({
   updatedAt = null,
   cardRate: cardRateProp = null,
   cardUpdatedAt = null,
+  showGuideLink = true,
 }) {
   const es = language === 'es';
   const [fetchedCard, setFetchedCard] = useState(null);
@@ -247,6 +248,7 @@ export default function RateTrioStrip({
       {headerBlock}
       {bodyBlock}
       <nav className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-xs" aria-label={es ? 'Contexto de las referencias' : 'Reference context'}>
+        {showGuideLink && <Link to={`/efectivo-o-tarjeta-bolivia${es ? '' : '?lang=en'}`} className="text-blue-600 dark:text-blue-400 underline font-semibold">{es ? 'Comparador de efectivo y tarjeta: tasas, comisiones y ejemplos' : 'Cash or card comparison: rates, fees and examples'}</Link>}
         <Link to={es ? '/guia-dinero-bolivia' : '/bolivia-money-guide'} className="text-blue-600 dark:text-blue-400 underline">{es ? 'Guía de dinero para viajeros' : 'Traveler money guide'}</Link>
         <Link to={`/fuente-de-datos${es ? '' : '?lang=en'}`} className="text-blue-600 dark:text-blue-400 underline">{es ? 'Cómo se calcula la referencia P2P' : 'How the P2P reference is calculated'}</Link>
       </nav>

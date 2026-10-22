@@ -978,6 +978,11 @@ async function main() {
   }
 
   // Calculator identity, presets and guidance share the same model as React.
+  const { renderCashCardHtml } = await import('../../seo/cashCardSeo.js');
+  const cashCardDir = path.join(DIST, 'efectivo-o-tarjeta-bolivia');
+  fs.mkdirSync(cashCardDir, { recursive: true });
+  fs.writeFileSync(path.join(cashCardDir, 'index.html'), renderCashCardHtml(originalHtml), 'utf8');
+
   const { renderCalculatorHtml } = await import('../../seo/calculatorSeo.js');
   const calculatorDir = path.join(DIST, 'calculadora');
   fs.mkdirSync(calculatorDir, { recursive: true });

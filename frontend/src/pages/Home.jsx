@@ -10,7 +10,6 @@ import RateBinanceCta from '../components/RateBinanceCta';
 import RateTrioStrip from '../components/RateTrioStrip';
 import TravelersGuideTeaser from '../components/TravelersGuideTeaser';
 import AiCitationBlock from '../components/AiCitationBlock';
-import { PRIMARY_RATE_URL } from '../config/seo';
 import NewsletterSignup from '../components/NewsletterSignup';
 import SocialShare from '../components/SocialShare';
 import LazyErrorBoundary from '../components/LazyErrorBoundary';
@@ -162,10 +161,7 @@ function Home() {
             }}
           />
           <div className="relative">
-            <h1 className="md:hidden text-2xl font-bold text-gray-900 dark:text-white leading-tight">
-              {language === 'es' ? 'Dólar blue en Bolivia hoy' : 'Blue dollar in Bolivia today'}
-            </h1>
-            <h1 className="hidden md:block text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight">
+            <h1 className="text-2xl md:text-5xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight">
               {language === 'es' ? 'Dólar blue en Bolivia hoy' : 'Blue dollar in Bolivia today'}
             </h1>
             <p className="hidden md:block mt-3 text-sm text-gray-600 dark:text-gray-300">
@@ -191,7 +187,7 @@ function Home() {
             />
             <div className="hidden md:flex flex-wrap items-center justify-center gap-3 mt-4" data-home-secondary-actions>
               <Link
-                to={PRIMARY_RATE_URL}
+                to="/dolar-blue-hoy"
                 className="inline-flex h-11 items-center justify-center rounded-xl bg-sky-500 px-5 text-sm font-bold text-white shadow-md shadow-sky-500/25 transition hover:bg-sky-400"
               >
                 {language === 'es' ? 'Cotización completa de hoy' : 'Full quote for today'}

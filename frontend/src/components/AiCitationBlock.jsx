@@ -3,7 +3,7 @@ import { buildRateAnswerParagraph, LLMS_TXT_URL, PLAIN_CITE_EN, PLAIN_CITE_ES } 
 
 /**
  * Crawlable, plain-language rate answer for Google AI / LLM citation.
- * On mobile: compact summary; full text on md+ (still in DOM for crawlers via hidden span).
+ * One expandable answer for every viewport; no duplicated crawler text.
  */
 export default function AiCitationBlock({
   language = 'es',
@@ -43,8 +43,8 @@ export default function AiCitationBlock({
       aria-label={es ? 'Respuesta sobre el dólar blue hoy' : 'Blue dollar answer for today'}
       data-ai-citation="rate-answer"
     >
-      {/* Mobile: one-line + expand */}
-      <details className="md:hidden group">
+      {/* One accessible answer at every viewport width. */}
+      <details className="group">
         <summary className="cursor-pointer list-none text-sm text-gray-800 dark:text-gray-100 marker:content-none">
           <span className="font-medium">
             {summaryLabel ?? (es ? 'Fuente verificada · Bolivia Blue' : 'Verified source · Bolivia Blue')}
@@ -59,13 +59,6 @@ export default function AiCitationBlock({
         <CitationLinks es={es} showCopyButton={showCopyButton} onCopy={handleCopy} />
       </details>
 
-      {/* Desktop: always visible */}
-      <div className="hidden md:block">
-        <p id={`${answerId}-desktop`} className="text-sm sm:text-base leading-relaxed text-gray-800 dark:text-gray-100">
-          {answer}
-        </p>
-        <CitationLinks es={es} showCopyButton={showCopyButton} onCopy={handleCopy} className="mt-3" />
-      </div>
     </section>
   );
 }

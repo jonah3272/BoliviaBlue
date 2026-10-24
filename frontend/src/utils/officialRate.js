@@ -3,8 +3,8 @@ import officialProvenance from '../../../shared/officialProvenance.cjs';
 export const { officialPayload } = officialProvenance;
 
 /** Presentation always starts from the same bound provenance as API readers. */
-export function officialRateModel(row, language = 'es') {
-  const payload = officialPayload(row);
+export function officialRateModel(row, language = 'es', now = Date.now()) {
+  const payload = officialPayload(row, { now });
   const es = language === 'es';
   const status = payload.official_status;
   const available = status === 'verified' || status === 'stale';

@@ -2,7 +2,7 @@ import { renderPressStories } from './frontend/src/data/pressStories.js';
 import { renderQrCardHtml, renderSantaCruzHtml } from './seo/paymentToolsSeo.js';
 import { TRAVELER_GUIDE_PATHS, renderTravelerGuideHtml } from './seo/travelerGuideSeo.js';
 import { aboutPageForSearch, renderAboutHtml } from './seo/aboutSeo.js';
-import { buildDollarRateSearchCopy, DOLLAR_SEARCH_PAGES, normalizeDollarRatePayload } from './frontend/src/utils/dollarRateSearchCopy.js';
+import { buildDollarRateSearchCopy, DOLLAR_SEARCH_PAGES, normalizeDollarRatePayload, normalizeHomeRatePayload } from './frontend/src/utils/dollarRateSearchCopy.js';
 import { renderDollarRateHtml } from './seo/dollarRateSeo.js';
 import { dataDocumentationPageForSearch, renderDataDocumentationHtml, renderSourceCompositionPressLink } from './seo/dataDocumentationSeo.js';
 import { apiDocumentationPageForSearch, renderApiDocumentationHtml } from './seo/apiDocumentationSeo.js';
@@ -89,6 +89,7 @@ export function escapeHtml(s) {
 
 /** Normalize /api/blue-rate JSON into validated display strings. */
 export function normalizeRates(rate, path = null) {
+  if (path === '/') return normalizeHomeRatePayload(rate);
   if (DOLLAR_SEARCH_PAGES[path] || TRAVELER_GUIDE_PATHS.has(path)) return normalizeDollarRatePayload(rate);
   if (!rate || typeof rate !== 'object') return null;
   const buy = fmt(rate.buy_bob_per_usd ?? rate.buy);

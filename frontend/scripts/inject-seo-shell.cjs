@@ -891,11 +891,11 @@ async function main() {
     return;
   }
 
-  const { normalizeDollarRatePayload } = await import('../src/utils/dollarRateSearchCopy.js');
+  const { normalizeHomeRatePayload } = await import('../src/utils/dollarRateSearchCopy.js');
   let dollarSnapshot = null;
   try {
     const live = await fetchLiveRate();
-    dollarSnapshot = normalizeDollarRatePayload(live.rawPayload || live);
+    dollarSnapshot = normalizeHomeRatePayload(live.rawPayload || live);
     const ok = applyLiveRatesToRoutes(live.buy, live.sell, live.updatedAt, {
       buyEur: live.buyEur,
       sellEur: live.sellEur,

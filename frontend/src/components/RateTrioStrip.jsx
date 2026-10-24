@@ -32,6 +32,7 @@ export default function RateTrioStrip({
   cardRate: cardRateProp = null,
   cardUpdatedAt = null,
   showGuideLink = true,
+  showOfficialReference = true,
 }) {
   const es = language === 'es';
   const [fetchedCard, setFetchedCard] = useState(null);
@@ -115,7 +116,7 @@ export default function RateTrioStrip({
       accent: 'border-gray-400 bg-gray-50 dark:bg-gray-800/60',
       valueClass: 'text-gray-800 dark:text-gray-100',
     },
-  ];
+  ].filter(cell => showOfficialReference || cell.key !== 'bcb');
 
   const headerBlock = (
     <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 mb-4">
@@ -173,7 +174,7 @@ export default function RateTrioStrip({
         </Link>
       </div>
 
-      <div className="flex md:grid md:grid-cols-3 gap-3 overflow-x-auto snap-x snap-mandatory pb-1 -mx-1 px-1 md:mx-0 md:px-0 hide-scrollbar">
+      <div className={`flex md:grid ${showOfficialReference ? 'md:grid-cols-3' : 'md:grid-cols-2'} gap-3 overflow-x-auto snap-x snap-mandatory pb-1 -mx-1 px-1 md:mx-0 md:px-0 hide-scrollbar`}>
         {cells.map((c) => (
           <div
             key={c.key}
@@ -194,7 +195,7 @@ export default function RateTrioStrip({
         ))}
       </div>
 
-      {official.available && !official.stale && bcbMid > 0 && blueMid > 0 && ['cash', 'card', 'tie'].includes(comparison.status) && (
+      {showOfficialReference && official.available && !official.stale && bcbMid > 0 && blueMid > 0 && ['cash', 'card', 'tie'].includes(comparison.status) && (
         <p className="mt-3 text-xs text-gray-600 dark:text-gray-400">
           {es ? 'Si tu banco usa BCB: ' : 'If your bank uses BCB: '}
           {formatRate(bcbMid / (1 + fee))} Bs/USD {es ? `tras ${feeId}% de comisión FX` : `after a ${feeId}% FX fee`}.
@@ -220,7 +221,7 @@ export default function RateTrioStrip({
               {cardVsBluePct >= 0 ? '+' : ''}
               {cardVsBluePct.toFixed(1)}%
             </span>
-            {bcbVsBluePct != null && (
+            {showOfficialReference && bcbVsBluePct != null && (
               <span className="text-gray-400 dark:text-gray-500 ml-2">
                 · BCB {bcbVsBluePct >= 0 ? '+' : ''}
                 {bcbVsBluePct.toFixed(1)}%

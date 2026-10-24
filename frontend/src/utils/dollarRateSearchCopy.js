@@ -44,6 +44,24 @@ export function normalizeDollarRatePayload(data) {
   };
 }
 
+/** Homepage evidence travels with the same API response, independent of P2P availability.
+ * Keep raw numbers until the source and official provenance models validate them. */
+export function normalizeHomeRatePayload(data) {
+  const normalized = normalizeDollarRatePayload(data);
+  if (!data || typeof data !== 'object') return normalized;
+  return { ...normalized, homeSourceRate: {
+    buy: data.buy_bob_per_usd ?? data.buy,
+    sell: data.sell_bob_per_usd ?? data.sell,
+    updatedAt: data.updated_at_iso ?? data.updatedAt ?? data.t,
+    is_stale: data.is_stale === true || data.isStale === true,
+    source_observation: data.source_observation,
+    official_buy: data.official_buy,
+    official_sell: data.official_sell,
+    official_mid: data.official_mid,
+    official_observation: data.official_observation,
+  } };
+}
+
 export function buildDollarRateSearchCopy({ page = 'home', buy, sell, updatedAt, sourceRate = null, isStale = false, language = 'es', now = null } = {}) {
   const lang = language === 'en' ? 'en' : 'es';
   const es = lang === 'es';

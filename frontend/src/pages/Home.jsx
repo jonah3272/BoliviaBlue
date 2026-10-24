@@ -211,6 +211,7 @@ function Home() {
           </div>
         </section>
         <HomeMarketSummary language={language} />
+        <SourceObservationPanel homepage rate={currentRate} language={language} loading={rateLoading} error={rateError} />
 
         {/* Rates + buy CTA — first composition */}
         <div className="relative rounded-2xl px-1 py-4 sm:px-4 sm:py-6 -mx-1 sm:mx-0 bg-gradient-to-b from-sky-50/90 via-transparent to-transparent dark:from-sky-950/40 dark:via-transparent">
@@ -218,6 +219,7 @@ function Home() {
             <BlueRateCards showOfficial={showOfficial} setShowOfficial={setShowOfficial} showTimestampInCards={false} showCrossSourceBadge={false} />
             <div className="mt-4 max-w-5xl mx-auto">
               <RateTrioStrip
+                showOfficialReference={false}
                 buy={currentRate?.buy ?? currentRate?.buy_bob_per_usd}
                 sell={currentRate?.sell ?? currentRate?.sell_bob_per_usd}
                 officialBuy={currentRate?.official_buy ?? currentRate?.officialBuy}
@@ -339,8 +341,6 @@ function Home() {
             </div>
           </section>
         </div>
-
-        <SourceObservationPanel rate={currentRate} language={language} loading={rateLoading} error={rateError} />
 
         <section className="max-w-3xl mx-auto space-y-4 text-gray-700 dark:text-gray-200" data-rate-reading-guide>
           <h2 className="text-2xl font-bold">{rateReadingGuide(language).heading}</h2>

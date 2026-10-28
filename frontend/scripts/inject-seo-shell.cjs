@@ -253,15 +253,6 @@ function applyLiveRatesToRoutes(buy, sell, updatedAt, extra = {}) {
     moneyGuide.shell = fillLiveRateSlots(moneyGuide.shell, b, s, updatedAt);
   }
 
-  const eurB = fmtRate(extra.buyEur);
-  const eurS = fmtRate(extra.sellEur);
-  const euro = ROUTES['/euro-a-boliviano'];
-  if (euro && eurB && eurS) {
-    euro.title = `Euro Blue Bolivia Hoy: Compra ${eurB} · Venta ${eurS}`;
-    euro.description = `Euro blue / paralelo en Bolivia: compra Bs ${eurB} y venta Bs ${eurS}. Derivado vía USDT (no es una cotización de ventanilla).`;
-    euro.shell = fillLiveRateSlots(euro.shell, eurB, eurS, extra.eurUpdatedAt || updatedAt);
-  }
-
   const copB = fmtCopThousand(extra.buyCop);
   const copS = fmtCopThousand(extra.sellCop);
   const peso = ROUTES['/peso-a-boliviano'];
@@ -1016,6 +1007,13 @@ async function main() {
   const realDir = path.join(DIST, 'real-a-boliviano');
   fs.mkdirSync(realDir, { recursive: true });
   fs.writeFileSync(path.join(realDir, 'index.html'), renderRealConversionHtml(originalHtml), 'utf8');
+
+  // A built EUR quote would age until the next deploy. Request-time middleware
+  // supplies the dated observation; the static fallback must stay unavailable.
+  const { renderEuroRateHtml } = await import('../../seo/euroRateSeo.js');
+  const euroDir = path.join(DIST, 'euro-a-boliviano');
+  fs.mkdirSync(euroDir, { recursive: true });
+  fs.writeFileSync(path.join(euroDir, 'index.html'), renderEuroRateHtml(originalHtml), 'utf8');
 
   // The API reference uses the same endpoint contract as the interactive page.
   const { renderApiDocumentationHtml } = await import('../../seo/apiDocumentationSeo.js');

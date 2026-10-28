@@ -13,6 +13,7 @@ import { calculatorPageForSearch, renderCalculatorHtml } from './seo/calculatorS
 import { renderArchiveHtml, DAILY_EVIDENCE_SEEDS, normalizeArchiveBefore, archiveLocalePaths } from './frontend/src/data/dailyEvidenceArchive.js';
 import { realPageForSearch, renderRealConversionHtml } from './seo/realConversionSeo.js';
 import { renderCashCardHtml } from './seo/cashCardSeo.js';
+import { euroRateModel, renderEuroRateHtml } from './seo/euroRateSeo.js';
 
 /**
  * Vercel Edge Middleware: inject live buy/sell into homepage HTML for every visitor,
@@ -648,6 +649,39 @@ export default async function middleware(request) {
 
   const url = new URL(request.url);
   const path = normalizePath(url.pathname);
+  // EUR observations can age independently of USD. Serve the same dated reading
+  // to browsers and bots, and never reuse the deploy-time quote after API failure.
+  if (path === '/euro-a-boliviano') {
+    try {
+      const shell = await fetch(new URL('/euro-a-boliviano/index.html', url.origin), {
+        headers: { [SKIP_HEADER]: '1', Accept: 'text/html' }, signal: withTimeout(HTML_TIMEOUT_MS),
+      });
+      if (!shell.ok) throw new Error('EUR shell unavailable');
+      let rate = null;
+      try {
+        const response = await fetch(new URL('/api/blue-rate', url.origin), {
+          headers: { [SKIP_HEADER]: '1', Accept: 'application/json' }, signal: withTimeout(RATE_TIMEOUT_MS),
+        });
+        if (response.ok) rate = await response.json();
+      } catch { /* Render unavailable rather than retaining a build-time quote. */ }
+      const now = Date.now();
+      const model = euroRateModel(rate, now);
+      const fresh = model.available && !model.stale;
+      const headers = new Headers(shell.headers);
+      headers.set('content-type', 'text/html; charset=utf-8');
+      headers.set('cache-control', fresh ? 'public, max-age=0, s-maxage=60, must-revalidate' : 'no-store');
+      headers.set('x-bb-live-seo', fresh ? '1' : '0');
+      headers.delete('content-length');
+      headers.delete('etag');
+      headers.delete('last-modified');
+      headers.delete('age');
+      return new Response(request.method === 'HEAD' ? null : renderEuroRateHtml(await shell.text(), url.search, rate, now), { status: 200, headers });
+    } catch {
+      const language = url.searchParams.get('lang') === 'en' ? 'en' : 'es';
+      const title = language === 'es' ? 'Página temporalmente no disponible' : 'Page temporarily unavailable';
+      return new Response(request.method === 'HEAD' ? null : `<!doctype html><html lang="${language}"><head><meta name="robots" content="noindex, follow"><title>${title} | Bolivia Blue</title></head><body><h1>${title}</h1></body></html>`, { status: 503, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex, follow', 'retry-after': '60' } });
+    }
+  }
   // The same tool guidance and verified provider facts are served to every user agent.
   if (path === '/comparar-qr-tarjeta' || path === '/dolar-blue-santa-cruz') {
     try {

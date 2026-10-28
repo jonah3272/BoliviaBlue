@@ -153,3 +153,16 @@ test('static EUR route no longer freezes a build quote; final build uses the sam
   const build = readFileSync(new URL('../frontend/scripts/inject-seo-shell.cjs', import.meta.url), 'utf8');
   assert.match(build, /writeFileSync\(path\.join\(euroDir, 'index\.html'\), renderEuroRateHtml\(originalHtml\)/);
 });
+
+test('an upstream 200 login/error page is never relabeled as a valid EUR document', async () => {
+  const originalFetch = globalThis.fetch;
+  try {
+    let calls = 0;
+    globalThis.fetch = async () => { calls++; return new Response('<html><head><title>Log in</title></head><body>Protected content</body></html>'); };
+    const response = await middleware(new Request('https://www.boliviablue.com/euro-a-boliviano?lang=en'));
+    assert.equal(response.status, 503); assert.equal(calls, 1);
+    assert.equal(response.headers.get('cache-control'), 'no-store');
+    const html = await response.text();
+    assert.match(html, /Page temporarily unavailable/); assert.doesNotMatch(html, /Protected content|Log in/);
+  } finally { globalThis.fetch = originalFetch; }
+});

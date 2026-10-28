@@ -657,6 +657,9 @@ export default async function middleware(request) {
         headers: { [SKIP_HEADER]: '1', Accept: 'text/html' }, signal: withTimeout(HTML_TIMEOUT_MS),
       });
       if (!shell.ok) throw new Error('EUR shell unavailable');
+      const shellHtml = await shell.text();
+      // Protected previews can redirect an internal asset fetch to a 200 login page.
+      if (!shellHtml.includes('<div id="root">')) throw new Error('EUR app shell unavailable');
       let rate = null;
       try {
         const response = await fetch(new URL('/api/blue-rate', url.origin), {
@@ -675,7 +678,7 @@ export default async function middleware(request) {
       headers.delete('etag');
       headers.delete('last-modified');
       headers.delete('age');
-      return new Response(request.method === 'HEAD' ? null : renderEuroRateHtml(await shell.text(), url.search, rate, now), { status: 200, headers });
+      return new Response(request.method === 'HEAD' ? null : renderEuroRateHtml(shellHtml, url.search, rate, now), { status: 200, headers });
     } catch {
       const language = url.searchParams.get('lang') === 'en' ? 'en' : 'es';
       const title = language === 'es' ? 'Página temporalmente no disponible' : 'Page temporarily unavailable';

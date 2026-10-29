@@ -19,6 +19,37 @@ const cases = {
  future:{...rate,updatedAt:'2099-10-24T13:35:35.531Z',source_observation:{...rate.source_observation,observed_at:'2099-10-24T13:35:35.531Z'}},
 };
 for(const language of ['es','en']) describe(`homepage source comparison ${language}`, () => {
+ it('survives browser translation before rates arrive and during repeated refreshes', () => {
+  vi.setSystemTime(now);
+  const draw=(input,loading=false,error=null)=><MemoryRouter><SourceObservationPanel homepage rate={input} language={language} loading={loading} error={error}/></MemoryRouter>;
+  const {container,rerender}=render(draw(null,true));
+  const translate = () => {
+   // Chrome Translate replaces React-owned Text nodes with nested <font> nodes.
+   // Keep their original references detached, exactly as the browser does.
+   const walker=document.createTreeWalker(container,NodeFilter.SHOW_TEXT);
+   const nodes=[];while(walker.nextNode()) nodes.push(walker.currentNode);
+   for(const node of nodes) {
+    if(!node.textContent.trim() || node.parentElement.closest('font')) continue;
+    const outer=document.createElement('font'),inner=document.createElement('font');
+    inner.textContent=`Translated: ${node.textContent}`;outer.appendChild(inner);
+    node.replaceWith(outer);
+   }
+  };
+  translate();
+  expect(()=>rerender(draw(rate))).not.toThrow();
+  expect(container.querySelector('table')).toBeTruthy();
+  expect(container.querySelector('time').dateTime).toBe(time);
+  expect(container.querySelector('time').textContent).not.toContain('Translated:');
+  translate();
+  expect(()=>rerender(draw(rate,false,'offline'))).not.toThrow();
+  expect(container.textContent).toMatch(/actualización pendiente|update pending/);
+  translate();
+  expect(()=>rerender(draw(null,true))).not.toThrow();
+  expect(container.querySelector('table')).toBeNull();
+  translate();
+  expect(()=>rerender(draw(rate))).not.toThrow();
+  expect(container.querySelector('table')).toBeTruthy();
+ });
  for(const [name,input] of Object.entries(cases)) it(`matches the initial HTML's complete visible evidence: ${name}`, () => {
   vi.setSystemTime(now);
   const initial=document.createElement('div');initial.innerHTML=renderHomeSourceComparison(input,language,now.getTime());

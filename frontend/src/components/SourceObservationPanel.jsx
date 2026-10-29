@@ -6,7 +6,8 @@ function HomeSourceComparison({ rate, language, loading, error }) {
   const m = homeSourceComparison(rate, language), c = m.copy;
   return <section data-home-source-comparison aria-labelledby="home-source-comparison-heading" className={HOME_SOURCE_CLASS}>
     <h2 id="home-source-comparison-heading" className="text-lg font-bold">{c.heading}</h2>
-    <p className="text-sm">{m.sources.observedAt ? <time dateTime={m.sources.observedAt}>{m.observation}</time> : m.observation}{(m.sources.stale || error) && <strong className="block text-amber-700 dark:text-amber-300">{c.stale}</strong>}</p>
+    {/* Keep a stable element: browser translation can detach raw React text nodes. */}
+    <p className="text-sm"><span>{m.sources.observedAt ? <time dateTime={m.sources.observedAt}>{m.observation}</time> : m.observation}</span>{(m.sources.stale || error) && <strong className="block text-amber-700 dark:text-amber-300">{c.stale}</strong>}</p>
     {loading && !rate ? <p role="status">{c.loading}</p> : m.sources.available ? <>
       <div className="overflow-x-auto"><table className="w-full text-sm text-left tabular-nums"><caption className="text-left pb-2">{c.caption}</caption><thead><tr>{[c.platform, c.buy, c.sell].map(label => <th key={label} scope="col" className="py-2 pr-3 align-bottom">{label}</th>)}</tr></thead><tbody>{m.rows.map(p => <tr key={p.id} className="border-t border-gray-200 dark:border-gray-700"><th scope="row" className="py-2 pr-3 font-medium">{p.name}</th><td className="py-2 pr-3">{p.buy}</td><td className="py-2">{p.sell}</td></tr>)}</tbody></table></div>
       <p className="text-xs">{c.method}</p>

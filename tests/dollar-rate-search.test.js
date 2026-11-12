@@ -161,3 +161,14 @@ describe('primary dollar search copy', () => {
     assert.match(hero, /const conversion = live\.times\(100\)/);
   });
 });
+
+
+it('primary search snippets do not retain time-sensitive prices', () => {
+  for (const page of Object.values(DOLLAR_SEARCH_PAGES)) for (const language of ['es', 'en']) {
+    for (const input of [{}, { buy: 12.34, sell: 12.56, updatedAt: payload.updated_at_iso }, { buy: 12.34, sell: 12.56, isStale: true }]) {
+      const copy = buildDollarRateSearchCopy({ page, language, ...input });
+      assert.doesNotMatch(copy.title + copy.description, /12\\.34|12\\.56/);
+      if (copy.hasRates) assert.match(copy.answer, /12\\.34/);
+    }
+  }
+});

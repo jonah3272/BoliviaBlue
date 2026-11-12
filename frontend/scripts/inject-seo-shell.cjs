@@ -424,19 +424,21 @@ const ROUTES = {
     getJsonLd: () => buildStaticJsonLd('/bolivian-blue', 'Bolivian Blue', 'Bolivian Blue – Tipo de Cambio Dólar Blue Bolivia', 'Bolivian Blue: referencia P2P USDT/BOB del dólar paralelo en Bolivia, no cotización de efectivo.', [])
   },
   '/que-es-dolar-blue': {
-    title: '¿Qué es el Dólar Blue? Guía 2025 – Bolivia y Latinoamérica',
-    description: '¿Qué es el dólar blue? Guía completa sobre el dólar blue en Bolivia. Explicación del mercado paralelo, cómo funciona, diferencia con el dólar oficial. Actualizado cada 15 minutos. Gratis.',
+    title: '¿Qué es el dólar blue en Bolivia? Guía y referencia P2P',
+    description: 'Qué es el dólar blue en Bolivia, cómo se compara con la referencia oficial y qué mide la cotización P2P USDT/BOB.',
     canonical: BASE_URL + '/que-es-dolar-blue',
     shell: `
 <main class="max-w-7xl mx-auto px-4 py-8" data-seo-shell="que-es-dolar-blue">
   <div class="text-center space-y-4 mb-8">
     <h1 class="text-3xl sm:text-5xl font-bold text-gray-900">¿Qué es el Dólar Blue?</h1>
-    <p class="text-base text-gray-600">Guía completa sobre el dólar blue en Bolivia: qué es, cómo funciona y por qué es importante.</p>
+    <p class="text-base text-gray-600">El dólar blue o paralelo se refiere a cotizaciones fuera de la referencia oficial. Bolivia Blue muestra una referencia digital P2P de USDT/BOB, no una cotización de efectivo.</p>
+    <p class="text-base text-gray-600">La referencia publicada por el BCB y las cotizaciones P2P miden mercados distintos y pueden variar. La lectura P2P usa las fuentes disponibles; consultá su hora, metodología y costos antes de comparar.</p>
     <nav class="flex flex-wrap justify-center gap-3 mt-4" aria-label="Enlaces relacionados">
       <a href="/" class="text-blue-600 font-medium">Inicio</a>
       <a href="/dolar-blue-hoy" class="text-blue-600 font-medium">Dólar blue hoy</a>
       <a href="/datos-historicos" class="text-blue-600 font-medium">Datos históricos</a>
       <a href="/calculadora" class="text-blue-600 font-medium">Calculadora</a>
+      <a href="/fuente-de-datos" class="text-blue-600 font-medium">Metodología y fuentes</a>
     </nav>
   </div>
 </main>`.replace(/\n/g, '').trim(),

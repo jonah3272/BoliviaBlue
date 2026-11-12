@@ -78,7 +78,7 @@ export function buildDollarRateSearchCopy({ page = 'home', buy, sell, updatedAt,
   const baseTitle = (TITLES[page] || TITLES.home)[lang];
   const analyticsTitle = `${baseTitle} | Bolivia Blue`;
   const title = page === 'home'
-    ? (es ? 'Dólar blue Bolivia hoy: compra y venta P2P | Bolivia Blue' : 'Bolivia blue dollar today: P2P buy and sell | Bolivia Blue')
+    ? (es ? 'Dólar blue y paralelo Bolivia hoy | Bolivia Blue' : 'Bolivia blue dollar today: P2P buy and sell | Bolivia Blue')
     : hasRates
     ? `${baseTitle}: ${es ? 'Compra' : 'Buy'} ${buyStr} · ${es ? 'Venta' : 'Sell'} ${sellStr}${page === 'home' ? ' | Bolivia Blue' : ''}`
     : analyticsTitle;
@@ -93,7 +93,7 @@ export function buildDollarRateSearchCopy({ page = 'home', buy, sell, updatedAt,
   const qualification = es ? 'No es cotización de efectivo.' : 'Not a cash quote.';
   const quoteDescription = `${quote} ${observation} ${qualification}`;
   const description = page === 'home'
-    ? (es ? 'Dólar blue y paralelo en Bolivia: compra, venta e historial. Compará efectivo y tarjeta con comisiones. Referencia P2P USDT/BOB, con hora de lectura.' : 'Bolivia blue dollar: buy, sell and historical rates. Compare cash and card costs after fees. P2P USDT/BOB reference with observation times.')
+    ? (es ? 'Dólar blue y paralelo en Bolivia: compra y venta USDT/BOB, comparación por plataforma e historial. Compará efectivo y tarjeta con comisiones.' : 'Bolivia blue dollar: buy, sell and historical rates. Compare cash and card costs after fees. P2P USDT/BOB reference with observation times.')
     : quoteDescription;
   let answer = `${quoteDescription} ${es
     ? 'USDT se usa como referencia del USD. Se intentan actualizaciones periódicas y puede haber demoras. Consultá la metodología y el historial; la composición de fuentes de esta lectura no está confirmada aquí.'

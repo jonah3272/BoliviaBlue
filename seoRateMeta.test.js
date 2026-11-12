@@ -13,14 +13,14 @@ import {
 } from './frontend/src/utils/seoRateMeta.js';
 
 describe('buildLiveRateSeoMeta', () => {
-  it('puts buy/sell in the dolar-blue-hoy title without a date', () => {
+  it('keeps changing buy/sell rates out of the dolar-blue-hoy title', () => {
     const meta = buildLiveRateSeoMeta({
       buy: 11.87,
       sell: 11.75,
       language: 'es',
       page: 'dolar-blue-hoy',
     });
-    assert.equal(meta.title, 'Dólar Blue Hoy Bolivia: Compra 11.87 · Venta 11.75');
+    assert.equal(meta.title, 'Dólar Blue Hoy Bolivia | Bolivia Blue');
     assert.doesNotMatch(meta.title, /20\d\d/);
     assert.equal(meta.analyticsTitle, 'Dólar Blue Hoy Bolivia | Bolivia Blue');
   });
@@ -32,8 +32,8 @@ describe('buildLiveRateSeoMeta', () => {
       language: 'es',
       page: 'home',
     });
-    assert.equal(meta.title, 'Dólar blue Bolivia hoy: compra y venta P2P | Bolivia Blue');
-    assert.match(meta.description, /P2P USDT\/BOB/);
+    assert.equal(meta.title, 'Dólar blue y paralelo Bolivia hoy | Bolivia Blue');
+    assert.match(meta.description, /USDT\/BOB/);
     assert.doesNotMatch(meta.description, /para la compra/);
   });
 
@@ -45,7 +45,7 @@ describe('buildLiveRateSeoMeta', () => {
       page: 'home',
     });
     assert.doesNotMatch(meta.title, /0\.00/);
-    assert.equal(meta.title, 'Dólar blue Bolivia hoy: compra y venta P2P | Bolivia Blue');
+    assert.equal(meta.title, 'Dólar blue y paralelo Bolivia hoy | Bolivia Blue');
   });
 
   it('uses 1.000 COP in Bs for the peso page (per-peso rate is < 1)', () => {

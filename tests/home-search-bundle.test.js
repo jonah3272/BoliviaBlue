@@ -12,7 +12,7 @@ const html = '<html><head><title>Old</title><meta name="description" content="Ol
 for (const language of ['es','en']) {
   test(`homepage identity and same-record evidence: ${language}`, () => {
     const m = buildLiveRateSeoMeta({...normalizeDollarRatePayload(rate), page: 'home', language, now});
-    assert.equal(m.title, language === 'es' ? 'Dólar blue Bolivia hoy: compra y venta P2P | Bolivia Blue' : 'Bolivia blue dollar today: P2P buy and sell | Bolivia Blue');
+    assert.equal(m.title, language === 'es' ? 'Dólar blue y paralelo Bolivia hoy | Bolivia Blue' : 'Bolivia blue dollar today: P2P buy and sell | Bolivia Blue');
     assert.doesNotMatch(m.title + m.description, /10\.13|10\.38/);
     assert.match(m.answer, /Binance P2P/);
     assert.match(m.answer, /10\.13/);

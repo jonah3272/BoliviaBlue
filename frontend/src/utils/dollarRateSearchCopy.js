@@ -77,10 +77,10 @@ export function buildDollarRateSearchCopy({ page = 'home', buy, sell, updatedAt,
   }).format(new Date(observedAt)) : null;
   const baseTitle = (TITLES[page] || TITLES.home)[lang];
   const analyticsTitle = `${baseTitle} | Bolivia Blue`;
+  // Search engines may cache a snippet much longer than the quote remains valid.
+  // Keep transient prices in the timestamped page answer, not its title.
   const title = page === 'home'
     ? (es ? 'Dólar blue y paralelo Bolivia hoy | Bolivia Blue' : 'Bolivia blue dollar today: P2P buy and sell | Bolivia Blue')
-    : hasRates
-    ? `${baseTitle}: ${es ? 'Compra' : 'Buy'} ${buyStr} · ${es ? 'Venta' : 'Sell'} ${sellStr}${page === 'home' ? ' | Bolivia Blue' : ''}`
     : analyticsTitle;
   const observation = !hasRates
     ? (es ? 'Lectura P2P no disponible.' : 'P2P reading unavailable.')
@@ -94,7 +94,7 @@ export function buildDollarRateSearchCopy({ page = 'home', buy, sell, updatedAt,
   const quoteDescription = `${quote} ${observation} ${qualification}`;
   const description = page === 'home'
     ? (es ? 'Dólar blue y paralelo en Bolivia: compra y venta USDT/BOB, comparación por plataforma e historial. Compará efectivo y tarjeta con comisiones.' : 'Bolivia blue dollar: buy, sell and historical rates. Compare cash and card costs after fees. P2P USDT/BOB reference with observation times.')
-    : quoteDescription;
+    : (es ? 'Referencia P2P USDT/BOB del dólar blue en Bolivia: consultá compra, venta, hora de lectura y metodología. No es cotización de efectivo.' : 'Bolivia blue dollar P2P USDT/BOB reference: see buy and sell rates, observation time, and methodology. Not a cash quote.');
   let answer = `${quoteDescription} ${es
     ? 'USDT se usa como referencia del USD. Se intentan actualizaciones periódicas y puede haber demoras. Consultá la metodología y el historial; la composición de fuentes de esta lectura no está confirmada aquí.'
     : 'USDT is used as a USD proxy. Updates are attempted periodically and may be delayed. See the methodology and history; the source composition of this reading is not confirmed here.'}`;

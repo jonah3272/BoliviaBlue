@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useReducer, useRef } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -7,6 +7,7 @@ import Navigation from '../components/Navigation';
 import BinanceBanner from '../components/BinanceBanner';
 import { Link } from 'react-router-dom';
 import { fetchBlueRate, fetchBlueHistory } from '../utils/api';
+import { MAX_OBSERVATION_AGE_MS as BCB_MAX_AGE_MS } from '../../../shared/officialProvenance.cjs';
 import { officialRateModel } from '../utils/officialRate';
 import { observationLabel, sourceObservationModel } from '../utils/sourceObservation';
 import OfficialRateNote from '../components/OfficialRateNote';
@@ -14,6 +15,8 @@ import Breadcrumbs from '../components/Breadcrumbs';
 import { useAdsenseReady } from '../hooks/useAdsenseReady';
 import { getWebPage, getBreadcrumbList, getFAQPage } from '../utils/seoSchema';
 import { trackComparisonPageViewed, trackRelatedLinkClicked } from '../utils/analyticsEvents';
+
+const P2P_MAX_AGE_MS = 45 * 60 * 1000; // Match sourceObservationModel.
 
 function Comparison() {
   // Signal to AdSense that this page has sufficient content
@@ -25,6 +28,7 @@ function Comparison() {
   const [currentRate, setCurrentRate] = useState(null);
   const [rateLoading, setRateLoading] = useState(true);
   const [avgSpread, setAvgSpread] = useState(null);
+  const [, refreshFreshness] = useReducer(version => version + 1, 0);
 
   const trackRel = (destination, link_label) => () =>
     trackRelatedLinkClicked({ language, destination, link_label, page_type: 'comparison' });
@@ -80,8 +84,38 @@ function Comparison() {
     { name: language === 'es' ? 'Comparación' : 'Comparison', url: '/comparacion' }
   ];
 
-  const p2p = sourceObservationModel(currentRate);
-  const official = officialRateModel(currentRate, language);
+  const now = Date.now();
+  const p2p = sourceObservationModel(currentRate, now);
+  const official = officialRateModel(currentRate, language, now);
+
+  useEffect(() => {
+    // Re-evaluate the retained quote at the freshness boundaries even if polling fails.
+    const deadlines = [
+      Date.parse(p2p.observedAt) + P2P_MAX_AGE_MS + 1,
+      Date.parse(official.official_observed_at) + BCB_MAX_AGE_MS + 1,
+      Date.parse(`${official.official_source_date}T04:00:00Z`) + 24 * 60 * 60 * 1000,
+    ].filter(Number.isFinite);
+    let timeout;
+    function scheduleExpiry() {
+      clearTimeout(timeout);
+      const now = Date.now();
+      const next = Math.min(...deadlines.filter(deadline => deadline > now));
+      if (Number.isFinite(next)) timeout = setTimeout(recheck, next - now);
+    }
+    function recheck() {
+      refreshFreshness();
+      scheduleExpiry();
+    }
+    function onVisibilityChange() {
+      if (document.visibilityState === 'visible') recheck();
+    }
+    recheck();
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    return () => {
+      clearTimeout(timeout);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+    };
+  }, [p2p.observedAt, official.official_observed_at, official.official_source_date]);
   const hasOfficial = official.available;
   const hasP2p = p2p.buy != null && p2p.sell != null;
   const blueMid = hasP2p ? (p2p.buy + p2p.sell) / 2 : null;
